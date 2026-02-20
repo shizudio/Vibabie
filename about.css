@@ -1,0 +1,65 @@
+/* ─────────────────────────────────────────
+   about.css — About page styles
+   ───────────────────────────────────────── */
+
+   html, body { min-height: 100%; }
+
+   nav {
+     background: linear-gradient(to bottom, var(--paper), transparent);
+   }
+   
+   main {
+     max-width: 640px;
+     margin: 0 auto;
+     padding: 140px 40px 100px;
+   }
+   
+   .portrait-frame {
+     width: 100%;
+     aspect-ratio: 4/3;
+     background: var(--blush);
+     margin-bottom: 56px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     opacity: 0.6;
+   }
+   .portrait-hint {
+     font-size: 0.62rem;
+     letter-spacing: 0.2em;
+     text-transform: uppercase;
+     color: var(--stone);
+     font-weight: 200;
+   }
+   
+   .bio {
+     font-size: 1rem;
+     line-height: 2;
+     color: var(--ink);
+     font-weight: 300;
+     opacity: 0.85;
+     margin-bottom: 24px;
+   }
+   
+   .detail-row {
+     display: flex;
+     gap: 48px;
+     margin-bottom: 48px;
+     flex-wrap: wrap;
+   }
+   .detail-label {
+     font-size: 0.58rem;
+     letter-spacing: 0.2em;
+     text-transform: uppercase;
+     color: var(--stone);
+     font-weight: 200;
+     display: block;
+     margin-bottom: 8px;
+   }
+   .detail-value {
+     font-family: 'Cormorant Garamond', serif;
+     font-size: 1rem;
+     font-weight: 300;
+     font-style: italic;
+     color: var(--ink);
+   }

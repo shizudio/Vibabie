@@ -4,111 +4,127 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Perena.org — Creative, Growing</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
 </head>
 <body>
 
-  <!-- LOADER -->
-  <div class="loader" id="loader">
-    <span class="loader-num" id="loader-num">0</span>
+  <div class="cursor default-cursor" id="cursor"></div>
+
+  <div class="tooltip" id="tooltip">
+    <div class="tooltip-inner">
+      <span class="tooltip-label" id="tt-label"></span>
+      <span class="tooltip-desc" id="tt-desc"></span>
+      <a href="#" class="tooltip-link" id="tt-link"></a>
+    </div>
   </div>
 
-  <!-- NAV -->
-  <nav>
-    <span class="nav-logo">Perena.org</span>
-    <div class="nav-links">
-      <a href="#work">Work</a>
-      <a href="#about">About</a>
-      <a href="#contact">Contact</a>
-    </div>
-  </nav>
+  <div class="loader" id="loader">
+    <span class="loader-num" id="loader-num">0</span>
+    <span class="loader-label">entering the room</span>
+  </div>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-eyebrow">Creative, Growing —</div>
-    <h1 class="hero-title">
-      <em>Perena</em><br>
-      <span class="outline">is alive</span>
-    </h1>
-    <p class="hero-sub">Art · Life · Becoming</p>
-    <div class="hero-scroll">↓ enter</div>
-  </section>
+  <div class="hanging-string" id="hanging-string"></div>
 
-  <!-- WORK -->
-  <section class="work" id="work">
-    <div class="section-label">Selected Work</div>
-    <div class="work-grid">
+  <header class="site-header">
+    <span class="site-logo">Perena.org</span>
+    <span class="site-tagline">Creative, Growing</span>
+  </header>
 
-      <div class="work-card" data-num="01">
-        <div class="work-card-inner">
-          <div class="work-img" style="background: linear-gradient(135deg, #7F1F12 0%, #6F4DA0 100%)"></div>
-          <div class="work-info">
-            <span class="work-cat" style="color: #7F1F12">Perena</span>
-            <h3>The Project</h3>
-            <p>An ongoing exploration of identity, creation, and what it means to grow in public.</p>
+  <main class="stage" id="stage">
+    <div class="frame-mount">
+      <div class="frame-border">
+        <div class="room-image" id="room-image">
+          <img src="Portfoliov2.jpg" alt="Shina's Room" id="room-img" />
+
+          <!-- ① BOOKS -->
+          <div class="zone"
+            data-emoji="📖"
+            data-label="The Shelf"
+            data-desc="Essays & Writing"
+            data-href="https://shinafoo.substack.com/"
+            data-link-text="Substack ↗"
+            data-external="true"
+            style="top:5%; left:32%; width:18%; height:18%;">
           </div>
+
+          <!-- ② CANVAS / EASEL -->
+          <div class="zone"
+            data-emoji="🎨"
+            data-label="The Canvas"
+            data-desc="Art & Illustration"
+            data-href="https://www.instagram.com/shizudio?igsh=MXN2NzVsZ2FocmdsYw%3D%3D&utm_source=qr"
+            data-link-text="Instagram Art ↗"
+            data-external="true"
+            style="top:10%; left:60%; width:22%; height:55%;">
+          </div>
+
+          <!-- ③ BED -->
+          <div class="zone"
+            data-emoji="🛏"
+            data-label="The Bed"
+            data-desc="Who I Am"
+            data-href="about.html"
+            data-link-text="About ↗"
+            data-external="false"
+            style="top:28%; left:18%; width:42%; height:38%;">
+          </div>
+
+          <!-- ④ LAMP -->
+          <div class="zone"
+            data-emoji="🪔"
+            data-label="The Light"
+            data-desc="Get in Touch"
+            data-href="mailto:shizudio.eth@gmail.com"
+            data-link-text="Email ↗"
+            data-external="true"
+            style="top:60%; left:6%; width:14%; height:28%;">
+          </div>
+
+          <!-- ⑤ FUJIFILM CAMERA -->
+          <div class="zone"
+            data-emoji="📷"
+            data-label="The Fujifilm Camera"
+            data-desc="Photography"
+            data-href="photography.html"
+            data-link-text="View Work ↗"
+            data-external="false"
+            style="top:62%; left:22%; width:16%; height:22%;">
+          </div>
+
+          <!-- ⑥ IPHONE -->
+          <div class="zone"
+            data-emoji="📱"
+            data-label="The Phone"
+            data-desc="Thoughts & Updates"
+            data-href="https://x.com/shizudio"
+            data-link-text="X / Twitter ↗"
+            data-external="true"
+            style="top:68%; left:44%; width:10%; height:20%;">
+          </div>
+
+          <!-- ⑦ LAPTOP -->
+          <div class="zone"
+            data-emoji="💻"
+            data-label="The Laptop"
+            data-desc="Work & Projects"
+            data-href="https://perena.org"
+            data-link-text="Perena.org ↗"
+            data-external="true"
+            style="top:60%; left:55%; width:24%; height:25%;">
+          </div>
+
         </div>
       </div>
-
-      <div class="work-card" data-num="02">
-        <div class="work-card-inner">
-          <div class="work-img" style="background: linear-gradient(135deg, #6F4DA0 0%, #94D3D3 100%)"></div>
-          <div class="work-info">
-            <span class="work-cat" style="color: #6F4DA0">Art</span>
-            <h3>Visual Language</h3>
-            <p>Studies in form, tension, and the space between intention and accident.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="work-card" data-num="03">
-        <div class="work-card-inner">
-          <div class="work-img" style="background: linear-gradient(135deg, #B9B94B 0%, #FCBC43 100%)"></div>
-          <div class="work-info">
-            <span class="work-cat" style="color: #B9B94B">Life</span>
-            <h3>Living Material</h3>
-            <p>Documentation of the everyday as creative practice. Nothing is outside the work.</p>
-          </div>
-        </div>
-      </div>
-
     </div>
-  </section>
+  </main>
 
-  <!-- ABOUT -->
-
-  <!-- ABOUT -->
-  <section class="about" id="about">
-    <div class="section-label">About</div>
-    <div class="about-inner">
-      <h2 class="about-title">Contained chaos<br><em>that sparks life</em></h2>
-      <div class="about-text">
-        <p>I am growing Perena.org by day, experimental artist and designer after sunsets. Living in the intersection of creativity, finance, and technology.</p>
-        <p>Currently learning to build the things I imagine. Interested to see what happens when you stop waiting for permission.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- CONTACT -->
-  <section class="contact" id="contact">
-    <div class="section-label">Connect</div>
-    <div class="contact-inner">
-      <h2>Let's make<br><em>something real</em></h2>
-      <div class="contact-links">
-        <a href="mailto:hello@perena.org" class="contact-link">Email ↗</a>
-        <a href="#" class="contact-link">Instagram ↗</a>
-        <a href="https://github.com/shizudio" class="contact-link" target="_blank">GitHub ↗</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    <span>© Perena.org</span>
-    <span>Creative, Growing</span>
+  <footer class="site-footer">
+    <span class="footer-hint">explore the room</span>
   </footer>
 
   <script src="script.js"></script>
+  <script src="index.js"></script>
 </body>
 </html>

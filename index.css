@@ -1,0 +1,123 @@
+/* ─────────────────────────────────────────
+   index.css — Home page styles
+   ───────────────────────────────────────── */
+
+   html, body { overflow: hidden; }
+
+   /* ── STAGE ── */
+   .stage {
+     width: 100vw;
+     height: 100vh;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     opacity: 0;
+     transition: opacity 1s ease;
+   }
+   .stage.visible { opacity: 1; }
+   
+   /* ── FRAME ── */
+   .frame-mount {
+     background: #f0ebe2;
+     padding: 32px 32px 40px;
+     box-shadow:
+       0 2px 4px rgba(0,0,0,0.04),
+       0 8px 24px rgba(0,0,0,0.08),
+       0 32px 64px rgba(0,0,0,0.12),
+       0 64px 120px rgba(0,0,0,0.08);
+     position: relative;
+   }
+   .frame-mount::before {
+     content: '';
+     position: absolute;
+     inset: 12px;
+     border: 1px solid rgba(0,0,0,0.08);
+     pointer-events: none;
+     z-index: 2;
+   }
+   .frame-border {
+     border: 3px solid #2a1f1a;
+     position: relative;
+     line-height: 0;
+   }
+   .frame-border::after {
+     content: '';
+     position: absolute;
+     inset: 0;
+     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15);
+     pointer-events: none;
+     z-index: 2;
+   }
+   
+   /* ── ROOM IMAGE ── */
+   .room-image {
+     display: block;
+     position: relative;
+   }
+   .room-image img {
+     display: block;
+     width: 100%;
+     height: 100%;
+     object-fit: cover;
+   }
+   
+   /* ── ZONES (invisible interaction areas) ── */
+   .zone {
+     position: absolute;
+     cursor: none;
+     z-index: 10;
+     border-radius: 40%;
+   }
+   
+   /* ── TOOLTIP ── */
+   .tooltip {
+     position: fixed;
+     pointer-events: none;
+     z-index: 9998;
+     opacity: 0;
+     transition: opacity 0.25s ease;
+   }
+   .tooltip.visible { opacity: 1; }
+   
+   .tooltip-inner {
+     background: var(--paper);
+     border: 1px solid var(--border);
+     padding: 18px 22px;
+     box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+     min-width: 180px;
+   }
+   .tooltip-label {
+     font-family: 'Cormorant Garamond', serif;
+     font-size: 1.05rem;
+     font-weight: 300;
+     font-style: italic;
+     color: var(--ink);
+     display: block;
+     margin-bottom: 10px;
+     line-height: 1.4;
+   }
+   .tooltip-desc {
+     font-size: 0.6rem;
+     letter-spacing: 0.14em;
+     text-transform: uppercase;
+     color: var(--stone);
+     display: block;
+     margin-bottom: 14px;
+     font-weight: 200;
+     line-height: 1.8;
+   }
+   .tooltip-link {
+     display: inline-block;
+     font-size: 0.68rem;
+     letter-spacing: 0.1em;
+     text-transform: uppercase;
+     color: var(--crimson);
+     text-decoration: none;
+     padding-bottom: 2px;
+     border-bottom: 1px solid rgba(127,31,18,0.3);
+     transition: all 0.2s;
+   }
+   .tooltip-link:hover {
+     border-bottom-color: var(--crimson);
+     letter-spacing: 0.14em;
+   }
