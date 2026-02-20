@@ -121,3 +121,46 @@
      border-bottom-color: var(--crimson);
      letter-spacing: 0.14em;
    }
+
+   /* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+    html, body {
+      overflow: auto;
+      overflow-x: hidden;
+    }
+  
+    .site-header, nav {
+      padding: 16px 20px;
+    }
+  
+    .stage {
+      height: auto;
+      min-height: 100vh;
+      padding: 80px 16px 60px;
+    }
+  
+    .frame-mount {
+      padding: 16px 16px 20px;
+    }
+  
+    .room-image img {
+      width: 100%;
+      height: auto;
+    }
+  
+    .tooltip {
+      display: none;
+    }
+  
+    .zone {
+      cursor: pointer;
+    }
+  
+    .footer-hint {
+      font-size: 0.5rem;
+    }
+  
+    .cursor {
+      display: none;
+    }
+  }
