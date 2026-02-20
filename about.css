@@ -15,22 +15,37 @@
    }
    
    .portrait-frame {
-     width: 100%;
-     aspect-ratio: 4/3;
-     background: var(--blush);
-     margin-bottom: 56px;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     opacity: 0.6;
-   }
-   .portrait-hint {
-     font-size: 0.62rem;
-     letter-spacing: 0.2em;
-     text-transform: uppercase;
-     color: var(--stone);
-     font-weight: 200;
-   }
+    width: 100%;
+    aspect-ratio: 3/4;
+    margin-bottom: 56px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .portrait-frame img,
+.portrait-frame video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity 0.4s ease;
+}
+
+.portrait-frame video {
+    opacity: 0;
+  }
+  
+  .portrait-frame:hover img {
+    opacity: 0;
+  }
+  
+  .portrait-frame:hover video {
+    opacity: 1;
+  }
    
    .bio {
      font-size: 1rem;
@@ -63,3 +78,42 @@
      font-style: italic;
      color: var(--ink);
    }
+
+   .page-h1-sub {
+    font-family: 'Titillium Web', sans-serif;
+    font-weight: 300;
+    font-size: 0.92rem;
+    background: #FFF5EB;
+    color: #5a3a34;
+    padding: 14px 20px;
+    border-radius: 6px;
+    border-left: 3px solid #7F1F12;
+    letter-spacing: 0.02em;
+    line-height: 1.5;
+    margin: 20px 0;
+  }
+  .page-h1-sub::before {
+    content: ">";
+    color: #7F1F12;
+    margin-right: 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .page-h1-sub::after {
+    content: "▋";
+    color: #7F1F12;
+    margin-left: 4px;
+    animation: blink 1.1s step-end infinite;
+    font-size: 0.85rem;
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  .portrait-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+  }

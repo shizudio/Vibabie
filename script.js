@@ -4,6 +4,7 @@
 
 // ── CUSTOM CURSOR (used on all pages) ────
 const cursor = document.getElementById('cursor')
+cursor.innerHTML = '♥';
 
 document.addEventListener('mousemove', (e) => {
   cursor.style.left = e.clientX + 'px'
@@ -27,3 +28,17 @@ document.addEventListener('mousemove', (e) => {
   tooltip.style.left = tx + 'px'
   tooltip.style.top = ty + 'px'
 })
+
+const portraitFrame = document.getElementById('portraitFrame');
+const portraitVid = portraitFrame?.querySelector('.portrait-vid');
+
+if (portraitFrame && portraitVid) {
+  portraitFrame.addEventListener('mouseenter', () => {
+    portraitVid.currentTime = 0;
+    portraitVid.play();
+  });
+  portraitFrame.addEventListener('mouseleave', () => {
+    portraitVid.pause();
+  });
+}
+

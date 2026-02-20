@@ -16,19 +16,17 @@
    
    /* ── PHOTO GRID ── */
    .grid {
-     display: grid;
-     grid-template-columns: repeat(3, 1fr);
-     gap: 3px;
-     padding: 0 0 80px;
-   }
-   .grid-item {
-     aspect-ratio: 1;
-     background: #e8e2d9;
-     position: relative;
-     overflow: hidden;
-   }
-   .grid-item:nth-child(4n) { aspect-ratio: 1 / 1.2; }
-   .grid-item:nth-child(7n) { aspect-ratio: 1.2 / 1; }
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    padding: 0;
+  }
+  .grid-item {
+    aspect-ratio: 1 / 1;
+    background: #e8e2d9;
+    position: relative;
+    overflow: hidden;
+  }
    
    .grid-item img {
      width: 100%; height: 100%;
@@ -78,3 +76,14 @@
      line-height: 2;
      opacity: 0.6;
    }
+
+   .upload-hint a {
+    color: var(--crimson);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(127,31,18,0.3);
+    transition: border-color 0.2s;
+  }
+  
+  .upload-hint a:hover {
+    border-bottom-color: var(--crimson);
+  }

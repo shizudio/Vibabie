@@ -10,7 +10,7 @@ const hangingString = document.getElementById('hanging-string')
 
 let count = 0
 const counter = setInterval(() => {
-  count += 1
+  count += 10
   loaderNum.textContent = count
   if (count === 100) {
     clearInterval(counter)
@@ -18,9 +18,9 @@ const counter = setInterval(() => {
       loader.classList.add('hidden')
       stage.classList.add('visible')
       hangingString.classList.add('visible')
-    }, 500)
+    }, 800)
   }
-}, 18)
+}, 100)
 
 // ── FIT IMAGE TO SCREEN ───────────────────
 function fitRoom() {
@@ -65,7 +65,7 @@ document.querySelectorAll('.zone').forEach(zone => {
 
   zone.addEventListener('mouseleave', () => {
     cursor.className = 'cursor default-cursor'
-    cursor.textContent = ''
+    cursor.textContent = '♥'
     tooltip.classList.remove('visible')
   })
 
