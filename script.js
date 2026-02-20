@@ -1,46 +1,46 @@
-console.log("JavaScript is working")
-
+// LOADER
 const loader = document.getElementById('loader')
 const loaderNum = document.getElementById('loader-num')
 
 let count = 0
-
 const counter = setInterval(() => {
-  count += 10
+  count += 1
   loaderNum.textContent = count
-
   if (count === 100) {
     clearInterval(counter)
     setTimeout(() => {
       loader.classList.add('hidden')
-    }, 500)
+    }, 400)
   }
-}, 80)
+}, 16)
 
-const btn = document.querySelector(".toggle-btn")
-const body = document.querySelector("body")
-
-let isDark = true
-
-btn.addEventListener("click", function() {
-  if (isDark) {
-    body.style.background = "#f5f0e8"
-    body.style.color = "#0d0d0d"
-    btn.textContent = "Switch Back"
-    isDark = false
-  } else {
-    body.style.background = "linear-gradient(135deg, #170032 0%, #430a0a 50%, #3e163d 100% )"
-    body.style.color = "#f0ebe0"
-    btn.textContent = "Switch Mode"
-    isDark = true
-  }
+// WORK CARDS — cursor follower effect
+const cards = document.querySelectorAll('.work-card')
+cards.forEach(card => {
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 10
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 10
+    card.querySelector('.work-card-inner').style.transform = `perspective(800px) rotateX(${-y}deg) rotateY(${x}deg) translateY(-6px)`
+  })
+  card.addEventListener('mouseleave', () => {
+    card.querySelector('.work-card-inner').style.transform = ''
+  })
 })
 
-const greeting = document.querySelector("h1")
-const hour = new Date().getHours()
+// SCROLL REVEAL
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1'
+      entry.target.style.transform = 'translateY(0)'
+    }
+  })
+}, { threshold: 0.1 })
 
-let timeOfDay = "Good morning"
-if (hour >= 12 && hour < 17) timeOfDay = "Good afternoon"
-if (hour >= 17) timeOfDay = "Good evening"
-
-greeting.textContent = timeOfDay + ", I'm Shina"
+document.querySelectorAll('.work-card, .about-inner, .contact-inner').forEach(el => {
+  el.style.opacity = '0'
+  el.style.transform = 'translateY(40px)'
+  el.style.transition = 'opacity 0.8s ease, transform 0.8s ease'
+  observer.observe(el)
+})

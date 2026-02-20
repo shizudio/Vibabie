@@ -3,36 +3,112 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shina</title>
+  <title>Perena.org — Creative, Growing</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baskervville:wght@600&family=Instrument+Serif:ital@0;1&family=Titillium+Web&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+
+  <!-- LOADER -->
   <div class="loader" id="loader">
     <span class="loader-num" id="loader-num">0</span>
   </div>
-  <div class="container">
-    <button class="toggle-btn">Switch Mode</button>
-    <div class="hero">
-      <span class="label">Design & Art Student</span>
-      <h1>Shina</h1>
-      <p class="bio">Learning to build things on the web. Currently exploring the intersection of design and code.</p>
+
+  <!-- NAV -->
+  <nav>
+    <span class="nav-logo">Perena.org</span>
+    <div class="nav-links">
+      <a href="#work">Work</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
     </div>
-    <span class="label">Currently into</span>
-    <div class="tags">
-      <span class="tag">Typography</span>
-      <span class="tag">UI Design</span>
-      <span class="tag">Vibe Coding</span>
-      <div class="section">
-        <p class="bio">I am here to experiment and learn</p>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">Creative, Growing —</div>
+    <h1 class="hero-title">
+      <em>Perena</em><br>
+      <span class="outline">is alive</span>
+    </h1>
+    <p class="hero-sub">Art · Life · Becoming</p>
+    <div class="hero-scroll">↓ enter</div>
+  </section>
+
+  <!-- WORK -->
+  <section class="work" id="work">
+    <div class="section-label">Selected Work</div>
+    <div class="work-grid">
+
+      <div class="work-card" data-num="01">
+        <div class="work-card-inner">
+          <div class="work-img" style="background: linear-gradient(135deg, #7F1F12 0%, #6F4DA0 100%)"></div>
+          <div class="work-info">
+            <span class="work-cat" style="color: #7F1F12">Perena</span>
+            <h3>The Project</h3>
+            <p>An ongoing exploration of identity, creation, and what it means to grow in public.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="work-card" data-num="02">
+        <div class="work-card-inner">
+          <div class="work-img" style="background: linear-gradient(135deg, #6F4DA0 0%, #94D3D3 100%)"></div>
+          <div class="work-info">
+            <span class="work-cat" style="color: #6F4DA0">Art</span>
+            <h3>Visual Language</h3>
+            <p>Studies in form, tension, and the space between intention and accident.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="work-card" data-num="03">
+        <div class="work-card-inner">
+          <div class="work-img" style="background: linear-gradient(135deg, #B9B94B 0%, #FCBC43 100%)"></div>
+          <div class="work-info">
+            <span class="work-cat" style="color: #B9B94B">Life</span>
+            <h3>Living Material</h3>
+            <p>Documentation of the everyday as creative practice. Nothing is outside the work.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="section-label">About</div>
+    <div class="about-inner">
+      <h2 class="about-title">Contained chaos<br><em>that sparks life</em></h2>
+      <div class="about-text">
+        <p>I am growing Perena.org by day, experimental artist and designer after sunsets. Living in the intersection of creativity, finance, and technology.</p>
+        <p>Currently learning to build the things I imagine. Interested to see what happens when you stop waiting for permission.</p>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <div class="section-label">Connect</div>
+    <div class="contact-inner">
+      <h2>Let's make<br><em>something real</em></h2>
+      <div class="contact-links">
+        <a href="mailto:hello@perena.org" class="contact-link">Email ↗</a>
+        <a href="#" class="contact-link">Instagram ↗</a>
+        <a href="https://github.com/shizudio" class="contact-link" target="_blank">GitHub ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>© Perena.org</span>
+    <span>Creative, Growing</span>
+  </footer>
+
   <script src="script.js"></script>
 </body>
 </html>
