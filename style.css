@@ -1,0 +1,116 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Titillium Web", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+    background: linear-gradient(135deg, #170032 0%, #430a0a 50%, #3e163d 100% );
+  color: #f0ebe0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  max-width: 600px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.label {
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #888;
+  display: block;
+  margin-bottom: 16px;
+}
+
+h1 {
+  font-family: "Baskervville", serif;
+  font-size: 80px;
+  font-style: normal;
+  line-height: 1.05;
+  margin-bottom: 20px;
+}
+
+.bio {
+  font-size: 1.1rem;
+  font-weight: 300;
+  line-height: 1.7;
+  color: #aaa;
+  max-width: 480px;
+}
+
+.tags {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-size: 0.78rem;
+  padding: 6px 14px;
+  border: 1px solid #333;
+  border-radius: 100px;
+  color: #888;
+  letter-spacing: 0.05em;
+}
+
+.section {
+  border-top: 1px solid #e7c8c8;
+  padding-top: 32px;
+  margin-top: 32px;
+}
+
+.toggle-btn {
+  background: none;
+  border: 1px solid #444;
+  color: #f0ebe0;
+  padding: 10px 24px;
+  border-radius: 100px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  align-self: flex-start;
+}
+
+.toggle-btn:hover {
+  border-color: #f0ebe0;
+  background: #f0ebe0;
+  color: #0d0d0d;
+}
+
+.loader {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+.loader.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader-num {
+  font-family: 'Baskerville', 'Libre Baskerville', serif;
+  font-size: clamp(2rem, 4vw, 5rem);
+  color: #400f0f;
+  font-weight: normal;
+  letter-spacing: -0.03em;
+  transition: opacity 0.3s ease;
+}
