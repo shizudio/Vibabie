@@ -57,8 +57,22 @@ const ttLabel = document.getElementById('tt-label')
 const ttDesc = document.getElementById('tt-desc')
 const ttLink = document.getElementById('tt-link')
 
+// Build a map of zone label → matching mobile link
+const mobileLinks = document.querySelectorAll('.mobile-link')
+const labelToLink = {}
+mobileLinks.forEach(link => {
+  const label = link.querySelector('.mobile-link-label')
+  if (label) labelToLink[label.textContent.trim()] = link
+})
+
+// Track which zone was last tapped (for tap-again-to-navigate)
+let lastTappedZone = null
+const isMobile = () => window.matchMedia('(max-width: 768px)').matches
+
 document.querySelectorAll('.zone').forEach(zone => {
+  // Desktop: hover + click
   zone.addEventListener('mouseenter', () => {
+    if (isMobile()) return
     cursor.className = 'cursor emoji-cursor'
     cursor.textContent = zone.dataset.emoji
     ttLabel.textContent = zone.dataset.label
@@ -70,16 +84,46 @@ document.querySelectorAll('.zone').forEach(zone => {
   })
 
   zone.addEventListener('mouseleave', () => {
+    if (isMobile()) return
     cursor.className = 'cursor default-cursor'
     cursor.textContent = '♥'
     tooltip.classList.remove('visible')
   })
 
   zone.addEventListener('click', () => {
-    if (zone.dataset.external === 'true') {
-      window.open(zone.dataset.href, '_blank')
+    if (isMobile()) {
+      // Mobile: first tap highlights button, second tap navigates
+      const matchingLink = labelToLink[zone.dataset.label]
+
+      if (lastTappedZone === zone) {
+        // Second tap → navigate
+        if (zone.dataset.external === 'true') {
+          window.open(zone.dataset.href, '_blank')
+        } else {
+          window.location.href = zone.dataset.href
+        }
+        lastTappedZone = null
+        return
+      }
+
+      // First tap → highlight the matching button
+      lastTappedZone = zone
+      if (matchingLink) {
+        // Remove glow from all links first
+        mobileLinks.forEach(l => l.classList.remove('glow'))
+        // Trigger reflow so animation restarts
+        void matchingLink.offsetWidth
+        matchingLink.classList.add('glow')
+        // Scroll button into view
+        matchingLink.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      }
     } else {
-      window.location.href = zone.dataset.href
+      // Desktop: click navigates immediately
+      if (zone.dataset.external === 'true') {
+        window.open(zone.dataset.href, '_blank')
+      } else {
+        window.location.href = zone.dataset.href
+      }
     }
   })
 })
