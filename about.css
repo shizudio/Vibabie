@@ -117,3 +117,42 @@
     object-fit: cover;
     border-radius: 4px;
   }
+
+  /* ── MOBILE RESPONSIVE ── */
+  @media (max-width: 768px) {
+    main {
+      padding: 80px 20px 60px;
+    }
+
+    .portrait-frame {
+      margin-bottom: 32px;
+    }
+
+    .bio {
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+
+    .detail-row {
+      flex-direction: column;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .detail-label {
+      font-size: 0.62rem;
+    }
+
+    .detail-value {
+      font-size: 0.95rem;
+    }
+
+    .page-h1-sub {
+      font-size: 0.82rem;
+      padding: 12px 16px;
+    }
+
+    .divider {
+      margin: 32px 0;
+    }
+  }

@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shina Foo — Creative</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="index.css">
 </head>
@@ -27,9 +29,9 @@
 
   <div class="hanging-string" id="hanging-string"></div>
 
-  <header class="site-header">
-    <span class="site-logo">Shina Foo</span>
-    <span class="site-tagline">Furnishing My Room</span>
+  <header class="site-header" id="site-header">
+    <a href="index.html" class="nav-logo">Shina Foo</a>
+    <span class="nav-page-name">Furnishing My Room</span>
   </header>
 
   <main class="stage" id="stage">
@@ -118,9 +120,62 @@
         </div>
       </div>
     </div>
+
+    <!-- Mobile: tappable link list for zones -->
+    <div class="mobile-links" id="mobile-links">
+      <a href="https://shinafoo.substack.com/" target="_blank" class="mobile-link">
+        <span class="mobile-link-emoji">📖</span>
+        <span class="mobile-link-text">
+          <span class="mobile-link-label">The Shelf</span>
+          <span class="mobile-link-desc">Essays & Writing</span>
+        </span>
+      </a>
+      <a href="https://www.instagram.com/shizudio" target="_blank" class="mobile-link">
+        <span class="mobile-link-emoji">🎨</span>
+        <span class="mobile-link-text">
+          <span class="mobile-link-label">The Canvas</span>
+          <span class="mobile-link-desc">Art & Illustration</span>
+        </span>
+      </a>
+      <a href="about.html" class="mobile-link">
+        <span class="mobile-link-emoji">🛏</span>
+        <span class="mobile-link-text">
+          <span class="mobile-link-label">The Bed</span>
+          <span class="mobile-link-desc">Who I Am</span>
+        </span>
+      </a>
+      <a href="mailto:shizudio.eth@gmail.com" class="mobile-link">
+        <span class="mobile-link-emoji">🪔</span>
+        <span class="mobile-link-text">
+          <span class="mobile-link-label">The Light</span>
+          <span class="mobile-link-desc">Get in Touch</span>
+        </span>
+      </a>
+      <a href="photography.html" class="mobile-link">
+        <span class="mobile-link-emoji">📷</span>
+        <span class="mobile-link-text">
+          <span class="mobile-link-label">The Fujifilm Camera</span>
+          <span class="mobile-link-desc">Photography</span>
+        </span>
+      </a>
+      <a href="https://x.com/shizudio" target="_blank" class="mobile-link">
+        <span class="mobile-link-emoji">📱</span>
+        <span class="mobile-link-text">
+          <span class="mobile-link-label">The Phone</span>
+          <span class="mobile-link-desc">Thoughts & Updates</span>
+        </span>
+      </a>
+      <a href="https://perena.org" target="_blank" class="mobile-link">
+        <span class="mobile-link-emoji">💻</span>
+        <span class="mobile-link-text">
+          <span class="mobile-link-label">The Laptop</span>
+          <span class="mobile-link-desc">Work & Projects</span>
+        </span>
+      </a>
+    </div>
   </main>
 
-  <footer class="site-footer">
+  <footer class="site-footer" id="site-footer">
     <span class="footer-hint">explore the room</span>
   </footer>
 

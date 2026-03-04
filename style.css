@@ -5,6 +5,7 @@
    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
    :root {
+     /* Colors */
      --crimson: #7F1F12;
      --olive:   #B9B94B;
      --purple:  #6F4DA0;
@@ -15,6 +16,27 @@
      --ink:     #1a1614;
      --paper:   #FFFAF4;
      --border:  rgba(0,0,0,0.08);
+
+     /* Fonts */
+     --font-display: 'EB Garamond', 'Cormorant Garamond', Georgia, serif;
+     --font-serif: 'Cormorant Garamond', Georgia, serif;
+     --font-body: 'Noto Serif JP', serif;
+     --font-mono: 'Courier New', Courier, monospace;
+
+     /* Font sizes */
+     --text-xs: clamp(0.55rem, 0.5vw, 0.65rem);
+     --text-sm: clamp(0.62rem, 0.6vw, 0.72rem);
+     --text-base: clamp(0.85rem, 1vw, 1rem);
+     --text-lg: clamp(1.1rem, 1.5vw, 1.3rem);
+     --text-xl: clamp(1.5rem, 2.5vw, 2rem);
+     --text-display: clamp(2.8rem, 6vw, 4.5rem);
+
+     /* Spacing */
+     --space-sm: 8px;
+     --space-md: 16px;
+     --space-lg: 32px;
+     --space-xl: 48px;
+     --space-2xl: 64px;
    }
    
    html, body {
@@ -65,7 +87,7 @@
      visibility: hidden;
    }
    .loader-num {
-     font-family: 'Cormorant Garamond', serif;
+     font-family: var(--font-display);
      font-size: clamp(4rem, 12vw, 8rem);
      color: var(--crimson);
      font-weight: 300;
@@ -74,7 +96,7 @@
      line-height: 1;
    }
    .loader-label {
-     font-size: 0.7rem;
+     font-size: var(--text-sm);
      letter-spacing: 0.25em;
      text-transform: uppercase;
      color: var(--stone);
@@ -89,37 +111,34 @@
      display: flex;
      align-items: center;
      justify-content: space-between;
-     padding: 28px 48px;
+     padding: var(--space-lg) var(--space-xl);
      pointer-events: none;
    }
+   .site-header {
+     opacity: 0;
+   }
+   .nav-page-name {
+     font-size: var(--text-xs);
+     letter-spacing: 0.2em;
+     text-transform: uppercase;
+     color: var(--stone);
+     font-weight: 200;
+     pointer-events: all;
+   }
    .site-logo, .nav-logo {
-     font-family: 'Cormorant Garamond', serif;
-     font-size: 1rem;
-     font-weight: 300;
+     font-family: var(--font-display);
+     font-size: var(--text-base);
+     font-weight: 500;
      letter-spacing: 0.12em;
      color: var(--ink);
      opacity: 0.7;
      text-decoration: none;
      pointer-events: all;
+     transition: opacity 0.2s;
    }
-   .site-tagline {
-     font-size: 0.65rem;
-     letter-spacing: 0.2em;
-     text-transform: uppercase;
-     color: var(--stone);
-     font-weight: 200;
+   .site-logo:hover, .nav-logo:hover {
+     opacity: 1;
    }
-   .nav-back {
-     font-size: 0.65rem;
-     letter-spacing: 0.2em;
-     text-transform: uppercase;
-     color: var(--stone);
-     text-decoration: none;
-     font-weight: 200;
-     transition: color 0.2s;
-     pointer-events: all;
-   }
-   .nav-back:hover { color: var(--crimson); }
    
    /* ── FOOTER ── */
    .site-footer {
@@ -130,9 +149,10 @@
      justify-content: center;
      padding: 20px;
      pointer-events: none;
+     opacity: 0;
    }
    .footer-hint {
-     font-size: 0.6rem;
+     font-size: var(--text-xs);
      letter-spacing: 0.2em;
      text-transform: uppercase;
      color: var(--stone);
@@ -155,17 +175,17 @@
    
    /* ── SUBPAGE SHARED ── */
    .page-label {
-     font-size: 0.62rem;
+     font-size: var(--text-sm);
      letter-spacing: 0.25em;
      text-transform: uppercase;
      color: var(--stone);
      font-weight: 200;
      display: block;
-     margin-bottom: 24px;
+     margin-bottom: var(--space-lg);
    }
    .page-h1 {
-     font-family: 'Cormorant Garamond', serif;
-     font-size: clamp(2.8rem, 6vw, 4.5rem);
+     font-family: var(--font-display);
+     font-size: var(--text-display);
      font-weight: 300;
      font-style: italic;
      line-height: 1.1;
@@ -176,5 +196,55 @@
      width: 40px; height: 1px;
      background: var(--crimson);
      opacity: 0.4;
-     margin: 48px 0;
+     margin: var(--space-xl) 0;
+   }
+
+   /* ── ENTRANCE ANIMATION ── */
+   @keyframes fadeUp {
+     from {
+       opacity: 0;
+       transform: translateY(16px);
+     }
+     to {
+       opacity: 1;
+       transform: translateY(0);
+     }
+   }
+
+   .fade-up {
+     opacity: 0;
+     animation: fadeUp 0.7s ease-out forwards;
+   }
+
+   /* ── GLOBAL MOBILE ── */
+   @media (max-width: 768px) {
+     html, body {
+       cursor: auto;
+     }
+
+     .cursor {
+       display: none;
+     }
+
+     .hanging-string {
+       display: none;
+     }
+
+     .site-header, nav {
+       padding: var(--space-md) 20px;
+     }
+
+     .site-footer {
+       position: relative;
+       padding: var(--space-md) 20px;
+     }
+
+     .page-label {
+       font-size: 0.6rem;
+       margin-bottom: var(--space-md);
+     }
+
+     .page-h1 {
+       font-size: clamp(2rem, 8vw, 3rem);
+     }
    }

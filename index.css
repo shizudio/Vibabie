@@ -16,37 +16,64 @@
    }
    .stage.visible { opacity: 1; }
    
-   /* ── FRAME ── */
+   /* ── FRAME (oil painting canvas) ── */
    .frame-mount {
-     background: #f0ebe2;
-     padding: 32px 32px 40px;
-     box-shadow:
-       0 2px 4px rgba(0,0,0,0.04),
-       0 8px 24px rgba(0,0,0,0.08),
-       0 32px 64px rgba(0,0,0,0.12),
-       0 64px 120px rgba(0,0,0,0.08);
+     background: none;
+     padding: 0;
      position: relative;
    }
    .frame-mount::before {
-     content: '';
-     position: absolute;
-     inset: 12px;
-     border: 1px solid rgba(0,0,0,0.08);
-     pointer-events: none;
-     z-index: 2;
+     content: none;
    }
    .frame-border {
-     border: 3px solid #2a1f1a;
+     border: none;
      position: relative;
      line-height: 0;
    }
+   /* Canvas edge depth — mimics stretched canvas over wooden stretcher bars */
+   .frame-border::before {
+     content: '';
+     position: absolute;
+     inset: -6px;
+     background: #d6cfc4;
+     z-index: -1;
+     box-shadow:
+       /* side thickness of stretched canvas */
+       inset 0 2px 4px rgba(0,0,0,0.15),
+       inset 0 -2px 4px rgba(0,0,0,0.1),
+       inset 2px 0 4px rgba(0,0,0,0.1),
+       inset -2px 0 4px rgba(0,0,0,0.1),
+       /* gallery wall shadow */
+       0 4px 12px rgba(0,0,0,0.08),
+       0 16px 48px rgba(0,0,0,0.12),
+       0 32px 80px rgba(0,0,0,0.08);
+   }
+   /* Canvas texture + oil paint finish overlay */
    .frame-border::after {
      content: '';
      position: absolute;
      inset: 0;
-     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15);
+     background:
+       /* subtle linen / canvas weave texture */
+       repeating-linear-gradient(
+         0deg,
+         transparent,
+         transparent 1px,
+         rgba(0,0,0,0.015) 1px,
+         rgba(0,0,0,0.015) 2px
+       ),
+       repeating-linear-gradient(
+         90deg,
+         transparent,
+         transparent 1px,
+         rgba(0,0,0,0.015) 1px,
+         rgba(0,0,0,0.015) 2px
+       );
+     /* slight varnish sheen */
+     box-shadow: inset 0 0 80px rgba(255,248,230,0.08);
      pointer-events: none;
      z-index: 2;
+     mix-blend-mode: multiply;
    }
    
    /* ── ROOM IMAGE ── */
@@ -87,8 +114,8 @@
      min-width: 180px;
    }
    .tooltip-label {
-     font-family: 'Cormorant Garamond', serif;
-     font-size: 1.05rem;
+     font-family: var(--font-display);
+     font-size: var(--text-lg);
      font-weight: 300;
      font-style: italic;
      color: var(--ink);
@@ -97,7 +124,7 @@
      line-height: 1.4;
    }
    .tooltip-desc {
-     font-size: 0.6rem;
+     font-size: var(--text-xs);
      letter-spacing: 0.14em;
      text-transform: uppercase;
      color: var(--stone);
@@ -108,7 +135,7 @@
    }
    .tooltip-link {
      display: inline-block;
-     font-size: 0.68rem;
+     font-size: var(--text-sm);
      letter-spacing: 0.1em;
      text-transform: uppercase;
      color: var(--crimson);
@@ -120,6 +147,11 @@
    .tooltip-link:hover {
      border-bottom-color: var(--crimson);
      letter-spacing: 0.14em;
+   }
+
+   /* ── MOBILE ZONE LINKS (hidden on desktop) ── */
+   .mobile-links {
+     display: none;
    }
 
    /* ── MOBILE RESPONSIVE ── */
@@ -135,12 +167,12 @@
   
     .stage {
       height: auto;
-      min-height: 100vh;
+      min-height: 100dvh;
       padding: 80px 16px 60px;
     }
   
     .frame-mount {
-      padding: 16px 16px 20px;
+      padding: 0;
     }
   
     .room-image img {
@@ -162,5 +194,60 @@
   
     .cursor {
       display: none;
+    }
+
+    .mobile-links {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      margin-top: 32px;
+      width: 100%;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .mobile-link {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      background: rgba(255,255,255,0.6);
+      text-decoration: none;
+      transition: background 0.2s;
+      min-height: 56px;
+    }
+
+    .mobile-link:active {
+      background: rgba(127, 31, 18, 0.05);
+    }
+
+    .mobile-link-emoji {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      width: 32px;
+      text-align: center;
+    }
+
+    .mobile-link-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .mobile-link-label {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .mobile-link-desc {
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--stone);
+      font-weight: 200;
     }
   }

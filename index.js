@@ -18,6 +18,12 @@ const counter = setInterval(() => {
       loader.classList.add('hidden')
       stage.classList.add('visible')
       hangingString.classList.add('visible')
+
+      // Stagger entrance animations after loader
+      const header = document.getElementById('site-header')
+      const footer = document.getElementById('site-footer')
+      if (header) { header.style.animationDelay = '0s'; header.classList.add('fade-up') }
+      if (footer) { footer.style.animationDelay = '0.3s'; footer.classList.add('fade-up') }
     }, 800)
   }
 }, 100)
