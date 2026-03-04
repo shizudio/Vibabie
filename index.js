@@ -30,7 +30,19 @@ const counter = setInterval(() => {
 
 // ── FIT IMAGE TO SCREEN ───────────────────
 function fitRoom() {
+  const isMobile = window.matchMedia('(max-width: 768px)').matches
   const img = document.getElementById('room-img')
+  const roomImage = document.getElementById('room-image')
+
+  if (isMobile) {
+    // Let CSS handle sizing on mobile
+    img.style.width = ''
+    img.style.height = ''
+    roomImage.style.width = ''
+    roomImage.style.height = ''
+    return
+  }
+
   const padding = 64 + 32 + 3
   const headerFooter = 120
   const maxW = window.innerWidth - padding - 40
@@ -42,7 +54,6 @@ function fitRoom() {
   if (h > maxH) { h = maxH; w = h * ratio }
   img.style.width = w + 'px'
   img.style.height = h + 'px'
-  const roomImage = document.getElementById('room-image')
   roomImage.style.width = w + 'px'
   roomImage.style.height = h + 'px'
 }

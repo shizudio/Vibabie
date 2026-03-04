@@ -30,23 +30,8 @@
      position: relative;
      line-height: 0;
    }
-   /* Canvas edge depth — mimics stretched canvas over wooden stretcher bars */
    .frame-border::before {
-     content: '';
-     position: absolute;
-     inset: -6px;
-     background: #d6cfc4;
-     z-index: -1;
-     box-shadow:
-       /* side thickness of stretched canvas */
-       inset 0 2px 4px rgba(0,0,0,0.15),
-       inset 0 -2px 4px rgba(0,0,0,0.1),
-       inset 2px 0 4px rgba(0,0,0,0.1),
-       inset -2px 0 4px rgba(0,0,0,0.1),
-       /* gallery wall shadow */
-       0 4px 12px rgba(0,0,0,0.08),
-       0 16px 48px rgba(0,0,0,0.12),
-       0 32px 80px rgba(0,0,0,0.08);
+     content: none;
    }
    /* Canvas texture + oil paint finish overlay */
    .frame-border::after {
@@ -170,16 +155,23 @@
       min-height: 100dvh;
       flex-direction: column;
       align-items: center;
-      padding: 60px 16px 40px;
+      justify-content: center;
+      padding: 56px 8px 40px;
     }
 
-    /* Image centered with breathing room */
     .frame-mount {
       padding: 0;
-      max-width: 92vw;
+      width: 100%;
     }
-    .frame-border::before {
-      display: none;
+
+    .room-image {
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    .room-image img {
+      width: 100% !important;
+      height: auto !important;
     }
 
     .room-image img {
@@ -222,8 +214,7 @@
       grid-template-columns: repeat(8, 1fr);
       gap: 10px;
       width: 100%;
-      max-width: 92vw;
-      padding: 20px 0 40px;
+      padding: 20px 12px 40px;
     }
 
     .mobile-link {
