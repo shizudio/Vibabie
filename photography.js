@@ -76,18 +76,34 @@ function samplePixel(img, el, cursorX, cursorY) {
 }
 
 // Attach adaptive cursor logic to all grid images
+// Colour only commits after the mouse has "rested" on a region for SETTLE_MS —
+// fast sweeps sample continuously but never apply a half-way colour.
+const SETTLE_MS = 150
 const cursor = document.getElementById('cursor')
 
 document.querySelectorAll('.grid-item img').forEach(img => {
   const el = img.parentElement
+  let debounceTimer = null
+  let pendingColor  = null
 
   function onMove(e) {
     const pixel = samplePixel(img, el, e.clientX, e.clientY)
-    if (pixel) cursor.style.color = bestColor(pixel.r, pixel.g, pixel.b)
+    if (!pixel) return
+
+    const color = bestColor(pixel.r, pixel.g, pixel.b)
+    if (color === cursor.style.color) return   // already correct, nothing to do
+
+    pendingColor = color
+    clearTimeout(debounceTimer)
+    debounceTimer = setTimeout(() => {
+      cursor.style.color = pendingColor
+    }, SETTLE_MS)
   }
 
   el.addEventListener('mousemove', onMove)
   el.addEventListener('mouseleave', () => {
+    clearTimeout(debounceTimer)
+    pendingColor = null
     cursor.style.color = '#7F1F12'  // reset to default crimson
   })
 })
