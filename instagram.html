@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photography — Shina Foo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="cosmos.css">
+</head>
+<body>
+
+  <div class="cursor default-cursor" id="cursor"></div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close">✕</button>
+    <div class="ig-lb-inner">
+      <img class="lightbox-img" id="lightbox-img" src="" alt="" />
+      <p class="ig-lb-caption" id="ig-lb-caption"></p>
+    </div>
+  </div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Shina Foo</a>
+    <span class="nav-page-name">Photography</span>
+  </nav>
+
+  <main class="cosmos-page">
+
+    <header class="cosmos-header fade-up">
+      <div class="cosmos-meta">
+        <span class="cosmos-collection-label">The Fujifilm Camera — Shot on Film</span>
+        <h1 class="cosmos-title" id="ig-title">Through the lens.</h1>
+      </div>
+      <a
+        href="https://www.instagram.com/shinana.ya"
+        class="cosmos-external-link"
+        target="_blank"
+        rel="noopener noreferrer"
+        id="ig-link"
+      >View on Instagram ↗</a>
+    </header>
+
+    <div class="cosmos-grid" id="ig-grid">
+      <!-- Rendered by instagram.js -->
+    </div>
+
+    <footer class="cosmos-footer fade-up">
+      <span class="cosmos-updated" id="ig-updated"></span>
+      <a
+        href="https://www.instagram.com/shinana.ya"
+        class="cosmos-view-all"
+        target="_blank"
+        rel="noopener noreferrer"
+        id="ig-handle"
+      >@shinana.ya ↗</a>
+    </footer>
+
+  </main>
+
+  <script type="module" src="script.js"></script>
+  <script type="module" src="instagram.js"></script>
+</body>
+</html>

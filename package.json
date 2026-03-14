@@ -8,8 +8,9 @@
       "dev": "vite",
       "build": "vite build",
       "preview": "vite preview",
-      "prebuild": "node fetch-cosmos.js",
-      "fetch-cosmos": "node fetch-cosmos.js"
+      "prebuild": "node fetch-cosmos.js && node fetch-instagram.js",
+      "fetch-cosmos": "node fetch-cosmos.js",
+      "fetch-instagram": "node fetch-instagram.js"
    },
   
   "repository": {

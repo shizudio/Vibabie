@@ -10,6 +10,7 @@ export default defineConfig({
         photography: resolve(__dirname, 'photography.html'),
         cosmos: resolve(__dirname, 'cosmos.html'),
         contact: resolve(__dirname, 'contact.html'),
+        instagram: resolve(__dirname, 'instagram.html'),
       },
     },
   },
