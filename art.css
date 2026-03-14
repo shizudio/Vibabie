@@ -1,0 +1,249 @@
+/* ─────────────────────────────────────────
+   art.css — Art & Illustration card-fan gallery
+   ───────────────────────────────────────── */
+
+/* ── Page shell ──────────────────────────────────────────────────────────── */
+.art-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-top: 64px;
+  background: var(--paper);
+  overflow: hidden;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.art-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 24px 40px 16px;
+  flex-shrink: 0;
+}
+
+.page-label {
+  display: block;
+  font-size: var(--text-xs);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--stone);
+  font-weight: 200;
+  margin-bottom: 8px;
+}
+
+.page-h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.art-hint {
+  font-size: var(--text-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--stone);
+  font-weight: 200;
+  opacity: 0.6;
+  align-self: flex-end;
+  padding-bottom: 4px;
+}
+
+/* ── Stage ───────────────────────────────────────────────────────────────── */
+.art-stage {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  min-height: 0;
+  cursor: none; /* handled by custom cursor */
+}
+
+/* ── Cards ───────────────────────────────────────────────────────────────── */
+.art-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center bottom;
+  will-change: transform, opacity;
+  transition:
+    transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    opacity   0.45s ease,
+    z-index   0s;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.art-card img {
+  display: block;
+  object-fit: cover;
+  box-shadow:
+    0 4px 16px rgba(26, 22, 20, 0.12),
+    0 16px 48px rgba(26, 22, 20, 0.10);
+  pointer-events: none;
+  -webkit-user-drag: none;
+  border-radius: 1px;
+  /* height set via inline style per card */
+}
+
+/* ── Footer label area ───────────────────────────────────────────────────── */
+.art-footer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 18px 40px 32px;
+}
+
+.art-label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.art-label-title {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 1.8vw, 1.35rem);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ink);
+  line-height: 1.2;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.art-label-meta {
+  font-size: var(--text-xs);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--stone);
+  font-weight: 200;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.35s ease 0.06s, transform 0.35s ease 0.06s;
+}
+
+.art-label-title.visible,
+.art-label-meta.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.art-counter {
+  font-size: var(--text-xs);
+  letter-spacing: 0.2em;
+  color: var(--stone);
+  font-weight: 200;
+  font-family: var(--font-body);
+  align-self: flex-end;
+  padding-bottom: 2px;
+}
+
+/* ── Fade-up entry ───────────────────────────────────────────────────────── */
+.fade-up {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Lightbox ────────────────────────────────────────────────────────────── */
+.art-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  background: rgba(26, 22, 20, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.art-lightbox.open {
+  opacity: 1;
+  pointer-events: all;
+}
+.art-lb-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  background: none;
+  border: none;
+  color: rgba(255, 250, 244, 0.5);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px;
+  line-height: 1;
+  font-family: var(--font-body);
+  transition: color 0.2s;
+}
+.art-lb-close:hover { color: var(--paper); }
+
+.art-lb-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+.art-lb-img {
+  max-width: 100%;
+  max-height: 78vh;
+  object-fit: contain;
+  display: block;
+  transform: scale(0.97);
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.art-lightbox.open .art-lb-img {
+  transform: scale(1);
+}
+.art-lb-caption {
+  font-family: var(--font-display);
+  font-size: clamp(0.85rem, 1.5vw, 1.05rem);
+  font-weight: 300;
+  font-style: italic;
+  color: rgba(255, 250, 244, 0.5);
+  letter-spacing: 0.08em;
+  text-align: center;
+  line-height: 1.5;
+  max-width: 480px;
+  margin: 0;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.4s ease 0.15s, transform 0.4s ease 0.15s;
+}
+.art-lb-caption:empty { display: none; }
+.art-lightbox.open .art-lb-caption {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .art-page { padding-top: 58px; }
+
+  .art-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 16px 24px 12px;
+  }
+
+  .art-hint { display: none; }
+
+  .art-footer {
+    padding: 14px 24px 24px;
+  }
+}

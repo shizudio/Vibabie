@@ -11,6 +11,7 @@ export default defineConfig({
         cosmos: resolve(__dirname, 'cosmos.html'),
         contact: resolve(__dirname, 'contact.html'),
         instagram: resolve(__dirname, 'instagram.html'),
+        art: resolve(__dirname, 'art.html'),
       },
     },
   },

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Art & Illustration — Shina Foo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="art.css">
+</head>
+<body>
+
+  <div class="cursor default-cursor" id="cursor"></div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Shina Foo</a>
+    <span class="nav-page-name">The Canvas</span>
+  </nav>
+
+  <main class="art-page">
+
+    <header class="art-header fade-up">
+      <div>
+        <span class="page-label">The Canvas — Art & Illustration</span>
+        <h1 class="page-h1">Drawn things.</h1>
+      </div>
+      <span class="art-hint">drag to browse</span>
+    </header>
+
+    <div class="art-stage" id="art-stage">
+      <!-- Cards injected by art.js -->
+    </div>
+
+    <footer class="art-footer">
+      <div class="art-label">
+        <span class="art-label-title" id="art-label-title"></span>
+        <span class="art-label-meta"  id="art-label-meta"></span>
+      </div>
+      <span class="art-counter" id="art-counter"></span>
+    </footer>
+
+  </main>
+
+  <!-- Lightbox -->
+  <div class="art-lightbox" id="art-lightbox" aria-hidden="true">
+    <button class="art-lb-close" id="art-lb-close" aria-label="Close">&#x2715;</button>
+    <div class="art-lb-inner">
+      <img class="art-lb-img" id="art-lb-img" src="" alt="" />
+      <p class="art-lb-caption" id="art-lb-caption"></p>
+    </div>
+  </div>
+
+  <script type="module" src="script.js"></script>
+  <script type="module" src="art.js"></script>
+</body>
+</html>
