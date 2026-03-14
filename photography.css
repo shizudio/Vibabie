@@ -7,18 +7,18 @@
    nav {
      background: linear-gradient(to bottom, var(--paper), transparent);
    }
-   
-   .page-header {
-     padding: 140px 48px 64px;
-     max-width: 900px;
-     margin: 0 auto;
+
+   .photo-page {
+     padding-top: 82px;
+     min-height: 100vh;
+     background: #f5f4f2;
    }
    
    /* ── PHOTO GRID ── */
    .grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 2px;
+    gap: 40px;
     padding: 0;
   }
   .grid-item {
@@ -61,49 +61,13 @@
      font-weight: 200;
    }
    
-   .upload-hint {
-     text-align: center;
-     padding: 32px 48px 80px;
-     max-width: 480px;
-     margin: 0 auto;
-   }
-   .upload-hint p {
-     font-size: 0.65rem;
-     letter-spacing: 0.15em;
-     text-transform: uppercase;
-     color: var(--stone);
-     font-weight: 200;
-     line-height: 2;
-     opacity: 0.6;
-   }
-
-   .upload-hint a {
-    color: var(--crimson);
-    text-decoration: none;
-    border-bottom: 1px solid rgba(127,31,18,0.3);
-    transition: border-color 0.2s;
-  }
-  
-  .upload-hint a:hover {
-    border-bottom-color: var(--crimson);
-  }
-
   /* ── MOBILE RESPONSIVE ── */
   @media (max-width: 768px) {
-    .page-header {
-      padding: 80px 20px 32px;
-    }
+    .photo-page { padding-top: 78px; }
 
     .grid {
       grid-template-columns: 1fr;
-      gap: 2px;
+      gap: 40px;
     }
 
-    .upload-hint {
-      padding: 24px 20px 60px;
-    }
-
-    .upload-hint p {
-      font-size: 0.6rem;
-    }
   }

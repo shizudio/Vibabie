@@ -1,0 +1,229 @@
+/* ─────────────────────────────────────────
+   cosmos.css — Personal Aesthetics gallery
+   ───────────────────────────────────────── */
+
+/* ── Page shell ──────────────────────────────────────────────────────────── */
+.cosmos-page {
+  padding-top: 82px; /* matches Cosmos --layout-header-height */
+  min-height: 100vh;
+  background: #f5f4f2; /* matches Cosmos light bg: rgb(245 244 242) */
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.cosmos-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  /* matches Cosmos page padding scale: 32px → 30px → 40px → 60px */
+  padding: 24px 32px 20px;
+  gap: 32px;
+}
+
+.cosmos-collection-label {
+  display: block;
+  font-size: var(--text-xs);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--stone);
+  font-weight: 200;
+  margin-bottom: 8px;
+}
+
+.cosmos-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.cosmos-external-link {
+  flex-shrink: 0;
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--crimson);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(127, 31, 18, 0.3);
+  padding-bottom: 1px;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+  align-self: flex-end;
+}
+.cosmos-external-link:hover { opacity: 0.6; }
+
+/* ── Masonry grid ────────────────────────────────────────────────────────── */
+.cosmos-grid {
+  columns: 3;
+  column-gap: 40px;
+  padding: 0 4px 4px;
+}
+
+/* ── Grid item ───────────────────────────────────────────────────────────── */
+.cosmos-item {
+  break-inside: avoid;
+  margin-bottom: 40px;
+  overflow: hidden;
+  position: relative;
+  cursor: zoom-in;
+  border-radius: 0;
+
+  /* Fade-in state (driven by IntersectionObserver in cosmos.js) */
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.cosmos-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cosmos-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              opacity  0.3s ease;
+}
+
+.cosmos-item:hover img {
+  transform: scale(1.025);
+  opacity: 0.88;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+.cosmos-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 32px 40px;
+}
+
+.cosmos-updated {
+  font-size: var(--text-xs);
+  color: var(--stone);
+  letter-spacing: 0.08em;
+  font-weight: 200;
+}
+
+.cosmos-view-all {
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--crimson);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(127, 31, 18, 0.3);
+  padding-bottom: 1px;
+  transition: opacity 0.2s ease;
+}
+.cosmos-view-all:hover { opacity: 0.6; }
+
+/* ── Lightbox ────────────────────────────────────────────────────────────── */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  background: rgba(26, 22, 20, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.lightbox.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.lightbox-img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  display: block;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+
+  transform: scale(0.96);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.lightbox.open .lightbox-img {
+  transform: scale(1);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  background: none;
+  border: none;
+  color: rgba(255, 250, 244, 0.7);
+  font-size: 22px;
+  cursor: pointer;
+  padding: 8px;
+  line-height: 1;
+  transition: color 0.2s ease;
+  font-family: var(--font-body);
+}
+.lightbox-close:hover { color: var(--paper); }
+
+/* ── Responsive — mirrors Cosmos padding scale ───────────────────────────── */
+
+/* 768px */
+@media (min-width: 768px) {
+  .cosmos-header { padding: 28px 12px 20px; }
+  .cosmos-grid   { column-gap: 40px; padding: 0 4px 4px; }
+  .cosmos-footer { padding: 20px 12px 44px; }
+}
+
+/* 834px */
+@media (min-width: 834px) {
+  .cosmos-header { padding: 32px 12px 22px; }
+  .cosmos-grid   { padding: 0 4px 4px; }
+  .cosmos-footer { padding: 22px 12px 48px; }
+}
+
+/* 1280px — more columns, minimal side padding */
+@media (min-width: 1280px) {
+  .cosmos-header { padding: 40px 12px 24px; }
+  .cosmos-grid   { columns: 6; column-gap: 40px; padding: 0 4px 4px; }
+  .cosmos-footer { padding: 24px 12px 52px; }
+}
+
+/* Mobile — stack header, 2-col grid, tight gaps */
+@media (max-width: 767px) {
+  .cosmos-page  { padding-top: 78px; } /* matches Cosmos mobile header height */
+
+  .cosmos-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 20px 32px 32px;
+  }
+
+  .cosmos-title { font-size: clamp(1.4rem, 6vw, 2rem); }
+
+  .cosmos-grid {
+    columns: 2;
+    column-gap: 40px;
+    padding: 0 4px 4px;
+  }
+
+  .cosmos-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 32px 32px 36px;
+  }
+
+  .lightbox-img {
+    max-width: 96vw;
+    max-height: 80vh;
+  }
+}

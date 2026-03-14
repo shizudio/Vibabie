@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Aesthetics — Shina Foo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="cosmos.css">
+</head>
+<body>
+
+  <div class="cursor default-cursor" id="cursor"></div>
+
+  <!-- Lightbox overlay -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close">✕</button>
+    <img class="lightbox-img" id="lightbox-img" src="" alt="" />
+  </div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Shina Foo</a>
+    <span class="nav-page-name">Personal Aesthetics</span>
+  </nav>
+
+  <main class="cosmos-page">
+
+    <header class="cosmos-header fade-up">
+      <div class="cosmos-meta">
+        <span class="cosmos-collection-label">The French Press — Curated on Cosmos</span>
+        <h1 class="cosmos-title" id="cosmos-title">Personal aesthetics</h1>
+      </div>
+      <a
+        href="https://www.cosmos.so/shizudio/personal-aesthetics"
+        class="cosmos-external-link"
+        target="_blank"
+        rel="noopener noreferrer"
+      >View on Cosmos ↗</a>
+    </header>
+
+    <div class="cosmos-grid" id="cosmos-grid">
+      <!-- Rendered by cosmos.js from cosmos-data.json -->
+    </div>
+
+    <footer class="cosmos-footer fade-up">
+      <span class="cosmos-updated" id="cosmos-updated"></span>
+      <a
+        href="https://www.cosmos.so/shizudio/personal-aesthetics"
+        class="cosmos-view-all"
+        target="_blank"
+        rel="noopener noreferrer"
+      >@shizudio ↗</a>
+    </footer>
+
+  </main>
+
+  <script type="module" src="script.js"></script>
+  <script type="module" src="cosmos.js"></script>
+</body>
+</html>

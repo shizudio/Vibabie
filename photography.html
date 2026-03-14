@@ -6,6 +6,7 @@
   <title>Shina's Photography</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="cosmos.css">
   <link rel="stylesheet" href="photography.css">
 </head>
 <body>
@@ -17,58 +18,73 @@
     <span class="nav-page-name">Photography</span>
   </nav>
 
-  <div class="page-header">
-    <span class="page-label">The Fujifilm Camera — Photography</span>
-    <h1 class="page-h1">Through<br>the lens.</h1>
-  </div>
+  <main class="photo-page">
 
-  <!-- PHOTO GRID
-       To add a photo: replace a <div class="grid-placeholder"> block with:
-       <img src="your-photo.jpg" alt="description" />
-  -->
+    <header class="cosmos-header fade-up">
+      <div class="cosmos-meta">
+        <span class="cosmos-collection-label">The Fujifilm Camera — Photography</span>
+        <h1 class="cosmos-title">Through the lens.</h1>
+      </div>
+      <a
+        href="https://www.instagram.com/shinana.ya"
+        class="cosmos-external-link"
+        target="_blank"
+        rel="noopener noreferrer"
+      >View on Instagram ↗</a>
+    </header>
+
+  <!-- PHOTO GRID -->
   <div class="grid">
 
     <div class="grid-item">
-        <img src="photography/Pic1.JPG" alt="my photo" />
+        <img loading="lazy" src="photography/Pic1.JPG" alt="my photo" />
       </div>
 
     <div class="grid-item">
-        <img src="photography/Pic2.JPG" alt="my photo" />
+        <img loading="lazy" src="photography/Pic2.JPG" alt="my photo" />
     </div>
 
     <div class="grid-item">
-        <img src="photography/Pic3.JPG" alt="my photo" />
+        <img loading="lazy" src="photography/Pic3.JPG" alt="my photo" />
     </div>
 
     <div class="grid-item">
-        <img src="photography/Pic4.JPG" alt="my photo" />
+        <img loading="lazy" src="photography/Pic4.JPG" alt="my photo" />
     </div>
 
     <div class="grid-item">
-        <img src="photography/Pic5.jpg" alt="my photo" />
+        <img loading="lazy" src="photography/Pic5.jpg" alt="my photo" />
     </div>
 
     <div class="grid-item">
-        <img src="photography/Pic6.JPG" alt="my photo" />
+        <img loading="lazy" src="photography/Pic6.JPG" alt="my photo" />
     </div>
 
     <div class="grid-item">
-        <img src="photography/Pic7.JPG" alt="my photo" />
+        <img loading="lazy" src="photography/Pic7.JPG" alt="my photo" />
     </div>
 
     <div class="grid-item">
-        <img src="photography/Pic8.jpeg" alt="my photo" />
+        <img loading="lazy" src="photography/Pic8.jpeg" alt="my photo" />
     </div>
 
     <div class="grid-item">
-        <img src="photography/Pic9.JPG" alt="my photo" />
+        <img loading="lazy" src="photography/Pic9.JPG" alt="my photo" />
     </div>
 
   </div>
 
-    <div class="upload-hint">
-        <p>Visit <a href="https://www.instagram.com/shinana.ya" target="_blank">my instagram</a> to view more<br>(than just photos :))</p>
-      </div>
+    <footer class="cosmos-footer fade-up">
+      <span class="cosmos-updated">Shot on Fujifilm X-T series</span>
+      <a
+        href="https://www.instagram.com/shinana.ya"
+        class="cosmos-view-all"
+        target="_blank"
+        rel="noopener noreferrer"
+      >@shinana.ya ↗</a>
+    </footer>
+
+  </main>
 
   <script type="module" src="script.js"></script>
 </body>
