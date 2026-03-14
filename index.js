@@ -5,8 +5,14 @@
 // ── LOADER ───────────────────────────────
 const loader = document.getElementById('loader')
 const loaderNum = document.getElementById('loader-num')
+const loaderVideo = document.getElementById('loader-video')
 const stage = document.getElementById('stage')
 const hangingString = document.getElementById('hanging-string')
+
+// Start video immediately
+if (loaderVideo) {
+  loaderVideo.play().catch(() => {}) // silent catch for browsers that block autoplay
+}
 
 let count = 0
 const counter = setInterval(() => {

@@ -80,15 +80,40 @@
      justify-content: center;
      z-index: 999;
      transition: opacity 1.2s ease, visibility 1.2s ease;
-     gap: 24px;
    }
    .loader.hidden {
      opacity: 0;
      visibility: hidden;
    }
+
+   /* Art block — video fills a square panel */
+   .loader-art {
+     width: clamp(120px, 15vw, 160px);
+     height: clamp(120px, 15vw, 160px);
+     overflow: hidden;
+     flex-shrink: 0;
+   }
+   .loader-video {
+     width: 100%;
+     height: 100%;
+     object-fit: cover;
+     display: block;
+   }
+
+   /* Counter block — same width, sits flush below the art */
+   .loader-counter {
+     width: clamp(120px, 15vw, 160px);
+     background: transparent;
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     padding: 12px 0 15px;
+     gap: 5px;
+   }
    .loader-num {
      font-family: var(--font-display);
-     font-size: clamp(4rem, 12vw, 8rem);
+     font-size: clamp(2.4rem, 6.7vw, 4rem);
      color: var(--crimson);
      font-weight: 300;
      font-style: italic;
