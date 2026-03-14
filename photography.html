@@ -13,6 +13,15 @@
 
   <div class="cursor default-cursor" id="cursor"></div>
 
+  <!-- Lightbox -->
+  <div class="photo-lightbox" id="photo-lightbox" aria-hidden="true">
+    <button class="photo-lb-close" id="photo-lb-close" aria-label="Close">✕</button>
+    <div class="photo-lb-inner">
+      <img class="photo-lb-img" id="photo-lb-img" src="" alt="" />
+      <p class="photo-lb-caption" id="photo-lb-caption"></p>
+    </div>
+  </div>
+
   <nav>
     <a href="index.html" class="nav-logo">Shina Foo</a>
     <span class="nav-page-name">Photography</span>
@@ -36,40 +45,40 @@
   <!-- PHOTO GRID -->
   <div class="grid">
 
-    <div class="grid-item">
-        <img loading="lazy" src="photography/Pic1.JPG" alt="my photo" />
-      </div>
-
-    <div class="grid-item">
-        <img loading="lazy" src="photography/Pic2.JPG" alt="my photo" />
+    <div class="grid-item" data-caption="A Tokyo coffee shop caught sideways, the world still moving through it.">
+      <img loading="eager" src="photography/Pic1.JPG" alt="Tokyo coffee shop" />
     </div>
 
-    <div class="grid-item">
-        <img loading="lazy" src="photography/Pic3.JPG" alt="my photo" />
+    <div class="grid-item" data-caption="Two friends mid-conversation, a yellow truck passing behind them like punctuation.">
+      <img loading="eager" src="photography/Pic2.JPG" alt="Two friends on a street" />
     </div>
 
-    <div class="grid-item">
-        <img loading="lazy" src="photography/Pic4.JPG" alt="my photo" />
+    <div class="grid-item" data-caption="A late-night produce market in Japan, colour louder than the hour.">
+      <img loading="eager" src="photography/Pic3.JPG" alt="Night market in Japan" />
     </div>
 
-    <div class="grid-item">
-        <img loading="lazy" src="photography/Pic5.jpg" alt="my photo" />
+    <div class="grid-item" data-caption="Beneath a tangle of wires and signage, she reaches for something just out of frame.">
+      <img loading="lazy" src="photography/Pic4.JPG" alt="Street scene Japan" />
     </div>
 
-    <div class="grid-item">
-        <img loading="lazy" src="photography/Pic6.JPG" alt="my photo" />
+    <div class="grid-item" data-caption="Hands peeling a mandarin slowly, the evening asking nothing more of anyone.">
+      <img loading="lazy" src="photography/Pic5.jpg" alt="Hands peeling a mandarin" />
     </div>
 
-    <div class="grid-item">
-        <img loading="lazy" src="photography/Pic7.JPG" alt="my photo" />
+    <div class="grid-item" data-caption="A red postbox beside hydrangeas, as if the flowers had something to send.">
+      <img loading="lazy" src="photography/Pic6.JPG" alt="Japanese postbox and hydrangeas" />
     </div>
 
-    <div class="grid-item">
-        <img loading="lazy" src="photography/Pic8.jpeg" alt="my photo" />
+    <div class="grid-item" data-caption="A curved bridge glimpsed through branches, half-hidden and unhurried.">
+      <img loading="lazy" src="photography/Pic7.JPG" alt="Bridge through foliage" />
     </div>
 
-    <div class="grid-item">
-        <img loading="lazy" src="photography/Pic9.JPG" alt="my photo" />
+    <div class="grid-item" data-caption="A white rose let itself go, petals scattered like a quiet admission.">
+      <img loading="lazy" src="photography/Pic8.jpeg" alt="Fallen white rose" />
+    </div>
+
+    <div class="grid-item" data-caption="Pink roses past their peak, still insisting on being seen.">
+      <img loading="lazy" src="photography/Pic9.JPG" alt="Wilting pink roses" />
     </div>
 
   </div>
