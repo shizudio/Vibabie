@@ -1,0 +1,241 @@
+/* ─────────────────────────────────────────
+   contact.css — Leave a Note page
+   ───────────────────────────────────────── */
+
+html, body { min-height: 100%; }
+
+nav {
+  background: linear-gradient(to bottom, var(--paper), transparent);
+}
+
+main {
+  max-width: 580px;
+  margin: 0 auto;
+  padding: 140px 40px 100px;
+}
+
+/* ── Form ────────────────────────────────────────────────────────────────── */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin-bottom: 0;
+}
+
+/* ── Field ───────────────────────────────────────────────────────────────── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.field label {
+  font-size: var(--text-xs);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--stone);
+  font-weight: 200;
+}
+
+/* Shared input + textarea styles — paper feel, bottom-border only */
+.field input,
+.field textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  outline: none;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--ink);
+  padding: 8px 0 12px;
+  transition: border-color 0.2s ease;
+  -webkit-appearance: none;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--stone);
+  opacity: 0.5;
+}
+
+.field input:focus,
+.field textarea:focus {
+  border-bottom-color: var(--crimson);
+}
+
+/* ── Textarea — ruled paper effect ──────────────────────────────────────── */
+.field textarea {
+  resize: none;
+  line-height: 2;
+  /* subtle horizontal rules mimicking writing paper */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent calc(2em - 1px),
+    rgba(0, 0, 0, 0.04) calc(2em - 1px),
+    rgba(0, 0, 0, 0.04) 2em
+  );
+  background-size: 100% 2em;
+  background-attachment: local;
+  padding-top: 8px;
+}
+
+/* ── Submit button ───────────────────────────────────────────────────────── */
+.submit-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  align-self: flex-end;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--crimson);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  transition: opacity 0.2s ease, gap 0.3s ease;
+}
+
+.submit-btn:hover {
+  opacity: 0.7;
+  gap: 16px;
+}
+
+.submit-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  gap: 10px;
+}
+
+.submit-arrow {
+  font-style: normal;
+  transition: transform 0.3s ease;
+}
+
+.submit-btn:hover .submit-arrow {
+  transform: translate(3px, -3px);
+}
+
+/* ── Success state ───────────────────────────────────────────────────────── */
+.success-state {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  padding: 48px 0 24px;
+  animation: fadeUp 0.6s ease-out forwards;
+}
+
+.success-state[aria-hidden="false"] {
+  display: flex;
+}
+
+.success-heading {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--ink);
+}
+
+.success-sub {
+  font-size: var(--text-base);
+  color: var(--stone);
+  font-weight: 200;
+}
+
+.success-back {
+  font-size: var(--text-xs);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--crimson);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(127, 31, 18, 0.3);
+  padding-bottom: 1px;
+  align-self: flex-start;
+  margin-top: 8px;
+  transition: opacity 0.2s ease;
+}
+.success-back:hover { opacity: 0.6; }
+
+/* ── Alternate channels ──────────────────────────────────────────────────── */
+.channels {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.channel-item {
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+}
+
+.channel-label {
+  font-size: var(--text-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--stone);
+  font-weight: 200;
+  min-width: 80px;
+}
+
+.channel-link {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.channel-link:hover {
+  color: var(--crimson);
+  border-bottom-color: rgba(127, 31, 18, 0.3);
+}
+
+/* ── Form error ──────────────────────────────────────────────────────────── */
+.form-error {
+  font-size: var(--text-xs);
+  color: var(--crimson);
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  main {
+    padding: 80px 20px 60px;
+  }
+
+  .contact-form {
+    gap: 32px;
+  }
+
+  .field input,
+  .field textarea {
+    font-size: var(--text-base);
+  }
+
+  .submit-btn {
+    font-size: var(--text-base);
+    align-self: flex-start;
+  }
+
+  .channel-item {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .divider {
+    margin: 32px 0;
+  }
+}

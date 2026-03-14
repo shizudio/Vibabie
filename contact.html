@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get in Touch — Shina Foo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="contact.css">
+</head>
+<body>
+
+  <div class="cursor default-cursor" id="cursor"></div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Shina Foo</a>
+    <span class="nav-page-name">Get in Touch</span>
+  </nav>
+
+  <main>
+
+    <span class="page-label">The Light — Get in Touch</span>
+    <h1 class="page-h1">Say something.</h1>
+
+    <div class="divider"></div>
+
+    <!-- ── Contact form ── -->
+    <form
+      id="contact-form"
+      class="contact-form"
+      action="https://formspree.io/f/xdawdpqp"
+      method="POST"
+    >
+      <div class="field fade-up" style="animation-delay: 0.1s">
+        <label for="name">Name</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="Your name"
+          autocomplete="name"
+          required
+        />
+      </div>
+
+      <div class="field fade-up" style="animation-delay: 0.2s">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="your@email.com"
+          autocomplete="email"
+          required
+        />
+      </div>
+
+      <div class="field fade-up" style="animation-delay: 0.3s">
+        <label for="message">Message</label>
+        <textarea
+          id="message"
+          name="message"
+          rows="7"
+          placeholder="Write something…"
+          required
+        ></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn fade-up" style="animation-delay: 0.4s">
+        <span class="submit-text">Send note</span>
+        <span class="submit-arrow">↗</span>
+      </button>
+    </form>
+
+    <!-- ── Success state (hidden until form submitted) ── -->
+    <div class="success-state" id="success-state" aria-hidden="true">
+      <p class="success-heading">Note received.</p>
+      <p class="success-sub">I'll write back soon.</p>
+      <a href="index.html" class="success-back">← Back to the room</a>
+    </div>
+
+    <div class="divider fade-up" style="animation-delay: 0.5s"></div>
+
+    <!-- ── Alternate channels ── -->
+    <div class="channels fade-up" style="animation-delay: 0.55s">
+      <div class="channel-item">
+        <span class="channel-label">Email</span>
+        <a href="mailto:shizudio.eth@gmail.com" class="channel-link">shizudio.eth@gmail.com ↗</a>
+      </div>
+      <div class="channel-item">
+        <span class="channel-label">Twitter</span>
+        <a href="https://x.com/shizudio" target="_blank" rel="noopener" class="channel-link">@shizudio ↗</a>
+      </div>
+      <div class="channel-item">
+        <span class="channel-label">Instagram</span>
+        <a href="https://www.instagram.com/shizudio" target="_blank" rel="noopener" class="channel-link">@shizudio ↗</a>
+      </div>
+    </div>
+
+  </main>
+
+  <script type="module" src="script.js"></script>
+  <script type="module" src="contact.js"></script>
+</body>
+</html>

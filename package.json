@@ -7,7 +7,9 @@
   "scripts": {
       "dev": "vite",
       "build": "vite build",
-      "preview": "vite preview"
+      "preview": "vite preview",
+      "prebuild": "node fetch-cosmos.js",
+      "fetch-cosmos": "node fetch-cosmos.js"
    },
   
   "repository": {
