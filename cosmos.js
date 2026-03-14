@@ -25,9 +25,10 @@ data.elements.forEach((el, i) => {
   item.style.animationDelay = `${i * 0.045}s`
 
   const img = document.createElement('img')
-  img.src     = el.url
-  img.alt     = ''
-  img.loading = i < 6 ? 'eager' : 'lazy'
+  img.crossOrigin = 'anonymous'   // allows canvas pixel sampling for adaptive cursor
+  img.src      = el.url
+  img.alt      = ''
+  img.loading  = i < 6 ? 'eager' : 'lazy'
   img.decoding = 'async'
 
   // Preserve aspect ratio via intrinsic dimensions
