@@ -234,12 +234,7 @@
       background: rgba(127, 31, 18, 0.05);
     }
 
-    /* Center bottom row: 3 items across 8 cols → offset by 1 col */
-    .mobile-link:nth-child(5) {
-      grid-column: 2 / span 2;
-    }
-
-    .mobile-link-emoji {
+.mobile-link-emoji {
       font-size: 1.4rem;
     }
 
