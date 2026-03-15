@@ -18,7 +18,7 @@ import { writeFileSync, readFileSync, existsSync } from 'fs'
 
 const COSMOS_URL  = 'https://www.cosmos.so/shizudio/personal-aesthetics'
 const GRAPHQL_URL = 'https://api.cosmos.so/graphql'
-const OUT_FILE    = './cosmos-data.json'
+const OUT_FILE    = './public/cosmos-data.json'
 
 const QUERY = `
   query GetCluster {

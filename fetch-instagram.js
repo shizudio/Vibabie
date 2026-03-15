@@ -37,7 +37,7 @@ import http  from 'http'
 import path  from 'path'
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
-const OUT_FILE    = './instagram-data.json'
+const OUT_FILE    = './public/instagram-data.json'
 const MEDIA_DIR   = './instagram'
 const MAX_POSTS   = 24
 const IG_USERNAME = 'shinana.ya'

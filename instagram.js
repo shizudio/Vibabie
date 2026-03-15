@@ -1,5 +1,8 @@
-import data from './instagram-data.json'
 import { initLightbox } from './lightbox.js'
+
+const data = await fetch('./instagram-data.json')
+  .then(r => r.json())
+  .catch(() => ({ elements: [], lastUpdated: null }))
 
 const grid      = document.getElementById('ig-grid')
 const updatedEl = document.getElementById('ig-updated')

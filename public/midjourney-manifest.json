@@ -1,0 +1,438 @@
+{
+  "tags": [
+    {
+      "id": "crimson",
+      "color": "#7F1F12"
+    },
+    {
+      "id": "purple",
+      "color": "#3D4A6B"
+    },
+    {
+      "id": "green",
+      "color": "#7A8E6A"
+    },
+    {
+      "id": "shiba",
+      "color": "#C8803A"
+    },
+    {
+      "id": "astronauts",
+      "color": "#6B8CAE"
+    },
+    {
+      "id": "cats",
+      "color": "#C4A267"
+    },
+    {
+      "id": "model",
+      "color": "#B08A8A"
+    },
+    {
+      "id": "others",
+      "color": "#9B9B9B"
+    }
+  ],
+  "images": [
+    {
+      "src": "Midjourney/Astronaut__modern_vogue_--sref_httpss.mj.run-_mEHRrYr2U_https_10953ab2-762b-455a-9abe-38b9080223d1_1.webp",
+      "prompt": "",
+      "tags": [
+        "astronauts",
+        "crimson"
+      ]
+    },
+    {
+      "src": "Midjourney/Astronaut__modern_vogue_--sref_httpss.mj.run-_mEHRrYr2U_https_2af1a94f-ed50-4b64-b8a2-b2847ff96adc_0.webp",
+      "prompt": "",
+      "tags": [
+        "astronauts",
+        "crimson"
+      ]
+    },
+    {
+      "src": "Midjourney/Astronaut__modern_vogue_--sref_httpss.mj.run-_mEHRrYr2U_https_2af1a94f-ed50-4b64-b8a2-b2847ff96adc_2.webp",
+      "prompt": "",
+      "tags": [
+        "astronauts",
+        "crimson"
+      ]
+    },
+    {
+      "src": "Midjourney/Astronaut__modern_vogue_--sref_httpss.mj.runMbEBeFT6rvY_https_f29b6487-2aff-4231-8c92-08796fce74c0_2.webp",
+      "prompt": "",
+      "tags": [
+        "astronauts",
+        "crimson"
+      ]
+    },
+    {
+      "src": "Midjourney/Astronaut_with_flower_in_the_helmet_modern_vogue_--sref_https_cf7da6bf-ebc4-47cc-9e82-3e1efb9c5fc6_0.webp",
+      "prompt": "",
+      "tags": [
+        "astronauts",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/Astronaut_with_flower_in_the_helmet_modern_vogue_--sref_https_e6f1fb1d-de0c-4845-886e-74f6c0fce655_0.webp",
+      "prompt": "",
+      "tags": [
+        "astronauts",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/Astronaut_with_flower_in_the_helmet_studio_fashion_light_mode_223f5e46-32c5-43da-9092-bf55625baaac_0.webp",
+      "prompt": "",
+      "tags": [
+        "astronauts",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/Astronaut_with_flower_in_the_helmet_studio_fashion_light_mode_4b86560a-4e77-4e20-bf36-39c17820a571_0.webp",
+      "prompt": "",
+      "tags": [
+        "astronauts",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/Astronaut_with_flower_in_the_helmet_studio_fashion_light_mode_4b86560a-4e77-4e20-bf36-39c17820a571_1.webp",
+      "prompt": "",
+      "tags": [
+        "astronauts",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/Astronaut_with_flower_in_the_helmet_studio_fashion_light_mode_4b86560a-4e77-4e20-bf36-39c17820a571_2.webp",
+      "prompt": "",
+      "tags": [
+        "astronauts",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/Astronaut_with_flower_in_the_helmet_studio_fashion_light_mode_4b86560a-4e77-4e20-bf36-39c17820a571_3.webp",
+      "prompt": "",
+      "tags": [
+        "astronauts",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/Astronaut_with_flower_in_the_helmet_studio_fashion_light_mode_5a959bdb-336c-4115-bbd7-5609bf25922d_2.webp",
+      "prompt": "",
+      "tags": [
+        "astronauts",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/Astronaut_with_flower_in_the_helmet_studio_fashion_light_mode_e09791ac-68e9-4230-95fe-bf410c2004f3_3.webp",
+      "prompt": "",
+      "tags": [
+        "astronauts",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/cat_--sref_httpss.mj.run4tUJlv9gikU_httpss.mj.runKdGz-vXJvnU__3a4e71e2-a030-4cb1-b8c6-47379e3e0c9c_0.webp",
+      "prompt": "",
+      "tags": [
+        "cats",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/cat_--sref_httpss.mj.run4tUJlv9gikU_httpss.mj.runKdGz-vXJvnU__3a4e71e2-a030-4cb1-b8c6-47379e3e0c9c_1.webp",
+      "prompt": "",
+      "tags": [
+        "cats",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/cat_--sref_httpss.mj.run4tUJlv9gikU_httpss.mj.runKdGz-vXJvnU__3a4e71e2-a030-4cb1-b8c6-47379e3e0c9c_2.webp",
+      "prompt": "",
+      "tags": [
+        "cats",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/cat_--sref_httpss.mj.run4tUJlv9gikU_httpss.mj.runKdGz-vXJvnU__3a4e71e2-a030-4cb1-b8c6-47379e3e0c9c_3.webp",
+      "prompt": "",
+      "tags": [
+        "cats",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/cat_--sref_httpss.mj.run4tUJlv9gikU_httpss.mj.runKdGz-vXJvnU__b4e346b1-542d-4bf2-8fe3-9c1991f85884_2.webp",
+      "prompt": "",
+      "tags": [
+        "cats",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/cat_--sref_httpss.mj.runMbEBeFT6rvY_httpss.mj.runZQHeTuUsnHA__0f6381bb-43b2-45d2-9d87-2c5235928f0a_3.webp",
+      "prompt": "",
+      "tags": [
+        "cats",
+        "crimson"
+      ]
+    },
+    {
+      "src": "Midjourney/cat_--sref_httpss.mj.runMbEBeFT6rvY_httpss.mj.runZQHeTuUsnHA__c86d41a1-a027-4b97-ada6-1eec8d31a220_3.webp",
+      "prompt": "",
+      "tags": [
+        "cats",
+        "green"
+      ]
+    },
+    {
+      "src": "Midjourney/design_perena_65145_Cute_funny_shiba_--sref_httpss.mj.runL-1c_0a396d2b-5e93-462e-87fe-534c5cfbf2cd_0.webp",
+      "prompt": "",
+      "tags": [
+        "shiba",
+        "crimson"
+      ]
+    },
+    {
+      "src": "Midjourney/design_perena_65145_Cute_funny_shiba_--sref_httpss.mj.runL-1c_524e7506-6afb-45a1-8b44-78fd98f6e210_3.webp",
+      "prompt": "",
+      "tags": [
+        "shiba",
+        "crimson"
+      ]
+    },
+    {
+      "src": "Midjourney/design_perena_65145_astronaut_with_flowers_coming_out_of_helm_b398c866-7f74-43a0-9607-ab41da3d53f0_1.webp",
+      "prompt": "",
+      "tags": [
+        "astronauts",
+        "crimson"
+      ]
+    },
+    {
+      "src": "Midjourney/design_perena_65145_cat_--sref_httpss.mj.runL-1c-tdnN2Q_https_72fbe156-ce45-4fc8-9c6e-b805a1e6d095_3.webp",
+      "prompt": "",
+      "tags": [
+        "cats",
+        "crimson"
+      ]
+    },
+    {
+      "src": "Midjourney/design_perena_65145_dazed_magazine_female_model_--sref_httpss_48d3771f-2f74-41b4-b24f-dd1fab6ce1ed_3.webp",
+      "prompt": "",
+      "tags": [
+        "model",
+        "crimson"
+      ]
+    },
+    {
+      "src": "Midjourney/design_perena_65145_ethereal_woman_--sref_httpss.mj.runL-1c-t_9b04c9c9-2ebf-4d7a-907f-8950b1a6077d_0.webp",
+      "prompt": "",
+      "tags": [
+        "model",
+        "crimson"
+      ]
+    },
+    {
+      "src": "Midjourney/design_perena_65145_ethereal_woman_--sref_httpss.mj.runL-1c-t_e8fc29a9-1a23-4010-b7f2-c037a062f50a_1.webp",
+      "prompt": "",
+      "tags": [
+        "model",
+        "crimson"
+      ]
+    },
+    {
+      "src": "Midjourney/design_perena_65145_ethereal_woman_--sref_httpss.mj.runL-1c-t_e8fc29a9-1a23-4010-b7f2-c037a062f50a_2.webp",
+      "prompt": "",
+      "tags": [
+        "model",
+        "crimson"
+      ]
+    },
+    {
+      "src": "Midjourney/design_perena_65145_ethereal_woman_--sref_httpss.mj.runL-1c-t_e8fc29a9-1a23-4010-b7f2-c037a062f50a_3.webp",
+      "prompt": "",
+      "tags": [
+        "model",
+        "crimson"
+      ]
+    },
+    {
+      "src": "Midjourney/design_perena_65145_httpss.mj.runV72yx1yWrOQ_editorial_female_895efc8f-61cd-4028-89b6-73c7e8998e26_0.webp",
+      "prompt": "",
+      "tags": [
+        "model",
+        "crimson"
+      ]
+    },
+    {
+      "src": "Midjourney/design_perena_65145_shiba_inu_--sref_httpss.mj.runL-1c-tdnN2Q_efdbd3d9-0526-428f-86e0-8ac5aad04084_0.webp",
+      "prompt": "",
+      "tags": [
+        "shiba",
+        "crimson"
+      ]
+    },
+    {
+      "src": "Midjourney/editorial_fashion_model__japanese_vogue_magazine_--sref_https_60551ef7-4feb-439f-abde-d20d7baf49d0_2.webp",
+      "prompt": "",
+      "tags": [
+        "model",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/editorial_fashion_model__japanese_vogue_magazine_--sref_https_60551ef7-4feb-439f-abde-d20d7baf49d0_3.webp",
+      "prompt": "",
+      "tags": [
+        "model",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/editorial_fashion_model__japanese_vogue_magazine_--sref_https_736d5ef6-15de-4fcd-9185-f6bf7d3c2254_0.webp",
+      "prompt": "",
+      "tags": [
+        "model",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/editorial_fashion_model__japanese_vogue_magazine_--sref_https_736d5ef6-15de-4fcd-9185-f6bf7d3c2254_1.webp",
+      "prompt": "",
+      "tags": [
+        "model",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/editorial_fashion_model__japanese_vogue_magazine_--sref_https_ef88cd82-7a9a-4be2-ad6c-ffbba7c825cd_2.webp",
+      "prompt": "",
+      "tags": [
+        "model",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/editorial_model_--sref_httpss.mj.runS_QKKy-uHWE_httpss.mj.run_bbfe9c9d-49f5-4de4-82e3-27df8d3eb5f9_3.webp",
+      "prompt": "",
+      "tags": [
+        "model",
+        "green"
+      ]
+    },
+    {
+      "src": "Midjourney/editorial_model_--sref_httpss.mj.runT9kZidFchs8_httpss.mj.run_6f1cbdbe-a570-4555-b0a8-432882f61166_0.webp",
+      "prompt": "",
+      "tags": [
+        "model",
+        "crimson"
+      ]
+    },
+    {
+      "src": "Midjourney/editorial_model_--sref_httpss.mj.runT9kZidFchs8_httpss.mj.run_6f1cbdbe-a570-4555-b0a8-432882f61166_1.webp",
+      "prompt": "",
+      "tags": [
+        "model",
+        "crimson"
+      ]
+    },
+    {
+      "src": "Midjourney/editorial_model_--sref_httpss.mj.runT9kZidFchs8_httpss.mj.run_6f1cbdbe-a570-4555-b0a8-432882f61166_2.webp",
+      "prompt": "",
+      "tags": [
+        "model",
+        "green"
+      ]
+    },
+    {
+      "src": "Midjourney/editorial_model_--sref_httpss.mj.runzqP8zlB4jpQ_httpss.mj.run_d527298d-bbb8-4090-8bc4-0eaae3c5080d_3.webp",
+      "prompt": "",
+      "tags": [
+        "model",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/editorial_model__flower_bouqeut_--sref_httpss.mj.runzqP8zlB4j_e311c8a2-8b84-494a-bffb-126af489096b_0.webp",
+      "prompt": "",
+      "tags": [
+        "model",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/editorial_model__flower_bouqeut_--sref_httpss.mj.runzqP8zlB4j_e311c8a2-8b84-494a-bffb-126af489096b_1.webp",
+      "prompt": "",
+      "tags": [
+        "model",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/editorial_model__flower_bouqeut_--sref_httpss.mj.runzqP8zlB4j_e311c8a2-8b84-494a-bffb-126af489096b_2.webp",
+      "prompt": "",
+      "tags": [
+        "model",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/editorial_model__hazed_and_vogue_magazine_--sref_httpss.mj.ru_5329783f-d768-49e2-b6b4-4e01663e1c60_0.webp",
+      "prompt": "",
+      "tags": [
+        "model",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/shiba_inu_--sref_httpss.mj.run-_mEHRrYr2U_httpss.mj.runMbEBeF_7348fb61-c36c-4bb7-8f37-1df88bd96d69_3.webp",
+      "prompt": "",
+      "tags": [
+        "shiba",
+        "crimson"
+      ]
+    },
+    {
+      "src": "Midjourney/shiba_inu_--sref_httpss.mj.run-_mEHRrYr2U_httpss.mj.runMbEBeF_dfb21a57-a3b0-473b-b9b0-2d0d48f849a4_1.webp",
+      "prompt": "",
+      "tags": [
+        "shiba",
+        "green"
+      ]
+    },
+    {
+      "src": "Midjourney/shiba_inu_--sref_httpss.mj.run4tUJlv9gikU_httpss.mj.runKdGz-v_127eba5d-d040-4bf2-9756-38108b8b97e1_0.webp",
+      "prompt": "",
+      "tags": [
+        "shiba",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/shiba_inu_--sref_httpss.mj.run4tUJlv9gikU_httpss.mj.runKdGz-v_127eba5d-d040-4bf2-9756-38108b8b97e1_1.webp",
+      "prompt": "",
+      "tags": [
+        "shiba",
+        "purple"
+      ]
+    },
+    {
+      "src": "Midjourney/shiba_inu_with_flowers_--sref_httpss.mj.run4tUJlv9gikU_httpss_5d0f7d78-5a9a-4a3d-9bef-0b24c6430b26_1.webp",
+      "prompt": "",
+      "tags": [
+        "shiba",
+        "purple"
+      ]
+    }
+  ]
+}
