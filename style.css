@@ -1,12 +1,65 @@
 /* ─────────────────────────────────────────
-   PERENA.ORG — Global Styles
+   SHINA FOO — Global Styles
    ───────────────────────────────────────── */
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE SYSTEM — read before adding pages
+   ═══════════════════════════════════════════
+
+   BREAKPOINTS
+   ─────────────────────────────────────────
+   Mobile  : max-width: 767px   (iPhone SE 375 → iPhone 14 390 → mid-phone 480)
+   Tablet  : 768px – 1023px     (iPad mini 768 → iPad 810 → iPad Air 834)
+   Desktop : 1024px+            (laptops, wide monitors)
+
+   Always use max-width: 767px for mobile-only overrides so that
+   767px is the last mobile pixel and 768px is the first tablet pixel.
+   Avoid mixing 768px and 767px thresholds — pick one and stick to it.
+
+   SPACING SCALE  (--space-* in :root)
+   ─────────────────────────────────────────
+   --space-sm  :  8px  — tight internal gaps (icon ↔ label)
+   --space-md  : 16px  — card padding, small section gaps
+   --space-lg  : 32px  — section dividers, column gaps on mobile
+   --space-xl  : 48px  — generous section padding on desktop
+   --space-2xl : 64px  — hero / page-level breathing room on desktop
+   On mobile prefer --space-md / --space-lg; shrink --space-xl → --space-lg.
+
+   FONT SCALE  (--text-* in :root, all use clamp())
+   ─────────────────────────────────────────
+   --text-xs      : 0.55 → 0.65 rem  — labels, metadata, uppercase caps
+   --text-sm      : 0.62 → 0.72 rem  — secondary text, hints
+   --text-base    : 0.85 → 1.00 rem  — body copy
+   --text-lg      : 1.10 → 1.30 rem  — large body / sub-headings
+   --text-xl      : 1.50 → 2.00 rem  — section headings
+   --text-display : 2.80 → 4.50 rem  — hero headings (page-h1)
+   On mobile the clamp() fluid range kicks in automatically.
+   Override with a tighter clamp() in the page's own @media block only
+   when the default clamp still produces an oversized result.
+
+   TOUCH TARGETS
+   ─────────────────────────────────────────
+   All tappable elements must be ≥ 44 × 44 px (WCAG 2.5.5).
+   Use min-height: 44px + padding to meet this without hard-coding sizes.
+   Buttons and links that look small visually can pad inward with
+   padding-block: 10px; padding-inline: 8px to hit the 44px minimum.
+
+   LAYOUT RULES
+   ─────────────────────────────────────────
+   - Never set a fixed px width on a container that must shrink on mobile.
+     Use max-width + width: 100% (or min(100%, Xpx)).
+   - Prefer flexbox with flex-wrap: wrap or CSS Grid with auto-fill
+     so columns collapse naturally without media query overrides.
+   - Page-level horizontal padding: 40px desktop → 20px mobile (clamp below).
+
+   ═══════════════════════════════════════════ */
 
    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
    :root {
      /* Colors */
      --crimson: #7F1F12;
+     /* Reserved palette (not yet in active CSS rules) */
      --olive:   #B9B94B;
      --purple:  #6F4DA0;
      --amber:   #FCBC43;
@@ -17,11 +70,30 @@
      --paper:   #FFFAF4;
      --border:  rgba(0,0,0,0.08);
 
+     /* Extended palette */
+     --paper-cool:   #f5f4f2;
+     --warm-grey:    #e8e2d9;
+     --crimson-bg:   #FFF5EB;
+     --crimson-text: #5a3a34;
+
+     /* Semantic overlays */
+     --overlay-dark: rgba(26, 22, 20, 0.94);
+     --paper-dim:    rgba(255, 250, 244, 0.55);
+     --paper-mid:    rgba(255, 250, 244, 0.60);
+     --paper-faint:  rgba(255, 250, 244, 0.70);
+
+     /* Semantic borders */
+     --border-crimson: rgba(127, 31, 18, 0.3);
+
      /* Fonts */
-     --font-display: 'EB Garamond', 'Cormorant Garamond', Georgia, serif;
-     --font-serif: 'Cormorant Garamond', Georgia, serif;
-     --font-body: 'Noto Serif JP', serif;
-     --font-mono: 'Courier New', Courier, monospace;
+     --font-sans:        'DM Sans', sans-serif;
+     --font-serif:       'EB Garamond', 'Noto Serif JP', Georgia, serif;
+     --font-display:     var(--font-serif);
+     --font-body:        var(--font-serif);
+     --font-mono:        'Courier New', Courier, monospace;
+     /* Description font token — image captions & page descriptions */
+     --font-description:  'DM Sans', sans-serif;
+     --color-description: var(--stone);
 
      /* Font sizes */
      --text-xs: clamp(0.55rem, 0.5vw, 0.65rem);
@@ -32,11 +104,47 @@
      --text-display: clamp(2.8rem, 6vw, 4.5rem);
 
      /* Spacing */
-     --space-sm: 8px;
-     --space-md: 16px;
-     --space-lg: 32px;
-     --space-xl: 48px;
+     --space-xs:  4px;
+     --space-sm:  8px;
+     --space-md:  16px;
+     --space-ml:  24px;
+     --space-lg:  32px;
+     --space-xl:  48px;
      --space-2xl: 64px;
+     --space-3xl: 80px;
+     --space-4xl: 100px;
+     --gap-grid:  40px;
+
+     /* Fluid page-gutter: 20px on narrow mobile → 40px on wide desktop */
+     --page-gutter: clamp(20px, 4vw, 40px);
+
+     /* Radius */
+     --radius-sm: 2px;
+     --radius-md: 4px;
+     --radius-lg: 6px;
+
+     /* Shadows */
+     --shadow-sm:   0 4px 16px rgba(26, 22, 20, 0.12);
+     --shadow-md:   0 8px 32px rgba(0, 0, 0, 0.10);
+     --shadow-lg:   0 24px 80px rgba(0, 0, 0, 0.50);
+     --shadow-card: 0 4px 16px rgba(26, 22, 20, 0.12), 0 16px 48px rgba(26, 22, 20, 0.10);
+
+     /* Transitions */
+     --transition-fast:  0.2s ease;
+     --transition-base:  0.35s ease;
+     --transition-slow:  0.5s ease;
+     --transition-enter: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+     /* Z-index */
+     --z-cursor:   9999;
+     --z-tooltip:  9998;
+     --z-lightbox: 9990;
+     --z-loader:    999;
+     --z-nav:        50;
+
+     /* Layout */
+     --layout-content-top:        140px;
+     --layout-content-top-mobile:  80px;
    }
    
    html, body {
@@ -44,7 +152,7 @@
      height: 100%;
      background: var(--paper);
      color: var(--ink);
-     font-family: 'Noto Serif JP', serif;
+     font-family: var(--font-serif);
      cursor: none;
    }
    
@@ -55,7 +163,7 @@
     z-index: 9999;
     transform: translate(-50%, -50%);
     transition: opacity 0.2s;
-    color: #7F1F12;
+    color: var(--crimson);
     font-size: 22px;
     
   }
@@ -78,7 +186,7 @@
      flex-direction: column;
      align-items: center;
      justify-content: center;
-     z-index: 999;
+     z-index: var(--z-loader);
      transition: opacity 1.2s ease, visibility 1.2s ease;
    }
    .loader.hidden {
@@ -108,8 +216,8 @@
      flex-direction: column;
      align-items: center;
      justify-content: center;
-     padding: 12px 0 15px;
-     gap: 5px;
+     padding: var(--space-md) 0 var(--space-sm);
+     gap: var(--space-xs);
    }
    .loader-num {
      font-family: var(--font-display);
@@ -121,33 +229,27 @@
      line-height: 1;
    }
    .loader-label {
-     font-size: var(--text-sm);
+     /* base: .label-meta in style.css */
+     font-size: var(--text-sm);  /* slightly larger than base */
      letter-spacing: 0.25em;
-     text-transform: uppercase;
-     color: var(--stone);
-     font-weight: 200;
    }
    
    /* ── HEADER / NAV ── */
    .site-header, nav {
      position: fixed;
      top: 0; left: 0; right: 0;
-     z-index: 50;
+     z-index: var(--z-nav);
      display: flex;
      align-items: center;
      justify-content: space-between;
-     padding: var(--space-lg) var(--space-xl);
+     padding: var(--space-lg) var(--page-gutter);
      pointer-events: none;
    }
    .site-header {
      opacity: 0;
    }
    .nav-page-name {
-     font-size: var(--text-xs);
-     letter-spacing: 0.2em;
-     text-transform: uppercase;
-     color: var(--stone);
-     font-weight: 200;
+     /* base: .label-meta in style.css */
      pointer-events: all;
    }
    .site-logo, .nav-logo {
@@ -172,17 +274,13 @@
      display: flex;
      align-items: center;
      justify-content: center;
-     padding: 20px;
+     padding: var(--space-md);
      pointer-events: none;
      opacity: 0;
    }
    .footer-hint {
-     font-size: var(--text-xs);
-     letter-spacing: 0.2em;
-     text-transform: uppercase;
-     color: var(--stone);
+     /* base: .label-meta in style.css */
      opacity: 0.5;
-     font-weight: 200;
    }
    
    /* ── HANGING STRING ── */
@@ -198,13 +296,27 @@
    }
    .hanging-string.visible { opacity: 1; }
    
+   /* ── Meta label token ────────────────────────────────────────────────────── */
+   /* Base for all uppercase stone labels. Per-page classes add layout overrides. */
+   .label-meta,
+   .channel-label,
+   .detail-label,
+   .cosmos-collection-label,
+   .page-label,
+   .nav-page-name,
+   .footer-hint,
+   .loader-label {
+     font-size: var(--text-xs);
+     letter-spacing: 0.2em;
+     text-transform: uppercase;
+     color: var(--stone);
+     font-weight: 200;
+   }
+
    /* ── SUBPAGE SHARED ── */
    .page-label {
      font-size: var(--text-sm);
      letter-spacing: 0.25em;
-     text-transform: uppercase;
-     color: var(--stone);
-     font-weight: 200;
      display: block;
      margin-bottom: var(--space-lg);
    }
@@ -241,8 +353,202 @@
      animation: fadeUp 0.7s ease-out forwards;
    }
 
+   /* ── Shared lightbox close button ───────────────────────────────────────── */
+   .lb-close {
+     position: absolute;
+     top: 20px;
+     right: var(--space-ml);
+     background: none;
+     border: none;
+     color: var(--paper-dim);
+     font-size: 20px;
+     cursor: pointer;
+     min-width: 44px;
+     min-height: 44px;
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     padding: 0;
+     line-height: 1;
+     font-family: var(--font-body);
+     transition: color var(--transition-fast);
+   }
+   .lb-close:hover { color: var(--paper); }
+
+   /* ── Lightbox ────────────────────────────────────────────────────────────── */
+   /* Common overlay styles shared across art.css, cosmos.css, photography.css  */
+   .art-lightbox,
+   .photo-lightbox,
+   .lightbox {
+     position: fixed;
+     inset: 0;
+     z-index: var(--z-lightbox);
+     background: var(--overlay-dark);
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     opacity: 0;
+     pointer-events: none;
+     transition: opacity 0.35s ease;
+   }
+   .art-lightbox.open,
+   .photo-lightbox.open,
+   .lightbox.open {
+     opacity: 1;
+     pointer-events: all;
+   }
+
+   /* Common close button base */
+   .art-lb-close,
+   .photo-lb-close,
+   .lightbox-close {
+     position: absolute;
+     top: 20px;
+     right: 24px;
+     background: none;
+     border: none;
+     color: var(--paper-dim);
+     font-size: 20px;
+     cursor: pointer;
+     min-width: 44px;
+     min-height: 44px;
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     padding: 0;
+     line-height: 1;
+     font-family: var(--font-body);
+     transition: color 0.2s ease;
+   }
+   .art-lb-close:hover,
+   .photo-lb-close:hover,
+   .lightbox-close:hover { color: var(--paper); }
+
+   /* Common inner container */
+   .art-lb-inner,
+   .photo-lb-inner,
+   .ig-lb-inner {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     gap: 24px;
+     max-width: 90vw;
+     max-height: 90vh;
+   }
+
+   /* Common lightbox image */
+   .art-lb-img,
+   .photo-lb-img,
+   .lightbox-img {
+     max-width: 100%;
+     max-height: 78vh;
+     object-fit: contain;
+     display: block;
+     transform: scale(0.97);
+     transition: transform 0.35s var(--transition-enter);
+   }
+   .art-lightbox.open .art-lb-img,
+   .photo-lightbox.open .photo-lb-img,
+   .lightbox.open .lightbox-img {
+     transform: scale(1);
+   }
+
+   /* Common caption */
+   .art-lb-caption,
+   .photo-lb-caption,
+   .ig-lb-caption {
+     font-family: var(--font-description);
+     font-size: clamp(0.82rem, 1.4vw, 1rem);
+     font-weight: 300;
+     color: var(--paper-dim);
+     text-align: center;
+     max-width: 480px;
+     margin: 0;
+     line-height: 1.5;
+     opacity: 0;
+     transform: translateY(6px);
+     transition: opacity 0.4s ease 0.15s, transform 0.4s ease 0.15s;
+   }
+   .art-lb-caption:empty { display: none; }
+   .art-lightbox.open .art-lb-caption,
+   .photo-lightbox.open .photo-lb-caption,
+   .lightbox.open .ig-lb-caption {
+     opacity: 1;
+     transform: translateY(0);
+   }
+
+   /* Mobile lightbox overrides */
+   @media (max-width: 767px) {
+     .art-lb-close,
+     .photo-lb-close,
+     .lightbox-close {
+       top: 12px;
+       right: 12px;
+     }
+     .art-lb-img,
+     .photo-lb-img {
+       max-height: 65vh;
+       max-width: 90vw;
+     }
+     .lightbox-img {
+       max-width: 96vw;
+       max-height: 80vh;
+     }
+     .art-lb-caption,
+     .photo-lb-caption,
+     .ig-lb-caption {
+       font-size: clamp(0.78rem, 3vw, 0.95rem);
+       max-width: 90vw;
+     }
+   }
+
+   /* ── Terminal prompt block ───────────────────────────────────────────────── */
+   /* Shared across about.html, cosmos.html, etc.                               */
+   .page-h1-sub {
+     font-family: 'Titillium Web', sans-serif;
+     font-weight: 300;
+     font-size: 0.92rem;
+     color: var(--crimson-text);
+     padding: 14px 20px;
+     border-radius: var(--radius-lg);
+     border-left: 3px solid var(--crimson);
+     letter-spacing: 0.02em;
+     line-height: 1.5;
+     margin: 20px 0;
+     overflow-wrap: break-word;
+     max-width: 100%;
+   }
+   .page-h1-sub::before {
+     content: ">";
+     color: var(--crimson);
+     margin-right: 10px;
+     font-family: var(--font-mono);
+     font-size: 0.85rem;
+     font-weight: 700;
+   }
+   .page-h1-sub::after {
+     content: "▋";
+     color: var(--crimson);
+     margin-left: 4px;
+     animation: blink 1.1s step-end infinite;
+     font-size: 0.85rem;
+   }
+   @keyframes blink {
+     50% { opacity: 0; }
+   }
+
+   /* ── Crimson underline link ──────────────────────────────────────────────── */
+   .crimson-link {
+     color: var(--crimson);
+     text-decoration: none;
+     border-bottom: 1px solid var(--border-crimson);
+     padding-bottom: 1px;
+     transition: opacity var(--transition-fast);
+   }
+   .crimson-link:hover { opacity: 0.6; }
+
    /* ── GLOBAL MOBILE ── */
-   @media (max-width: 768px) {
+   @media (max-width: 767px) {
      html, body {
        cursor: auto;
      }
@@ -256,20 +562,28 @@
      }
 
      .site-header, nav {
-       padding: var(--space-md) 20px;
+       padding: var(--space-md) var(--page-gutter);
+     }
+
+     /* Ensure nav links are ≥44px tall for touch */
+     .site-logo, .nav-logo {
+       min-height: 44px;
+       display: inline-flex;
+       align-items: center;
      }
 
      .site-footer {
        position: relative;
-       padding: var(--space-md) 20px;
+       padding: var(--space-md) var(--page-gutter);
      }
 
      .page-label {
-       font-size: 0.6rem;
+       font-size: var(--text-xs);
        margin-bottom: var(--space-md);
      }
 
      .page-h1 {
-       font-size: clamp(2rem, 8vw, 3rem);
+       font-size: clamp(1.9rem, 8vw, 2.8rem);
      }
+
    }

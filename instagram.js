@@ -1,4 +1,5 @@
 import data from './instagram-data.json'
+import { initLightbox } from './lightbox.js'
 
 const grid      = document.getElementById('ig-grid')
 const updatedEl = document.getElementById('ig-updated')
@@ -6,6 +7,9 @@ const lightbox  = document.getElementById('lightbox')
 const lbImg     = document.getElementById('lightbox-img')
 const lbCaption = document.getElementById('ig-lb-caption')
 const lbClose   = document.getElementById('lightbox-close')
+
+// ── Lightbox ──────────────────────────────────────────────────────────────────
+const { open: openLightbox } = initLightbox(lightbox, lbImg, lbCaption, lbClose)
 
 // ── Last updated ─────────────────────────────────────────────────────────────
 if (updatedEl && data.lastUpdated) {
@@ -55,24 +59,3 @@ const observer = new IntersectionObserver(entries => {
 }, { threshold: 0.05 })
 
 document.querySelectorAll('.cosmos-item').forEach(el => observer.observe(el))
-
-// ── Lightbox ──────────────────────────────────────────────────────────────────
-function openLightbox(src, caption) {
-  lbImg.src = src
-  lbCaption.textContent = caption || ''
-  lbCaption.style.display = caption ? '' : 'none'
-  lightbox.classList.add('open')
-  lightbox.setAttribute('aria-hidden', 'false')
-  document.body.style.overflow = 'hidden'
-}
-
-function closeLightbox() {
-  lightbox.classList.remove('open')
-  lightbox.setAttribute('aria-hidden', 'true')
-  document.body.style.overflow = ''
-  setTimeout(() => { lbImg.src = '' }, 300)
-}
-
-lbClose.addEventListener('click', closeLightbox)
-lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox() })
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox() })

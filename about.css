@@ -10,8 +10,9 @@
    
    main {
      max-width: 640px;
+     width: 100%;
      margin: 0 auto;
-     padding: 140px 40px 100px;
+     padding: 140px var(--page-gutter, 40px) 100px;
    }
    
    .portrait-frame {
@@ -20,7 +21,7 @@
     margin-bottom: 56px;
     position: relative;
     overflow: hidden;
-    border-radius: 4px;
+    border-radius: var(--radius-md);
     cursor: pointer;
   }
 
@@ -48,80 +49,46 @@
   }
    
    .bio {
-     font-size: 1rem;
+     font-family: var(--font-description);
+     font-size: clamp(0.9rem, 1.8vw, 1rem);
      line-height: 2;
-     color: var(--ink);
+     color: var(--color-description);
      font-weight: 300;
-     opacity: 0.85;
      margin-bottom: 24px;
    }
    
    .detail-row {
      display: flex;
-     gap: 48px;
+     gap: clamp(20px, 4vw, 48px);
      margin-bottom: 48px;
      flex-wrap: wrap;
    }
    .detail-label {
-     font-size: 0.58rem;
-     letter-spacing: 0.2em;
-     text-transform: uppercase;
-     color: var(--stone);
-     font-weight: 200;
+     /* base: .label-meta in style.css */
      display: block;
      margin-bottom: 8px;
    }
    .detail-value {
-     font-family: 'Cormorant Garamond', serif;
-     font-size: 1rem;
+     font-family: var(--font-display);
+     font-size: var(--text-base);
      font-weight: 300;
      font-style: italic;
      color: var(--ink);
    }
 
-   .page-h1-sub {
-    font-family: 'Titillium Web', sans-serif;
-    font-weight: 300;
-    font-size: 0.92rem;
-    background: #FFF5EB;
-    color: #5a3a34;
-    padding: 14px 20px;
-    border-radius: 6px;
-    border-left: 3px solid #7F1F12;
-    letter-spacing: 0.02em;
-    line-height: 1.5;
-    margin: 20px 0;
-  }
-  .page-h1-sub::before {
-    content: ">";
-    color: #7F1F12;
-    margin-right: 10px;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.85rem;
-    font-weight: 700;
-  }
-  .page-h1-sub::after {
-    content: "▋";
-    color: #7F1F12;
-    margin-left: 4px;
-    animation: blink 1.1s step-end infinite;
-    font-size: 0.85rem;
-  }
-  @keyframes blink {
-    50% { opacity: 0; }
-  }
+   /* .page-h1-sub — now global in style.css */
 
   .portrait-frame img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: var(--radius-md);
   }
 
   /* ── MOBILE RESPONSIVE ── */
-  @media (max-width: 768px) {
+  @media (max-width: 767px) {
     main {
-      padding: 80px 20px 60px;
+      padding: 80px var(--page-gutter) 60px;
     }
 
     .portrait-frame {
@@ -129,30 +96,32 @@
     }
 
     .bio {
-      font-size: 0.9rem;
-      line-height: 1.8;
+      font-size: clamp(0.88rem, 3.5vw, 0.96rem);
+      line-height: 1.85;
     }
 
     .detail-row {
       flex-direction: column;
-      gap: 24px;
+      gap: 20px;
       margin-bottom: 32px;
     }
 
     .detail-label {
-      font-size: 0.62rem;
+      font-size: var(--text-xs);
     }
 
     .detail-value {
-      font-size: 0.95rem;
+      font-size: clamp(0.88rem, 3.5vw, 0.95rem);
     }
 
     .page-h1-sub {
-      font-size: 0.82rem;
+      font-size: clamp(0.78rem, 3vw, 0.88rem);
       padding: 12px 16px;
+      max-width: 100%;
+      overflow-x: auto;
     }
 
     .divider {
-      margin: 32px 0;
+      margin: 28px 0;
     }
   }

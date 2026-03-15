@@ -6,8 +6,325 @@
 .cosmos-page {
   padding-top: 82px; /* matches Cosmos --layout-header-height */
   min-height: 100vh;
-  background: #f5f4f2; /* matches Cosmos light bg: rgb(245 244 242) */
+  background: var(--paper-cool); /* matches Cosmos light bg: rgb(245 244 242) */
 }
+
+/* ── Style description ───────────────────────────────────────────────────── */
+.style-desc {
+  padding: 32px 32px 40px;
+  max-width: 680px;
+}
+
+.cosmos-subtitle {
+  display: block;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--stone);
+  font-weight: 200;
+  margin-top: 4px;
+  margin-bottom: 16px;
+}
+
+.style-desc-body {
+  font-family: var(--font-description);
+  font-size: var(--text-base);
+  font-weight: 200;
+  font-style: italic;
+  color: var(--color-description);
+  line-height: 1.75;
+}
+
+/* /imagine command keyword inside the style prompt */
+.imagine-cmd {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--crimson);
+  letter-spacing: 0.04em;
+  margin-right: 6px;
+  font-style: normal;
+  font-size: 0.82em;
+  opacity: 0.8;
+}
+
+/* ── Section divider ─────────────────────────────────────────────────────── */
+.cosmos-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 32px;
+}
+
+/* ── Midjourney section ──────────────────────────────────────────────────── */
+.mj-section {
+  position: relative;
+  overflow-x: hidden; /* prevent carousel track from causing page-level horizontal scroll */
+  transition: background-color 0.5s ease;
+}
+
+.mj-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 32px 32px 16px;
+  gap: 32px;
+}
+
+.mj-desc {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 300;
+  color: var(--stone);
+  line-height: 1.6;
+  margin-top: 10px;
+  max-width: 480px;
+}
+
+/* ── Sidebar + carousel layout ───────────────────────────────────────────── */
+.mj-body {
+  display: flex;
+  align-items: center;
+}
+
+.mj-carousel-col {
+  flex: 1;
+  min-width: 0; /* prevent flex overflow */
+}
+
+/* ── Filter sidebar ──────────────────────────────────────────────────────── */
+.mj-filters {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex-shrink: 0;
+  gap: 4px;
+  padding: 0 80px 20px 32px;
+}
+
+.mj-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--stone);
+  transition: color 0.2s ease;
+  min-height: 32px;
+  white-space: nowrap;
+}
+
+.mj-filter:hover  { color: var(--ink); }
+.mj-filter.active { color: var(--ink); }
+
+.mj-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: block;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mj-filter:hover .mj-dot  { transform: scale(1.3); }
+.mj-filter.active .mj-dot { box-shadow: 0 0 0 2px var(--paper-cool), 0 0 0 3px currentColor; }
+
+/* ── Infinite carousel ───────────────────────────────────────────────────── */
+
+/* Clip wrapper: handles overflow so tiles can escape vertically */
+.mj-carousel-clip {
+  overflow: hidden;
+  width: 100%; /* anchor clip to parent column width */
+  /* Extra vertical padding lets hovered tiles pop above/below the row */
+  padding: 24px 0;
+  margin: -24px 0;
+  position: relative;
+}
+
+/* Right-edge colour fade — bleeds into page background rather than fading to transparent */
+.mj-carousel-clip::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 25%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, var(--paper-cool) 85%);
+  pointer-events: none;
+  z-index: 20;
+}
+
+.mj-carousel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: visible;
+}
+
+.mj-track {
+  display: flex;
+  gap: 0;
+  width: max-content;
+  will-change: transform;
+}
+
+.mj-track--fwd { animation: mj-fwd var(--mj-dur, 100s) linear infinite; }
+
+.mj-carousel:hover .mj-track { animation-play-state: paused; }
+
+@keyframes mj-fwd {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ── Carousel tile ───────────────────────────────────────────────────────── */
+.mj-tile {
+  width: 240px;
+  height: 240px;
+  flex-shrink: 0;
+  overflow: hidden;
+  cursor: zoom-in;
+  position: relative;
+  z-index: 0;
+  /* 20% overlap: each tile slides 48px under the next */
+  margin-right: -48px;
+}
+.mj-tile:hover { z-index: 10; }
+/* Base transition — JS overrides to 'fast follow' on move, 'slow spring' on leave */
+.mj-tile { transition: transform 0.15s ease-out; }
+
+/* Subtle depth shadow on the left edge of each tile (simulates overlap depth) */
+.mj-tile::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0;
+  width: 24px; height: 100%;
+  background: linear-gradient(to right, rgba(0,0,0,0.14), transparent);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.mj-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none; /* let tile receive all mouse events */
+}
+
+/* ── See all bar — sticky to bottom of section ───────────────────────────── */
+.mj-see-all-bar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  padding: 14px 32px;
+  background: var(--paper-cool);
+  border-top: 1px solid var(--border);
+  z-index: 5;
+}
+
+.mj-see-all-btn {
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border-crimson);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--crimson);
+  padding-bottom: 2px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  transition: opacity 0.2s ease;
+}
+.mj-see-all-btn:hover { opacity: 0.6; }
+
+/* ── Full gallery modal ──────────────────────────────────────────────────── */
+.mj-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--paper-cool);
+  overflow-y: auto;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.mj-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mj-modal-header {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 32px;
+  background: var(--paper-cool);
+  z-index: 10;
+  border-bottom: 1px solid var(--border);
+}
+
+.mj-modal-title {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--stone);
+  font-weight: 200;
+}
+
+.mj-modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--stone);
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+.mj-modal-close:hover { color: var(--ink); }
+
+.mj-modal-body {
+  padding: 24px 32px 60px;
+}
+
+/* Grid inside modal — justified flex, same language as cosmos grid */
+.mj-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: clamp(8px, 2vw, 20px);
+}
+
+.mj-modal-grid .mj-item {
+  aspect-ratio: 1;
+  overflow: hidden;
+  cursor: zoom-in;
+  opacity: 1;
+  transform: none;
+}
+
+.mj-modal-grid .mj-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.45s var(--transition-enter);
+}
+.mj-modal-grid .mj-item:hover img { transform: scale(1.04); }
 
 /* ── Header ──────────────────────────────────────────────────────────────── */
 .cosmos-header {
@@ -20,12 +337,9 @@
 }
 
 .cosmos-collection-label {
+  /* base: .label-meta in style.css */
   display: block;
-  font-size: var(--text-xs);
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--stone);
-  font-weight: 200;
+  letter-spacing: 0.25em; /* slightly wider than base 0.2em */
   margin-bottom: 8px;
 }
 
@@ -46,7 +360,7 @@
   text-transform: uppercase;
   color: var(--crimson);
   text-decoration: none;
-  border-bottom: 1px solid rgba(127, 31, 18, 0.3);
+  border-bottom: 1px solid var(--border-crimson);
   padding-bottom: 1px;
   transition: opacity 0.2s ease;
   white-space: nowrap;
@@ -58,7 +372,7 @@
 .cosmos-gallery-wrapper {
   display: flex;
   align-items: stretch;
-  gap: 40px;
+  gap: clamp(16px, 3vw, 40px);
   padding: 0 4px 4px;
 }
 
@@ -111,8 +425,8 @@
 /* ── Masonry grid ────────────────────────────────────────────────────────── */
 .cosmos-grid {
   flex: 1;
-  columns: 3;
-  column-gap: 40px;
+  columns: 4;
+  column-gap: clamp(12px, 2vw, 28px);
   padding: 0;
 }
 
@@ -120,7 +434,7 @@
 /* ── Grid item ───────────────────────────────────────────────────────────── */
 .cosmos-item {
   break-inside: avoid;
-  margin-bottom: 40px;
+  margin-bottom: clamp(16px, 3vw, 40px);
   overflow: hidden;
   position: relative;
   cursor: zoom-in;
@@ -141,7 +455,7 @@
   width: 100%;
   height: auto;
   display: block;
-  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+  transition: transform 0.5s var(--transition-enter),
               opacity  0.3s ease;
 }
 
@@ -149,6 +463,33 @@
   transform: scale(1.025);
   opacity: 0.88;
 }
+
+/* ── Cosmos see-all bar ──────────────────────────────────────────────────── */
+.cosmos-see-all-bar {
+  display: flex;
+  justify-content: center;
+  padding: 24px 32px;
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+}
+
+.cosmos-see-all-btn {
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border-crimson);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--crimson);
+  padding-bottom: 2px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  transition: opacity 0.2s ease;
+}
+.cosmos-see-all-btn:hover { opacity: 0.6; }
 
 /* ── Footer ──────────────────────────────────────────────────────────────── */
 .cosmos-footer {
@@ -171,93 +512,36 @@
   text-transform: uppercase;
   color: var(--crimson);
   text-decoration: none;
-  border-bottom: 1px solid rgba(127, 31, 18, 0.3);
+  border-bottom: 1px solid var(--border-crimson);
   padding-bottom: 1px;
   transition: opacity 0.2s ease;
 }
 .cosmos-view-all:hover { opacity: 0.6; }
 
 /* ── Lightbox ────────────────────────────────────────────────────────────── */
+/* Base overlay, close btn, inner, image, and caption styles live in style.css */
 .lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 9990;
-  background: rgba(26, 22, 20, 0.92);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: 24px;
-
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
 }
-
-.lightbox.open {
-  opacity: 1;
-  pointer-events: all;
-}
-
+/* cosmos/instagram image: drop shadow + slightly different initial scale */
 .lightbox-img {
   max-width: 90vw;
   max-height: 90vh;
-  object-fit: contain;
-  display: block;
   box-shadow: 0 24px 80px rgba(0,0,0,0.5);
-
   transform: scale(0.96);
-  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform 0.3s var(--transition-enter);
 }
-
 .lightbox.open .lightbox-img {
   transform: scale(1);
 }
-
+/* cosmos/instagram close button uses a lighter initial colour */
 .lightbox-close {
-  position: absolute;
-  top: 20px;
-  right: 24px;
-  background: none;
-  border: none;
-  color: rgba(255, 250, 244, 0.7);
+  color: var(--paper-faint);
   font-size: 22px;
-  cursor: pointer;
-  padding: 8px;
-  line-height: 1;
-  transition: color 0.2s ease;
-  font-family: var(--font-body);
 }
-.lightbox-close:hover { color: var(--paper); }
-
-/* Caption inside Instagram (and cosmos) lightbox */
+/* ig-lb-inner uses a slightly tighter gap than the shared 24px */
 .ig-lb-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   gap: 20px;
-  max-width: 90vw;
-  max-height: 90vh;
-}
-.ig-lb-inner .lightbox-img {
-  max-height: 78vh;
-}
-.ig-lb-caption {
-  font-family: var(--font-display);
-  font-size: clamp(0.8rem, 1.4vw, 1rem);
-  font-weight: 300;
-  font-style: italic;
-  color: rgba(255, 250, 244, 0.55);
-  text-align: center;
-  max-width: 480px;
-  margin: 0;
-  line-height: 1.5;
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 0.4s ease 0.15s, transform 0.4s ease 0.15s;
-}
-.lightbox.open .ig-lb-caption {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 /* ── Responsive — mirrors Cosmos padding scale ───────────────────────────── */
@@ -278,38 +562,86 @@
 /* 1280px — more columns, minimal side padding */
 @media (min-width: 1280px) {
   .cosmos-header { padding: 40px 12px 24px; }
-  .cosmos-grid   { columns: 6; }
+  .cosmos-grid   { columns: 7; }
   .cosmos-footer { padding: 24px 12px 52px; }
 }
 
-/* Mobile — hide sidebar, 2-col grid */
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
-  .cosmos-page            { padding-top: 78px; }
+  /* ── Page shell ── */
+  .cosmos-page            { padding-top: 72px; }
   .cosmos-palette-section { display: none; }
+  .cosmos-divider         { margin: 0 var(--page-gutter); }
 
+  /* ── Style description ── */
+  .style-desc { padding: 24px var(--page-gutter) 32px; }
+
+  /* ── Midjourney header ── */
+  .mj-header {
+    padding: 24px var(--page-gutter) 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  /* ── Sidebar → horizontal filter strip ── */
+  .mj-body    { flex-direction: column; }
+  .mj-filters { flex-direction: row; flex-wrap: wrap; gap: 12px 20px; padding: 0 var(--page-gutter) 16px; }
+  .mj-filter  { min-height: 36px; }
+
+  /* ── Carousel ── */
+  .mj-carousel-clip {
+    padding-left: var(--page-gutter);
+  }
+  .mj-carousel-clip::after {
+    width: 20%; /* slightly tighter on mobile */
+  }
+  .mj-tile         { width: 140px; height: 140px; margin-right: -28px; }
+  .mj-tile::before { width: 16px; }
+
+  /* ── Modal ── */
+  .mj-modal-header { padding: 16px var(--page-gutter); }
+  .mj-modal-body   {
+    padding: 16px var(--page-gutter);
+    padding-bottom: max(40px, env(safe-area-inset-bottom, 40px));
+  }
+  .mj-modal-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 6px; }
+  .mj-modal-close { min-width: 44px; min-height: 44px; }
+
+  /* ── Cosmos header ── */
   .cosmos-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
-    padding: 20px 32px 32px;
+    padding: 20px var(--page-gutter) 24px;
   }
-
+  .cosmos-external-link {
+    align-self: flex-start;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
   .cosmos-title { font-size: clamp(1.4rem, 6vw, 2rem); }
 
-  .cosmos-grid {
-    columns: 2;
-    column-gap: 40px;
-  }
+  /* ── Cosmos gallery ── */
+  .cosmos-gallery-wrapper { padding: 0 var(--page-gutter) 4px; }
+  .cosmos-grid    { columns: 2; column-gap: clamp(8px, 2vw, 16px); }
+  .cosmos-item    { margin-bottom: clamp(8px, 2vw, 16px); }
 
+  /* ── Footer ── */
   .cosmos-footer {
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
-    padding: 32px 32px 36px;
+    gap: 10px;
+    padding: 24px var(--page-gutter) 32px;
   }
 
-  .lightbox-img {
-    max-width: 96vw;
-    max-height: 80vh;
+  /* Make footer links tap-friendly */
+  .cosmos-view-all {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
   }
+
 }
+/* Mobile lightbox overrides for cosmos/instagram handled by style.css */

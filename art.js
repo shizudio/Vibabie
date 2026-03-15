@@ -1,21 +1,33 @@
-// ── Artwork data ──────────────────────────────────────────────────────────
-import cosmosData from './cosmos-data.json'
+import { initLightbox } from './lightbox.js'
 
-const ARTWORKS = cosmosData.elements.map(el => ({
-  src: el.url,
-  title: '',
-  meta: '',
-  aspect: `${el.width}/${el.height}`,
-}))
+// ── Artwork data — loaded from art-manifest.json ───────────────────────────
+// Run `node sync-art.js` after adding new files to Art/ to update the manifest.
+const manifestResp = await fetch('art-manifest.json')
+const ARTWORKS = (await manifestResp.json()).map(a => ({ ...a, aspect: 'auto' }))
 
-// ── Constants ──────────────────────────────────────────────────────────────
-const CARD_HEIGHT_VH = 52     // active card height as % of viewport height
-const SPREAD        = 190     // horizontal spread per step (px)
-const ROTATE_STEP   = 5       // degrees of tilt per step
-const SCALE_STEP    = 0.08    // scale reduction per step
-const OPACITY_STEP  = 0.18    // opacity reduction per step
-const DRAG_THRESH   = 70      // px of accumulated drag to advance
-const COOLDOWN_MS   = 480     // ms between advances
+// ── Mobile detection ───────────────────────────────────────────────────────
+// Checks are run once at load; resize listener updates if orientation changes.
+function isMobile() { return window.innerWidth <= 767 }
+
+// ── Constants (responsive) ─────────────────────────────────────────────────
+// On mobile: smaller cards (36vh) so they stay within the viewport,
+//            tighter spread (clamp to 42% of viewport width) so side cards
+//            don't bleed off-screen on 375px devices.
+function getConstants() {
+  const mobile = isMobile()
+  return {
+    CARD_HEIGHT_VH: mobile ? 36  : 52,     // vh
+    SPREAD:         mobile ? Math.min(120, window.innerWidth * 0.30) : 190,  // px
+    ROTATE_STEP:    mobile ? 4   : 5,      // deg
+    SCALE_STEP:     mobile ? 0.10 : 0.08,  // per step
+    OPACITY_STEP:   mobile ? 0.22 : 0.18,  // per step
+    DRAG_THRESH:    mobile ? 50  : 70,     // px (easier swipe on touch)
+    COOLDOWN_MS:    480,
+  }
+}
+
+let { CARD_HEIGHT_VH, SPREAD, ROTATE_STEP, SCALE_STEP,
+      OPACITY_STEP, DRAG_THRESH, COOLDOWN_MS } = getConstants()
 
 // ── State ──────────────────────────────────────────────────────────────────
 let activeIndex   = 0
@@ -54,6 +66,22 @@ const cards = ARTWORKS.map((art, i) => {
   stage.appendChild(card)
   return card
 })
+
+// ── Resize: recalculate mobile constants + update card heights ──────────────
+// Debounced so it doesn't fire on every pixel during a drag-resize.
+let _resizeTimer
+window.addEventListener('resize', () => {
+  clearTimeout(_resizeTimer)
+  _resizeTimer = setTimeout(() => {
+    ;({ CARD_HEIGHT_VH, SPREAD, ROTATE_STEP, SCALE_STEP,
+        OPACITY_STEP, DRAG_THRESH, COOLDOWN_MS } = getConstants())
+    cards.forEach(card => {
+      const img = card.querySelector('img')
+      if (img) img.style.height = `${CARD_HEIGHT_VH}vh`
+    })
+    layoutCards()
+  }, 120)
+}, { passive: true })
 
 // ── Layout ─────────────────────────────────────────────────────────────────
 function layoutCards() {
@@ -173,24 +201,7 @@ document.addEventListener('keydown', e => {
 })
 
 // ── Lightbox ───────────────────────────────────────────────────────────────
-function openLightbox(src, caption) {
-  lbImg.src = src
-  lbCaption.textContent = caption
-  lightbox.classList.add('open')
-  lightbox.setAttribute('aria-hidden', 'false')
-  document.body.style.overflow = 'hidden'
-}
-
-function closeLightbox() {
-  lightbox.classList.remove('open')
-  lightbox.setAttribute('aria-hidden', 'true')
-  document.body.style.overflow = ''
-  setTimeout(() => { lbImg.src = '' }, 350)
-}
-
-lbClose.addEventListener('click', closeLightbox)
-lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox() })
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox() })
+const { open: openLightbox, close: closeLightbox } = initLightbox(lightbox, lbImg, lbCaption, lbClose)
 
 // ── Card click — open lightbox if active, navigate if not ─────────────────
 cards.forEach((card, i) => {
@@ -200,7 +211,7 @@ cards.forEach((card, i) => {
     if (offset === 0) {
       const art = ARTWORKS[i]
       const pad = n => String(n).padStart(2, '0')
-      const caption = art.title || `${pad(i + 1)} / ${pad(ARTWORKS.length)}`
+      const caption = art.description || art.title || `${pad(i + 1)} / ${pad(ARTWORKS.length)}`
       openLightbox(card.querySelector('img').src, caption)
     } else {
       navigate(Math.sign(offset))
@@ -209,7 +220,7 @@ cards.forEach((card, i) => {
 })
 
 // ── Header fade-up ─────────────────────────────────────────────────────────
-document.querySelectorAll('.fade-up').forEach(el => {
+document.querySelectorAll('.reveal').forEach(el => {
   requestAnimationFrame(() => el.classList.add('visible'))
 })
 

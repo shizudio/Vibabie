@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://cdn.cosmos.so" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400&family=EB+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Noto+Serif+JP:wght@200;300;400&family=Titillium+Web:wght@300;400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="cosmos.css">
 </head>
@@ -28,10 +28,46 @@
 
   <main class="cosmos-page">
 
+    <!-- ── Style description ─────────────────────────────────────────────── -->
+    <section class="style-desc fade-up">
+      <span class="cosmos-collection-label">Style</span>
+      <span class="cosmos-subtitle">Manifested Style Prompt</span>
+      <p class="page-h1-sub">
+        <span class="imagine-cmd">/imagine</span>
+        muted grounds erupting into saturated colour, handmade mark-making, quiet tension,
+        botanical, East Asian editorial, imperfect surfaces, film grain, oil pastel on canvas,
+        diffuse window light, wabi-sabi, the moment a photograph tips from document into feeling
+      </p>
+    </section>
+
+    <div class="cosmos-divider"></div>
+
+    <!-- ── Midjourney moodboards ──────────────────────────────────────────── -->
+    <section class="mj-section" id="mj-section">
+      <header class="mj-header fade-up">
+        <div class="cosmos-meta">
+          <span class="cosmos-collection-label">Generated · Midjourney</span>
+          <h2 class="cosmos-title">Style in motion</h2>
+          <p class="mj-desc">Each colour world is a set of prompts run through Midjourney — testing how the style prompt above translates into generated imagery.</p>
+        </div>
+      </header>
+      <div class="mj-body">
+        <div class="mj-filters" id="mj-filters"></div>
+        <div class="mj-carousel-col">
+          <div class="mj-carousel-clip">
+            <div class="mj-carousel" id="mj-carousel"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="cosmos-divider"></div>
+
+    <!-- ── Cosmos inspiration grid ───────────────────────────────────────── -->
     <header class="cosmos-header fade-up">
       <div class="cosmos-meta">
-        <span class="cosmos-collection-label">The French Press — Curated on Cosmos</span>
-        <h1 class="cosmos-title" id="cosmos-title">Personal aesthetics</h1>
+        <span class="cosmos-collection-label">Personal aesthetics - Curated on Cosmos</span>
+        <h1 class="cosmos-title" id="cosmos-title"> The french Press </h1>
       </div>
       <a
         href="https://www.cosmos.so/shizudio/personal-aesthetics"
@@ -65,5 +101,6 @@
 
   <script type="module" src="script.js"></script>
   <script type="module" src="cosmos.js"></script>
+  <script type="module" src="midjourney.js"></script>
 </body>
 </html>

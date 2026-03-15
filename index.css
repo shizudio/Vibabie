@@ -85,7 +85,7 @@
    .tooltip {
      position: fixed;
      pointer-events: none;
-     z-index: 9998;
+     z-index: var(--z-tooltip);
      opacity: 0;
      transition: opacity 0.25s ease;
    }
@@ -95,7 +95,7 @@
      background: var(--paper);
      border: 1px solid var(--border);
      padding: 18px 22px;
-     box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+     box-shadow: var(--shadow-md);
      min-width: 180px;
    }
    .tooltip-label {
@@ -126,7 +126,7 @@
      color: var(--crimson);
      text-decoration: none;
      padding-bottom: 2px;
-     border-bottom: 1px solid rgba(127,31,18,0.3);
+     border-bottom: 1px solid var(--border-crimson);
      transition: all 0.2s;
    }
    .tooltip-link:hover {
@@ -140,14 +140,10 @@
    }
 
    /* ── MOBILE RESPONSIVE ── */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     html, body {
       overflow: auto;
       overflow-x: hidden;
-    }
-
-    .site-header, nav {
-      padding: 16px 20px;
     }
 
     .stage {
@@ -155,8 +151,8 @@
       min-height: 100dvh;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 56px 8px 40px;
+      justify-content: flex-start;
+      padding: 68px 0 32px;
     }
 
     .frame-mount {
@@ -167,17 +163,6 @@
     .room-image {
       width: 100% !important;
       height: auto !important;
-    }
-
-    .room-image img {
-      width: 100% !important;
-      height: auto !important;
-    }
-
-    .room-image img {
-      width: 100%;
-      height: auto;
-      display: block;
     }
 
     .zone {
@@ -201,53 +186,59 @@
     }
 
     .footer-hint {
-      font-size: 0.5rem;
+      font-size: var(--text-xs);
     }
 
     .cursor {
       display: none;
     }
 
-    /* Grid buttons: 4 top row, 3 bottom row centered */
+    /*
+      Grid: 4 columns so 8 items = 2 rows of 4.
+      Each item spans 1 column, giving equal sizing and natural centering.
+    */
     .mobile-links {
       display: grid;
-      grid-template-columns: repeat(8, 1fr);
-      gap: 10px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
       width: 100%;
-      padding: 20px 12px 40px;
+      padding: 16px var(--page-gutter, 20px) 40px;
     }
 
     .mobile-link {
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: 6px;
-      padding: 12px 4px;
+      /* min-height ensures the ≥44px touch target */
+      min-height: 76px;
+      padding: 10px 4px;
       background: rgba(255,255,255,0.6);
       text-decoration: none;
       transition: background 0.2s;
       border-radius: 8px;
-      grid-column: span 2;
     }
 
     .mobile-link:active {
       background: rgba(127, 31, 18, 0.05);
     }
 
-.mobile-link-emoji {
-      font-size: 1.4rem;
+    .mobile-link-emoji {
+      font-size: clamp(1.2rem, 4vw, 1.5rem);
+      line-height: 1;
     }
 
     .mobile-link-text {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 1px;
+      gap: 2px;
     }
 
     .mobile-link-label {
       font-family: var(--font-display);
-      font-size: 0.72rem;
+      font-size: clamp(0.62rem, 2.5vw, 0.78rem);
       font-weight: 400;
       font-style: italic;
       color: var(--ink);
@@ -256,8 +247,8 @@
     }
 
     .mobile-link-desc {
-      font-size: 0.48rem;
-      letter-spacing: 0.1em;
+      font-size: clamp(0.44rem, 1.8vw, 0.55rem);
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--stone);
       font-weight: 200;

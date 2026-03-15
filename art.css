@@ -7,6 +7,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  min-height: 100dvh; /* use dvh for mobile to exclude browser chrome */
   padding-top: 64px;
   background: var(--paper);
   overflow: hidden;
@@ -21,25 +22,8 @@
   flex-shrink: 0;
 }
 
-.page-label {
-  display: block;
-  font-size: var(--text-xs);
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--stone);
-  font-weight: 200;
-  margin-bottom: 8px;
-}
-
-.page-h1 {
-  font-family: var(--font-display);
-  font-size: var(--text-xl);
-  font-weight: 300;
-  font-style: italic;
-  color: var(--ink);
-  letter-spacing: -0.01em;
-  line-height: 1.1;
-}
+.art-page .page-label { margin-bottom: var(--space-sm); }
+.art-page .page-h1    { font-size: var(--text-xl); letter-spacing: -0.01em; }
 
 .art-hint {
   font-size: var(--text-xs);
@@ -60,7 +44,8 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  min-height: 0;
+  /* explicit min-height so the stage takes real vertical space */
+  min-height: clamp(260px, 52vh, 520px);
   cursor: none; /* handled by custom cursor */
 }
 
@@ -82,12 +67,10 @@
 .art-card img {
   display: block;
   object-fit: cover;
-  box-shadow:
-    0 4px 16px rgba(26, 22, 20, 0.12),
-    0 16px 48px rgba(26, 22, 20, 0.10);
+  box-shadow: var(--shadow-card);
   pointer-events: none;
   -webkit-user-drag: none;
-  border-radius: 1px;
+  border-radius: var(--radius-sm);
   /* height set via inline style per card */
 }
 
@@ -145,89 +128,42 @@
   padding-bottom: 2px;
 }
 
-/* ── Fade-up entry ───────────────────────────────────────────────────────── */
-.fade-up {
+.art-ig-link {
+  font-size: var(--text-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--stone);
+  font-weight: 200;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  align-self: flex-end;
+  padding-bottom: 2px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.art-ig-link:hover {
+  color: var(--crimson);
+  border-color: var(--crimson);
+}
+
+/* ── Reveal entry ────────────────────────────────────────────────────────── */
+.reveal {
   opacity: 0;
   transform: translateY(14px);
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
-.fade-up.visible {
+.reveal.visible {
   opacity: 1;
   transform: translateY(0);
 }
 
 /* ── Lightbox ────────────────────────────────────────────────────────────── */
+/* Base overlay, close btn, inner, image, and caption styles live in style.css */
 .art-lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 9990;
-  background: rgba(26, 22, 20, 0.94);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: 32px 24px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.35s ease;
 }
-.art-lightbox.open {
-  opacity: 1;
-  pointer-events: all;
-}
-.art-lb-close {
-  position: absolute;
-  top: 20px;
-  right: 24px;
-  background: none;
-  border: none;
-  color: rgba(255, 250, 244, 0.5);
-  font-size: 20px;
-  cursor: pointer;
-  padding: 8px;
-  line-height: 1;
-  font-family: var(--font-body);
-  transition: color 0.2s;
-}
-.art-lb-close:hover { color: var(--paper); }
-
-.art-lb-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  max-width: 90vw;
-  max-height: 90vh;
-}
-.art-lb-img {
-  max-width: 100%;
-  max-height: 78vh;
-  object-fit: contain;
-  display: block;
-  transform: scale(0.97);
-  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-.art-lightbox.open .art-lb-img {
-  transform: scale(1);
-}
+/* Art caption — tighter letter-spacing tweak (font set globally via --font-description) */
 .art-lb-caption {
-  font-family: var(--font-display);
-  font-size: clamp(0.85rem, 1.5vw, 1.05rem);
-  font-weight: 300;
-  font-style: italic;
-  color: rgba(255, 250, 244, 0.5);
   letter-spacing: 0.08em;
-  text-align: center;
-  line-height: 1.5;
-  max-width: 480px;
-  margin: 0;
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 0.4s ease 0.15s, transform 0.4s ease 0.15s;
-}
-.art-lb-caption:empty { display: none; }
-.art-lightbox.open .art-lb-caption {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 /* ── Mobile ──────────────────────────────────────────────────────────────── */
@@ -238,12 +174,46 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
-    padding: 16px 24px 12px;
+    padding: 16px 20px 12px;
   }
 
   .art-hint { display: none; }
 
+  /*
+    Stage: constrained height on mobile so cards don't overflow.
+    JS reads a CSS custom property --card-height-vh to scale cards down.
+    On mobile we reduce it to 36vh so the full card stays in viewport
+    even with the spread offset.
+  */
+  .art-stage {
+    /* CSS variable read by art.js for CARD_HEIGHT_VH on mobile */
+    --card-height-mobile-vh: 36;
+    min-height: clamp(220px, 40vh, 380px);
+    cursor: auto;
+  }
+
   .art-footer {
-    padding: 14px 24px 24px;
+    padding: 12px 20px 20px;
+    /* stack label and counter vertically on very narrow screens */
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .art-label {
+    flex: 1;
+    min-width: 0; /* allow text truncation */
+  }
+
+  .art-label-title {
+    font-size: clamp(0.9rem, 4vw, 1.1rem);
+    /* prevent long titles from overflowing */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* art-specific: slightly taller max-height than the shared 65vh default */
+  .art-lb-img {
+    max-height: 72vh;
   }
 }

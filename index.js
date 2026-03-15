@@ -36,7 +36,7 @@ const counter = setInterval(() => {
 
 // ── FIT IMAGE TO SCREEN ───────────────────
 function fitRoom() {
-  const isMobile = window.matchMedia('(max-width: 768px)').matches
+  const isMobile = window.matchMedia('(max-width: 767px)').matches
   const img = document.getElementById('room-img')
   const roomImage = document.getElementById('room-image')
 
@@ -84,7 +84,7 @@ mobileLinks.forEach(link => {
 
 // Track which zone was last tapped (for tap-again-to-navigate)
 let lastTappedZone = null
-const isMobile = () => window.matchMedia('(max-width: 768px)').matches
+const isMobile = () => window.matchMedia('(max-width: 767px)').matches
 
 document.querySelectorAll('.zone').forEach(zone => {
   // Desktop: hover + click

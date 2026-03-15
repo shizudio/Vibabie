@@ -3,16 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  
   "scripts": {
-      "dev": "vite",
-      "build": "vite build",
-      "preview": "vite preview",
-      "prebuild": "node fetch-cosmos.js && node fetch-instagram.js",
-      "fetch-cosmos": "node fetch-cosmos.js",
-      "fetch-instagram": "node fetch-instagram.js"
-   },
-  
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prebuild": "node fetch-cosmos.js && node fetch-instagram.js",
+    "fetch-cosmos": "node fetch-cosmos.js",
+    "fetch-instagram": "node fetch-instagram.js",
+    "sync-midjourney": "node sync-midjourney.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://shizudio@github.com/shizudio/Vibabie.git"
@@ -20,12 +19,16 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/shizudio/Vibabie/issues"
   },
   "homepage": "https://github.com/shizudio/Vibabie#readme",
   "devDependencies": {
+    "sharp": "^0.34.5",
     "vite": "^7.3.1"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0"
   }
 }
