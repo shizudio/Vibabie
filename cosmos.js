@@ -101,7 +101,6 @@ function renderItem(el, i) {
   item.style.animationDelay = `${i * 0.045}s`
 
   const img = document.createElement('img')
-  img.crossOrigin = 'anonymous'
   img.src      = el.url
   img.alt      = ''
   img.loading  = i < 6 ? 'eager' : 'lazy'
@@ -113,7 +112,9 @@ function renderItem(el, i) {
   }
 
   if (!cachedPalette) {
-    img.addEventListener('load', () => addToGlobalPalette(extractColors(img)))
+    img.addEventListener('load', () => {
+      try { addToGlobalPalette(extractColors(img)) } catch (_) { /* tainted canvas — skip */ }
+    })
   }
 
   item.appendChild(img)
