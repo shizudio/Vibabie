@@ -596,8 +596,8 @@
   .mj-carousel-clip::after {
     width: 20%; /* slightly tighter on mobile */
   }
-  .mj-tile         { width: 140px; height: 140px; margin-right: -28px; }
-  .mj-tile::before { width: 16px; }
+  .mj-tile         { width: 280px; height: 280px; margin-right: -56px; }
+  .mj-tile::before { width: 28px; }
 
   /* ── Modal ── */
   .mj-modal-header { padding: 16px var(--page-gutter); }
