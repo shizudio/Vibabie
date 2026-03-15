@@ -14,7 +14,7 @@
  * existing cosmos-data.json is preserved as a fallback.
  */
 
-const { writeFileSync, readFileSync, existsSync } = require('fs')
+import { writeFileSync, readFileSync, existsSync } from 'fs'
 
 const COSMOS_URL  = 'https://www.cosmos.so/shizudio/personal-aesthetics'
 const GRAPHQL_URL = 'https://api.cosmos.so/graphql'

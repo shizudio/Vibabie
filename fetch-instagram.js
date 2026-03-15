@@ -31,11 +31,11 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-const { writeFileSync, readFileSync, existsSync, mkdirSync } = require('fs')
-const https  = require('https')
-const http   = require('http')
-const path   = require('path')
-const url    = require('url')
+import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs'
+import https from 'https'
+import http  from 'http'
+import path  from 'path'
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 const OUT_FILE    = './instagram-data.json'
 const MEDIA_DIR   = './instagram'
