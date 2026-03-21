@@ -103,8 +103,7 @@ document.querySelectorAll('.zone').forEach(zone => {
   // Desktop: hover + click
   zone.addEventListener('mouseenter', () => {
     if (isMobile()) return
-    cursor.className = 'cursor emoji-cursor'
-    cursor.textContent = zone.dataset.emoji
+    window.cursorMorphTo(zone.dataset.emoji)
     ttLabel.textContent = zone.dataset.label
     ttDesc.textContent = zone.dataset.desc
     ttLink.textContent = zone.dataset.linkText
@@ -115,8 +114,7 @@ document.querySelectorAll('.zone').forEach(zone => {
 
   zone.addEventListener('mouseleave', () => {
     if (isMobile()) return
-    cursor.className = 'cursor default-cursor'
-    cursor.textContent = '♥'
+    window.cursorMorphBack()
     tooltip.classList.remove('visible')
   })
 

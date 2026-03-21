@@ -9,7 +9,38 @@ initRouter()
 
 // ── CUSTOM CURSOR (used on all pages) ────
 const cursor = document.getElementById('cursor')
-cursor.innerHTML = '♥'
+cursor.innerHTML = '<span class="cursor-inner">♥</span>'
+const cursorInner = cursor.querySelector('.cursor-inner')
+
+/**
+ * Smooth morph: heart grows into circle, text swaps mid-transition.
+ * Single element — CSS transitions handle the size/background morph.
+ */
+let morphTimer = null
+
+window.cursorMorphTo = function(emoji) {
+  if (cursor.classList.contains('emoji-cursor') && cursorInner.textContent === emoji) return
+  clearTimeout(morphTimer)
+
+  // Start the circle grow immediately
+  cursor.className = 'cursor emoji-cursor'
+  // Swap text slightly after circle begins growing
+  morphTimer = setTimeout(() => {
+    cursorInner.textContent = emoji
+  }, 100)
+}
+
+window.cursorMorphBack = function() {
+  if (cursor.classList.contains('default-cursor')) return
+  clearTimeout(morphTimer)
+
+  // Shrink circle back to heart size
+  cursor.className = 'cursor default-cursor'
+  // Swap text back mid-shrink
+  morphTimer = setTimeout(() => {
+    cursorInner.textContent = '♥'
+  }, 100)
+}
 
 // ── ADAPTIVE CURSOR COLOUR ────────────────
 // Samples the image pixel under the cursor and picks the

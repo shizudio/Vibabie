@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 200" width="40" height="200">
+  <defs>
+    <!-- Brushed metal gradient for pivot knob -->
+    <radialGradient id="knobGrad" cx="50%" cy="45%" r="50%">
+      <stop offset="0%" stop-color="#e8e8e8"/>
+      <stop offset="30%" stop-color="#d0d0d0"/>
+      <stop offset="60%" stop-color="#b8b8b8"/>
+      <stop offset="85%" stop-color="#a0a0a0"/>
+      <stop offset="100%" stop-color="#888"/>
+    </radialGradient>
+
+    <!-- Inner knob ring highlight -->
+    <radialGradient id="knobInnerGrad" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#f0f0f0"/>
+      <stop offset="40%" stop-color="#ddd"/>
+      <stop offset="100%" stop-color="#aaa"/>
+    </radialGradient>
+
+    <!-- Knob top cap -->
+    <radialGradient id="knobCapGrad" cx="45%" cy="35%" r="55%">
+      <stop offset="0%" stop-color="#d8d8d8"/>
+      <stop offset="50%" stop-color="#b0b0b0"/>
+      <stop offset="100%" stop-color="#909090"/>
+    </radialGradient>
+
+    <!-- Arm tube metallic gradient (left-right sheen) -->
+    <linearGradient id="armGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#999"/>
+      <stop offset="15%" stop-color="#bbb"/>
+      <stop offset="35%" stop-color="#ddd"/>
+      <stop offset="50%" stop-color="#eee"/>
+      <stop offset="65%" stop-color="#ddd"/>
+      <stop offset="85%" stop-color="#bbb"/>
+      <stop offset="100%" stop-color="#999"/>
+    </linearGradient>
+
+    <!-- Arm tube highlight -->
+    <linearGradient id="armHighlight" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0)" />
+      <stop offset="40%" stop-color="rgba(255,255,255,0.35)" />
+      <stop offset="50%" stop-color="rgba(255,255,255,0.5)" />
+      <stop offset="60%" stop-color="rgba(255,255,255,0.35)" />
+      <stop offset="100%" stop-color="rgba(255,255,255,0)" />
+    </linearGradient>
+
+    <!-- Headshell gradient -->
+    <linearGradient id="headshellGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#a0a0a0"/>
+      <stop offset="20%" stop-color="#c8c8c8"/>
+      <stop offset="50%" stop-color="#d8d8d8"/>
+      <stop offset="80%" stop-color="#c0c0c0"/>
+      <stop offset="100%" stop-color="#989898"/>
+    </linearGradient>
+
+    <!-- Headshell top face gradient -->
+    <linearGradient id="headshellTopGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#d0d0d0"/>
+      <stop offset="100%" stop-color="#b0b0b0"/>
+    </linearGradient>
+
+    <!-- Cartridge body gradient -->
+    <linearGradient id="cartridgeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#888"/>
+      <stop offset="25%" stop-color="#aaa"/>
+      <stop offset="50%" stop-color="#bbb"/>
+      <stop offset="75%" stop-color="#aaa"/>
+      <stop offset="100%" stop-color="#888"/>
+    </linearGradient>
+
+    <!-- Elbow joint gradient -->
+    <radialGradient id="elbowGrad" cx="50%" cy="45%" r="50%">
+      <stop offset="0%" stop-color="#ddd"/>
+      <stop offset="60%" stop-color="#bbb"/>
+      <stop offset="100%" stop-color="#999"/>
+    </radialGradient>
+
+    <!-- Shadow filter -->
+    <filter id="shadow" x="-20%" y="-5%" width="140%" height="115%">
+      <feDropShadow dx="1" dy="1" stdDeviation="0.8" flood-color="#00000030"/>
+    </filter>
+
+    <!-- Subtle arm shadow -->
+    <filter id="armShadow" x="-10%" y="-5%" width="125%" height="112%">
+      <feDropShadow dx="0.5" dy="0.5" stdDeviation="0.5" flood-color="#00000020"/>
+    </filter>
+  </defs>
+
+  <!-- ==================== PIVOT KNOB (top) ==================== -->
+  <!-- Knob base / outer ring -->
+  <ellipse cx="20" cy="16" rx="14" ry="14" fill="url(#knobGrad)" filter="url(#shadow)"/>
+  <!-- Knob outer bevel ring -->
+  <ellipse cx="20" cy="16" rx="13" ry="13" fill="none" stroke="#999" stroke-width="0.6"/>
+  <!-- Knob inner ring groove -->
+  <ellipse cx="20" cy="16" rx="9.5" ry="9.5" fill="url(#knobInnerGrad)" stroke="#a0a0a0" stroke-width="0.5"/>
+  <!-- Knob top cap (raised center) -->
+  <ellipse cx="20" cy="15.5" rx="6.5" ry="6.5" fill="url(#knobCapGrad)"/>
+  <!-- Knob cap highlight arc -->
+  <path d="M 15 13.5 Q 20 10.5 25 13.5" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="0.7" stroke-linecap="round"/>
+  <!-- Knob center dimple -->
+  <circle cx="20" cy="15" r="1.5" fill="#a0a0a0" stroke="#909090" stroke-width="0.3"/>
+  <circle cx="19.7" cy="14.6" r="0.5" fill="rgba(255,255,255,0.4)"/>
+
+  <!-- ==================== PIVOT-TO-ARM CONNECTOR ==================== -->
+  <!-- Small collar connecting knob to arm -->
+  <rect x="16.5" y="28" width="7" height="5" rx="1.5" fill="url(#armGrad)" filter="url(#armShadow)"/>
+  <rect x="17" y="28.5" width="6" height="4" rx="1" fill="url(#armHighlight)" opacity="0.5"/>
+
+  <!-- ==================== MAIN ARM BAR (upper section) ==================== -->
+  <!-- Slightly tapered tube -->
+  <path d="M 17 33 L 16.5 95 L 23.5 95 L 23 33 Z" fill="url(#armGrad)" filter="url(#armShadow)"/>
+  <!-- Arm highlight stripe -->
+  <path d="M 19 33 L 18.8 95 L 21.2 95 L 21 33 Z" fill="url(#armHighlight)" opacity="0.6"/>
+  <!-- Arm edge lines -->
+  <line x1="17" y1="33" x2="16.5" y2="95" stroke="#999" stroke-width="0.3"/>
+  <line x1="23" y1="33" x2="23.5" y2="95" stroke="#999" stroke-width="0.3"/>
+
+  <!-- ==================== ELBOW / BEND JOINT ==================== -->
+  <!-- Elbow bulge -->
+  <ellipse cx="20" cy="98" rx="5.5" ry="4" fill="url(#elbowGrad)" filter="url(#armShadow)"/>
+  <ellipse cx="20" cy="97.5" rx="4" ry="2.8" fill="url(#armHighlight)" opacity="0.4"/>
+  <!-- Joint ring -->
+  <ellipse cx="20" cy="98" rx="5.5" ry="4" fill="none" stroke="#a0a0a0" stroke-width="0.4"/>
+
+  <!-- ==================== LOWER ARM (elbow to headshell) ==================== -->
+  <!-- Slightly narrower tube -->
+  <path d="M 17 101 L 16.8 140 L 23.2 140 L 23 101 Z" fill="url(#armGrad)" filter="url(#armShadow)"/>
+  <!-- Highlight -->
+  <path d="M 19.2 101 L 19 140 L 21 140 L 20.8 101 Z" fill="url(#armHighlight)" opacity="0.5"/>
+  <!-- Edge lines -->
+  <line x1="17" y1="101" x2="16.8" y2="140" stroke="#999" stroke-width="0.3"/>
+  <line x1="23" y1="101" x2="23.2" y2="140" stroke="#999" stroke-width="0.3"/>
+
+  <!-- ==================== HEADSHELL ==================== -->
+  <!-- Headshell body (wider rectangular piece) -->
+  <rect x="13" y="140" width="14" height="22" rx="1.5" fill="url(#headshellGrad)" filter="url(#shadow)"/>
+  <!-- Headshell top face bevel -->
+  <rect x="14" y="141" width="12" height="20" rx="1" fill="url(#headshellTopGrad)" opacity="0.5"/>
+  <!-- Headshell edge highlight -->
+  <line x1="14.5" y1="141.5" x2="14.5" y2="160.5" stroke="rgba(255,255,255,0.35)" stroke-width="0.5"/>
+  <!-- Headshell mounting screws -->
+  <circle cx="16" cy="144" r="0.8" fill="#909090" stroke="#808080" stroke-width="0.3"/>
+  <circle cx="24" cy="144" r="0.8" fill="#909090" stroke="#808080" stroke-width="0.3"/>
+  <!-- Headshell finger lift tab -->
+  <path d="M 12 142 L 10.5 145 L 12 148" fill="none" stroke="#b0b0b0" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- ==================== CARTRIDGE ==================== -->
+  <!-- Cartridge body -->
+  <rect x="15" y="152" width="10" height="12" rx="0.8" fill="url(#cartridgeGrad)" stroke="#808080" stroke-width="0.4"/>
+  <!-- Cartridge label area -->
+  <rect x="16.5" y="153.5" width="7" height="4" rx="0.4" fill="#777" opacity="0.5"/>
+  <!-- Cartridge detail lines -->
+  <line x1="16" y1="159" x2="24" y2="159" stroke="#777" stroke-width="0.3"/>
+  <line x1="16" y1="160.5" x2="24" y2="160.5" stroke="#777" stroke-width="0.3"/>
+
+  <!-- ==================== STYLUS / NEEDLE ==================== -->
+  <!-- Stylus cantilever (angled thin line) -->
+  <line x1="20" y1="164" x2="20" y2="185" stroke="#888" stroke-width="1.2" stroke-linecap="round"/>
+  <!-- Cantilever taper -->
+  <line x1="20" y1="164" x2="20" y2="185" stroke="url(#armHighlight)" stroke-width="0.6" opacity="0.6"/>
+  <!-- Stylus housing -->
+  <rect x="18" y="163.5" width="4" height="3" rx="0.5" fill="#777" stroke="#666" stroke-width="0.3"/>
+  <!-- Needle tip (diamond) -->
+  <path d="M 20 185 L 18.8 188 L 20 193 L 21.2 188 Z" fill="#666" stroke="#555" stroke-width="0.3"/>
+  <!-- Needle tip highlight -->
+  <path d="M 20 186 L 19.4 188 L 20 191" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.4"/>
+  <!-- Very tip point -->
+  <circle cx="20" cy="193.5" r="0.6" fill="#555"/>
+  <!-- Tiny sparkle on needle tip -->
+  <circle cx="19.8" cy="192.8" r="0.3" fill="rgba(255,255,255,0.5)"/>
+</svg>

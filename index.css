@@ -152,7 +152,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding: 68px 0 32px;
+      padding: 90px 0 32px;
     }
 
     .frame-mount {
@@ -198,11 +198,12 @@
       Each item spans 1 column, giving equal sizing and natural centering.
     */
     .mobile-links {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: 8px;
       width: 100%;
-      padding: 16px var(--page-gutter, 20px) 40px;
+      padding: 20px var(--page-gutter, 20px) 40px;
     }
 
     .mobile-link {
@@ -211,8 +212,8 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      /* min-height ensures the ≥44px touch target */
       min-height: 76px;
+      width: calc(25% - 8px);
       padding: 10px 4px;
       background: rgba(255,255,255,0.6);
       text-decoration: none;

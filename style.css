@@ -170,19 +170,49 @@ body {
   pointer-events: none;
   z-index: 9999;
   transform: translate(-50%, -50%);
-  transition: opacity 0.2s;
   color: var(--crimson);
   font-size: 22px;
+}
 
+/* Single element that morphs from heart → circle with emoji */
+.cursor-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: transparent;
+  transition: width 0.28s cubic-bezier(0.25, 1, 0.5, 1),
+              height 0.28s cubic-bezier(0.25, 1, 0.5, 1),
+              background 0.28s ease,
+              font-size 0.28s ease,
+              filter 0.28s ease,
+              color 0.2s ease;
+  line-height: 1;
+  filter: none;
+}
+
+/* Default: small heart, no background */
+.cursor.default-cursor .cursor-inner {
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  font-size: 22px;
 }
 
 .cursor.default-cursor::after {
   content: none;
 }
 
-.cursor.emoji-cursor {
-  font-size: 30px;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+/* Emoji: circle grows, background appears, emoji sized down */
+.cursor.emoji-cursor .cursor-inner {
+  width: 44px;
+  height: 44px;
+  background: var(--paper);
+  font-size: 20px;
+  filter: drop-shadow(0 2px 8px rgba(127, 31, 18, 0.35));
+  color: inherit;
 }
 
 /* ── LOADER ── */
@@ -612,8 +642,8 @@ nav {
   right: var(--page-gutter);
   z-index: 100;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
+  gap: 6px;
 }
 
 .vinyl-widget .vinyl-container {
@@ -629,140 +659,216 @@ nav {
     0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
-/* ── Widget dropdown menu ────────────────────────────────────────────────── */
-.vinyl-widget-menu {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  right: 0;
-  background: var(--paper);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
-  min-width: 260px;
-  padding: 8px 0;
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(6px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-.vinyl-widget.menu-open .vinyl-widget-menu {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
-}
-
-.vinyl-widget-menu-item {
+/* ── Widget player group (now-playing + disc + tonearm) ──────────────────── */
+.vinyl-widget-player {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
-  cursor: pointer;
-  transition: background 0.15s ease;
-  text-decoration: none;
-  color: inherit;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-  font-family: var(--font-serif);
+  align-items: flex-end;
+  gap: 10px;
 }
 
-.vinyl-widget-menu-item:hover {
-  background: var(--crimson-bg);
-}
-
-.vinyl-widget-menu-item img {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-sm);
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.vinyl-widget-menu-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.vinyl-widget-menu-name {
-  display: block;
-  font-size: var(--text-base);
-  color: var(--ink);
+/* ── Now playing info (left of disc) ─────────────────────────────────────── */
+.vinyl-widget-now-playing {
+  text-align: right;
   white-space: nowrap;
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  pointer-events: none;
+  padding-bottom: 6px;
+}
+
+.vinyl-widget.playing-active .vinyl-widget-now-playing {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.vinyl-widget-track-name {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: var(--text-sm);
+  color: var(--ink);
+  max-width: 160px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.vinyl-widget-menu-artist {
+.vinyl-widget-track-artist {
   display: block;
   font-family: var(--font-description);
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
+  color: var(--stone);
+  font-weight: 300;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Chevron button (left of disc) ───────────────────────────────────────── */
+.vinyl-widget-chevron {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  color: var(--stone);
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.5;
+  transition: opacity 0.2s ease, transform 0.3s ease;
+  margin-bottom: 38px;
+}
+
+.vinyl-widget-chevron:hover {
+  opacity: 1;
+}
+
+.vinyl-widget.menu-open .vinyl-widget-chevron {
+  transform: rotate(180deg);
+}
+
+.vinyl-widget-chevron svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Sleeve stack (vinyl record sleeves fanning out left) ─────────────────── */
+.vinyl-widget-sleeves {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.vinyl-widget.menu-open .vinyl-widget-sleeves {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.vinyl-sleeve {
+  width: 80px;
+  height: 80px;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  font-family: inherit;
+  /* stagger animation */
+  transform: translateX(calc(var(--sleeve-i, 0) * 20px + 40px));
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.2s ease;
+  transition-delay: calc(var(--sleeve-i, 0) * 0.04s);
+}
+
+.vinyl-widget.menu-open .vinyl-sleeve {
+  transform: translateX(0);
+}
+
+.vinyl-sleeve:hover {
+  box-shadow: var(--shadow-md);
+  z-index: 2;
+}
+
+.vinyl-sleeve + .vinyl-sleeve {
+  margin-left: -4px;
+}
+
+.vinyl-sleeve-art {
+  width: 100%;
+  height: 54px;
+  object-fit: cover;
+  display: block;
+}
+
+.vinyl-sleeve-info {
+  padding: 3px 5px;
+  flex: 1;
+  min-width: 0;
+}
+
+.vinyl-sleeve-name {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 9px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.vinyl-sleeve-artist {
+  display: block;
+  font-family: var(--font-description);
+  font-size: 8px;
   color: var(--stone);
   font-weight: 300;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.2;
 }
 
-.vinyl-widget-menu-divider {
-  height: 1px;
-  background: var(--border);
-  margin: 4px 0;
-}
-
-.vinyl-widget-menu-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--crimson);
-  text-decoration: none;
-  min-height: 40px;
-  transition: background 0.15s ease;
-}
-
-.vinyl-widget-menu-link:hover {
-  background: var(--crimson-bg);
-}
-
-/* ── Menu toggle button (♪ badge above disc) ─────────────────────────────── */
-.vinyl-widget-toggle {
-  order: -1;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: none;
-  background: var(--crimson);
-  color: white;
-  font-size: 13px;
-  line-height: 1;
-  cursor: pointer;
+/* The Record link sleeve */
+.vinyl-sleeve-link {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 6px;
-  transition: transform 0.2s ease, opacity 0.2s ease;
-  animation: widget-pulse 2s ease-in-out infinite;
-  box-shadow: 0 2px 8px rgba(127, 31, 18, 0.35);
+  text-decoration: none;
+  background: var(--ink);
 }
 
-.vinyl-widget-toggle:hover {
-  transform: scale(1.15);
+.vinyl-sleeve-link-label {
+  font-family: var(--font-body);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper);
+  text-align: center;
+  padding: 4px;
 }
 
-.vinyl-widget.menu-open .vinyl-widget-toggle {
-  animation: none;
-  opacity: 0.8;
+/* ── Widget tonearm (SVG image) ──────────────────────────────────────────── */
+.vinyl-widget-tonearm {
+  position: absolute;
+  top: -30px;
+  right: -20px;
+  width: 18px;
+  height: 90px;
+  /* Pivot near the knob (top of SVG) */
+  transform-origin: 9px 8px;
+  /* Resting: -90deg from playing position */
+  transform: rotate(-40deg);
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 3;
+  cursor: pointer;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 
-@keyframes widget-pulse {
-  0%, 100% { transform: scale(1); }
-  50%      { transform: scale(1.1); }
+.vinyl-widget-tonearm .tonearm-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.vinyl-widget-tonearm:hover {
+  filter: drop-shadow(0 2px 6px rgba(127, 31, 18, 0.4));
+}
+
+.vinyl-widget-tonearm:hover {
+  cursor: none;
+}
+
+/* Playing: swing needle onto disc outer edge (~45deg diagonal) */
+.vinyl-container.playing .vinyl-widget-tonearm {
+  transform: rotate(45deg);
 }
 
 /* Hidden Spotify embed container for widget playback */
@@ -788,7 +894,25 @@ nav {
     --vinyl-spindle: 5px;
   }
 
-  .vinyl-widget-menu {
-    min-width: 240px;
+  .vinyl-widget-tonearm {
+    width: 14px;
+    height: 70px;
+    top: -24px;
+    right: -5px;
+    transform-origin: 7px 6px;
+  }
+
+  .vinyl-widget-now-playing {
+    display: none;
+  }
+
+  .vinyl-widget-chevron {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 26px;
+  }
+
+  .vinyl-widget-sleeves {
+    display: none;
   }
 }

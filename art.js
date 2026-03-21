@@ -172,11 +172,13 @@ stage.addEventListener('mousemove', e => {
   if (cursor.classList.contains('emoji-cursor')) return
   const midX = stage.getBoundingClientRect().left + stage.offsetWidth / 2
   const sym  = e.clientX < midX ? '←' : '→'
-  if (cursor.textContent !== sym) cursor.textContent = sym
+  const inner = cursor.querySelector('.cursor-inner')
+  if (inner && inner.textContent !== sym) inner.textContent = sym
 })
 
 stage.addEventListener('mouseleave', () => {
-  if (!cursor.classList.contains('emoji-cursor')) cursor.textContent = '♥'
+  const inner = cursor.querySelector('.cursor-inner')
+  if (!cursor.classList.contains('emoji-cursor') && inner) inner.textContent = '♥'
 })
 
 // ── Touch swipe ────────────────────────────────────────────────────────────

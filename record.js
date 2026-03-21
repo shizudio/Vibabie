@@ -29,7 +29,16 @@ const PAUSE_SVG = '<svg viewBox="0 0 24 24" fill="white"><rect x="5" y="3" width
 const PLAYLIST_ID = '7nJm9hIEEOYdvgNgNxmMVt'
 let spotifyController = null
 let isPlaying = false
+
+// Check if user was playing a track in the widget — start from that track
 let currentTrackIndex = 0
+try {
+  const prev = JSON.parse(sessionStorage.getItem('vinyl-playing'))
+  if (prev?.name) {
+    const idx = data.tracks.findIndex(t => t.name === prev.name)
+    if (idx >= 0) currentTrackIndex = idx
+  }
+} catch {}
 
 function setPlayState(playing) {
   isPlaying = playing
@@ -77,6 +86,16 @@ function togglePlay() {
 if (vinylDisc) vinylDisc.addEventListener('click', togglePlay)
 if (tonearm) tonearm.addEventListener('click', togglePlay)
 
+// Emoji cursor on tonearm hover
+if (tonearm) {
+  tonearm.addEventListener('mouseenter', () => {
+    if (window.cursorMorphTo) window.cursorMorphTo('💿')
+  })
+  tonearm.addEventListener('mouseleave', () => {
+    if (window.cursorMorphBack) window.cursorMorphBack()
+  })
+}
+
 // Prev/Next buttons
 document.getElementById('record-prev')?.addEventListener('click', () => {
   if (data.tracks.length === 0) return
@@ -95,8 +114,14 @@ window.__spotifyReady.then((IFrameAPI) => {
   const el = document.createElement('div')
   embedContainer.appendChild(el)
 
+  // Load the last-played track if coming from widget, otherwise full playlist
+  const initialTrack = data.tracks[currentTrackIndex]
+  const initialUri = initialTrack?.spotifyId
+    ? `spotify:track:${initialTrack.spotifyId}`
+    : `spotify:playlist:${PLAYLIST_ID}`
+
   IFrameAPI.createController(el, {
-    uri: `spotify:playlist:${PLAYLIST_ID}`,
+    uri: initialUri,
     width: '100%',
     height: 152,
     theme: 0
@@ -109,6 +134,17 @@ window.__spotifyReady.then((IFrameAPI) => {
         if (idx !== -1) updateActiveTrack(idx)
       }
     })
+
+    // Auto-play: if user was playing in widget, continue on record page
+    try {
+      const prev = JSON.parse(sessionStorage.getItem('vinyl-playing'))
+      if (prev && !prev.paused) {
+        setTimeout(() => {
+          controller.play()
+          setPlayState(true)
+        }, 500)
+      }
+    } catch {}
   })
 })
 
@@ -119,9 +155,10 @@ function formatDuration(ms) {
   return `${mins}:${secs.toString().padStart(2, '0')}`
 }
 
-// ── Set initial vinyl label image ───────────────────────────────────────────
+// ── Set initial vinyl label image + active track ────────────────────────────
 if (data.tracks.length > 0 && vinylLabelImg) {
-  vinylLabelImg.src = data.tracks[0].albumArt
+  vinylLabelImg.src = data.tracks[currentTrackIndex].albumArt
+  updateActiveTrack(currentTrackIndex)
 }
 
 // ── Last updated ────────────────────────────────────────────────────────────
