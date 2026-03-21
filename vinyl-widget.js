@@ -95,6 +95,7 @@ const widget = document.createElement('div')
 widget.className = 'vinyl-widget'
 widget.id = 'vinyl-widget'
 widget.innerHTML = `
+  <div class="vinyl-widget-backdrop" id="widget-backdrop"></div>
   <div class="vinyl-widget-sleeves" id="widget-sleeves">
     ${sleeveItemsHTML}
     <a href="/record.html" class="vinyl-sleeve vinyl-sleeve-link" style="--sleeve-i: ${menuTracks.length}">
@@ -102,13 +103,9 @@ widget.innerHTML = `
     </a>
   </div>
   <div class="vinyl-widget-player">
-    <div class="vinyl-widget-now-playing" id="widget-now-playing">
-      <span class="vinyl-widget-track-name" id="widget-track-name">${defaultTrack?.name || ''}</span>
-      <span class="vinyl-widget-track-artist" id="widget-track-artist">${defaultTrack?.artist || ''}</span>
-    </div>
     <button class="vinyl-widget-chevron" id="widget-chevron" aria-label="Browse tracks">
-      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <polyline points="13,8 7,10 13,12" />
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <polygon points="16,4 8,12 16,20" />
       </svg>
     </button>
     <div class="vinyl-container">
@@ -202,10 +199,17 @@ chevron.addEventListener('click', (e) => {
   widget.classList.toggle('menu-open')
 })
 
+// Backdrop closes bottom sheet on mobile
+document.getElementById('widget-backdrop')?.addEventListener('click', () => {
+  widget.classList.remove('menu-open')
+})
+
 // Auto-collapse with delay
 let closeTimer = null
 
 widget.addEventListener('mouseleave', () => {
+  // Skip auto-close on mobile (touch devices use backdrop to close)
+  if (window.innerWidth <= 767) return
   closeTimer = setTimeout(() => {
     widget.classList.remove('menu-open')
   }, 600)
@@ -218,6 +222,65 @@ widget.addEventListener('mouseenter', () => {
   }
 })
 
+// Adaptive chevron color — samples background behind the arrow
+function updateChevronColor() {
+  const chevron = document.getElementById('widget-chevron')
+  if (!chevron) return
+  const rect = chevron.getBoundingClientRect()
+  const x = Math.round(rect.left + rect.width / 2)
+  const y = Math.round(rect.top + rect.height / 2)
+
+  // Temporarily hide entire widget to sample page content behind
+  widget.style.visibility = 'hidden'
+  const el = document.elementFromPoint(x, y)
+  widget.style.visibility = ''
+
+  if (!el) return
+
+  // If element is an image, sample its pixel color via canvas
+  if (el.tagName === 'IMG' && el.complete && el.naturalWidth > 0) {
+    try {
+      const imgRect = el.getBoundingClientRect()
+      const imgX = ((x - imgRect.left) / imgRect.width) * el.naturalWidth
+      const imgY = ((y - imgRect.top) / imgRect.height) * el.naturalHeight
+      const canvas = document.createElement('canvas')
+      canvas.width = 1; canvas.height = 1
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(el, imgX, imgY, 1, 1, 0, 0, 1, 1)
+      const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data
+      const brightness = (r * 299 + g * 587 + b * 114) / 1000
+      chevron.style.color = brightness > 140 ? 'var(--crimson)' : '#f5f0eb'
+      return
+    } catch (e) {
+      // CORS or other error — fall through to CSS approach
+    }
+  }
+
+  // Walk up DOM to find first non-transparent CSS background
+  let target = el
+  let r = 245, g = 240, b = 235 // fallback: beige
+  while (target && target !== document.documentElement) {
+    const bg = getComputedStyle(target).backgroundColor
+    const match = bg.match(/\d+/g)
+    if (match && match.length >= 3) {
+      const [cr, cg, cb, ca] = match.map(Number)
+      if (ca !== 0 && !(cr === 0 && cg === 0 && cb === 0 && match.length === 4 && ca === 0)) {
+        r = cr; g = cg; b = cb
+        break
+      }
+    }
+    target = target.parentElement
+  }
+  // Perceived brightness (W3C formula)
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000
+  chevron.style.color = brightness > 140 ? 'var(--crimson)' : '#f5f0eb'
+}
+
+// Run on scroll and resize
+updateChevronColor()
+window.addEventListener('scroll', updateChevronColor, { passive: true })
+window.addEventListener('resize', updateChevronColor, { passive: true })
+
 // Close on outside click
 document.addEventListener('click', (e) => {
   if (!widget.contains(e.target)) {
@@ -225,9 +288,21 @@ document.addEventListener('click', (e) => {
   }
 })
 
-// Sleeve item clicks → play that track
-widget.querySelectorAll('.vinyl-sleeve[data-track-index]').forEach(btn => {
-  btn.addEventListener('click', () => {
+// Sleeve item clicks → expand on mobile first tap, play on second tap or desktop click
+const allSleeves = widget.querySelectorAll('.vinyl-sleeve[data-track-index]')
+allSleeves.forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    const isMobile = window.innerWidth <= 767
+
+    // On mobile: first tap expands, second tap plays
+    if (isMobile && !btn.classList.contains('sleeve-active')) {
+      e.preventDefault()
+      allSleeves.forEach(s => s.classList.remove('sleeve-active'))
+      btn.classList.add('sleeve-active')
+      return
+    }
+
+    // Play the track but keep menu open
     const idx = parseInt(btn.dataset.trackIndex)
     const track = tracks[idx]
     if (spotifyController && track && track.spotifyId) {
@@ -241,8 +316,18 @@ widget.querySelectorAll('.vinyl-sleeve[data-track-index]').forEach(btn => {
       setPlayState(true)
       saveSession({ defaultIdx: idx, playing: true })
     }
-    widget.classList.remove('menu-open')
+    // Highlight active sleeve, keep menu open
+    allSleeves.forEach(s => s.classList.remove('sleeve-active'))
+    btn.classList.add('sleeve-active')
   })
+})
+
+// Close menu when tapping outside the widget
+document.addEventListener('click', (e) => {
+  if (!widget.contains(e.target) && widget.classList.contains('menu-open')) {
+    widget.classList.remove('menu-open')
+    allSleeves.forEach(s => s.classList.remove('sleeve-active'))
+  }
 })
 
 // ── Load Spotify IFrame API ─────────────────────────────────────────────────
