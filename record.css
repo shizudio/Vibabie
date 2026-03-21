@@ -64,14 +64,25 @@
 
 /* ── Player section ──────────────────────────────────────────────────────── */
 .record-player {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 24px;
   max-width: 960px;
   margin: 0 auto;
   padding: var(--space-xl) 32px;
   padding-bottom: 0;
+}
+
+.record-player-inner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 64px;
+}
+
+/* Mobile-only skip buttons row — hidden on desktop */
+.record-skip-mobile {
+  display: none;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 20px;
 }
 
 /* ── Sleeve assembly: disc peeking out of the sleeve ────────────────────── */
@@ -365,25 +376,15 @@
     align-items: center;
   }
 
-  .record-player {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 16px;
-    width: 100%;
+  .record-player-inner .record-skip {
+    display: none;
+  }
+
+  .record-skip-mobile {
+    display: flex;
   }
 
   .record-player .sleeve-assembly {
-    order: 0;
     width: 100%;
-  }
-
-  .record-prev {
-    order: 1;
-    margin-bottom: 0;
-  }
-
-  .record-next {
-    order: 2;
-    margin-bottom: 0;
   }
 }

@@ -63,10 +63,16 @@ function playTrackByIndex(idx) {
   if (!track) return
   currentTrackIndex = idx
 
-  if (spotifyController && track.spotifyId) {
-    // loadUri with individual track URI — this switches the track
-    spotifyController.loadUri(`spotify:track:${track.spotifyId}`)
-    // play() after a short delay to let the embed load
+  if (spotifyController) {
+    if (track.spotifyId) {
+      spotifyController.loadUri(`spotify:track:${track.spotifyId}`)
+    } else {
+      // No track ID — reload playlist embed at correct offset
+      const iframe = embedContainer.querySelector('iframe')
+      if (iframe) {
+        iframe.src = `https://open.spotify.com/embed/playlist/${PLAYLIST_ID}?utm_source=generator&theme=0&startTrack=${idx}&autoplay=1`
+      }
+    }
     setTimeout(() => {
       spotifyController.play()
     }, 300)
@@ -96,18 +102,23 @@ if (tonearm) {
   })
 }
 
-// Prev/Next buttons
-document.getElementById('record-prev')?.addEventListener('click', () => {
+// Prev/Next buttons (desktop + mobile duplicates)
+function handlePrev() {
   if (data.tracks.length === 0) return
   const idx = (currentTrackIndex - 1 + data.tracks.length) % data.tracks.length
   playTrackByIndex(idx)
-})
+}
 
-document.getElementById('record-next')?.addEventListener('click', () => {
+function handleNext() {
   if (data.tracks.length === 0) return
   const idx = (currentTrackIndex + 1) % data.tracks.length
   playTrackByIndex(idx)
-})
+}
+
+document.getElementById('record-prev')?.addEventListener('click', handlePrev)
+document.getElementById('record-next')?.addEventListener('click', handleNext)
+document.getElementById('record-prev-mobile')?.addEventListener('click', handlePrev)
+document.getElementById('record-next-mobile')?.addEventListener('click', handleNext)
 
 // ── Spotify IFrame API init ─────────────────────────────────────────────────
 window.__spotifyReady.then((IFrameAPI) => {

@@ -664,6 +664,7 @@ nav {
   display: flex;
   align-items: flex-end;
   gap: 10px;
+  position: relative;
 }
 
 /* ── Now playing info (left of disc) ─────────────────────────────────────── */
@@ -703,31 +704,40 @@ nav {
   text-overflow: ellipsis;
 }
 
-/* ── Chevron button (left of disc) ───────────────────────────────────────── */
+/* ── Widget sleeve tab (peeks from left of disc) ────────────────────────── */
 .vinyl-widget-chevron {
-  width: 24px;
-  height: 24px;
+  position: absolute;
+  left: -28px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 60px;
   border: none;
-  background: none;
-  color: var(--stone);
+  background: linear-gradient(90deg, #2a2018, #1a1410);
+  border-radius: 4px 0 0 4px;
+  color: var(--paper);
   cursor: pointer;
   padding: 0;
-  opacity: 0.5;
-  transition: opacity 0.2s ease, transform 0.3s ease;
-  margin-bottom: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, background 0.2s ease;
+  z-index: 5;
 }
 
 .vinyl-widget-chevron:hover {
-  opacity: 1;
+  background: linear-gradient(90deg, #3a2e24, #2a2018);
 }
 
-.vinyl-widget.menu-open .vinyl-widget-chevron {
+.vinyl-widget.menu-open .vinyl-widget-chevron svg {
   transform: rotate(180deg);
 }
 
 .vinyl-widget-chevron svg {
-  width: 100%;
-  height: 100%;
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
 }
 
 /* ── Sleeve stack (vinyl record sleeves fanning out left) ─────────────────── */
@@ -907,12 +917,15 @@ nav {
   }
 
   .vinyl-widget-chevron {
-    width: 20px;
-    height: 20px;
-    margin-bottom: 26px;
+    width: 24px;
+    height: 50px;
+    left: -24px;
   }
 
   .vinyl-widget-sleeves {
-    display: none;
+    right: auto;
+    left: -24px;
+    bottom: 0;
+    flex-direction: column-reverse;
   }
 }

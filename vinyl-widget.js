@@ -101,16 +101,16 @@ widget.innerHTML = `
       <span class="vinyl-sleeve-link-label">The Record ↗</span>
     </a>
   </div>
-  <button class="vinyl-widget-chevron" id="widget-chevron" aria-label="Browse tracks">
-    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-      <polyline points="13,8 7,10 13,12" />
-    </svg>
-  </button>
   <div class="vinyl-widget-player">
     <div class="vinyl-widget-now-playing" id="widget-now-playing">
       <span class="vinyl-widget-track-name" id="widget-track-name">${defaultTrack?.name || ''}</span>
       <span class="vinyl-widget-track-artist" id="widget-track-artist">${defaultTrack?.artist || ''}</span>
     </div>
+    <button class="vinyl-widget-chevron" id="widget-chevron" aria-label="Browse tracks">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <polyline points="13,8 7,10 13,12" />
+      </svg>
+    </button>
     <div class="vinyl-container">
       <div class="vinyl-disc" id="widget-disc">
         <div class="vinyl-label">

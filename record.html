@@ -33,30 +33,40 @@
 
     <!-- ── Player: vinyl + embed + controls ───────────────────────────────── -->
     <section class="record-player fade-up">
-      <button class="record-skip record-prev" id="record-prev" aria-label="Previous track">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6" /></svg>
-      </button>
-      <div class="sleeve-assembly">
-        <div class="vinyl-container">
-          <div class="vinyl-disc" id="vinyl-disc">
-            <div class="vinyl-label">
-              <img class="vinyl-label-img" id="vinyl-label-img" src="" alt="Album art" />
+      <div class="record-player-inner">
+        <button class="record-skip record-prev" id="record-prev" aria-label="Previous track">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6" /></svg>
+        </button>
+        <div class="sleeve-assembly">
+          <div class="vinyl-container">
+            <div class="vinyl-disc" id="vinyl-disc">
+              <div class="vinyl-label">
+                <img class="vinyl-label-img" id="vinyl-label-img" src="" alt="Album art" />
+              </div>
+              <div class="vinyl-play-icon" id="vinyl-play-icon">
+                <svg viewBox="0 0 24 24" fill="white"><polygon points="6,3 20,12 6,21" /></svg>
+              </div>
             </div>
-            <div class="vinyl-play-icon" id="vinyl-play-icon">
-              <svg viewBox="0 0 24 24" fill="white"><polygon points="6,3 20,12 6,21" /></svg>
+            <div class="vinyl-tonearm">
+              <img class="tonearm-img" src="/vinyl/tonearm.svg" alt="Tonearm" />
             </div>
           </div>
-          <div class="vinyl-tonearm">
-            <img class="tonearm-img" src="/vinyl/tonearm.svg" alt="Tonearm" />
+          <div class="record-sleeve" id="embed-container">
+            <!-- Spotify embed = the sleeve -->
           </div>
         </div>
-        <div class="record-sleeve" id="embed-container">
-          <!-- Spotify embed = the sleeve -->
-        </div>
+        <button class="record-skip record-next" id="record-next" aria-label="Next track">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,6 15,12 9,18" /></svg>
+        </button>
       </div>
-      <button class="record-skip record-next" id="record-next" aria-label="Next track">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,6 15,12 9,18" /></svg>
-      </button>
+      <div class="record-skip-mobile">
+        <button class="record-skip" id="record-prev-mobile" aria-label="Previous track">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6" /></svg>
+        </button>
+        <button class="record-skip" id="record-next-mobile" aria-label="Next track">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,6 15,12 9,18" /></svg>
+        </button>
+      </div>
     </section>
 
     <div class="record-divider"></div>
