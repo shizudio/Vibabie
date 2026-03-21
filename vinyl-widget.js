@@ -80,8 +80,9 @@ function saveSession(updates = {}) {
 }
 
 // ── Build sleeve items HTML (vinyl sleeves — square album slips) ─────────────
+const sleeveAngles = [-8, -3, 4, 10] // organic tilt per sleeve
 const sleeveItemsHTML = menuTracks.map((t, i) => `
-  <button class="vinyl-sleeve" data-track-index="${t._idx}" style="--sleeve-i: ${i}">
+  <button class="vinyl-sleeve" data-track-index="${t._idx}" style="--sleeve-i: ${i}; --sleeve-angle: ${sleeveAngles[i] || 0}deg">
     <img class="vinyl-sleeve-art" src="${t.albumArt || t.albumArtSmall}" alt="" />
     <div class="vinyl-sleeve-info">
       <span class="vinyl-sleeve-name">${t.name}</span>
@@ -98,7 +99,7 @@ widget.innerHTML = `
   <div class="vinyl-widget-backdrop" id="widget-backdrop"></div>
   <div class="vinyl-widget-sleeves" id="widget-sleeves">
     ${sleeveItemsHTML}
-    <a href="/record.html" class="vinyl-sleeve vinyl-sleeve-link" style="--sleeve-i: ${menuTracks.length}">
+    <a href="/record.html" class="vinyl-sleeve vinyl-sleeve-link" style="--sleeve-i: ${menuTracks.length}; --sleeve-angle: ${sleeveAngles[menuTracks.length] || 10}deg">
       <span class="vinyl-sleeve-link-label">The Record ↗</span>
     </a>
   </div>
@@ -204,23 +205,7 @@ document.getElementById('widget-backdrop')?.addEventListener('click', () => {
   widget.classList.remove('menu-open')
 })
 
-// Auto-collapse with delay
-let closeTimer = null
-
-widget.addEventListener('mouseleave', () => {
-  // Skip auto-close on mobile (touch devices use backdrop to close)
-  if (window.innerWidth <= 767) return
-  closeTimer = setTimeout(() => {
-    widget.classList.remove('menu-open')
-  }, 600)
-})
-
-widget.addEventListener('mouseenter', () => {
-  if (closeTimer) {
-    clearTimeout(closeTimer)
-    closeTimer = null
-  }
-})
+// No auto-collapse — sleeves are at the bottom of screen, close via backdrop or outside click
 
 // Adaptive chevron color — samples background behind the arrow
 function updateChevronColor() {
@@ -288,21 +273,19 @@ document.addEventListener('click', (e) => {
   }
 })
 
-// Sleeve item clicks → expand on mobile first tap, play on second tap or desktop click
+// Sleeve item clicks → first click lifts sleeve, second click plays
 const allSleeves = widget.querySelectorAll('.vinyl-sleeve[data-track-index]')
 allSleeves.forEach(btn => {
   btn.addEventListener('click', (e) => {
-    const isMobile = window.innerWidth <= 767
-
-    // On mobile: first tap expands, second tap plays
-    if (isMobile && !btn.classList.contains('sleeve-active')) {
+    // First click: lift/expand the sleeve
+    if (!btn.classList.contains('sleeve-active')) {
       e.preventDefault()
       allSleeves.forEach(s => s.classList.remove('sleeve-active'))
       btn.classList.add('sleeve-active')
       return
     }
 
-    // Play the track but keep menu open
+    // Second click: play the track, retract sleeves
     const idx = parseInt(btn.dataset.trackIndex)
     const track = tracks[idx]
     if (spotifyController && track && track.spotifyId) {
@@ -316,13 +299,12 @@ allSleeves.forEach(btn => {
       setPlayState(true)
       saveSession({ defaultIdx: idx, playing: true })
     }
-    // Highlight active sleeve, keep menu open
     allSleeves.forEach(s => s.classList.remove('sleeve-active'))
-    btn.classList.add('sleeve-active')
+    widget.classList.remove('menu-open')
   })
 })
 
-// Close menu when tapping outside the widget
+// Close menu + retract sleeves when clicking outside
 document.addEventListener('click', (e) => {
   if (!widget.contains(e.target) && widget.classList.contains('menu-open')) {
     widget.classList.remove('menu-open')
