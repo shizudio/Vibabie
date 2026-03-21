@@ -65,33 +65,50 @@
 /* ── Player section ──────────────────────────────────────────────────────── */
 .record-player {
   display: flex;
-  gap: var(--space-xl);
-  align-items: center;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 24px;
   max-width: 960px;
   margin: 0 auto;
   padding: var(--space-xl) 32px;
+  padding-bottom: 0;
 }
 
-/* Record page vinyl overrides (tonearm space) */
+/* ── Sleeve assembly: disc peeking out of the sleeve ────────────────────── */
+.sleeve-assembly {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 400px;
+}
+
+/* Disc sits above the sleeve, peeking 3/4 out */
 .record-player .vinyl-container {
-  flex: 0 0 280px;
+  position: relative;
+  z-index: 2;
+  margin-bottom: -70px;
   padding-top: 20px;
   padding-right: 20px;
 }
 
-/* ── Now playing display ─────────────────────────────────────────────────── */
-.embed-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 0;
+/* ── Record sleeve (Spotify embed) ───────────────────────────────────────── */
+.record-sleeve {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  background: linear-gradient(180deg, #2a2018 0%, #1a1410 100%);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  overflow: hidden;
 }
 
-.embed-container iframe {
+.record-sleeve iframe {
   width: 100%;
-  max-width: 360px;
-  border-radius: var(--radius-md);
+  border-radius: calc(var(--radius-md) - 4px);
 }
 
 /* ── Tonearm (record page — SVG image) ─────────────────────────────────── */
@@ -128,14 +145,7 @@
 }
 
 /* ── Prev/Next controls ──────────────────────────────────────────────────── */
-.record-controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-md);
-  max-width: 1060px;
-  margin: 0 auto;
-}
+/* (record-controls removed — buttons now inside record-player) */
 
 .record-skip {
   flex-shrink: 0;
@@ -150,6 +160,7 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  margin-bottom: 60px;
 }
 
 .record-skip:hover {
@@ -306,16 +317,18 @@
   }
 
   .record-player {
-    flex-direction: column;
-    align-items: center;
     padding: var(--space-lg) var(--page-gutter);
-    gap: var(--space-lg);
+  }
+
+  .sleeve-assembly {
+    width: 100%;
+    max-width: 320px;
   }
 
   .record-player .vinyl-container {
-    flex: none;
     --vinyl-size: 200px;
     --vinyl-label-size: 64px;
+    margin-bottom: -50px;
   }
 
   .vinyl-tonearm {
@@ -352,13 +365,14 @@
     align-items: center;
   }
 
-  .record-controls {
+  .record-player {
     flex-wrap: wrap;
     justify-content: center;
-    padding: 0 var(--page-gutter);
+    gap: 16px;
+    width: 100%;
   }
 
-  .record-player {
+  .record-player .record-sleeve {
     order: 0;
     width: 100%;
   }

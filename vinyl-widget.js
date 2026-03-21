@@ -22,7 +22,16 @@ const data = await fetch('/spotify-data.json')
 const tracks = data?.tracks ?? []
 
 // ── Session cache: keep same playlist + playback state across pages ────────
+// Clear cache on manual refresh of index page so playlist re-randomizes
 const SESSION_KEY = 'vinyl-widget-session'
+const isIndexPage = location.pathname === '/' || location.pathname === '/index.html'
+const navEntries = performance.getEntriesByType('navigation')
+const isReload = navEntries.length > 0 ? navEntries[0].type === 'reload' : performance.navigation?.type === 1
+if (isIndexPage && isReload) {
+  sessionStorage.removeItem(SESSION_KEY)
+  sessionStorage.removeItem('vinyl-playing')
+}
+
 let session = null
 try { session = JSON.parse(sessionStorage.getItem(SESSION_KEY)) } catch {}
 
