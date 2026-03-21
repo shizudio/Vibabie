@@ -372,16 +372,18 @@
     width: 100%;
   }
 
-  .record-player .record-sleeve {
+  .record-player .sleeve-assembly {
     order: 0;
     width: 100%;
   }
 
   .record-prev {
     order: 1;
+    margin-bottom: 0;
   }
 
   .record-next {
     order: 2;
+    margin-bottom: 0;
   }
 }
