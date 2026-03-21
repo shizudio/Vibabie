@@ -9,30 +9,43 @@ const loaderVideo = document.getElementById('loader-video')
 const stage = document.getElementById('stage')
 const hangingString = document.getElementById('hanging-string')
 
-// Start video immediately
-if (loaderVideo) {
-  loaderVideo.play().catch(() => {}) // silent catch for browsers that block autoplay
-}
-
-let count = 0
-const counter = setInterval(() => {
-  count += 10
-  loaderNum.textContent = count
-  if (count === 100) {
-    clearInterval(counter)
-    setTimeout(() => {
-      loader.classList.add('hidden')
-      stage.classList.add('visible')
-      hangingString.classList.add('visible')
-
-      // Stagger entrance animations after loader
-      const header = document.getElementById('site-header')
-      const footer = document.getElementById('site-footer')
-      if (header) { header.style.animationDelay = '0s'; header.classList.add('fade-up') }
-      if (footer) { footer.style.animationDelay = '0.3s'; footer.classList.add('fade-up') }
-    }, 800)
+// Skip loader when returning from a subpage
+const skipLoader = sessionStorage.getItem('skip-loader')
+if (skipLoader) {
+  sessionStorage.removeItem('skip-loader')
+  if (loader) loader.classList.add('hidden')
+  if (stage) stage.classList.add('visible')
+  if (hangingString) hangingString.classList.add('visible')
+  const header = document.getElementById('site-header')
+  const footer = document.getElementById('site-footer')
+  if (header) { header.classList.add('fade-up'); header.style.animationDelay = '0s' }
+  if (footer) { footer.classList.add('fade-up'); footer.style.animationDelay = '0s' }
+} else {
+  // Start video immediately
+  if (loaderVideo) {
+    loaderVideo.play().catch(() => {}) // silent catch for browsers that block autoplay
   }
-}, 100)
+
+  let count = 0
+  const counter = setInterval(() => {
+    count += 10
+    loaderNum.textContent = count
+    if (count === 100) {
+      clearInterval(counter)
+      setTimeout(() => {
+        loader.classList.add('hidden')
+        stage.classList.add('visible')
+        hangingString.classList.add('visible')
+
+        // Stagger entrance animations after loader
+        const header = document.getElementById('site-header')
+        const footer = document.getElementById('site-footer')
+        if (header) { header.style.animationDelay = '0s'; header.classList.add('fade-up') }
+        if (footer) { footer.style.animationDelay = '0.3s'; footer.classList.add('fade-up') }
+      }, 800)
+    }
+  }, 100)
+}
 
 // ── FIT IMAGE TO SCREEN ───────────────────
 function fitRoom() {
@@ -117,7 +130,7 @@ document.querySelectorAll('.zone').forEach(zone => {
         if (zone.dataset.external === 'true') {
           window.open(zone.dataset.href, '_blank')
         } else {
-          window.location.href = zone.dataset.href
+          if (window.__softNavigate) { window.__softNavigate(zone.dataset.href) } else { window.location.href = zone.dataset.href }
         }
         lastTappedZone = null
         return
@@ -139,7 +152,7 @@ document.querySelectorAll('.zone').forEach(zone => {
       if (zone.dataset.external === 'true') {
         window.open(zone.dataset.href, '_blank')
       } else {
-        window.location.href = zone.dataset.href
+        if (window.__softNavigate) { window.__softNavigate(zone.dataset.href) } else { window.location.href = zone.dataset.href }
       }
     }
   })

@@ -1,5 +1,7 @@
 node_modules
 .vercel
+dist
+.claude
 
 # Instagram downloaded images are rebuilt at deploy time
 instagram/

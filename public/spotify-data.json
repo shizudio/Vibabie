@@ -1,0 +1,907 @@
+{
+  "playlistId": "7nJm9hIEEOYdvgNgNxmMVt",
+  "playlistUrl": "https://open.spotify.com/playlist/7nJm9hIEEOYdvgNgNxmMVt",
+  "lastUpdated": "2026-03-21T07:41:33.168Z",
+  "tracks": [
+    {
+      "name": "I miss you, I’m sorry",
+      "artist": "Gracie Abrams",
+      "album": "minor",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e0255c38bc34d1fe852f2657c2e",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d0000485155c38bc34d1fe852f2657c2e",
+      "durationMs": 167538,
+      "spotifyId": "4nyF5lmSziBAt7ESAUjpbx"
+    },
+    {
+      "name": "Cornelia Street",
+      "artist": "Taylor Swift",
+      "album": "Lover",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02e787cffec20aa2a396a61647",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851e787cffec20aa2a396a61647",
+      "durationMs": 287266,
+      "spotifyId": "12M5uqx0ZuwkpLp5rJim1a"
+    },
+    {
+      "name": "From The Start",
+      "artist": "Laufey",
+      "album": "Bewitched",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e0274c732f8aa0e0ccbb3d17d96",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d0000485174c732f8aa0e0ccbb3d17d96",
+      "durationMs": 169573,
+      "spotifyId": "43iIQbw5hx986dUEZbr3eN"
+    },
+    {
+      "name": "happier",
+      "artist": "Olivia Rodrigo",
+      "album": "SOUR",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02a91c10fe9472d9bd89802e5a",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851a91c10fe9472d9bd89802e5a",
+      "durationMs": 175933,
+      "spotifyId": "2tGvwE8GcFKwNdAXMnlbfl"
+    },
+    {
+      "name": "Hurts",
+      "artist": "LANY",
+      "album": "LANY",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e024011de7822423ed7557c3c81",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048514011de7822423ed7557c3c81",
+      "durationMs": 216749,
+      "spotifyId": "2N5AA16n90ZDksRqGID3kM"
+    },
+    {
+      "name": "Promise",
+      "artist": "Laufey",
+      "album": "Bewitched",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e0274c732f8aa0e0ccbb3d17d96",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d0000485174c732f8aa0e0ccbb3d17d96",
+      "durationMs": 234266,
+      "spotifyId": "08PdFBcXzpkn1cWNgmKqhn"
+    },
+    {
+      "name": "Fake",
+      "artist": "Lauv, Conan Gray",
+      "album": "Fake",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02b653ef10e004c8407a51a8af",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851b653ef10e004c8407a51a8af",
+      "durationMs": 146375,
+      "spotifyId": "1oz3gEoNWHAS3pjwThdSJb"
+    },
+    {
+      "name": "fuck, i'm lonely",
+      "artist": "Lauv, Anne-Marie",
+      "album": "~how i'm feeling~",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e022c0e1e9e1fd1e7b132da1606",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048512c0e1e9e1fd1e7b132da1606",
+      "durationMs": 198973,
+      "spotifyId": "2RNsweBBb1a6tAHXQtt2xH"
+    },
+    {
+      "name": "Street by Street",
+      "artist": "Laufey",
+      "album": "Street by Street",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02d25f8e7788dd5bc8a0f5da42",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851d25f8e7788dd5bc8a0f5da42",
+      "durationMs": 224098,
+      "spotifyId": "0OuOPYd05eORfLw94apb8j"
+    },
+    {
+      "name": "Someone New",
+      "artist": "Laufey",
+      "album": "Someone New",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e021bd9b1bac519b6936dd6609f",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048511bd9b1bac519b6936dd6609f",
+      "durationMs": 198000,
+      "spotifyId": "1trLEhC9nDvvj36MfnlwcJ"
+    },
+    {
+      "name": "Dear Soulmate",
+      "artist": "Laufey",
+      "album": "Everything I Know About Love",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e0248341e864d4b4881f56f01b4",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d0000485148341e864d4b4881f56f01b4",
+      "durationMs": 260026,
+      "spotifyId": "2OcTokSU4FnEaIMpNSAh9F"
+    },
+    {
+      "name": "Above The Chinese Restaurant",
+      "artist": "Laufey",
+      "album": "Everything I Know About Love",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e0248341e864d4b4881f56f01b4",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d0000485148341e864d4b4881f56f01b4",
+      "durationMs": 223173,
+      "spotifyId": "4bQaYjJTtUC1tNlZGDwENU"
+    },
+    {
+      "name": "Slow Down",
+      "artist": "Laufey",
+      "album": "Everything I Know About Love",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e0277b9aeb46d46a39699ac4b77",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d0000485177b9aeb46d46a39699ac4b77",
+      "durationMs": 145093,
+      "spotifyId": "4KLZOU5V5XuEkvytSgyW6u"
+    },
+    {
+      "name": "It's OK to Cry",
+      "artist": "Sarcastic Sounds",
+      "album": "It's OK to Cry",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02bd72784101b82c366eaff4f9",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851bd72784101b82c366eaff4f9",
+      "durationMs": 102055,
+      "spotifyId": "5utrtANUaATItHm4Twgp6Z"
+    },
+    {
+      "name": "You're Stuck (feat. Summer Walker)",
+      "artist": "Odeal, Summer Walker",
+      "album": "Lustropolis",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e022b3e686cb6ad311bfb2d0983",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048512b3e686cb6ad311bfb2d0983",
+      "durationMs": 244000,
+      "spotifyId": "4kCfyoPOYHqev60dmNPXzF"
+    },
+    {
+      "name": "Minarai",
+      "artist": "Yoko Kanno",
+      "album": "The Makanai: Cooking for the Maiko House Original Soundtrack",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e029a73fe460532d6223a618dcb",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048519a73fe460532d6223a618dcb",
+      "durationMs": 111278,
+      "spotifyId": "4tnlsRKTlZ9pcFIEO5qNlS"
+    },
+    {
+      "name": "猫",
+      "artist": "DISH//",
+      "album": "Bokutachiga Yarimashita",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02907cbf1595058edba3f61a9a",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851907cbf1595058edba3f61a9a",
+      "durationMs": 276040,
+      "spotifyId": "3NP2nqAgMELIV3MAhrFNMx"
+    },
+    {
+      "name": "Et si tu n'existais pas",
+      "artist": "Joe Dassin",
+      "album": "Joe Dassin",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e029520be730c64292246fc1d78",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048519520be730c64292246fc1d78",
+      "durationMs": 206240,
+      "spotifyId": "1GeszH3DWCOKwK0d8D5gEZ"
+    },
+    {
+      "name": "When You're Smiling (The Whole World Smiles With You) - Digitally Remastered 97",
+      "artist": "Dean Martin",
+      "album": "This Is Dean Martin",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e022f13fcfe011d340e9c69923e",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048512f13fcfe011d340e9c69923e",
+      "durationMs": 183560,
+      "spotifyId": "11tOuFtY7njtSzA5wr07xp"
+    },
+    {
+      "name": "If I Can't Have You",
+      "artist": "Shawn Mendes",
+      "album": "If I Can't Have You",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02625acd26e0e455312667565f",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851625acd26e0e455312667565f",
+      "durationMs": 190800,
+      "spotifyId": "6LsAAHotRLMOHfCsSfYCsz"
+    },
+    {
+      "name": "Cry Me A River",
+      "artist": "Ella Fitzgerald",
+      "album": "Clap Hands, Here Comes Charlie! (Expanded Edition)",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02825b940e911ca8edcfa9b7e4",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851825b940e911ca8edcfa9b7e4",
+      "durationMs": 256866,
+      "spotifyId": "5jkd3e1qgmsTWJm3NvQ7X4"
+    },
+    {
+      "name": "小情歌",
+      "artist": "sodagreen",
+      "album": "小宇宙",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02f455f6b17df809e48fad7379",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851f455f6b17df809e48fad7379",
+      "durationMs": 273573,
+      "spotifyId": "4FhJ7YSRxATHnaRg4nGs6t"
+    },
+    {
+      "name": "模特",
+      "artist": "Ronghao Li",
+      "album": "模特",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02c8ff126a07f3d0e5c8a80036",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851c8ff126a07f3d0e5c8a80036",
+      "durationMs": 306240,
+      "spotifyId": "0dS3iH5J875EMtaTAxwJ75"
+    },
+    {
+      "name": "李白",
+      "artist": "Ronghao Li",
+      "album": "模特",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02c8ff126a07f3d0e5c8a80036",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851c8ff126a07f3d0e5c8a80036",
+      "durationMs": 273442,
+      "spotifyId": "5PwyWoebyv4ofg4Z5MprFd"
+    },
+    {
+      "name": "Poem (Shhh)",
+      "artist": "Colde",
+      "album": "Poem",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e026d7aa41103e8171d9612b97c",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048516d7aa41103e8171d9612b97c",
+      "durationMs": 171000,
+      "spotifyId": "4UyV2ZMo5NpCcO0u3xX8uB"
+    },
+    {
+      "name": "at arm's length...",
+      "artist": "momü",
+      "album": "at arm's length...",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02d32663b2d25214bbb9fe534d",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851d32663b2d25214bbb9fe534d",
+      "durationMs": 167832,
+      "spotifyId": "5UW3V9pYyye7qGH8ecNhdL"
+    },
+    {
+      "name": "City Lights",
+      "artist": "Sunday Moon",
+      "album": "City Lights",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e022211f9bfd04d450a9c6da912",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048512211f9bfd04d450a9c6da912",
+      "durationMs": 241699,
+      "spotifyId": "36xcAYhiCUnzBoydVmxkO3"
+    },
+    {
+      "name": "Attention",
+      "artist": "Charlie Puth",
+      "album": "Voicenotes",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02897f73256b9128a9d70eaf66",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851897f73256b9128a9d70eaf66",
+      "durationMs": 208786,
+      "spotifyId": "5cF0dROlMOK5uNZtivgu50"
+    },
+    {
+      "name": "年少有為",
+      "artist": "Ronghao Li",
+      "album": "年少有為",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e028ac8aff0ae68816654c18332",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048518ac8aff0ae68816654c18332",
+      "durationMs": 279305,
+      "spotifyId": "4F189oz9W9JOV6ovuHsHYV"
+    },
+    {
+      "name": "Trouble I'm In",
+      "artist": "Twinbed",
+      "album": "Trouble I'm In",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e022b50a1f1a424957b0d7316c3",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048512b50a1f1a424957b0d7316c3",
+      "durationMs": 202500,
+      "spotifyId": "58NyDMjXSBQ9CG3lcvbLKi"
+    },
+    {
+      "name": "Youth (feat. Khalid)",
+      "artist": "Shawn Mendes, Khalid",
+      "album": "Shawn Mendes",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02269423eb6467e308c0fbce24",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851269423eb6467e308c0fbce24",
+      "durationMs": 190866,
+      "spotifyId": "1h0yImRPIVAjhhHeNVlTuC"
+    },
+    {
+      "name": "Because I Had You",
+      "artist": "Shawn Mendes",
+      "album": "Shawn Mendes",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02269423eb6467e308c0fbce24",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851269423eb6467e308c0fbce24",
+      "durationMs": 142480,
+      "spotifyId": "1RRZSm4akqNyMOsPUhw4cb"
+    },
+    {
+      "name": "Lost In Japan",
+      "artist": "Shawn Mendes",
+      "album": "Shawn Mendes",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02269423eb6467e308c0fbce24",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851269423eb6467e308c0fbce24",
+      "durationMs": 201200,
+      "spotifyId": "79esEXlqqmq0GPz0xQSZTV"
+    },
+    {
+      "name": "Where Were You In The Morning?",
+      "artist": "Shawn Mendes",
+      "album": "Shawn Mendes",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02269423eb6467e308c0fbce24",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851269423eb6467e308c0fbce24",
+      "durationMs": 200600,
+      "spotifyId": "376Gg7Oxo5C5jUWDWpVXeI"
+    },
+    {
+      "name": "世界が終わるまでは... (スラムダンク)",
+      "artist": "ジョバンニ",
+      "album": "JAPAN ANIMESONG COLLECTION VOL.7 [アニソン・ジャパン]",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e020b0c54e0124cbed58d958cb1",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048510b0c54e0124cbed58d958cb1",
+      "durationMs": 321744,
+      "spotifyId": "0dpR8tDU4IIXexVsLOVoaM"
+    },
+    {
+      "name": "飛行艇",
+      "artist": "King Gnu",
+      "album": "CEREMONY",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02c17e5b74e25b523d24a9e44e",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851c17e5b74e25b523d24a9e44e",
+      "durationMs": 260893,
+      "spotifyId": "022X58N6Tv7klHzcMzCtAl"
+    },
+    {
+      "name": "Drawl",
+      "artist": "haruno",
+      "album": "Drawl",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e024c63e4aba62c32998eb7526b",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048514c63e4aba62c32998eb7526b",
+      "durationMs": 210299,
+      "spotifyId": "6EHCdTBNWKPA3orf5qzgYv"
+    },
+    {
+      "name": "Lemon",
+      "artist": "Kenshi Yonezu",
+      "album": "Lemon",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02ae8ab64f32bde85afa89779d",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851ae8ab64f32bde85afa89779d",
+      "durationMs": 256105,
+      "spotifyId": "35KlorpQ6LQVVslvlcu1gN"
+    },
+    {
+      "name": "ぎゅっと。",
+      "artist": "もさを。",
+      "album": "ぎゅっと。",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e022e6ca2b9fca8581c4a84d107",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048512e6ca2b9fca8581c4a84d107",
+      "durationMs": 269746,
+      "spotifyId": "6nqfKM9JvQIiuAuzWZFvGW"
+    },
+    {
+      "name": "Seafloor",
+      "artist": "夜韻-Yoin-",
+      "album": "Seafloor",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e026e50edbd07838b2dd53dd618",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048516e50edbd07838b2dd53dd618",
+      "durationMs": 192666,
+      "spotifyId": "5Xb2RAzWJjC0AAD0lOi9ZY"
+    },
+    {
+      "name": "一葷一素",
+      "artist": "Mao Buyi",
+      "album": "平凡的一天",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02501b5db11b7fe5172a7506d0",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851501b5db11b7fe5172a7506d0",
+      "durationMs": 281346,
+      "spotifyId": "3BzCKzaN5jDpnOjFYHEWEU"
+    },
+    {
+      "name": "PLACEBO ＋ 野田洋次郎",
+      "artist": "Kenshi Yonezu, Yojiro Noda",
+      "album": "STRAY SHEEP",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02efb3ecf27f710c9231f2346f",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851efb3ecf27f710c9231f2346f",
+      "durationMs": 240253,
+      "spotifyId": "49nwbMrOB3fhDPp0MiPeb3"
+    },
+    {
+      "name": "パプリカ",
+      "artist": "Kenshi Yonezu",
+      "album": "STRAY SHEEP",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02eb53782889e6f2e70a2634a3",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851eb53782889e6f2e70a2634a3",
+      "durationMs": 202666,
+      "spotifyId": "5gZkspRLEDGfqKKKlW0zcv"
+    },
+    {
+      "name": "snow jam",
+      "artist": "Rin音",
+      "album": "swipe sheep",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e025dd0ff65e7e154393698d97e",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048515dd0ff65e7e154393698d97e",
+      "durationMs": 185378,
+      "spotifyId": "6uUtmCz8XXep7n1QmC1jJG"
+    },
+    {
+      "name": "香水",
+      "artist": "Eito",
+      "album": "香水",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e028c619e91247463929b384517",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048518c619e91247463929b384517",
+      "durationMs": 252594,
+      "spotifyId": "2iOvMtA1u9s95NF6mJDOuT"
+    },
+    {
+      "name": "going out",
+      "artist": "ROLE MODEL",
+      "album": "our little angel - EP",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02fb1c194dc56c9ef5b809ffea",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851fb1c194dc56c9ef5b809ffea",
+      "durationMs": 174493,
+      "spotifyId": "3hDNIAnUnraurZCuiuPegu"
+    },
+    {
+      "name": "Wonder",
+      "artist": "Shawn Mendes",
+      "album": "Wonder",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e0289657aa58a966265e922c3b7",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d0000485189657aa58a966265e922c3b7",
+      "durationMs": 172692,
+      "spotifyId": "542sVBh5liyh0gZWI62CdP"
+    },
+    {
+      "name": "天神",
+      "artist": "yonawo",
+      "album": "天神",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02e2049db6d6b89228dc75475c",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851e2049db6d6b89228dc75475c",
+      "durationMs": 230965,
+      "spotifyId": "09Nn96Jph0jdWxBzTDVt1O"
+    },
+    {
+      "name": "Thoughts",
+      "artist": "Sasha Alex Sloan",
+      "album": "Thoughts",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02e311caeb92d5e33849669db0",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851e311caeb92d5e33849669db0",
+      "durationMs": 185712,
+      "spotifyId": "2jm0S3dMPAz5H59z4lOJH"
+    },
+    {
+      "name": "Dancing With Your Ghost",
+      "artist": "Sasha Alex Sloan",
+      "album": "Dancing With Your Ghost",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02141cf717cd3993690358a60c",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851141cf717cd3993690358a60c",
+      "durationMs": 197732,
+      "spotifyId": "1TQXIltqoZ5XXyfCbAeSQQ"
+    },
+    {
+      "name": "I'll Wait",
+      "artist": "Kygo, Sasha Alex Sloan",
+      "album": "Golden Hour",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e0280368f0aa8f90c51674f9dd2",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d0000485180368f0aa8f90c51674f9dd2",
+      "durationMs": 215360,
+      "spotifyId": "1tuXOJYN6CkgubpifHEm96"
+    },
+    {
+      "name": "Lie",
+      "artist": "Sasha Alex Sloan",
+      "album": "Only Child",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e026f6bd6a31578bb03a7c06f87",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048516f6bd6a31578bb03a7c06f87",
+      "durationMs": 209133,
+      "spotifyId": "2ouNoo43UNurALLYLCapJv"
+    },
+    {
+      "name": "Où est ma tête?",
+      "artist": "Pink Martini, China Forbes",
+      "album": "Splendor in the Grass",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02dc875aef0f5d5d1de8949aab",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851dc875aef0f5d5d1de8949aab",
+      "durationMs": 252653,
+      "spotifyId": "30N6mzmZPQ0fUGW59krTc0"
+    },
+    {
+      "name": "21",
+      "artist": "Gracie Abrams",
+      "album": "minor",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e0255c38bc34d1fe852f2657c2e",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d0000485155c38bc34d1fe852f2657c2e",
+      "durationMs": 185172,
+      "spotifyId": "5meVa5klVlJalupZTvv5XX"
+    },
+    {
+      "name": "Mariposa - Acoustic",
+      "artist": "Peach Tree Rascals",
+      "album": "Mariposa (Acoustic)",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02c8935a25750b1ba21f49e720",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851c8935a25750b1ba21f49e720",
+      "durationMs": 216612,
+      "spotifyId": "64o1r6z5k2HmTglC2D4IKm"
+    },
+    {
+      "name": "Fake",
+      "artist": "Lauv, Conan Gray",
+      "album": "Fake",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e027eff443a62c51d7f9d39dc20",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048517eff443a62c51d7f9d39dc20",
+      "durationMs": 146375,
+      "spotifyId": "4Gt2kh3QbAGU6yquOWn4aW"
+    },
+    {
+      "name": "A Dream Is a Wish Your Heart Makes / Young at Heart (Mash-Up) [feat. Julissa Ruth]",
+      "artist": "Rick Hale, Julissa Ruth",
+      "album": "A Dream Is a Wish Your Heart Makes / Young at Heart (Mash-Up) [feat. Julissa Ruth]",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02da8d23e0d21f05ef7d79686e",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851da8d23e0d21f05ef7d79686e",
+      "durationMs": 187135,
+      "spotifyId": "5zZlt46nWEHkMCtjiieo6Q"
+    },
+    {
+      "name": "I miss you, I’m sorry",
+      "artist": "Gracie Abrams",
+      "album": "I miss you, I’m sorry",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02a5ea254e4c2f87956a6c64bb",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851a5ea254e4c2f87956a6c64bb",
+      "durationMs": 167538,
+      "spotifyId": "1tF7RL54zjHSy0N2qEQLDY"
+    },
+    {
+      "name": "Stay",
+      "artist": "Gracie Abrams",
+      "album": "Stay",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e028f0e4f832dfe1840169c8009",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048518f0e4f832dfe1840169c8009",
+      "durationMs": 177152,
+      "spotifyId": "0Uon5NsSAkBDx69XYOaQ5P"
+    },
+    {
+      "name": "Unbelievable",
+      "artist": "Why Don't We",
+      "album": "Unbelievable",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e0236414c8849198631be167b64",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d0000485136414c8849198631be167b64",
+      "durationMs": 189384,
+      "spotifyId": "3anNizayrIeuVv3Mb2KnIR"
+    },
+    {
+      "name": "Friend",
+      "artist": "Gracie Abrams",
+      "album": "minor",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e0255c38bc34d1fe852f2657c2e",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d0000485155c38bc34d1fe852f2657c2e",
+      "durationMs": 176946,
+      "spotifyId": "6fGSHpEipD1YjtLLChnBzW"
+    },
+    {
+      "name": "Moonlight",
+      "artist": "Grace VanderWaal",
+      "album": "Just The Beginning",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02d498bad6a0c66e1e26c70dc5",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851d498bad6a0c66e1e26c70dc5",
+      "durationMs": 172493,
+      "spotifyId": "4XrvRf68c9H4orZZ9KoldQ"
+    },
+    {
+      "name": "Stray",
+      "artist": "Grace VanderWaal",
+      "album": "Stray",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02344d8ad3f7e761875baf436c",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851344d8ad3f7e761875baf436c",
+      "durationMs": 190786,
+      "spotifyId": "5CZmC1I3ZbyH2ToPwTciAy"
+    },
+    {
+      "name": "Let's Fall in Love for the Night",
+      "artist": "FINNEAS",
+      "album": "Let’s Fall In Love For The Night",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02b226999f1df0dcdec8a53abe",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851b226999f1df0dcdec8a53abe",
+      "durationMs": 190348,
+      "spotifyId": "7kQkmyoHCEqwe7QwDbkSXM"
+    },
+    {
+      "name": "House With No Mirrors",
+      "artist": "Sasha Alex Sloan",
+      "album": "House With No Mirrors",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e020920d7e720ecd13bd6da3d98",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048510920d7e720ecd13bd6da3d98",
+      "durationMs": 227613,
+      "spotifyId": "55vsJO4tLZQ37qzD5QUOmh"
+    },
+    {
+      "name": "A Soulmate Who Wasn’t Meant to Be",
+      "artist": "Jess Benko",
+      "album": "Do You Love Me, or Are You Just Lonely?",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02aacb4d483af87300fa8333b4",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851aacb4d483af87300fa8333b4",
+      "durationMs": 316556,
+      "spotifyId": "0gOz9JUXsaKVzLTSmFDtdo"
+    },
+    {
+      "name": "pass you by",
+      "artist": "Alaina Castillo",
+      "album": "the voicenotes",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02b7d09d8197ee379e350feba6",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851b7d09d8197ee379e350feba6",
+      "durationMs": 245945,
+      "spotifyId": "7mmNunW4Bi6zmtFlewDzCb"
+    },
+    {
+      "name": "Sucker",
+      "artist": "Jonas Brothers",
+      "album": "Happiness Begins",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02de1a3a5eaa0c75bb18e7b597",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851de1a3a5eaa0c75bb18e7b597",
+      "durationMs": 181026,
+      "spotifyId": "22vgEDb5hykfaTwLuskFGD"
+    },
+    {
+      "name": "Invisible Things",
+      "artist": "Lauv",
+      "album": "~how i'm feeling~",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e0236b12a4082f11d16a519b964",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d0000485136b12a4082f11d16a519b964",
+      "durationMs": 197306,
+      "spotifyId": "1ShHhJlzaLuoZbJ3aP4z0m"
+    },
+    {
+      "name": "Hindenburg Lover",
+      "artist": "Anson Seabra",
+      "album": "Songs I Wrote in My Bedroom",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02e471b0b396a4dc0c0066d4f1",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851e471b0b396a4dc0c0066d4f1",
+      "durationMs": 302894,
+      "spotifyId": "32RwADYaEBNw9QeXP4Tz1g"
+    },
+    {
+      "name": "Tattoos Together",
+      "artist": "Lauv",
+      "album": "~how i'm feeling~",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02b6720b8af5cb0a3010f8e3d7",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851b6720b8af5cb0a3010f8e3d7",
+      "durationMs": 186613,
+      "spotifyId": "0ycFQvBTfuo1LCdG0HhszL"
+    },
+    {
+      "name": "I Wish I Never Met You",
+      "artist": "Oh Wonder",
+      "album": "I Wish I Never Met You",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02b8bb4209fa825802c8c58546",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851b8bb4209fa825802c8c58546",
+      "durationMs": 179080,
+      "spotifyId": "4P6Y4uhdy4Z9W9WUdCjt8l"
+    },
+    {
+      "name": "Première Gymnopédie",
+      "artist": "Erik Satie, Alexandre Tharaud",
+      "album": "Satie: Avant-dernières pensées (Bonus Track Version)",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02949cc0e6728be2f6601eb7ea",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851949cc0e6728be2f6601eb7ea",
+      "durationMs": 204266,
+      "spotifyId": "4jep6dMPP0z7HrN375InoL"
+    },
+    {
+      "name": "Miroirs: III. Une barque sur l'océan",
+      "artist": "Maurice Ravel, André Laplante",
+      "album": "Ravel: Miroirs, Jeux D'Eau, Pavane Pour Une Infante Défunte",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e023041581d8dc408915d909e32",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048513041581d8dc408915d909e32",
+      "durationMs": 428152,
+      "spotifyId": "4JOEMgLkrHp8K1XNmyNffH"
+    },
+    {
+      "name": "A Dream Is a Wish Your Heart Makes",
+      "artist": "Ilene Woods, Mice Chorus",
+      "album": "Cinderella Special Edition (Original Motion Picture Soundtrack/Japanese Version)",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e026b4d7353d778b84853751cda",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048516b4d7353d778b84853751cda",
+      "durationMs": 274480,
+      "spotifyId": "6PiTsEEiNYU9a9xXowi9i5"
+    },
+    {
+      "name": "end (stripped.)",
+      "artist": "Jeremy Zucker",
+      "album": "stripped.",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02d2276a5c82911c71528cfcd9",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851d2276a5c82911c71528cfcd9",
+      "durationMs": 234626,
+      "spotifyId": "0fWyDYARNbNd0zaa5bsQIY"
+    },
+    {
+      "name": "Astronomy",
+      "artist": "Conan Gray",
+      "album": "Astronomy",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02561bebcde13f57644b5550b2",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851561bebcde13f57644b5550b2",
+      "durationMs": 243907,
+      "spotifyId": "0KmgJyW4GDgonqsoyx0CZ3"
+    },
+    {
+      "name": "willow",
+      "artist": "Taylor Swift",
+      "album": "evermore",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e0225751b4b32829d6bbfe6be7f",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d0000485125751b4b32829d6bbfe6be7f",
+      "durationMs": 214706,
+      "spotifyId": "3Uo7WG0vmLQ07WB4BDwy7D"
+    },
+    {
+      "name": "cardigan",
+      "artist": "Taylor Swift",
+      "album": "folklore",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e0295f754318336a07e85ec59bc",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d0000485195f754318336a07e85ec59bc",
+      "durationMs": 239560,
+      "spotifyId": "4R2kfaDFhslZEMJqAFNpdd"
+    },
+    {
+      "name": "Part of Your World",
+      "artist": "Jodi Benson, Disney",
+      "album": "The Little Mermaid (Original Motion Picture Soundtrack)",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e0296cb978bc45a49ad47e1a288",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d0000485196cb978bc45a49ad47e1a288",
+      "durationMs": 195493,
+      "spotifyId": "5J4pDyvjRrYfcgHetKjKSj"
+    },
+    {
+      "name": "A Whole New World",
+      "artist": "Lea Salonga, Brad Kane, Disney",
+      "album": "Aladdin Special Edition",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e024a4b92dcf7a5c51cc4f7424c",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048514a4b92dcf7a5c51cc4f7424c",
+      "durationMs": 160800,
+      "spotifyId": "1hwdPQtFHISvZ9SXMkNrIK"
+    },
+    {
+      "name": "I Hear a Symphony",
+      "artist": "Cody Fry",
+      "album": "Flying",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e020143cb66fdb1abf40887a4de",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048510143cb66fdb1abf40887a4de",
+      "durationMs": 185176,
+      "spotifyId": "3iJya7m7trpGv570Ske30n"
+    },
+    {
+      "name": "Falling in Love",
+      "artist": "Cody Fry",
+      "album": "Flying",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e020143cb66fdb1abf40887a4de",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048510143cb66fdb1abf40887a4de",
+      "durationMs": 235122,
+      "spotifyId": "3OY5HPRxS3tSzIaWzj74F0"
+    },
+    {
+      "name": "At My Worst",
+      "artist": "Pink Sweat$",
+      "album": "PINK PLANET",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e0275af9fb0fa8dc8f3adef6905",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d0000485175af9fb0fa8dc8f3adef6905",
+      "durationMs": 170344,
+      "spotifyId": "2MJz8BxxMsERULatmBikDH"
+    },
+    {
+      "name": "My Future - Acoustic",
+      "artist": "Andie Case",
+      "album": "My Future (Acoustic)",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02eb94d6e8fd297b0a85bcba8e",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851eb94d6e8fd297b0a85bcba8e",
+      "durationMs": 199418,
+      "spotifyId": "4CCyeLYn5niImTAjDNJWlJ"
+    },
+    {
+      "name": "enough for you",
+      "artist": "Olivia Rodrigo",
+      "album": "SOUR",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02a91c10fe9472d9bd89802e5a",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851a91c10fe9472d9bd89802e5a",
+      "durationMs": 202826,
+      "spotifyId": "2TOzTqQXNmR2zDJXihjZ2e"
+    },
+    {
+      "name": "fuck, i'm lonely",
+      "artist": "Lauv, Anne-Marie",
+      "album": "~how i'm feeling~",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e0236b12a4082f11d16a519b964",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d0000485136b12a4082f11d16a519b964",
+      "durationMs": 198973,
+      "spotifyId": "09PGubKAMryhOWv1LHpCYz"
+    },
+    {
+      "name": "Already One Year",
+      "artist": "BANHANA, MJ",
+      "album": "Already One Year",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02598c697f83a2e265b04ca1ca",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851598c697f83a2e265b04ca1ca",
+      "durationMs": 216912,
+      "spotifyId": "4u82kMcuALU9XUFyVQBkjH"
+    },
+    {
+      "name": "Wake U Up",
+      "artist": "JOE CHO",
+      "album": "Wake U Up",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e027b8aa9083782ed657f6e1a94",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048517b8aa9083782ed657f6e1a94",
+      "durationMs": 195200,
+      "spotifyId": "1l9LUW4xj3lf0RnSyUxkBP"
+    },
+    {
+      "name": "Old Flame",
+      "artist": "Sody",
+      "album": "Old Flame",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02ab0bf6d94b4229f01546a9e0",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851ab0bf6d94b4229f01546a9e0",
+      "durationMs": 167341,
+      "spotifyId": "23KrgrkSQN9rY3DWbklgMc"
+    },
+    {
+      "name": "Before 4:30 (She Said…)",
+      "artist": "Mew Suppasit, Sam Kim",
+      "album": "Before 4:30 (She Said…)",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02fb2fce446c296d7005221523",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851fb2fce446c296d7005221523",
+      "durationMs": 231373,
+      "spotifyId": "6eXHtOGepsKaJ6UzN42YlG"
+    },
+    {
+      "name": "Blueberry Eyes (feat. SUGA of BTS)",
+      "artist": "MAX, SUGA",
+      "album": "Colour Vision",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e024422aac0b636fc07c0f860c8",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048514422aac0b636fc07c0f860c8",
+      "durationMs": 172244,
+      "spotifyId": "6sI8Q7TTJeA9exw6hxEqq3"
+    },
+    {
+      "name": "Keep Your Head Up Princess",
+      "artist": "Anson Seabra",
+      "album": "Feeling For My Life",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e025afa16bad57ffdf82f4b8a2e",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d000048515afa16bad57ffdf82f4b8a2e",
+      "durationMs": 198220,
+      "spotifyId": "3XjAgiBvWBKu1tHSLTgffX"
+    },
+    {
+      "name": "Come Close",
+      "artist": "Anson Seabra",
+      "album": "Come Close",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02ac80045b7badd41b56bb0140",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851ac80045b7badd41b56bb0140",
+      "durationMs": 179796,
+      "spotifyId": "10LSITr9KpQs2uCh7g2QQh"
+    },
+    {
+      "name": "I Drink Wine",
+      "artist": "Adele",
+      "album": "30",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02c6b577e4c4a6d326354a89f7",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851c6b577e4c4a6d326354a89f7",
+      "durationMs": 376169,
+      "spotifyId": "6v0UJD4a2FtleHeSYVX02A"
+    },
+    {
+      "name": "Let Somebody Go",
+      "artist": "Coldplay, Selena Gomez",
+      "album": "Music Of The Spheres",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02d5d34557fa33c03782d3e730",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851d5d34557fa33c03782d3e730",
+      "durationMs": 241595,
+      "spotifyId": "4cGqn0E8JCSY9gQllQj4Mf"
+    },
+    {
+      "name": "If You Ever Change Your Mind",
+      "artist": "Calum Scott",
+      "album": "If You Ever Change Your Mind",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02f672e23d9bc28b5279e7195c",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851f672e23d9bc28b5279e7195c",
+      "durationMs": 205994,
+      "spotifyId": "06Nak3IpaRtZKS27DYoHmt"
+    },
+    {
+      "name": "Roses Are Red (Violets Are Blue)",
+      "artist": "Jon Caryl",
+      "album": "Roses Are Red",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02b05c140c2d6806ecf55eb1d8",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851b05c140c2d6806ecf55eb1d8",
+      "durationMs": 212392,
+      "spotifyId": "6FmpBDrbKW6T0spUMFTgDC"
+    },
+    {
+      "name": "The Joker And The Queen (feat. Taylor Swift)",
+      "artist": "Ed Sheeran, Taylor Swift",
+      "album": "The Joker And The Queen (feat. Taylor Swift)",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e0210109c08f2d5e4333dfddefe",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d0000485110109c08f2d5e4333dfddefe",
+      "durationMs": 185422,
+      "spotifyId": "6N1K5OVVCopBjGViHs2IvP"
+    },
+    {
+      "name": "Bam Bam (feat. Ed Sheeran)",
+      "artist": "Camila Cabello, Ed Sheeran",
+      "album": "Bam Bam (feat. Ed Sheeran)",
+      "albumArt": "https://i.scdn.co/image/ab67616d00001e02facef3e72342d29bc1179a28",
+      "albumArtSmall": "https://i.scdn.co/image/ab67616d00004851facef3e72342d29bc1179a28",
+      "durationMs": 205604,
+      "spotifyId": "0QBzMgT7NIeoCYy3sJCof1"
+    }
+  ]
+}

@@ -1,0 +1,384 @@
+/* ─────────────────────────────────────────
+   record.css — The Record (Spotify playlist)
+   ───────────────────────────────────────── */
+
+/* ── Page shell ──────────────────────────────────────────────────────────── */
+.record-page {
+  padding-top: 82px;
+  min-height: 100vh;
+  background: var(--paper);
+}
+
+/* ── Fade-in (use translate property so it doesn't clash with vinyl spin) ─ */
+.fade-up {
+  opacity: 0;
+  translate: 0 10px;
+  transition: opacity 0.5s ease, translate 0.5s ease;
+}
+.fade-up.visible {
+  opacity: 1;
+  translate: 0 0;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.record-header {
+  padding: 32px 32px 40px;
+  max-width: 680px;
+}
+
+.record-label {
+  display: block;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--stone);
+  font-weight: 200;
+  margin-bottom: 8px;
+}
+
+.record-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.record-subtitle {
+  font-family: var(--font-description);
+  font-size: var(--text-base);
+  font-weight: 300;
+  color: var(--color-description);
+  margin-top: var(--space-sm);
+}
+
+/* ── Divider ─────────────────────────────────────────────────────────────── */
+.record-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 32px;
+}
+
+/* ── Player section ──────────────────────────────────────────────────────── */
+.record-player {
+  display: flex;
+  gap: var(--space-xl);
+  align-items: center;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--space-xl) 32px;
+}
+
+/* Record page vinyl overrides (tonearm space) */
+.record-player .vinyl-container {
+  flex: 0 0 280px;
+  padding-top: 20px;
+  padding-right: 20px;
+}
+
+/* ── Now playing display ─────────────────────────────────────────────────── */
+.embed-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+.embed-container iframe {
+  width: 100%;
+  max-width: 360px;
+  border-radius: var(--radius-md);
+}
+
+/* ── Tonearm (record page only) ──────────────────────────────────────────── */
+.vinyl-tonearm {
+  position: absolute;
+  top: 0;
+  right: 40px;
+  width: 4px;
+  height: 140px;
+  background: linear-gradient(to bottom, #aaa, var(--stone) 30%, #888);
+  border-radius: 2px;
+  transform-origin: 2px 8px;
+  transform: rotate(-55deg);
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 3;
+  cursor: pointer;
+}
+
+.vinyl-container.playing .vinyl-tonearm {
+  transform: rotate(18deg);
+}
+
+.vinyl-tonearm::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -4px);
+  width: 16px;
+  height: 16px;
+  background: radial-gradient(circle, #ccc, var(--stone));
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.vinyl-tonearm::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 8px;
+  background: var(--ink);
+  border-radius: 1px 1px 2px 2px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* ── Prev/Next controls ──────────────────────────────────────────────────── */
+.record-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  max-width: 1060px;
+  margin: 0 auto;
+}
+
+.record-skip {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--stone);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.record-skip:hover {
+  background: var(--crimson);
+  border-color: var(--crimson);
+  color: white;
+}
+
+/* ── Tracklist section ───────────────────────────────────────────────────── */
+.record-tracklist-section {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: var(--space-lg) 32px var(--space-xl);
+}
+
+.tracklist {
+  margin-top: var(--space-md);
+}
+
+.track-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s ease;
+  cursor: pointer;
+}
+
+.track-row:hover {
+  background: var(--crimson-bg);
+}
+
+.track-row.active {
+  background: var(--crimson-bg);
+  border-left: 3px solid var(--crimson);
+  padding-left: calc(var(--space-sm) - 3px);
+}
+
+.track-num {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--stone);
+  width: 24px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.track-art {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.track-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.track-name {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: var(--text-base);
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-artist {
+  display: block;
+  font-family: var(--font-description);
+  font-size: var(--text-sm);
+  color: var(--color-description);
+  font-weight: 300;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-duration {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--stone);
+  flex-shrink: 0;
+}
+
+/* ── See all button ──────────────────────────────────────────────────────── */
+.tracklist-see-all {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-lg) 0;
+}
+
+.tracklist-see-all-btn {
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border-crimson);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--crimson);
+  padding-bottom: 2px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  transition: opacity 0.2s ease;
+}
+.tracklist-see-all-btn:hover { opacity: 0.6; }
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+.record-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 32px 40px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.record-updated {
+  font-size: var(--text-xs);
+  color: var(--stone);
+  letter-spacing: 0.08em;
+  font-weight: 200;
+}
+
+.record-view-all {
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--crimson);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border-crimson);
+  padding-bottom: 1px;
+  transition: opacity 0.2s ease;
+}
+.record-view-all:hover { opacity: 0.6; }
+
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .record-page { padding-top: 72px; }
+
+  .record-header {
+    padding: 24px var(--page-gutter) 32px;
+  }
+
+  .record-divider {
+    margin: 0 var(--page-gutter);
+  }
+
+  .record-player {
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-lg) var(--page-gutter);
+    gap: var(--space-lg);
+  }
+
+  .record-player .vinyl-container {
+    flex: none;
+    --vinyl-size: 200px;
+    --vinyl-label-size: 64px;
+  }
+
+  .vinyl-tonearm {
+    height: 100px;
+    right: 28px;
+  }
+
+  .now-playing-art {
+    width: 150px;
+    height: 150px;
+  }
+
+  .record-tracklist-section {
+    padding: var(--space-lg) var(--page-gutter);
+  }
+
+  .track-art {
+    width: 40px;
+    height: 40px;
+  }
+
+  .record-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 24px var(--page-gutter) 32px;
+  }
+
+  .record-view-all {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .record-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 0 var(--page-gutter);
+  }
+
+  .record-player {
+    order: 0;
+    width: 100%;
+  }
+
+  .record-prev {
+    order: 1;
+  }
+
+  .record-next {
+    order: 2;
+  }
+}

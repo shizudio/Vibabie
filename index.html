@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400&family=EB+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="vinyl.css">
   <link rel="stylesheet" href="index.css">
 </head>
 <body>
@@ -22,6 +23,12 @@
     </div>
   </div>
 
+  <script>
+    // Hide loader instantly when returning from subpage (before paint)
+    if (sessionStorage.getItem('skip-loader')) {
+      document.write('<style>.loader{display:none!important}.stage,.hanging-string{opacity:1!important;visibility:visible!important}</style>')
+    }
+  </script>
   <div class="loader" id="loader">
     <div class="loader-art">
       <video class="loader-video" id="loader-video" autoplay muted playsinline>
@@ -46,6 +53,17 @@
       <div class="frame-border">
         <div class="room-image" id="room-image">
           <img src="Portfoliov2.jpg" alt="Shina's Room" id="room-img" fetchpriority="high" />
+
+          <!-- ⑨ RECORD PLAYER -->
+          <div class="zone"
+            data-emoji="🎶"
+            data-label="The Record"
+            data-desc="Music & Vibes"
+            data-href="record.html"
+            data-link-text="View Records ↗"
+            data-external="false"
+            style="top:5%; left:22%; width:10%; height:18%;">
+          </div>
 
           <!-- ① BOOKS -->
           <div class="zone"
@@ -197,6 +215,13 @@
           <span class="mobile-link-desc">Work & Projects</span>
         </span>
       </a>
+      <a href="record.html" class="mobile-link">
+        <span class="mobile-link-emoji">🎶</span>
+        <span class="mobile-link-text">
+          <span class="mobile-link-label">The Record</span>
+          <span class="mobile-link-desc">Music & Vibes</span>
+        </span>
+      </a>
     </div>
   </main>
 
@@ -205,6 +230,7 @@
   </footer>
 
   <script type="module" src="script.js"></script>
+  <script type="module" src="vinyl-widget.js"></script>
   <script type="module" src="index.js"></script>
 </body>
 </html>

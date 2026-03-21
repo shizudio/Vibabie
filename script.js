@@ -1,3 +1,8 @@
+import { inject } from '@vercel/analytics'
+import { initRouter } from './router.js'
+inject()
+initRouter()
+
 /* ─────────────────────────────────────────
    Shina - Global Scripts
    ───────────────────────────────────────── */
@@ -65,6 +70,7 @@ function _samplePixel(img, el, cx, cy) {
   } catch { return null }
 }
 
+window.attachAdaptiveCursor = attachAdaptiveCursor
 function attachAdaptiveCursor(img) {
   if (img._adaptiveBound) return   // already attached
   img._adaptiveBound = true

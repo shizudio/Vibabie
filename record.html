@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Record — Shina Foo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400&family=EB+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="vinyl.css">
+  <link rel="stylesheet" href="record.css">
+</head>
+<body>
+
+  <div class="cursor default-cursor" id="cursor"></div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Shina Foo</a>
+    <span class="nav-page-name">The Record</span>
+  </nav>
+
+  <main class="record-page">
+
+    <!-- ── Header ─────────────────────────────────────────────────────────── -->
+    <section class="record-header fade-up">
+      <span class="record-label">Music</span>
+      <h1 class="record-title">The Record</h1>
+      <p class="record-subtitle" id="record-desc">What's spinning right now</p>
+    </section>
+
+    <div class="record-divider"></div>
+
+    <!-- ── Player: vinyl + embed + controls ───────────────────────────────── -->
+    <div class="record-controls">
+      <button class="record-skip record-prev" id="record-prev" aria-label="Previous track">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6" /></svg>
+      </button>
+      <section class="record-player fade-up">
+      <div class="vinyl-container">
+        <div class="vinyl-disc" id="vinyl-disc">
+          <div class="vinyl-label">
+            <img class="vinyl-label-img" id="vinyl-label-img" src="" alt="Album art" />
+          </div>
+          <div class="vinyl-play-icon" id="vinyl-play-icon">
+            <svg viewBox="0 0 24 24" fill="white"><polygon points="6,3 20,12 6,21" /></svg>
+          </div>
+        </div>
+        <div class="vinyl-tonearm"></div>
+      </div>
+
+      <div class="embed-container" id="embed-container">
+        <!-- Spotify embed created by IFrame API in record.js -->
+      </div>
+    </section>
+      <button class="record-skip record-next" id="record-next" aria-label="Next track">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,6 15,12 9,18" /></svg>
+      </button>
+    </div>
+
+    <div class="record-divider"></div>
+
+    <!-- ── Tracklist ──────────────────────────────────────────────────────── -->
+    <section class="record-tracklist-section fade-up">
+      <span class="record-label">Tracklist</span>
+      <div class="tracklist" id="tracklist">
+        <!-- Rendered by record.js from spotify-data.json -->
+      </div>
+    </section>
+
+    <!-- ── Footer ─────────────────────────────────────────────────────────── -->
+    <footer class="record-footer fade-up">
+      <span class="record-updated" id="record-updated"></span>
+      <a href="https://open.spotify.com/playlist/7nJm9hIEEOYdvgNgNxmMVt"
+         class="record-view-all" target="_blank" rel="noopener noreferrer">
+        Open in Spotify ↗
+      </a>
+    </footer>
+
+  </main>
+
+  <script>
+    window.__spotifyReady = new Promise(function(resolve) {
+      window.onSpotifyIframeApiReady = resolve
+    })
+  </script>
+  <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+  <script type="module" src="script.js"></script>
+  <script type="module" src="record.js"></script>
+</body>
+</html>
