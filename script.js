@@ -2,6 +2,10 @@
    Shina - Global Scripts
    ───────────────────────────────────────── */
 
+// ── VERCEL WEB ANALYTICS ──────────────────
+import { inject } from '@vercel/analytics';
+inject();
+
 // ── CUSTOM CURSOR (used on all pages) ────
 const cursor = document.getElementById('cursor')
 cursor.innerHTML = '♥'
