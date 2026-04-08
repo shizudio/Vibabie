@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hotspot Dev Tool</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d0d14;
+      display: flex;
+      height: 100dvh;
+      overflow: hidden;
+      font-family: monospace;
+      color: #e0e0f0;
+    }
+
+    /* ── LEFT: canvas area ── */
+    #canvas-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #room-wrap {
+      position: relative;
+      display: inline-block;
+      line-height: 0;
+      user-select: none;
+    }
+
+    #room-img {
+      display: block;
+      max-width: 100%;
+      max-height: calc(100dvh - 48px);
+      object-fit: contain;
+    }
+
+    /* ── OVERLAY ITEMS ── */
+    .dev-item {
+      position: absolute;
+      cursor: pointer;
+    }
+
+    .dev-item .item-gif {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      opacity: 0.85;
+    }
+
+    /* hotspot tab: dashed highlight */
+    .dev-item.mode-hotspot .item-gif { display: none; }
+    .dev-item.mode-hotspot .hotspot-vis {
+      display: block;
+      position: absolute;
+      inset: 0;
+      border: 2px dashed rgba(255, 200, 50, 0.7);
+      background: rgba(255, 200, 50, 0.08);
+      border-radius: 4px;
+    }
+
+    /* overlay tab */
+    .dev-item.mode-overlay .hotspot-vis { display: none; }
+
+    /* ── SELECTION BORDER ── */
+    .dev-item.selected .sel-border {
+      display: block;
+      position: absolute;
+      inset: -2px;
+      border: 2px solid #FFD700;
+      border-radius: 3px;
+      pointer-events: none;
+      z-index: 30;
+    }
+    .dev-item .sel-border { display: none; }
+
+    /* ── BADGE ── */
+    .dev-item .badge {
+      position: absolute;
+      top: -18px;
+      left: 0;
+      font-size: 10px;
+      background: rgba(0,0,0,0.7);
+      color: #FFD700;
+      padding: 1px 5px;
+      border-radius: 3px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 31;
+    }
+
+    /* ── ROTATE HANDLE ── */
+    .dev-item.selected .rot-line {
+      display: block;
+      position: absolute;
+      top: -36px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1px;
+      height: 36px;
+      background: rgba(255,215,0,0.4);
+      pointer-events: none;
+      z-index: 29;
+    }
+    .dev-item .rot-line { display: none; }
+
+    .dev-item.selected .rot-handle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: -52px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #FFD700;
+      border: 2px solid white;
+      cursor: ew-resize;
+      z-index: 31;
+      font-size: 9px;
+      color: #000;
+    }
+    .dev-item .rot-handle { display: none; }
+
+    /* ── CORNER RESIZE HANDLES ── */
+    .dev-item .corner {
+      display: none;
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #FFD700;
+      border: 2px solid white;
+      border-radius: 2px;
+      z-index: 31;
+    }
+    .dev-item.selected .corner { display: block; }
+    .corner.tl { top: -5px; left: -5px; cursor: nwse-resize; }
+    .corner.tr { top: -5px; right: -5px; cursor: nesw-resize; }
+    .corner.bl { bottom: -5px; left: -5px; cursor: nesw-resize; }
+    .corner.br { bottom: -5px; right: -5px; cursor: nwse-resize; }
+
+    /* ── RIGHT PANEL ── */
+    #panel {
+      width: 300px;
+      flex-shrink: 0;
+      background: #0f0f1a;
+      border-left: 1px solid rgba(255,215,0,0.25);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #panel-header {
+      padding: 12px 14px 8px;
+      border-bottom: 1px solid rgba(255,215,0,0.15);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #panel-header span {
+      font-size: 11px;
+      color: #FFD700;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      flex: 1;
+    }
+
+    .hdr-btn {
+      font-size: 10px;
+      font-family: monospace;
+      border-radius: 4px;
+      padding: 2px 9px;
+      cursor: pointer;
+      border: 1px solid;
+    }
+
+    #btn-reset {
+      background: rgba(255,100,100,0.12);
+      border-color: rgba(255,100,100,0.4);
+      color: #ff8888;
+    }
+
+    #btn-copy {
+      background: rgba(255,215,0,0.12);
+      border-color: rgba(255,215,0,0.4);
+      color: #FFD700;
+      transition: all 0.2s;
+    }
+    #btn-copy.copied {
+      background: rgba(100,255,150,0.12);
+      border-color: rgba(100,255,150,0.4);
+      color: #88ffaa;
+    }
+
+    /* ── ITEM LIST ── */
+    #item-list {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255,215,0,0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .item-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 11px;
+      border: 1px solid transparent;
+    }
+    .item-row:hover { background: rgba(255,255,255,0.04); }
+    .item-row.active {
+      background: rgba(255,215,0,0.08);
+      border-color: rgba(255,215,0,0.3);
+      color: #FFD700;
+    }
+
+    .item-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── MODE TABS ── */
+    #mode-tabs {
+      display: flex;
+      padding: 8px 14px 0;
+      gap: 4px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      font-size: 10px;
+      font-family: monospace;
+      padding: 4px 0;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: transparent;
+      color: #aaa;
+      border-radius: 4px;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: all 0.15s;
+    }
+    .tab-btn.active {
+      background: rgba(255,215,0,0.12);
+      border-color: rgba(255,215,0,0.5);
+      color: #FFD700;
+    }
+
+    /* ── SLIDERS ── */
+    #controls {
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-bottom: 1px solid rgba(255,215,0,0.12);
+    }
+
+    .ctrl-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ctrl-label {
+      font-size: 10px;
+      color: #888;
+      width: 48px;
+      flex-shrink: 0;
+    }
+    .ctrl-val {
+      font-size: 11px;
+      color: #e0e0f0;
+      width: 44px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    input[type=range] {
+      flex: 1;
+      accent-color: #FFD700;
+      height: 3px;
+    }
+
+    /* ── CODE OUTPUT ── */
+    #code-block {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 14px;
+    }
+    #code-block pre {
+      font-size: 10.5px;
+      line-height: 1.6;
+      color: #b0b8d8;
+      white-space: pre;
+    }
+    #code-block .cm-key { color: #88aaff; }
+    #code-block .cm-val { color: #ffcc66; }
+    #code-block .cm-cmt { color: #556; }
+  </style>
+</head>
+<body>
+
+<!-- ── LEFT: interactive canvas ── -->
+<div id="canvas-area">
+  <div id="room-wrap">
+    <img id="room-img" src="Portfoliov2.jpg" alt="Room" />
+    <!-- dev items injected here by JS -->
+  </div>
+</div>
+
+<!-- ── RIGHT: panel ── -->
+<div id="panel">
+  <div id="panel-header">
+    <span>HOTSPOT DEV TOOL</span>
+    <button class="hdr-btn" id="btn-reset">Reset</button>
+    <button class="hdr-btn" id="btn-copy">Copy</button>
+  </div>
+
+  <div id="item-list">
+    <!-- item rows injected by JS -->
+  </div>
+
+  <div id="mode-tabs">
+    <button class="tab-btn active" data-mode="hotspot">HOTSPOT</button>
+    <button class="tab-btn" data-mode="overlay">OVERLAY</button>
+  </div>
+
+  <div id="controls">
+    <!-- sliders injected by JS -->
+  </div>
+
+  <div id="code-block">
+    <pre id="code-pre"></pre>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────
+//  HOTSPOT CONFIG — edit this to add items
+// ─────────────────────────────────────────
+const ITEMS = [
+  {
+    id: 'bulb',
+    label: 'Bulb (lamp)',
+    color: '#FFD700',
+    src: 'hotspot/bulb.gif',
+    hotspot:  { top: 60, left: 7,  width: 8,   height: 10 },
+    overlay:  { top: 0,  left: 0,  width: 100, height: 100 },
+  },
+  // ← add future items here
+]
+
+// ─────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────
+// Load from localStorage so edits survive refresh
+function loadState() {
+  try {
+    const saved = localStorage.getItem('devtool-state')
+    if (saved) return JSON.parse(saved)
+  } catch {}
+  return null
+}
+
+let state = loadState() || ITEMS.map(item => ({
+  hotspot:  { ...item.hotspot },
+  overlay:  { ...item.overlay },
+}))
+
+let selectedIdx = 0
+let activeMode  = 'hotspot' // 'hotspot' | 'overlay'
+
+function saveState() {
+  localStorage.setItem('devtool-state', JSON.stringify(state))
+}
+
+// ─────────────────────────────────────────
+//  BUILD DOM
+// ─────────────────────────────────────────
+const roomWrap  = document.getElementById('room-wrap')
+const roomImg   = document.getElementById('room-img')
+const itemList  = document.getElementById('item-list')
+const controls  = document.getElementById('controls')
+const codePre   = document.getElementById('code-pre')
+
+// Create dev-item elements
+const itemEls = ITEMS.map((item, i) => {
+  const el = document.createElement('div')
+  el.className = 'dev-item mode-hotspot'
+  el.dataset.idx = i
+  el.innerHTML = `
+    <div class="hotspot-vis"></div>
+    <img class="item-gif" src="${item.src}" alt="" />
+    <div class="badge">[${i}] ${item.label}</div>
+    <div class="sel-border"></div>
+    <div class="rot-line"></div>
+    <div class="rot-handle" title="drag left/right to rotate">↺</div>
+    <div class="corner tl" data-corner="tl"></div>
+    <div class="corner tr" data-corner="tr"></div>
+    <div class="corner bl" data-corner="bl"></div>
+    <div class="corner br" data-corner="br"></div>
+  `
+  roomWrap.appendChild(el)
+  return el
+})
+
+// Create item-list rows
+ITEMS.forEach((item, i) => {
+  const row = document.createElement('div')
+  row.className = 'item-row' + (i === 0 ? ' active' : '')
+  row.dataset.idx = i
+  row.innerHTML = `
+    <div class="item-dot" style="background:${item.color}"></div>
+    <span>${item.label}</span>
+  `
+  row.addEventListener('click', () => selectItem(i))
+  itemList.appendChild(row)
+})
+
+// ─────────────────────────────────────────
+//  POSITION HELPERS
+// ─────────────────────────────────────────
+function getImgRect() {
+  return roomImg.getBoundingClientRect()
+}
+
+function applyPositions() {
+  const rect = getImgRect()
+  const W = rect.width, H = rect.height
+
+  ITEMS.forEach((_, i) => {
+    const el = itemEls[i]
+    const s = state[i]
+
+    // Determine which coords to display based on active mode per element
+    // We always show both but style differently
+    // hotspot
+    const hs = s.hotspot
+    const ov = s.overlay
+
+    // Position the element according to active display mode
+    // element represents whichever mode is "being edited"
+    const coords = activeMode === 'hotspot' ? hs : ov
+
+    el.style.left   = (coords.left   / 100 * W) + 'px'
+    el.style.top    = (coords.top    / 100 * H) + 'px'
+    el.style.width  = (coords.width  / 100 * W) + 'px'
+    el.style.height = (coords.height / 100 * H) + 'px'
+  })
+}
+
+// ─────────────────────────────────────────
+//  SELECTION & MODE
+// ─────────────────────────────────────────
+function selectItem(i) {
+  selectedIdx = i
+  itemEls.forEach((el, idx) => {
+    el.classList.toggle('selected', idx === i)
+  })
+  document.querySelectorAll('.item-row').forEach((row, idx) => {
+    row.classList.toggle('active', idx === i)
+  })
+  buildControls()
+  updateCode()
+}
+
+function setMode(mode) {
+  activeMode = mode
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === mode)
+  })
+  itemEls.forEach(el => {
+    el.className = el.className.replace(/mode-\w+/, '').trim()
+    el.classList.add('mode-' + mode)
+  })
+  applyPositions()
+  buildControls()
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => setMode(btn.dataset.mode))
+})
+
+// ─────────────────────────────────────────
+//  SLIDERS
+// ─────────────────────────────────────────
+const SLIDER_DEFS = [
+  { key: 'top',    label: 'Top',    min: -20, max: 120, step: 0.1 },
+  { key: 'left',   label: 'Left',   min: -20, max: 120, step: 0.1 },
+  { key: 'width',  label: 'Width',  min: 1,   max: 150, step: 0.1 },
+  { key: 'height', label: 'Height', min: 1,   max: 150, step: 0.1 },
+]
+
+let sliderEls = {}
+
+function buildControls() {
+  controls.innerHTML = ''
+  sliderEls = {}
+
+  const coords = state[selectedIdx][activeMode]
+
+  SLIDER_DEFS.forEach(def => {
+    const row = document.createElement('div')
+    row.className = 'ctrl-row'
+
+    const label = document.createElement('div')
+    label.className = 'ctrl-label'
+    label.textContent = def.label
+
+    const slider = document.createElement('input')
+    slider.type = 'range'
+    slider.min = def.min
+    slider.max = def.max
+    slider.step = def.step
+    slider.value = coords[def.key]
+
+    const valEl = document.createElement('div')
+    valEl.className = 'ctrl-val'
+    valEl.textContent = coords[def.key].toFixed(1) + '%'
+
+    slider.addEventListener('input', () => {
+      const v = parseFloat(slider.value)
+      state[selectedIdx][activeMode][def.key] = v
+      valEl.textContent = v.toFixed(1) + '%'
+      applyPositions()
+      updateCode()
+      saveState()
+    })
+
+    sliderEls[def.key] = { slider, valEl }
+    row.append(label, slider, valEl)
+    controls.appendChild(row)
+  })
+}
+
+// ─────────────────────────────────────────
+//  DRAG INTERACTIONS
+// ─────────────────────────────────────────
+let drag = null // { idx, mode, startX, startY, startCoords }
+
+itemEls.forEach((el, i) => {
+  // Main body = move (only if already selected)
+  el.addEventListener('pointerdown', e => {
+    if (e.target.classList.contains('corner') || e.target.classList.contains('rot-handle')) return
+    if (selectedIdx !== i) { selectItem(i); return }
+    e.preventDefault()
+    const coords = state[i][activeMode]
+    drag = {
+      idx: i, type: 'move',
+      startX: e.clientX, startY: e.clientY,
+      orig: { ...coords },
+    }
+  })
+
+  // Corner resize handles
+  el.querySelectorAll('.corner').forEach(corner => {
+    corner.addEventListener('pointerdown', e => {
+      e.preventDefault()
+      e.stopPropagation()
+      const coords = state[i][activeMode]
+      drag = {
+        idx: i, type: 'resize', corner: corner.dataset.corner,
+        startX: e.clientX, startY: e.clientY,
+        orig: { ...coords },
+      }
+    })
+  })
+
+  // Rotate handle
+  el.querySelector('.rot-handle').addEventListener('pointerdown', e => {
+    e.preventDefault()
+    e.stopPropagation()
+    // Not implementing rotate for CSS % layout; could add later
+  })
+})
+
+document.addEventListener('pointermove', e => {
+  if (!drag) return
+  const rect = getImgRect()
+  const W = rect.width, H = rect.height
+  const dx = (e.clientX - drag.startX) / W * 100
+  const dy = (e.clientY - drag.startY) / H * 100
+  const coords = state[drag.idx][activeMode]
+  const o = drag.orig
+
+  if (drag.type === 'move') {
+    coords.left   = Math.round((o.left   + dx) * 10) / 10
+    coords.top    = Math.round((o.top    + dy) * 10) / 10
+  } else if (drag.type === 'resize') {
+    const c = drag.corner
+    if (c === 'br') {
+      coords.width  = Math.max(1, Math.round((o.width  + dx) * 10) / 10)
+      coords.height = Math.max(1, Math.round((o.height + dy) * 10) / 10)
+    } else if (c === 'bl') {
+      coords.width  = Math.max(1, Math.round((o.width  - dx) * 10) / 10)
+      coords.left   = Math.round((o.left   + dx) * 10) / 10
+      coords.height = Math.max(1, Math.round((o.height + dy) * 10) / 10)
+    } else if (c === 'tr') {
+      coords.width  = Math.max(1, Math.round((o.width  + dx) * 10) / 10)
+      coords.height = Math.max(1, Math.round((o.height - dy) * 10) / 10)
+      coords.top    = Math.round((o.top    + dy) * 10) / 10
+    } else if (c === 'tl') {
+      coords.width  = Math.max(1, Math.round((o.width  - dx) * 10) / 10)
+      coords.left   = Math.round((o.left   + dx) * 10) / 10
+      coords.height = Math.max(1, Math.round((o.height - dy) * 10) / 10)
+      coords.top    = Math.round((o.top    + dy) * 10) / 10
+    }
+  }
+
+  applyPositions()
+  // Sync sliders
+  if (selectedIdx === drag.idx) {
+    SLIDER_DEFS.forEach(def => {
+      if (sliderEls[def.key]) {
+        sliderEls[def.key].slider.value = coords[def.key]
+        sliderEls[def.key].valEl.textContent = coords[def.key].toFixed(1) + '%'
+      }
+    })
+  }
+  updateCode()
+  saveState()
+})
+
+document.addEventListener('pointerup', () => { drag = null })
+
+// Deselect on canvas background click
+document.getElementById('canvas-area').addEventListener('click', e => {
+  if (e.target === document.getElementById('canvas-area') || e.target === roomImg) {
+    // keep selection
+  }
+})
+
+// ─────────────────────────────────────────
+//  CODE OUTPUT
+// ─────────────────────────────────────────
+function updateCode() {
+  const lines = []
+
+  lines.push('<!-- index.html — hotspot divs -->')
+  ITEMS.forEach((item, i) => {
+    const hs = state[i].hotspot
+    lines.push(`\n<!-- ${item.label} -->`)
+    lines.push(`<div id="bulb-hotspot"`)
+    lines.push(`  style="top:${hs.top.toFixed(1)}%; left:${hs.left.toFixed(1)}%;`)
+    lines.push(`         width:${hs.width.toFixed(1)}%; height:${hs.height.toFixed(1)}%;">`)
+    lines.push(`</div>`)
+    lines.push(`<img id="${item.id}-overlay" src="" alt="" aria-hidden="true" />`)
+  })
+
+  lines.push('\n/* index.css — overlay styles */')
+  ITEMS.forEach((item, i) => {
+    const ov = state[i].overlay
+    lines.push(`#${item.id}-overlay {`)
+    lines.push(`  position: absolute;`)
+    lines.push(`  top: ${ov.top.toFixed(1)}%;`)
+    lines.push(`  left: ${ov.left.toFixed(1)}%;`)
+    lines.push(`  width: ${ov.width.toFixed(1)}%;`)
+    lines.push(`  height: ${ov.height.toFixed(1)}%;`)
+    lines.push(`  object-fit: cover;`)
+    lines.push(`  pointer-events: none;`)
+    lines.push(`  z-index: 5;`)
+    lines.push(`}`)
+  })
+
+  codePre.textContent = lines.join('\n')
+}
+
+// ─────────────────────────────────────────
+//  COPY BUTTON
+// ─────────────────────────────────────────
+document.getElementById('btn-copy').addEventListener('click', () => {
+  navigator.clipboard.writeText(codePre.textContent).then(() => {
+    const btn = document.getElementById('btn-copy')
+    btn.textContent = '✓ Copied!'
+    btn.classList.add('copied')
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied') }, 2000)
+  })
+})
+
+// ─────────────────────────────────────────
+//  RESET
+// ─────────────────────────────────────────
+document.getElementById('btn-reset').addEventListener('click', () => {
+  state = ITEMS.map(item => ({
+    hotspot:  { ...item.hotspot },
+    overlay:  { ...item.overlay },
+  }))
+  localStorage.removeItem('devtool-state')
+  applyPositions()
+  buildControls()
+  updateCode()
+})
+
+// ─────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────
+function init() {
+  applyPositions()
+  selectItem(0)
+  updateCode()
+}
+
+if (roomImg.complete) { init() }
+else { roomImg.addEventListener('load', init) }
+
+window.addEventListener('resize', applyPositions)
+</script>
+</body>
+</html>

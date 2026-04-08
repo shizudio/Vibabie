@@ -21,11 +21,6 @@ if (skipLoader) {
   if (header) { header.classList.add('fade-up'); header.style.animationDelay = '0s' }
   if (footer) { footer.classList.add('fade-up'); footer.style.animationDelay = '0s' }
 } else {
-  // Start video immediately
-  if (loaderVideo) {
-    loaderVideo.play().catch(() => {}) // silent catch for browsers that block autoplay
-  }
-
   let count = 0
   const counter = setInterval(() => {
     count += 10
@@ -80,6 +75,69 @@ function fitRoom() {
 const img = document.getElementById('room-img')
 if (img.complete) { fitRoom() } else { img.addEventListener('load', fitRoom) }
 window.addEventListener('resize', fitRoom)
+
+// ── BULB HOTSPOT ──────────────────────────
+const bulbHotspot = document.getElementById('bulb-hotspot')
+const bulbOverlay = document.getElementById('bulb-overlay')
+
+if (bulbHotspot && bulbOverlay) {
+  function showBulb() {
+    bulbOverlay.src = ''
+    bulbOverlay.src = 'hotspot/bulb.gif'
+    bulbOverlay.classList.add('active')
+  }
+  function hideBulb() {
+    bulbOverlay.classList.remove('active')
+  }
+
+  // Desktop: hover
+  bulbHotspot.addEventListener('mouseenter', () => {
+    if (isMobile()) return
+    showBulb()
+    window.cursorMorphTo('🪔')
+  })
+  bulbHotspot.addEventListener('mouseleave', () => {
+    if (isMobile()) return
+    hideBulb()
+    window.cursorMorphBack()
+  })
+
+  function navigateBulb() {
+    if (window.__softNavigate) {
+      window.__softNavigate('contact.html')
+    } else {
+      window.location.href = 'contact.html'
+    }
+  }
+
+  // Hotspot click: navigate on desktop, toggle on mobile
+  bulbHotspot.addEventListener('click', () => {
+    if (isMobile()) {
+      if (bulbOverlay.classList.contains('active')) {
+        hideBulb()
+      } else {
+        showBulb()
+      }
+    } else {
+      navigateBulb()
+    }
+  })
+
+  // Clicking the gif navigates to contact page (desktop + mobile)
+  bulbOverlay.addEventListener('click', navigateBulb)
+
+  // Desktop: gif keeps itself active while hovered
+  bulbOverlay.addEventListener('mouseenter', () => {
+    if (isMobile()) return
+    showBulb()
+    window.cursorMorphTo('🪔')
+  })
+  bulbOverlay.addEventListener('mouseleave', () => {
+    if (isMobile()) return
+    hideBulb()
+    window.cursorMorphBack()
+  })
+}
 
 // ── ZONE INTERACTIONS ─────────────────────
 const tooltip = document.getElementById('tooltip')

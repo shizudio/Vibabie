@@ -233,18 +233,17 @@ body {
   visibility: hidden;
 }
 
-/* Art block — video fills a square panel */
+/* Art block — sized to gif's native 1709×512 aspect ratio */
 .loader-art {
-  width: clamp(120px, 15vw, 160px);
-  height: clamp(120px, 15vw, 160px);
+  width: clamp(200px, 30vw, 400px);
+  height: auto;
   overflow: hidden;
   flex-shrink: 0;
 }
 
 .loader-video {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
   display: block;
 }
 

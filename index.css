@@ -81,6 +81,31 @@
      border-radius: 40%;
    }
    
+   /* ── BULB HOTSPOT ── */
+   #bulb-hotspot {
+     position: absolute;
+     cursor: none;
+     z-index: 11;
+     border-radius: 50%;
+   }
+
+   /* ── BULB OVERLAY ── */
+   #bulb-overlay {
+     position: absolute;
+     top: 52.3%;
+     left: 7.0%;
+     width: 19.1%;
+     height: 47.0%;
+     object-fit: cover;
+     pointer-events: auto;
+     cursor: none;
+     z-index: 5;
+     opacity: 0;
+   }
+   #bulb-overlay.active {
+     opacity: 1;
+   }
+
    /* ── TOOLTIP ── */
    .tooltip {
      position: fixed;
