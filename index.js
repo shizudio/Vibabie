@@ -82,8 +82,7 @@ const bulbOverlay = document.getElementById('bulb-overlay')
 
 if (bulbHotspot && bulbOverlay) {
   function showBulb() {
-    bulbOverlay.src = ''
-    bulbOverlay.src = 'hotspot/bulb.gif'
+    bulbOverlay.src = '/hotspot/bulb.gif'
     bulbOverlay.classList.add('active')
   }
   function hideBulb() {
