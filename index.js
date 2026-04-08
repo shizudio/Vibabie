@@ -138,6 +138,68 @@ if (bulbHotspot && bulbOverlay) {
   })
 }
 
+// ── CAMERA HOTSPOT ────────────────────────
+const cameraHotspot = document.getElementById('camera-hotspot')
+const cameraOverlay = document.getElementById('camera-overlay')
+
+if (cameraHotspot && cameraOverlay) {
+  function showCamera() {
+    cameraOverlay.src = '/hotspot/camera.gif'
+    cameraOverlay.classList.add('active')
+  }
+  function hideCamera() {
+    cameraOverlay.classList.remove('active')
+  }
+
+  // Desktop: hover
+  cameraHotspot.addEventListener('mouseenter', () => {
+    if (isMobile()) return
+    showCamera()
+    window.cursorMorphTo('📷')
+  })
+  cameraHotspot.addEventListener('mouseleave', () => {
+    if (isMobile()) return
+    hideCamera()
+    window.cursorMorphBack()
+  })
+
+  function navigateCamera() {
+    if (window.__softNavigate) {
+      window.__softNavigate('photography.html')
+    } else {
+      window.location.href = 'photography.html'
+    }
+  }
+
+  // Hotspot click: navigate on desktop, toggle on mobile
+  cameraHotspot.addEventListener('click', () => {
+    if (isMobile()) {
+      if (cameraOverlay.classList.contains('active')) {
+        hideCamera()
+      } else {
+        showCamera()
+      }
+    } else {
+      navigateCamera()
+    }
+  })
+
+  // Clicking the gif navigates to photography page (desktop + mobile)
+  cameraOverlay.addEventListener('click', navigateCamera)
+
+  // Desktop: gif keeps itself active while hovered
+  cameraOverlay.addEventListener('mouseenter', () => {
+    if (isMobile()) return
+    showCamera()
+    window.cursorMorphTo('📷')
+  })
+  cameraOverlay.addEventListener('mouseleave', () => {
+    if (isMobile()) return
+    hideCamera()
+    window.cursorMorphBack()
+  })
+}
+
 // ── ZONE INTERACTIONS ─────────────────────
 const tooltip = document.getElementById('tooltip')
 const ttLabel = document.getElementById('tt-label')

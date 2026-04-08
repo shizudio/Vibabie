@@ -357,20 +357,29 @@ const ITEMS = [
     label: 'Bulb (lamp)',
     color: '#FFD700',
     src: 'hotspot/bulb.gif',
-    hotspot:  { top: 60, left: 7,  width: 8,   height: 10 },
-    overlay:  { top: 0,  left: 0,  width: 100, height: 100 },
+    hotspot:  { top: 57.1, left: 8.7,  width: 14.4, height: 37.7 },
+    overlay:  { top: 52.3, left: 7.0,  width: 19.1, height: 47.0 },
   },
-  // ← add future items here
+  {
+    id: 'camera',
+    label: 'Fujifilm Camera',
+    color: '#88aaff',
+    src: 'hotspot/camera.gif',
+    hotspot:  { top: 66.5, left: 24.0, width: 16.0, height: 22.0 },
+    overlay:  { top: 67.2, left: 24.0, width: 15.0, height: 20.6 },
+  },
 ]
 
 // ─────────────────────────────────────────
 //  STATE
 // ─────────────────────────────────────────
-// Load from localStorage so edits survive refresh
+const STATE_VERSION = '3'
+
 function loadState() {
   try {
     const saved = localStorage.getItem('devtool-state')
-    if (saved) return JSON.parse(saved)
+    const ver   = localStorage.getItem('devtool-version')
+    if (saved && ver === STATE_VERSION) return JSON.parse(saved)
   } catch {}
   return null
 }
@@ -385,6 +394,7 @@ let activeMode  = 'hotspot' // 'hotspot' | 'overlay'
 
 function saveState() {
   localStorage.setItem('devtool-state', JSON.stringify(state))
+  localStorage.setItem('devtool-version', STATE_VERSION)
 }
 
 // ─────────────────────────────────────────
@@ -653,7 +663,7 @@ function updateCode() {
   ITEMS.forEach((item, i) => {
     const hs = state[i].hotspot
     lines.push(`\n<!-- ${item.label} -->`)
-    lines.push(`<div id="bulb-hotspot"`)
+    lines.push(`<div id="${item.id}-hotspot"`)
     lines.push(`  style="top:${hs.top.toFixed(1)}%; left:${hs.left.toFixed(1)}%;`)
     lines.push(`         width:${hs.width.toFixed(1)}%; height:${hs.height.toFixed(1)}%;">`)
     lines.push(`</div>`)
