@@ -101,6 +101,7 @@
      cursor: none;
      z-index: 5;
      opacity: 0;
+     filter: saturate(1.15);
    }
    #bulb-overlay.active {
      opacity: 1;
