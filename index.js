@@ -200,6 +200,68 @@ if (cameraHotspot && cameraOverlay) {
   })
 }
 
+// ── FRENCH PRESS HOTSPOT ──────────────────
+const frenchpressHotspot = document.getElementById('frenchpress-hotspot')
+const frenchpressOverlay = document.getElementById('frenchpress-overlay')
+
+if (frenchpressHotspot && frenchpressOverlay) {
+  function showFrenchpress() {
+    frenchpressOverlay.src = '/hotspot/frenchpress.gif'
+    frenchpressOverlay.classList.add('active')
+  }
+  function hideFrenchpress() {
+    frenchpressOverlay.classList.remove('active')
+  }
+
+  // Desktop: hover
+  frenchpressHotspot.addEventListener('mouseenter', () => {
+    if (isMobile()) return
+    showFrenchpress()
+    window.cursorMorphTo('☕')
+  })
+  frenchpressHotspot.addEventListener('mouseleave', () => {
+    if (isMobile()) return
+    hideFrenchpress()
+    window.cursorMorphBack()
+  })
+
+  function navigateFrenchpress() {
+    if (window.__softNavigate) {
+      window.__softNavigate('cosmos.html')
+    } else {
+      window.location.href = 'cosmos.html'
+    }
+  }
+
+  // Hotspot click: navigate on desktop, toggle on mobile
+  frenchpressHotspot.addEventListener('click', () => {
+    if (isMobile()) {
+      if (frenchpressOverlay.classList.contains('active')) {
+        hideFrenchpress()
+      } else {
+        showFrenchpress()
+      }
+    } else {
+      navigateFrenchpress()
+    }
+  })
+
+  // Clicking the gif navigates to cosmos page (desktop + mobile)
+  frenchpressOverlay.addEventListener('click', navigateFrenchpress)
+
+  // Desktop: gif keeps itself active while hovered
+  frenchpressOverlay.addEventListener('mouseenter', () => {
+    if (isMobile()) return
+    showFrenchpress()
+    window.cursorMorphTo('☕')
+  })
+  frenchpressOverlay.addEventListener('mouseleave', () => {
+    if (isMobile()) return
+    hideFrenchpress()
+    window.cursorMorphBack()
+  })
+}
+
 // ── ZONE INTERACTIONS ─────────────────────
 const tooltip = document.getElementById('tooltip')
 const ttLabel = document.getElementById('tt-label')
