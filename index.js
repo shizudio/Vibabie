@@ -76,6 +76,79 @@ const img = document.getElementById('room-img')
 if (img.complete) { fitRoom() } else { img.addEventListener('load', fitRoom) }
 window.addEventListener('resize', fitRoom)
 
+// ── VINYL HOTSPOT ─────────────────────────
+const vinylHotspot = document.getElementById('vinyl-hotspot')
+const vinylOverlay = document.getElementById('vinyl-overlay')
+
+if (vinylHotspot && vinylOverlay) {
+  function showVinyl() {
+    vinylOverlay.src = isMobile() ? '/hotspot/mobile/vinyl.gif' : '/hotspot/vinyl.gif'
+    vinylOverlay.classList.add('active')
+  }
+  function hideVinyl() {
+    vinylOverlay.classList.remove('active')
+  }
+
+  // Desktop: hover
+  vinylHotspot.addEventListener('mouseenter', () => {
+    if (isMobile()) return
+    showVinyl()
+    window.cursorMorphTo('🎶')
+    ttLabel.textContent = 'The Record'
+    ttDesc.textContent = 'Music & Vibes'
+    ttLink.textContent = 'View Records ↗'
+    ttLink.href = 'record.html'
+    ttLink.target = '_self'
+    tooltip.classList.add('visible')
+  })
+  vinylHotspot.addEventListener('mouseleave', () => {
+    if (isMobile()) return
+    hideVinyl()
+    window.cursorMorphBack()
+    tooltip.classList.remove('visible')
+  })
+
+  function navigateVinyl() {
+    if (window.__softNavigate) {
+      window.__softNavigate('record.html')
+    } else {
+      window.location.href = 'record.html'
+    }
+  }
+
+  // Mobile: tap → show gif → auto-navigate after 1.5s
+  vinylHotspot.addEventListener('click', () => {
+    if (isMobile()) {
+      showVinyl()
+      setTimeout(navigateVinyl, 1500)
+    } else {
+      navigateVinyl()
+    }
+  })
+
+  // Clicking the gif navigates to record page (desktop + mobile)
+  vinylOverlay.addEventListener('click', navigateVinyl)
+
+  // Desktop: gif keeps itself active while hovered
+  vinylOverlay.addEventListener('mouseenter', () => {
+    if (isMobile()) return
+    showVinyl()
+    window.cursorMorphTo('🎶')
+    ttLabel.textContent = 'The Record'
+    ttDesc.textContent = 'Music & Vibes'
+    ttLink.textContent = 'View Records ↗'
+    ttLink.href = 'record.html'
+    ttLink.target = '_self'
+    tooltip.classList.add('visible')
+  })
+  vinylOverlay.addEventListener('mouseleave', () => {
+    if (isMobile()) return
+    hideVinyl()
+    window.cursorMorphBack()
+    tooltip.classList.remove('visible')
+  })
+}
+
 // ── BULB HOTSPOT ──────────────────────────
 const bulbHotspot = document.getElementById('bulb-hotspot')
 const bulbOverlay = document.getElementById('bulb-overlay')

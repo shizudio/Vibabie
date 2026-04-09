@@ -376,8 +376,17 @@ const ITEMS = [
     label: 'French Press Coffee',
     color: '#aa8844',
     src: 'hotspot/frenchpress.gif',
-    hotspot:  { top: 50.0, left: 80.0, width: 9.0, height: 28.0 },
-    overlay:  { top: 50.0, left: 80.0, width: 9.0, height: 28.0 },
+    hotspot:  { top: 52.7, left: 79.7, width: 11.3, height: 26.3 },
+    overlay:  { top: 50.8, left: 79.2, width: 12.0, height: 29.9 },
+    filters: { brightness: 1, contrast: 1, vibrancy: 1.05 },
+  },
+  {
+    id: 'vinyl',
+    label: 'The Record (vinyl)',
+    color: '#cc88ff',
+    src: 'hotspot/vinyl.gif',
+    hotspot:  { top: 5.0, left: 25.0, width: 10.0, height: 18.0 },
+    overlay:  { top: 5.0, left: 25.0, width: 10.0, height: 18.0 },
     filters: { brightness: 1, contrast: 1, vibrancy: 1 },
   },
 ]
@@ -385,7 +394,7 @@ const ITEMS = [
 // ─────────────────────────────────────────
 //  STATE
 // ─────────────────────────────────────────
-const STATE_VERSION = '3'
+const STATE_VERSION = '4'
 
 function loadState() {
   try {
