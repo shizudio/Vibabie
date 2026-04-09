@@ -117,10 +117,10 @@
    /* ── BED OVERLAY ── */
    #bed-overlay {
      position: absolute;
-     top: 28%;
-     left: 18%;
-     width: 42%;
-     height: 38%;
+     top: 33.6%;
+     left: 18.5%;
+     width: 34.8%;
+     height: 27.6%;
      object-fit: cover;
      pointer-events: auto;
      cursor: none;
