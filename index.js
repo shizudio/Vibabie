@@ -76,18 +76,38 @@ const img = document.getElementById('room-img')
 if (img.complete) { fitRoom() } else { img.addEventListener('load', fitRoom) }
 window.addEventListener('resize', fitRoom)
 
+// ── PRELOAD OVERLAY GIFS ──────────────────
+// Set srcs immediately so gifs are cached before first tap/hover (prevents black flash)
+function preloadOverlays() {
+  const mobile = isMobile()
+  const overlays = [
+    { id: 'vinyl-overlay',       desk: '/hotspot/vinyl.gif',       mob: '/hotspot/mobile/vinyl.gif' },
+    { id: 'bulb-overlay',        desk: '/hotspot/bulb.gif',        mob: '/hotspot/mobile/bulb.gif' },
+    { id: 'camera-overlay',      desk: '/hotspot/camera.gif',      mob: '/hotspot/mobile/camera.gif' },
+    { id: 'frenchpress-overlay', desk: '/hotspot/frenchpress.gif', mob: '/hotspot/mobile/frenchpress.gif' },
+  ]
+  overlays.forEach(({ id, desk, mob }) => {
+    const el = document.getElementById(id)
+    if (el) el.src = mobile ? mob : desk
+  })
+}
+preloadOverlays()
+
+// Hide all overlays (used on mobile when opening a new one)
+function hideAllOverlays() {
+  ;['vinyl-overlay', 'bulb-overlay', 'camera-overlay', 'frenchpress-overlay'].forEach(id => {
+    const el = document.getElementById(id)
+    if (el) el.classList.remove('active')
+  })
+}
+
 // ── VINYL HOTSPOT ─────────────────────────
 const vinylHotspot = document.getElementById('vinyl-hotspot')
 const vinylOverlay = document.getElementById('vinyl-overlay')
 
 if (vinylHotspot && vinylOverlay) {
-  function showVinyl() {
-    vinylOverlay.src = isMobile() ? '/hotspot/mobile/vinyl.gif' : '/hotspot/vinyl.gif'
-    vinylOverlay.classList.add('active')
-  }
-  function hideVinyl() {
-    vinylOverlay.classList.remove('active')
-  }
+  function showVinyl() { vinylOverlay.classList.add('active') }
+  function hideVinyl() { vinylOverlay.classList.remove('active') }
 
   // Desktop: hover
   vinylHotspot.addEventListener('mouseenter', () => {
@@ -116,11 +136,15 @@ if (vinylHotspot && vinylOverlay) {
     }
   }
 
-  // Mobile: tap → show gif → auto-navigate after 1.5s
+  // Mobile: tap once → show gif, tap again → navigate
   vinylHotspot.addEventListener('click', () => {
     if (isMobile()) {
-      showVinyl()
-      setTimeout(navigateVinyl, 1500)
+      if (vinylOverlay.classList.contains('active')) {
+        navigateVinyl()
+      } else {
+        hideAllOverlays()
+        showVinyl()
+      }
     } else {
       navigateVinyl()
     }
@@ -154,13 +178,8 @@ const bulbHotspot = document.getElementById('bulb-hotspot')
 const bulbOverlay = document.getElementById('bulb-overlay')
 
 if (bulbHotspot && bulbOverlay) {
-  function showBulb() {
-    bulbOverlay.src = isMobile() ? '/hotspot/mobile/bulb.gif' : '/hotspot/bulb.gif'
-    bulbOverlay.classList.add('active')
-  }
-  function hideBulb() {
-    bulbOverlay.classList.remove('active')
-  }
+  function showBulb() { bulbOverlay.classList.add('active') }
+  function hideBulb() { bulbOverlay.classList.remove('active') }
 
   // Desktop: hover
   bulbHotspot.addEventListener('mouseenter', () => {
@@ -189,11 +208,15 @@ if (bulbHotspot && bulbOverlay) {
     }
   }
 
-  // Mobile: tap → show gif → auto-navigate after 1.5s
+  // Mobile: tap once → show gif, tap again → navigate
   bulbHotspot.addEventListener('click', () => {
     if (isMobile()) {
-      showBulb()
-      setTimeout(navigateBulb, 1500)
+      if (bulbOverlay.classList.contains('active')) {
+        navigateBulb()
+      } else {
+        hideAllOverlays()
+        showBulb()
+      }
     } else {
       navigateBulb()
     }
@@ -227,13 +250,8 @@ const cameraHotspot = document.getElementById('camera-hotspot')
 const cameraOverlay = document.getElementById('camera-overlay')
 
 if (cameraHotspot && cameraOverlay) {
-  function showCamera() {
-    cameraOverlay.src = isMobile() ? '/hotspot/mobile/camera.gif' : '/hotspot/camera.gif'
-    cameraOverlay.classList.add('active')
-  }
-  function hideCamera() {
-    cameraOverlay.classList.remove('active')
-  }
+  function showCamera() { cameraOverlay.classList.add('active') }
+  function hideCamera() { cameraOverlay.classList.remove('active') }
 
   // Desktop: hover
   cameraHotspot.addEventListener('mouseenter', () => {
@@ -262,11 +280,15 @@ if (cameraHotspot && cameraOverlay) {
     }
   }
 
-  // Mobile: tap → show gif → auto-navigate after 1.5s
+  // Mobile: tap once → show gif, tap again → navigate
   cameraHotspot.addEventListener('click', () => {
     if (isMobile()) {
-      showCamera()
-      setTimeout(navigateCamera, 1500)
+      if (cameraOverlay.classList.contains('active')) {
+        navigateCamera()
+      } else {
+        hideAllOverlays()
+        showCamera()
+      }
     } else {
       navigateCamera()
     }
@@ -300,13 +322,8 @@ const frenchpressHotspot = document.getElementById('frenchpress-hotspot')
 const frenchpressOverlay = document.getElementById('frenchpress-overlay')
 
 if (frenchpressHotspot && frenchpressOverlay) {
-  function showFrenchpress() {
-    frenchpressOverlay.src = isMobile() ? '/hotspot/mobile/frenchpress.gif' : '/hotspot/frenchpress.gif'
-    frenchpressOverlay.classList.add('active')
-  }
-  function hideFrenchpress() {
-    frenchpressOverlay.classList.remove('active')
-  }
+  function showFrenchpress() { frenchpressOverlay.classList.add('active') }
+  function hideFrenchpress() { frenchpressOverlay.classList.remove('active') }
 
   // Desktop: hover
   frenchpressHotspot.addEventListener('mouseenter', () => {
@@ -335,11 +352,15 @@ if (frenchpressHotspot && frenchpressOverlay) {
     }
   }
 
-  // Mobile: tap → show gif → auto-navigate after 1.5s
+  // Mobile: tap once → show gif, tap again → navigate
   frenchpressHotspot.addEventListener('click', () => {
     if (isMobile()) {
-      showFrenchpress()
-      setTimeout(navigateFrenchpress, 1500)
+      if (frenchpressOverlay.classList.contains('active')) {
+        navigateFrenchpress()
+      } else {
+        hideAllOverlays()
+        showFrenchpress()
+      }
     } else {
       navigateFrenchpress()
     }

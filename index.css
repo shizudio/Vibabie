@@ -81,6 +81,14 @@
      border-radius: 40%;
    }
    
+   /* ── SHARED OVERLAY TRANSITION ── */
+   #vinyl-overlay,
+   #bulb-overlay,
+   #camera-overlay,
+   #frenchpress-overlay {
+     transition: opacity 0.15s ease;
+   }
+
    /* ── VINYL HOTSPOT ── */
    #vinyl-hotspot {
      position: absolute;
@@ -105,6 +113,7 @@
    #vinyl-overlay.active {
      opacity: 1;
    }
+
 
    /* ── BULB HOTSPOT ── */
    #bulb-hotspot {
