@@ -53,6 +53,7 @@
       object-fit: cover;
       pointer-events: none;
       opacity: 0.85;
+      filter: brightness(var(--brightness, 1)) contrast(var(--contrast, 1)) saturate(var(--vibrancy, 1));
     }
 
     /* hotspot tab: dashed highlight */
@@ -359,6 +360,7 @@ const ITEMS = [
     src: 'hotspot/bulb.gif',
     hotspot:  { top: 57.1, left: 8.7,  width: 14.4, height: 37.7 },
     overlay:  { top: 52.3, left: 7.0,  width: 19.1, height: 47.0 },
+    filters: { brightness: 1, contrast: 1, vibrancy: 1 },
   },
   {
     id: 'camera',
@@ -367,6 +369,7 @@ const ITEMS = [
     src: 'hotspot/camera.gif',
     hotspot:  { top: 66.5, left: 24.0, width: 16.0, height: 22.0 },
     overlay:  { top: 67.2, left: 24.0, width: 15.0, height: 20.6 },
+    filters: { brightness: 1, contrast: 1, vibrancy: 1 },
   },
   {
     id: 'bed',
@@ -375,6 +378,7 @@ const ITEMS = [
     src: 'hotspot/bed.gif',
     hotspot:  { top: 28.0, left: 18.0, width: 42.0, height: 38.0 },
     overlay:  { top: 28.0, left: 18.0, width: 42.0, height: 38.0 },
+    filters: { brightness: 1, contrast: 1, vibrancy: 1 },
   },
 ]
 
@@ -395,6 +399,7 @@ function loadState() {
 let state = loadState() || ITEMS.map(item => ({
   hotspot:  { ...item.hotspot },
   overlay:  { ...item.overlay },
+  filters:  { ...item.filters },
 }))
 
 let selectedIdx = 0
@@ -477,6 +482,12 @@ function applyPositions() {
     el.style.top    = (coords.top    / 100 * H) + 'px'
     el.style.width  = (coords.width  / 100 * W) + 'px'
     el.style.height = (coords.height / 100 * H) + 'px'
+
+    // Apply filter values
+    const f = s.filters || {}
+    el.style.setProperty('--brightness', f.brightness || 1)
+    el.style.setProperty('--contrast', f.contrast || 1)
+    el.style.setProperty('--vibrancy', f.vibrancy || 1)
   })
 }
 
@@ -522,6 +533,12 @@ const SLIDER_DEFS = [
   { key: 'height', label: 'Height', min: 1,   max: 150, step: 0.1 },
 ]
 
+const FILTER_SLIDERS = [
+  { key: 'brightness', label: 'Brightness', min: 0, max: 2, step: 0.05, format: v => v.toFixed(2) },
+  { key: 'contrast',   label: 'Contrast',   min: 0, max: 2, step: 0.05, format: v => v.toFixed(2) },
+  { key: 'vibrancy',   label: 'Vibrancy',   min: 0, max: 2, step: 0.05, format: v => v.toFixed(2) },
+]
+
 let sliderEls = {}
 
 function buildControls() {
@@ -553,6 +570,42 @@ function buildControls() {
       const v = parseFloat(slider.value)
       state[selectedIdx][activeMode][def.key] = v
       valEl.textContent = v.toFixed(1) + '%'
+      applyPositions()
+      updateCode()
+      saveState()
+    })
+
+    sliderEls[def.key] = { slider, valEl }
+    row.append(label, slider, valEl)
+    controls.appendChild(row)
+  })
+
+  // Add filter sliders
+  const filters = state[selectedIdx].filters || {}
+  FILTER_SLIDERS.forEach(def => {
+    const row = document.createElement('div')
+    row.className = 'ctrl-row'
+
+    const label = document.createElement('div')
+    label.className = 'ctrl-label'
+    label.textContent = def.label
+
+    const slider = document.createElement('input')
+    slider.type = 'range'
+    slider.min = def.min
+    slider.max = def.max
+    slider.step = def.step
+    slider.value = filters[def.key] || 1
+
+    const valEl = document.createElement('div')
+    valEl.className = 'ctrl-val'
+    valEl.textContent = (filters[def.key] || 1).toFixed(2)
+
+    slider.addEventListener('input', () => {
+      const v = parseFloat(slider.value)
+      if (!state[selectedIdx].filters) state[selectedIdx].filters = {}
+      state[selectedIdx].filters[def.key] = v
+      valEl.textContent = v.toFixed(2)
       applyPositions()
       updateCode()
       saveState()
@@ -681,6 +734,7 @@ function updateCode() {
   lines.push('\n/* index.css — overlay styles */')
   ITEMS.forEach((item, i) => {
     const ov = state[i].overlay
+    const f = state[i].filters || {}
     lines.push(`#${item.id}-overlay {`)
     lines.push(`  position: absolute;`)
     lines.push(`  top: ${ov.top.toFixed(1)}%;`)
@@ -690,6 +744,9 @@ function updateCode() {
     lines.push(`  object-fit: cover;`)
     lines.push(`  pointer-events: none;`)
     lines.push(`  z-index: 5;`)
+    if (f.brightness !== 1 || f.contrast !== 1 || f.vibrancy !== 1) {
+      lines.push(`  filter: brightness(${(f.brightness || 1).toFixed(2)}) contrast(${(f.contrast || 1).toFixed(2)}) saturate(${(f.vibrancy || 1).toFixed(2)});`)
+    }
     lines.push(`}`)
   })
 
@@ -715,6 +772,7 @@ document.getElementById('btn-reset').addEventListener('click', () => {
   state = ITEMS.map(item => ({
     hotspot:  { ...item.hotspot },
     overlay:  { ...item.overlay },
+    filters:  { ...item.filters },
   }))
   localStorage.removeItem('devtool-state')
   applyPositions()
