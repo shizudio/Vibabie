@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elfa Opinion Tracker</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header-logo {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 800; font-size: 15px; letter-spacing: -0.5px;
+      flex-shrink: 0;
+    }
+    .header-title { font-size: 17px; font-weight: 700; color: #0f172a; }
+    .header-badge {
+      margin-left: 8px;
+      font-size: 11px; font-weight: 600;
+      background: #f0fdf4; color: #16a34a;
+      border: 1px solid #bbf7d0;
+      border-radius: 20px; padding: 2px 8px;
+    }
+    .header-right { margin-left: auto; font-size: 13px; color: #94a3b8; }
+
+    /* ── Main ── */
+    .main { max-width: 860px; margin: 0 auto; padding: 32px 20px 60px; }
+
+    /* ── Search card ── */
+    .search-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 24px 24px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    }
+    .search-label {
+      font-size: 11px; font-weight: 600;
+      color: #94a3b8; text-transform: uppercase; letter-spacing: .8px;
+      margin-bottom: 10px;
+    }
+    .search-row { display: flex; gap: 8px; }
+    .search-at {
+      display: flex; align-items: center;
+      background: #f1f5f9; border: 1px solid #e2e8f0;
+      border-radius: 9px 0 0 9px; padding: 0 12px;
+      font-size: 15px; color: #94a3b8; border-right: 0;
+    }
+    .search-input {
+      flex: 1; padding: 10px 14px;
+      border: 1px solid #e2e8f0; border-left: 0;
+      border-radius: 0 9px 9px 0;
+      font-size: 15px; color: #0f172a;
+      background: #f8fafc; outline: none;
+      transition: border-color .15s, background .15s;
+    }
+    .search-input:focus { border-color: #10b981; background: #fff; }
+    .search-btn {
+      padding: 10px 22px;
+      background: #0f172a; color: #fff;
+      border: none; border-radius: 9px;
+      font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: background .15s, opacity .15s;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .search-btn:hover:not(:disabled) { background: #1e293b; }
+    .search-btn:disabled { opacity: .45; cursor: not-allowed; }
+
+    /* ── Step pills ── */
+    .steps {
+      display: flex; gap: 6px; flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .step-pill {
+      font-size: 11px; font-weight: 600;
+      padding: 4px 11px; border-radius: 20px;
+      background: #f1f5f9; color: #94a3b8;
+      border: 1px solid transparent;
+      transition: all .2s;
+    }
+    .step-pill.active {
+      background: #eff6ff; color: #3b82f6; border-color: #bfdbfe;
+    }
+    .step-pill.done {
+      background: #f0fdf4; color: #16a34a; border-color: #bbf7d0;
+    }
+    .step-pill.error {
+      background: #fef2f2; color: #dc2626; border-color: #fecaca;
+    }
+
+    /* ── Section header ── */
+    .section { margin-bottom: 24px; }
+    .section-label {
+      font-size: 11px; font-weight: 700;
+      color: #94a3b8; text-transform: uppercase; letter-spacing: .8px;
+      margin-bottom: 12px;
+    }
+
+    /* ── Metric cards ── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    @media (max-width: 600px) { .metrics-grid { grid-template-columns: repeat(2, 1fr); } }
+    .metric-card {
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 18px 16px; box-shadow: 0 1px 2px rgba(0,0,0,.03);
+    }
+    .metric-label { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+    .metric-value { font-size: 26px; font-weight: 800; color: #0f172a; letter-spacing: -1px; }
+
+    /* ── Analysis block ── */
+    .analysis-card {
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 20px; box-shadow: 0 1px 2px rgba(0,0,0,.03);
+    }
+    .analysis-text {
+      font-size: 14px; line-height: 1.75; color: #334155;
+      white-space: pre-wrap; max-height: 320px; overflow-y: auto;
+    }
+
+    /* ── Sentiment bar ── */
+    .bar-card {
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 20px; box-shadow: 0 1px 2px rgba(0,0,0,.03);
+    }
+    .bar-track {
+      height: 14px; border-radius: 7px;
+      display: flex; overflow: hidden;
+      background: #f1f5f9; margin-bottom: 12px;
+    }
+    .bar-seg { height: 100%; transition: width .6s cubic-bezier(.4,0,.2,1); }
+    .bar-pos { background: #16a34a; }
+    .bar-neg { background: #ef4444; }
+    .bar-neu { background: #94a3b8; }
+    .bar-legend { display: flex; gap: 18px; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 7px; font-size: 13px; color: #334155; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── Opinions ── */
+    .opinions-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .opinions-title { font-size: 15px; font-weight: 700; color: #0f172a; }
+    .opinions-count { font-size: 13px; color: #94a3b8; font-weight: 500; }
+
+    .opinions-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .op-card {
+      background: #fff; border: 1px solid #e2e8f0;
+      border-left: 3px solid #e2e8f0;
+      border-radius: 10px; padding: 13px 16px;
+      transition: border-left-color .35s, background .35s;
+    }
+    .op-card.positive { border-left-color: #16a34a; background: #f0fdf4; }
+    .op-card.negative { border-left-color: #ef4444; background: #fef2f2; }
+    .op-card.neutral  { border-left-color: #94a3b8; background: #f8fafc; }
+
+    .op-top { display: flex; align-items: flex-start; gap: 10px; }
+    .op-badge {
+      font-size: 10px; font-weight: 700;
+      padding: 2px 8px; border-radius: 4px;
+      text-transform: uppercase; letter-spacing: .6px;
+      flex-shrink: 0; margin-top: 2px;
+      transition: background .35s, color .35s;
+    }
+    .op-badge.positive { background: #dcfce7; color: #16a34a; }
+    .op-badge.negative { background: #fee2e2; color: #dc2626; }
+    .op-badge.neutral  { background: #f1f5f9; color: #64748b; }
+
+    .op-text { font-size: 14px; color: #334155; line-height: 1.55; flex: 1; }
+    .op-source { font-size: 12px; color: #94a3b8; margin-top: 5px; }
+
+    /* ── Loading ── */
+    .loading-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 0; font-size: 14px; color: #64748b;
+    }
+    .spinner {
+      width: 16px; height: 16px; flex-shrink: 0;
+      border: 2px solid #e2e8f0;
+      border-top-color: #10b981;
+      border-radius: 50%;
+      animation: spin .65s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Error ── */
+    .err-pill {
+      font-size: 13px; color: #dc2626;
+      background: #fef2f2; border: 1px solid #fecaca;
+      border-radius: 8px; padding: 10px 14px;
+      margin-bottom: 10px;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-logo">E</div>
+  <div class="header-title">Elfa Opinion Tracker</div>
+  <span class="header-badge">Live</span>
+  <div class="header-right">Powered by Elfa API</div>
+</header>
+
+<main class="main">
+
+  <!-- Search -->
+  <div class="search-card">
+    <div class="search-label">X / Twitter Account</div>
+    <div class="search-row">
+      <div class="search-at">@</div>
+      <input id="usernameInput" class="search-input" type="text"
+             value="perena" placeholder="username" />
+      <button id="analyzeBtn" class="search-btn" onclick="runAnalysis()">Analyze</button>
+    </div>
+  </div>
+
+  <!-- Step pills -->
+  <div id="stepsRow" class="steps hidden">
+    <div class="step-pill" id="s1">1 · Smart Stats</div>
+    <div class="step-pill" id="s2">2 · Event Summaries</div>
+    <div class="step-pill" id="s3">3 · AI Analysis</div>
+    <div class="step-pill" id="s4">4 · Classify Events</div>
+    <div class="step-pill" id="s5">5 · Sentiment Breakdown</div>
+    <div class="step-pill" id="s6">6 · Overall Bar</div>
+  </div>
+
+  <!-- Errors -->
+  <div id="errBox"></div>
+
+  <!-- Loading -->
+  <div id="loadingRow" class="loading-row hidden">
+    <div class="spinner"></div>
+    <span id="loadingText">Loading…</span>
+  </div>
+
+  <!-- Stats -->
+  <div id="statsSection" class="section hidden">
+    <div class="section-label">Account Overview</div>
+    <div class="metrics-grid" id="metricsGrid"></div>
+  </div>
+
+  <!-- AI Analysis -->
+  <div id="analysisSection" class="section hidden">
+    <div class="section-label">AI Deep Analysis</div>
+    <div class="analysis-card">
+      <div class="analysis-text" id="analysisText"></div>
+    </div>
+  </div>
+
+  <!-- Sentiment Bar -->
+  <div id="barSection" class="section hidden">
+    <div class="section-label">Sentiment Overview</div>
+    <div class="bar-card">
+      <div class="bar-track">
+        <div class="bar-seg bar-pos" id="barPos" style="width:0%"></div>
+        <div class="bar-seg bar-neg" id="barNeg" style="width:0%"></div>
+        <div class="bar-seg bar-neu" id="barNeu" style="width:100%"></div>
+      </div>
+      <div class="bar-legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#16a34a"></div>
+          <span id="legPos">Positive: 0%</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#ef4444"></div>
+          <span id="legNeg">Negative: 0%</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#94a3b8"></div>
+          <span id="legNeu">Neutral: 0%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Opinions list -->
+  <div id="opinionsSection" class="hidden">
+    <div class="opinions-header">
+      <div class="opinions-title">Public Opinions</div>
+      <div class="opinions-count" id="opinionsCount"></div>
+    </div>
+    <div class="opinions-list" id="opinionsList"></div>
+  </div>
+
+</main>
+
+<script>
+// ─── State ────────────────────────────────────────────────
+let opinions  = [];   // { id, text, sentiment, source }
+let sessionId = null;
+let running   = false;
+
+// ─── Helpers ──────────────────────────────────────────────
+const $ = (id) => document.getElementById(id);
+
+function setStep(n, state) {
+  const el = $('s' + n);
+  if (el) el.className = 'step-pill ' + (state || '');
+}
+
+function setLoading(msg) {
+  $('loadingText').textContent = msg;
+  $('loadingRow').classList.remove('hidden');
+}
+
+function hideLoading() {
+  $('loadingRow').classList.add('hidden');
+}
+
+function addError(msg) {
+  $('errBox').insertAdjacentHTML('beforeend',
+    `<div class="err-pill">⚠ ${escHtml(msg)}</div>`);
+}
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function fmt(n) {
+  if (n == null) return '—';
+  n = Number(n);
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+  return n.toLocaleString();
+}
+
+// ─── API ──────────────────────────────────────────────────
+async function api(path, opts = {}) {
+  const res = await fetch('/api' + path, {
+    headers: { 'Content-Type': 'application/json' },
+    ...opts,
+  });
+  const text = await res.text();
+  let json;
+  try { json = JSON.parse(text); } catch { json = { error: text }; }
+  if (!res.ok) throw new Error(json?.error || `HTTP ${res.status}`);
+  return json;
+}
+
+
+// ─── Sentiment bar ────────────────────────────────────────
+function refreshBar() {
+  const total = opinions.length;
+  if (!total) return;
+  const pos = opinions.filter(o => o.sentiment === 'positive').length;
+  const neg = opinions.filter(o => o.sentiment === 'negative').length;
+  const neu = total - pos - neg;
+  const pPct = Math.round(pos / total * 100);
+  const nPct = Math.round(neg / total * 100);
+  const nuPct = 100 - pPct - nPct;
+  $('barPos').style.width = pPct + '%';
+  $('barNeg').style.width = nPct + '%';
+  $('barNeu').style.width = nuPct + '%';
+  $('legPos').textContent = `Positive: ${pPct}% (${pos})`;
+  $('legNeg').textContent = `Negative: ${nPct}% (${neg})`;
+  $('legNeu').textContent = `Neutral: ${nuPct}% (${neu})`;
+  $('barSection').classList.remove('hidden');
+}
+
+// ─── Render opinions ──────────────────────────────────────
+function renderOpinions() {
+  const list = $('opinionsList');
+  list.innerHTML = '';
+  for (const op of opinions) {
+    list.insertAdjacentHTML('beforeend', `
+      <div class="op-card ${op.sentiment}" id="op-${escHtml(op.id)}">
+        <div class="op-top">
+          <span class="op-badge ${op.sentiment}" id="badge-${escHtml(op.id)}">${op.sentiment}</span>
+          <span class="op-text">${escHtml(op.text)}</span>
+        </div>
+        <div class="op-source">${escHtml(op.source)}</div>
+      </div>
+    `);
+  }
+  $('opinionsCount').textContent = `${opinions.length} opinion${opinions.length !== 1 ? 's' : ''}`;
+  $('opinionsSection').classList.remove('hidden');
+  refreshBar();
+}
+
+// Update a single card's sentiment without full re-render
+function patchSentiment(id, sentiment) {
+  const op = opinions.find(o => o.id === id);
+  if (op) op.sentiment = sentiment;
+  const card  = $('op-' + id);
+  const badge = $('badge-' + id);
+  if (card)  card.className  = 'op-card '  + sentiment;
+  if (badge) { badge.className = 'op-badge ' + sentiment; badge.textContent = sentiment; }
+  refreshBar();
+}
+
+// Append new opinions without wiping existing DOM
+function appendOpinions(newOps) {
+  const list = $('opinionsList');
+  for (const op of newOps) {
+    list.insertAdjacentHTML('beforeend', `
+      <div class="op-card ${op.sentiment}" id="op-${escHtml(op.id)}">
+        <div class="op-top">
+          <span class="op-badge ${op.sentiment}" id="badge-${escHtml(op.id)}">${op.sentiment}</span>
+          <span class="op-text">${escHtml(op.text)}</span>
+        </div>
+        <div class="op-source">${escHtml(op.source)}</div>
+      </div>
+    `);
+  }
+  $('opinionsCount').textContent = `${opinions.length} opinion${opinions.length !== 1 ? 's' : ''}`;
+  $('opinionsSection').classList.remove('hidden');
+  refreshBar();
+}
+
+// ─── Main pipeline ────────────────────────────────────────
+async function runAnalysis() {
+  if (running) return;
+  const username = $('usernameInput').value.trim().replace(/^@/, '');
+  if (!username) { $('usernameInput').focus(); return; }
+
+  running   = true;
+  opinions  = [];
+  sessionId = null;
+
+  // Reset UI
+  $('analyzeBtn').disabled = true;
+  $('errBox').innerHTML    = '';
+  $('stepsRow').classList.remove('hidden');
+  $('statsSection').classList.add('hidden');
+  $('analysisSection').classList.add('hidden');
+  $('barSection').classList.add('hidden');
+  $('opinionsSection').classList.add('hidden');
+  $('metricsGrid').innerHTML = '';
+  $('analysisText').textContent = '';
+  $('opinionsList').innerHTML   = '';
+  for (let i = 1; i <= 6; i++) setStep(i, '');
+
+  // ── STEP 1: Smart Stats ──────────────────────────────
+  setStep(1, 'active');
+  setLoading('Fetching account stats…');
+  try {
+    const resp = await api(`/v2/account/smart-stats?username=${encodeURIComponent(username)}`);
+    const d = resp.data || resp;
+    const metrics = [
+      { label: 'Followers',       value: fmt(d.followerCount) },
+      { label: 'Smart Followers', value: fmt(d.smartFollowerCount) },
+      { label: 'Avg Engagement',  value: fmt(d.averageEngagement != null ? Math.round(d.averageEngagement) : null) },
+      { label: 'Avg Reach',       value: fmt(d.averageReach      != null ? Math.round(d.averageReach)      : null) },
+    ];
+    $('metricsGrid').innerHTML = metrics.map(m => `
+      <div class="metric-card">
+        <div class="metric-label">${m.label}</div>
+        <div class="metric-value">${m.value}</div>
+      </div>
+    `).join('');
+    $('statsSection').classList.remove('hidden');
+    setStep(1, 'done');
+  } catch (e) {
+    addError('Step 1 (Smart Stats): ' + e.message);
+    setStep(1, 'error');
+  }
+
+  // ── STEP 2: Event Summaries ──────────────────────────
+  setStep(2, 'active');
+  setLoading('Fetching event summaries…');
+  let eventItems = [];
+  try {
+    const resp = await api(`/v2/data/event-summary?keywords=${encodeURIComponent(username)}&timeWindow=7d`);
+    const raw = resp.data ?? resp;
+    eventItems = Array.isArray(raw) ? raw : [];
+
+    for (let i = 0; i < eventItems.length; i++) {
+      const ev = eventItems[i];
+      const text = ev.summary || ev.text || JSON.stringify(ev);
+      const links = ev.sourceLinks || ev.source_links || [];
+      const src = links.length ? links[0] : `Event #${i + 1}`;
+      opinions.push({ id: `ev${i}`, text, sentiment: 'neutral', source: src });
+    }
+
+    if (opinions.length) renderOpinions();
+    setStep(2, 'done');
+  } catch (e) {
+    addError('Step 2 (Event Summaries): ' + e.message);
+    setStep(2, 'error');
+  }
+
+  // ── STEP 3: AI Deep Analysis ─────────────────────────
+  setStep(3, 'active');
+  setLoading('Running AI deep analysis…');
+  try {
+    const resp = await api('/v2/chat', {
+      method: 'POST',
+      body: JSON.stringify({
+        analysisType: 'chat',
+        message: `Give me a full analysis of ${username}. I want to find out what people are saying, what's been going on with them in the past 7 days, any events, notable KOLs talking about them.`,
+        speed: 'fast',
+      }),
+    });
+    const d = resp.data || resp;
+    sessionId = d.sessionId || d.session_id || null;
+    const text = d.message || d.response || d.content || JSON.stringify(d);
+    $('analysisText').textContent = text;
+    $('analysisSection').classList.remove('hidden');
+    setStep(3, 'done');
+  } catch (e) {
+    addError('Step 3 (AI Analysis): ' + e.message);
+    setStep(3, 'error');
+  }
+
+  // ── STEP 4: AI Classifies Event Summaries ────────────
+  setStep(4, 'active');
+  setLoading('AI classifying event sentiments…');
+  if (sessionId && eventItems.length) {
+    try {
+      const numbered = eventItems.map((ev, i) => {
+        const text = ev.summary || ev.text || JSON.stringify(ev);
+        return `${i + 1}. ${text}`;
+      }).join('\n');
+      const resp = await api('/v2/chat', {
+        method: 'POST',
+        body: JSON.stringify({
+          analysisType: 'chat',
+          sessionId,
+          message: `Here are ${eventItems.length} event summaries about ${username}. Classify each as POSITIVE, NEGATIVE, or NEUTRAL based on actual meaning and context — do NOT rely on surface keywords (e.g. "improving compliance" is POSITIVE even if it mentions risk).\n\nReply ONLY with one line per item: "1. POSITIVE", "2. NEGATIVE", etc.\n\n${numbered}`,
+          speed: 'fast',
+        }),
+      });
+      const d = resp.data || resp;
+      const lines = (d.message || d.response || '').split('\n');
+      for (const line of lines) {
+        const m = line.match(/^(\d+)\.\s*(POSITIVE|NEGATIVE|NEUTRAL)/i);
+        if (m) {
+          const idx = parseInt(m[1]) - 1;
+          if (idx >= 0 && idx < eventItems.length) patchSentiment(`ev${idx}`, m[2].toLowerCase());
+        }
+      }
+      setStep(4, 'done');
+    } catch (e) {
+      addError('Step 4 (Classify Events): ' + e.message);
+      setStep(4, 'error');
+    }
+  } else {
+    setStep(4, 'done');
+  }
+
+  // ── STEP 5: AI Sentiment Breakdown ───────────────────
+  setStep(5, 'active');
+  setLoading('Extracting sentiment breakdown…');
+  if (sessionId) {
+    try {
+      const resp = await api('/v2/chat', {
+        method: 'POST',
+        body: JSON.stringify({
+          analysisType: 'chat',
+          sessionId,
+          message: 'Based on your analysis, break down the specific positive, negative, and neutral opinions people have about this account. List each distinct opinion as a separate item. Format each line as: [POSITIVE] or [NEGATIVE] or [NEUTRAL] followed by the opinion. Be specific about what people are saying.',
+          speed: 'fast',
+        }),
+      });
+      const d = resp.data || resp;
+      const lines = (d.message || d.response || '').split('\n');
+      const newOps = [];
+      let aiIdx = 0;
+      for (const line of lines) {
+        const m = line.match(/\[(POSITIVE|NEGATIVE|NEUTRAL)\]\s*(.+)/i);
+        if (m) {
+          const text = m[2].trim();
+          if (text) {
+            const op = { id: `ai${aiIdx++}`, text, sentiment: m[1].toLowerCase(), source: 'AI Analysis' };
+            opinions.push(op);
+            newOps.push(op);
+          }
+        }
+      }
+      if (newOps.length) appendOpinions(newOps);
+      setStep(5, 'done');
+    } catch (e) {
+      addError('Step 5 (Sentiment Breakdown): ' + e.message);
+      setStep(5, 'error');
+    }
+  } else {
+    setStep(5, 'done');
+  }
+
+  // ── STEP 6: Final bar ────────────────────────────────
+  setStep(6, 'active');
+  refreshBar();
+  setStep(6, 'done');
+
+  hideLoading();
+  running = false;
+  $('analyzeBtn').disabled = false;
+}
+
+// Enter key support
+$('usernameInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') runAnalysis();
+});
+</script>
+</body>
+</html>

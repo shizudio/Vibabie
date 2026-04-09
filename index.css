@@ -106,6 +106,31 @@
      opacity: 1;
    }
 
+   /* ── BED HOTSPOT ── */
+   #bed-hotspot {
+     position: absolute;
+     cursor: none;
+     z-index: 11;
+     border-radius: 10%;
+   }
+
+   /* ── BED OVERLAY ── */
+   #bed-overlay {
+     position: absolute;
+     top: 28%;
+     left: 18%;
+     width: 42%;
+     height: 38%;
+     object-fit: cover;
+     pointer-events: auto;
+     cursor: none;
+     z-index: 5;
+     opacity: 0;
+   }
+   #bed-overlay.active {
+     opacity: 1;
+   }
+
    /* ── CAMERA HOTSPOT ── */
    #camera-hotspot {
      position: absolute;

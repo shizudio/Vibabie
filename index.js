@@ -200,6 +200,68 @@ if (cameraHotspot && cameraOverlay) {
   })
 }
 
+// ── BED HOTSPOT ───────────────────────────
+const bedHotspot = document.getElementById('bed-hotspot')
+const bedOverlay = document.getElementById('bed-overlay')
+
+if (bedHotspot && bedOverlay) {
+  function showBed() {
+    bedOverlay.src = '/hotspot/bed.gif'
+    bedOverlay.classList.add('active')
+  }
+  function hideBed() {
+    bedOverlay.classList.remove('active')
+  }
+
+  // Desktop: hover
+  bedHotspot.addEventListener('mouseenter', () => {
+    if (isMobile()) return
+    showBed()
+    window.cursorMorphTo('🛏')
+  })
+  bedHotspot.addEventListener('mouseleave', () => {
+    if (isMobile()) return
+    hideBed()
+    window.cursorMorphBack()
+  })
+
+  function navigateBed() {
+    if (window.__softNavigate) {
+      window.__softNavigate('about.html')
+    } else {
+      window.location.href = 'about.html'
+    }
+  }
+
+  // Hotspot click: navigate on desktop, toggle on mobile
+  bedHotspot.addEventListener('click', () => {
+    if (isMobile()) {
+      if (bedOverlay.classList.contains('active')) {
+        hideBed()
+      } else {
+        showBed()
+      }
+    } else {
+      navigateBed()
+    }
+  })
+
+  // Clicking the gif navigates to about page (desktop + mobile)
+  bedOverlay.addEventListener('click', navigateBed)
+
+  // Desktop: gif keeps itself active while hovered
+  bedOverlay.addEventListener('mouseenter', () => {
+    if (isMobile()) return
+    showBed()
+    window.cursorMorphTo('🛏')
+  })
+  bedOverlay.addEventListener('mouseleave', () => {
+    if (isMobile()) return
+    hideBed()
+    window.cursorMorphBack()
+  })
+}
+
 // ── ZONE INTERACTIONS ─────────────────────
 const tooltip = document.getElementById('tooltip')
 const ttLabel = document.getElementById('tt-label')
