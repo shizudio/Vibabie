@@ -94,12 +94,13 @@
      position: absolute;
      top: 14.6%;
      left: 30.1%;
-     width: 9.7%;
-     height: 8.7%;
+     width: 9.8%;
+     height: 8.8%;
      object-fit: cover;
      pointer-events: none;
      z-index: 5;
      opacity: 0;
+     filter: brightness(1.05) contrast(1.00) saturate(1.05);
    }
    #vinyl-overlay.active {
      opacity: 1;
