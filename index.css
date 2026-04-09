@@ -152,7 +152,7 @@
      pointer-events: none;
      z-index: 5;
      opacity: 0;
-     filter: brightness(1.05) contrast(1.00) saturate(1.05);
+     filter: brightness(1.00) contrast(1.00) saturate(1.05);
    }
    #frenchpress-overlay.active {
      opacity: 1;

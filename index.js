@@ -82,7 +82,7 @@ const bulbOverlay = document.getElementById('bulb-overlay')
 
 if (bulbHotspot && bulbOverlay) {
   function showBulb() {
-    bulbOverlay.src = '/hotspot/bulb.gif'
+    bulbOverlay.src = isMobile() ? '/hotspot/mobile/bulb.gif' : '/hotspot/bulb.gif'
     bulbOverlay.classList.add('active')
   }
   function hideBulb() {
@@ -94,11 +94,18 @@ if (bulbHotspot && bulbOverlay) {
     if (isMobile()) return
     showBulb()
     window.cursorMorphTo('🪔')
+    ttLabel.textContent = 'The Light'
+    ttDesc.textContent = 'Get in Touch'
+    ttLink.textContent = 'Leave a Note ↗'
+    ttLink.href = 'contact.html'
+    ttLink.target = '_self'
+    tooltip.classList.add('visible')
   })
   bulbHotspot.addEventListener('mouseleave', () => {
     if (isMobile()) return
     hideBulb()
     window.cursorMorphBack()
+    tooltip.classList.remove('visible')
   })
 
   function navigateBulb() {
@@ -109,14 +116,11 @@ if (bulbHotspot && bulbOverlay) {
     }
   }
 
-  // Hotspot click: navigate on desktop, toggle on mobile
+  // Mobile: tap → show gif → auto-navigate after 1.5s
   bulbHotspot.addEventListener('click', () => {
     if (isMobile()) {
-      if (bulbOverlay.classList.contains('active')) {
-        hideBulb()
-      } else {
-        showBulb()
-      }
+      showBulb()
+      setTimeout(navigateBulb, 1500)
     } else {
       navigateBulb()
     }
@@ -130,11 +134,18 @@ if (bulbHotspot && bulbOverlay) {
     if (isMobile()) return
     showBulb()
     window.cursorMorphTo('🪔')
+    ttLabel.textContent = 'The Light'
+    ttDesc.textContent = 'Get in Touch'
+    ttLink.textContent = 'Leave a Note ↗'
+    ttLink.href = 'contact.html'
+    ttLink.target = '_self'
+    tooltip.classList.add('visible')
   })
   bulbOverlay.addEventListener('mouseleave', () => {
     if (isMobile()) return
     hideBulb()
     window.cursorMorphBack()
+    tooltip.classList.remove('visible')
   })
 }
 
@@ -144,7 +155,7 @@ const cameraOverlay = document.getElementById('camera-overlay')
 
 if (cameraHotspot && cameraOverlay) {
   function showCamera() {
-    cameraOverlay.src = '/hotspot/camera.gif'
+    cameraOverlay.src = isMobile() ? '/hotspot/mobile/camera.gif' : '/hotspot/camera.gif'
     cameraOverlay.classList.add('active')
   }
   function hideCamera() {
@@ -156,11 +167,18 @@ if (cameraHotspot && cameraOverlay) {
     if (isMobile()) return
     showCamera()
     window.cursorMorphTo('📷')
+    ttLabel.textContent = 'The Fujifilm Camera'
+    ttDesc.textContent = 'Photography'
+    ttLink.textContent = 'View Work ↗'
+    ttLink.href = 'photography.html'
+    ttLink.target = '_self'
+    tooltip.classList.add('visible')
   })
   cameraHotspot.addEventListener('mouseleave', () => {
     if (isMobile()) return
     hideCamera()
     window.cursorMorphBack()
+    tooltip.classList.remove('visible')
   })
 
   function navigateCamera() {
@@ -171,14 +189,11 @@ if (cameraHotspot && cameraOverlay) {
     }
   }
 
-  // Hotspot click: navigate on desktop, toggle on mobile
+  // Mobile: tap → show gif → auto-navigate after 1.5s
   cameraHotspot.addEventListener('click', () => {
     if (isMobile()) {
-      if (cameraOverlay.classList.contains('active')) {
-        hideCamera()
-      } else {
-        showCamera()
-      }
+      showCamera()
+      setTimeout(navigateCamera, 1500)
     } else {
       navigateCamera()
     }
@@ -192,11 +207,18 @@ if (cameraHotspot && cameraOverlay) {
     if (isMobile()) return
     showCamera()
     window.cursorMorphTo('📷')
+    ttLabel.textContent = 'The Fujifilm Camera'
+    ttDesc.textContent = 'Photography'
+    ttLink.textContent = 'View Work ↗'
+    ttLink.href = 'photography.html'
+    ttLink.target = '_self'
+    tooltip.classList.add('visible')
   })
   cameraOverlay.addEventListener('mouseleave', () => {
     if (isMobile()) return
     hideCamera()
     window.cursorMorphBack()
+    tooltip.classList.remove('visible')
   })
 }
 
@@ -206,7 +228,7 @@ const frenchpressOverlay = document.getElementById('frenchpress-overlay')
 
 if (frenchpressHotspot && frenchpressOverlay) {
   function showFrenchpress() {
-    frenchpressOverlay.src = '/hotspot/frenchpress.gif'
+    frenchpressOverlay.src = isMobile() ? '/hotspot/mobile/frenchpress.gif' : '/hotspot/frenchpress.gif'
     frenchpressOverlay.classList.add('active')
   }
   function hideFrenchpress() {
@@ -218,11 +240,18 @@ if (frenchpressHotspot && frenchpressOverlay) {
     if (isMobile()) return
     showFrenchpress()
     window.cursorMorphTo('☕')
+    ttLabel.textContent = 'The French Press'
+    ttDesc.textContent = 'Personal Aesthetics'
+    ttLink.textContent = 'View Curation ↗'
+    ttLink.href = 'cosmos.html'
+    ttLink.target = '_self'
+    tooltip.classList.add('visible')
   })
   frenchpressHotspot.addEventListener('mouseleave', () => {
     if (isMobile()) return
     hideFrenchpress()
     window.cursorMorphBack()
+    tooltip.classList.remove('visible')
   })
 
   function navigateFrenchpress() {
@@ -233,14 +262,11 @@ if (frenchpressHotspot && frenchpressOverlay) {
     }
   }
 
-  // Hotspot click: navigate on desktop, toggle on mobile
+  // Mobile: tap → show gif → auto-navigate after 1.5s
   frenchpressHotspot.addEventListener('click', () => {
     if (isMobile()) {
-      if (frenchpressOverlay.classList.contains('active')) {
-        hideFrenchpress()
-      } else {
-        showFrenchpress()
-      }
+      showFrenchpress()
+      setTimeout(navigateFrenchpress, 1500)
     } else {
       navigateFrenchpress()
     }
@@ -254,11 +280,18 @@ if (frenchpressHotspot && frenchpressOverlay) {
     if (isMobile()) return
     showFrenchpress()
     window.cursorMorphTo('☕')
+    ttLabel.textContent = 'The French Press'
+    ttDesc.textContent = 'Personal Aesthetics'
+    ttLink.textContent = 'View Curation ↗'
+    ttLink.href = 'cosmos.html'
+    ttLink.target = '_self'
+    tooltip.classList.add('visible')
   })
   frenchpressOverlay.addEventListener('mouseleave', () => {
     if (isMobile()) return
     hideFrenchpress()
     window.cursorMorphBack()
+    tooltip.classList.remove('visible')
   })
 }
 
