@@ -2,6 +2,11 @@
    index.js — Home page scripts
    ───────────────────────────────────────── */
 
+// ── MOBILE DETECTION ─────────────────────
+// Must be declared before the skip-loader block, which calls initMobileShimmer() synchronously.
+// If this is below that block, `const isMobile` is in the TDZ → ReferenceError → entire module crashes.
+const isMobile = () => window.matchMedia('(max-width: 767px)').matches
+
 // ── LOADER ───────────────────────────────
 const loader = document.getElementById('loader')
 const loaderNum = document.getElementById('loader-num')
@@ -20,6 +25,7 @@ if (skipLoader) {
   const footer = document.getElementById('site-footer')
   if (header) { header.classList.add('fade-up'); header.style.animationDelay = '0s' }
   if (footer) { footer.classList.add('fade-up'); footer.style.animationDelay = '0s' }
+  initMobileShimmer()
 } else {
   let count = 0
   const counter = setInterval(() => {
@@ -37,6 +43,7 @@ if (skipLoader) {
         const footer = document.getElementById('site-footer')
         if (header) { header.style.animationDelay = '0s'; header.classList.add('fade-up') }
         if (footer) { footer.style.animationDelay = '0.3s'; footer.classList.add('fade-up') }
+        initMobileShimmer()
       }, 800)
     }
   }, 100)
@@ -73,8 +80,9 @@ function fitRoom() {
 }
 
 const img = document.getElementById('room-img')
-if (img.complete) { fitRoom() } else { img.addEventListener('load', fitRoom) }
+if (img.complete && img.naturalWidth) { fitRoom() } else { img.addEventListener('load', fitRoom) }
 window.addEventListener('resize', fitRoom)
+window.addEventListener('load', fitRoom)
 
 // ── PRELOAD OVERLAY GIFS ──────────────────
 // Set srcs immediately so gifs are cached before first tap/hover (prevents black flash)
@@ -85,6 +93,7 @@ function preloadOverlays() {
     { id: 'bulb-overlay',        desk: '/hotspot/bulb.gif',        mob: '/hotspot/mobile/bulb.gif' },
     { id: 'camera-overlay',      desk: '/hotspot/camera.gif',      mob: '/hotspot/mobile/camera.gif' },
     { id: 'frenchpress-overlay', desk: '/hotspot/frenchpress.gif', mob: '/hotspot/mobile/frenchpress.gif' },
+    { id: 'bed-overlay',         desk: '/hotspot/bed.gif',         mob: '/hotspot/bed.gif' },
   ]
   overlays.forEach(({ id, desk, mob }) => {
     const el = document.getElementById(id)
@@ -93,12 +102,13 @@ function preloadOverlays() {
 }
 preloadOverlays()
 
-// Hide all overlays (used on mobile when opening a new one)
+// Hide all overlays and the revealed bottom link card
 function hideAllOverlays() {
-  ;['vinyl-overlay', 'bulb-overlay', 'camera-overlay', 'frenchpress-overlay'].forEach(id => {
+  ;['vinyl-overlay', 'bulb-overlay', 'camera-overlay', 'frenchpress-overlay', 'bed-overlay'].forEach(id => {
     const el = document.getElementById(id)
     if (el) el.classList.remove('active')
   })
+  hideRevealedLink()
 }
 
 // ── VINYL HOTSPOT ─────────────────────────
@@ -136,14 +146,16 @@ if (vinylHotspot && vinylOverlay) {
     }
   }
 
-  // Mobile: tap once → show gif, tap again → navigate
+  // Mobile: tap once → show gif + reveal link card, tap again → navigate
   vinylHotspot.addEventListener('click', () => {
     if (isMobile()) {
       if (vinylOverlay.classList.contains('active')) {
         navigateVinyl()
       } else {
+        removeShimmer()
         hideAllOverlays()
         showVinyl()
+        revealLink('The Record')
       }
     } else {
       navigateVinyl()
@@ -208,14 +220,16 @@ if (bulbHotspot && bulbOverlay) {
     }
   }
 
-  // Mobile: tap once → show gif, tap again → navigate
+  // Mobile: tap once → show gif + reveal link card, tap again → navigate
   bulbHotspot.addEventListener('click', () => {
     if (isMobile()) {
       if (bulbOverlay.classList.contains('active')) {
         navigateBulb()
       } else {
+        removeShimmer()
         hideAllOverlays()
         showBulb()
+        revealLink('The Light')
       }
     } else {
       navigateBulb()
@@ -280,14 +294,16 @@ if (cameraHotspot && cameraOverlay) {
     }
   }
 
-  // Mobile: tap once → show gif, tap again → navigate
+  // Mobile: tap once → show gif + reveal link card, tap again → navigate
   cameraHotspot.addEventListener('click', () => {
     if (isMobile()) {
       if (cameraOverlay.classList.contains('active')) {
         navigateCamera()
       } else {
+        removeShimmer()
         hideAllOverlays()
         showCamera()
+        revealLink('The Fujifilm Camera')
       }
     } else {
       navigateCamera()
@@ -352,14 +368,16 @@ if (frenchpressHotspot && frenchpressOverlay) {
     }
   }
 
-  // Mobile: tap once → show gif, tap again → navigate
+  // Mobile: tap once → show gif + reveal link card, tap again → navigate
   frenchpressHotspot.addEventListener('click', () => {
     if (isMobile()) {
       if (frenchpressOverlay.classList.contains('active')) {
         navigateFrenchpress()
       } else {
+        removeShimmer()
         hideAllOverlays()
         showFrenchpress()
+        revealLink('The French Press')
       }
     } else {
       navigateFrenchpress()
@@ -389,13 +407,87 @@ if (frenchpressHotspot && frenchpressOverlay) {
   })
 }
 
+// ── BED HOTSPOT ───────────────────────────
+const bedHotspot = document.getElementById('bed-hotspot')
+const bedOverlay = document.getElementById('bed-overlay')
+
+if (bedHotspot && bedOverlay) {
+  function showBed() { bedOverlay.classList.add('active') }
+  function hideBed() { bedOverlay.classList.remove('active') }
+
+  // Desktop: hover
+  bedHotspot.addEventListener('mouseenter', () => {
+    if (isMobile()) return
+    showBed()
+    window.cursorMorphTo('🛏')
+    ttLabel.textContent = 'The Bed'
+    ttDesc.textContent = 'Who I Am'
+    ttLink.textContent = 'About ↗'
+    ttLink.href = 'about.html'
+    ttLink.target = '_self'
+    tooltip.classList.add('visible')
+  })
+  bedHotspot.addEventListener('mouseleave', () => {
+    if (isMobile()) return
+    hideBed()
+    window.cursorMorphBack()
+    tooltip.classList.remove('visible')
+  })
+
+  function navigateBed() {
+    if (window.__softNavigate) {
+      window.__softNavigate('about.html')
+    } else {
+      window.location.href = 'about.html'
+    }
+  }
+
+  // Mobile: tap once → show gif + reveal link card, tap again → navigate
+  bedHotspot.addEventListener('click', () => {
+    if (isMobile()) {
+      if (bedOverlay.classList.contains('active')) {
+        navigateBed()
+      } else {
+        removeShimmer()
+        hideAllOverlays()
+        showBed()
+        revealLink('The Bed')
+      }
+    } else {
+      navigateBed()
+    }
+  })
+
+  // Clicking the gif navigates to about page (desktop + mobile)
+  bedOverlay.addEventListener('click', navigateBed)
+
+  // Desktop: gif keeps itself active while hovered
+  bedOverlay.addEventListener('mouseenter', () => {
+    if (isMobile()) return
+    showBed()
+    window.cursorMorphTo('🛏')
+    ttLabel.textContent = 'The Bed'
+    ttDesc.textContent = 'Who I Am'
+    ttLink.textContent = 'About ↗'
+    ttLink.href = 'about.html'
+    ttLink.target = '_self'
+    tooltip.classList.add('visible')
+  })
+  bedOverlay.addEventListener('mouseleave', () => {
+    if (isMobile()) return
+    hideBed()
+    window.cursorMorphBack()
+    tooltip.classList.remove('visible')
+  })
+}
+
 // ── ZONE INTERACTIONS ─────────────────────
 const tooltip = document.getElementById('tooltip')
 const ttLabel = document.getElementById('tt-label')
 const ttDesc = document.getElementById('tt-desc')
 const ttLink = document.getElementById('tt-link')
 
-// Build a map of zone label → matching mobile link
+const mobileLinkContainer = document.getElementById('mobile-links')
 const mobileLinks = document.querySelectorAll('.mobile-link')
 const labelToLink = {}
 mobileLinks.forEach(link => {
@@ -405,7 +497,36 @@ mobileLinks.forEach(link => {
 
 // Track which zone was last tapped (for tap-again-to-navigate)
 let lastTappedZone = null
-const isMobile = () => window.matchMedia('(max-width: 767px)').matches
+
+// Reveal a single link card at the bottom (mobile only)
+function revealLink(label) {
+  if (!isMobile()) return
+  const link = labelToLink[label]
+  if (!link) return
+  mobileLinks.forEach(l => l.classList.remove('revealed'))
+  mobileLinkContainer.classList.remove('revealed')
+  void mobileLinkContainer.offsetWidth  // restart slide-up animation
+  mobileLinkContainer.classList.add('revealed')
+  link.classList.add('revealed')
+}
+
+function hideRevealedLink() {
+  if (!mobileLinkContainer) return
+  mobileLinks.forEach(l => l.classList.remove('revealed'))
+  mobileLinkContainer.classList.remove('revealed')
+}
+
+function removeShimmer() {
+  document.querySelectorAll('.zone.shimmer').forEach(z => z.classList.remove('shimmer'))
+}
+
+function initMobileShimmer() {
+  if (!isMobile()) return
+  document.querySelectorAll('.zone').forEach((zone, i) => {
+    zone.classList.add('shimmer')
+    zone.style.setProperty('--shimmer-delay', `${(i * 0.35) % 2.4}s`)
+  })
+}
 
 document.querySelectorAll('.zone').forEach(zone => {
   // Desktop: hover + click
@@ -428,8 +549,7 @@ document.querySelectorAll('.zone').forEach(zone => {
 
   zone.addEventListener('click', () => {
     if (isMobile()) {
-      // Mobile: first tap highlights button, second tap navigates
-      const matchingLink = labelToLink[zone.dataset.label]
+      removeShimmer()
 
       if (lastTappedZone === zone) {
         // Second tap → navigate
@@ -442,17 +562,9 @@ document.querySelectorAll('.zone').forEach(zone => {
         return
       }
 
-      // First tap → highlight the matching button
+      // First tap → reveal the matching link card
       lastTappedZone = zone
-      if (matchingLink) {
-        // Remove glow from all links first
-        mobileLinks.forEach(l => l.classList.remove('glow'))
-        // Trigger reflow so animation restarts
-        void matchingLink.offsetWidth
-        matchingLink.classList.add('glow')
-        // Scroll button into view
-        matchingLink.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-      }
+      revealLink(zone.dataset.label)
     } else {
       // Desktop: click navigates immediately
       if (zone.dataset.external === 'true') {

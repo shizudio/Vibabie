@@ -6,3 +6,4 @@ dist
 # Instagram downloaded images are rebuilt at deploy time
 instagram/
 .env
+.gstack/

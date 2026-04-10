@@ -634,6 +634,169 @@ nav {
 
 }
 
+/* ── MENU TOGGLE BUTTON ──────────────────────────────────────────────────── */
+.menu-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: none;
+  pointer-events: all;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.menu-toggle-label {
+  font-size: var(--text-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--stone);
+  font-weight: 200;
+  transition: color 0.25s ease;
+}
+
+.menu-toggle:hover .menu-toggle-label {
+  color: var(--ink);
+}
+
+/* When menu is open: lift header above overlay, invert label colours */
+body.menu-open .site-header,
+body.menu-open nav {
+  z-index: 510;
+}
+
+body.menu-open .nav-logo {
+  color: var(--paper);
+  opacity: 0.85;
+}
+
+body.menu-open .nav-logo:hover {
+  opacity: 1;
+}
+
+body.menu-open .menu-toggle .menu-toggle-label {
+  color: var(--paper);
+  opacity: 0.7;
+}
+
+body.menu-open .menu-toggle:hover .menu-toggle-label {
+  opacity: 1;
+}
+
+body.menu-open .hanging-string {
+  opacity: 0;
+}
+
+body.menu-open .vinyl-widget {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+/* ── NAV OVERLAY ─────────────────────────────────────────────────────────── */
+.nav-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: var(--overlay-dark);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.nav-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.nav-overlay-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 80px 0 20px;
+  width: min(100%, 640px);
+  margin: 0 auto;
+  text-align: center;
+  pointer-events: none;
+}
+
+.nav-overlay.open .nav-overlay-nav {
+  pointer-events: auto;
+}
+
+@keyframes navItemIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.nav-overlay-item {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  padding: 7px 0;
+  opacity: 0;
+  cursor: none;
+  width: 100%;
+}
+
+.nav-overlay.open .nav-overlay-item {
+  animation: navItemIn 0.45s ease forwards;
+  animation-delay: calc(var(--i) * 0.045s + 0.07s);
+}
+
+.nav-overlay-label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 2.4vw, 1.95rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--paper);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  transition: color 0.2s ease;
+}
+
+.nav-overlay-item:hover .nav-overlay-label {
+  color: var(--crimson);
+}
+
+.nav-overlay-desc {
+  display: block;
+  font-size: clamp(0.48rem, 0.45vw, 0.58rem);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--stone);
+  font-weight: 200;
+  opacity: 0.6;
+  margin-top: 1px;
+  transition: opacity 0.2s ease;
+}
+
+.nav-overlay-item:hover .nav-overlay-desc {
+  opacity: 1;
+}
+
+/* Mobile menu overrides */
+@media (max-width: 767px) {
+  .menu-toggle {
+    cursor: pointer;
+  }
+
+  .nav-overlay-item {
+    cursor: pointer;
+    padding: 9px 32px;
+  }
+
+  .nav-overlay-label {
+    font-size: clamp(1.3rem, 6vw, 1.8rem);
+  }
+}
+
 /* ── Vinyl Widget (global mini player) ───────────────────────────────────── */
 .vinyl-widget {
   position: fixed;

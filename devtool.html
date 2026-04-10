@@ -389,12 +389,21 @@ const ITEMS = [
     overlay:  { top: 5.0, left: 25.0, width: 10.0, height: 18.0 },
     filters: { brightness: 1, contrast: 1, vibrancy: 1 },
   },
+  {
+    id: 'bed',
+    label: 'The Bed',
+    color: '#ff8866',
+    src: 'hotspot/bed.gif',
+    hotspot:  { top: 28.0, left: 18.0, width: 42.0, height: 38.0 },
+    overlay:  { top: 28.0, left: 18.0, width: 42.0, height: 38.0 },
+    filters: { brightness: 1, contrast: 1, vibrancy: 1 },
+  },
 ]
 
 // ─────────────────────────────────────────
 //  STATE
 // ─────────────────────────────────────────
-const STATE_VERSION = '4'
+const STATE_VERSION = '5'
 
 function loadState() {
   try {
