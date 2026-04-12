@@ -359,7 +359,7 @@ const ITEMS = [
     color: '#FFD700',
     src: 'hotspot/bulb.gif',
     hotspot:  { top: 57.1, left: 8.7,  width: 14.4, height: 37.7 },
-    overlay:  { top: 52.3, left: 7.0,  width: 19.1, height: 47.0 },
+    overlay:  { top: 52.3, left: 7.0,  width: 19.1, height: 47.0, cropX: 50, cropY: 50 },
     filters: { brightness: 1, contrast: 1, vibrancy: 1.15 },
   },
   {
@@ -368,7 +368,7 @@ const ITEMS = [
     color: '#88aaff',
     src: 'hotspot/camera.gif',
     hotspot:  { top: 66.5, left: 24.0, width: 16.0, height: 22.0 },
-    overlay:  { top: 67.2, left: 24.0, width: 15.0, height: 20.6 },
+    overlay:  { top: 67.2, left: 24.0, width: 15.0, height: 20.6, cropX: 50, cropY: 50 },
     filters: { brightness: 1, contrast: 1, vibrancy: 1 },
   },
   {
@@ -377,7 +377,7 @@ const ITEMS = [
     color: '#aa8844',
     src: 'hotspot/frenchpress.gif',
     hotspot:  { top: 52.7, left: 79.7, width: 11.3, height: 26.3 },
-    overlay:  { top: 50.8, left: 79.2, width: 12.0, height: 29.9 },
+    overlay:  { top: 50.8, left: 79.2, width: 12.0, height: 29.9, cropX: 50, cropY: 50 },
     filters: { brightness: 1, contrast: 1, vibrancy: 1.05 },
   },
   {
@@ -386,7 +386,7 @@ const ITEMS = [
     color: '#cc88ff',
     src: 'hotspot/vinyl.gif',
     hotspot:  { top: 5.0, left: 25.0, width: 10.0, height: 18.0 },
-    overlay:  { top: 5.0, left: 25.0, width: 10.0, height: 18.0 },
+    overlay:  { top: 5.0, left: 25.0, width: 10.0, height: 18.0, cropX: 50, cropY: 50 },
     filters: { brightness: 1, contrast: 1, vibrancy: 1 },
   },
   {
@@ -395,7 +395,7 @@ const ITEMS = [
     color: '#ff8866',
     src: 'hotspot/bed.gif',
     hotspot:  { top: 28.0, left: 18.0, width: 42.0, height: 38.0 },
-    overlay:  { top: 28.0, left: 18.0, width: 42.0, height: 38.0 },
+    overlay:  { top: 28.0, left: 18.0, width: 42.0, height: 38.0, cropX: 50, cropY: 50 },
     filters: { brightness: 1, contrast: 1, vibrancy: 1 },
   },
 ]
@@ -403,7 +403,7 @@ const ITEMS = [
 // ─────────────────────────────────────────
 //  STATE
 // ─────────────────────────────────────────
-const STATE_VERSION = '5'
+const STATE_VERSION = '6'
 
 function loadState() {
   try {
@@ -506,6 +506,12 @@ function applyPositions() {
     el.style.setProperty('--brightness', f.brightness || 1)
     el.style.setProperty('--contrast', f.contrast || 1)
     el.style.setProperty('--vibrancy', f.vibrancy || 1)
+
+    // Apply crop (object-position on the gif)
+    const gif = el.querySelector('.item-gif')
+    const cropX = ov.cropX !== undefined ? ov.cropX : 50
+    const cropY = ov.cropY !== undefined ? ov.cropY : 50
+    gif.style.objectPosition = `${cropX}% ${cropY}%`
   })
 }
 
@@ -597,6 +603,52 @@ function buildControls() {
     row.append(label, slider, valEl)
     controls.appendChild(row)
   })
+
+  // Add crop sliders (overlay mode only)
+  if (activeMode === 'overlay') {
+    const ov = state[selectedIdx].overlay
+    const CROP_SLIDERS = [
+      { key: 'cropX', label: 'Crop X', min: 0, max: 100, step: 1 },
+      { key: 'cropY', label: 'Crop Y', min: 0, max: 100, step: 1 },
+    ]
+
+    const sep = document.createElement('div')
+    sep.style.cssText = 'border-top:1px solid rgba(255,215,0,0.12);margin:2px 0 2px;'
+    controls.appendChild(sep)
+
+    CROP_SLIDERS.forEach(def => {
+      const row = document.createElement('div')
+      row.className = 'ctrl-row'
+
+      const label = document.createElement('div')
+      label.className = 'ctrl-label'
+      label.textContent = def.label
+
+      const slider = document.createElement('input')
+      slider.type = 'range'
+      slider.min = def.min
+      slider.max = def.max
+      slider.step = def.step
+      slider.value = ov[def.key] !== undefined ? ov[def.key] : 50
+
+      const valEl = document.createElement('div')
+      valEl.className = 'ctrl-val'
+      valEl.textContent = slider.value + '%'
+
+      slider.addEventListener('input', () => {
+        const v = parseFloat(slider.value)
+        state[selectedIdx].overlay[def.key] = v
+        valEl.textContent = v.toFixed(0) + '%'
+        applyPositions()
+        updateCode()
+        saveState()
+      })
+
+      sliderEls[def.key] = { slider, valEl }
+      row.append(label, slider, valEl)
+      controls.appendChild(row)
+    })
+  }
 
   // Add filter sliders
   const filters = state[selectedIdx].filters || {}
@@ -760,6 +812,11 @@ function updateCode() {
     lines.push(`  width: ${ov.width.toFixed(1)}%;`)
     lines.push(`  height: ${ov.height.toFixed(1)}%;`)
     lines.push(`  object-fit: cover;`)
+    const cropX = ov.cropX !== undefined ? ov.cropX : 50
+    const cropY = ov.cropY !== undefined ? ov.cropY : 50
+    if (cropX !== 50 || cropY !== 50) {
+      lines.push(`  object-position: ${cropX}% ${cropY}%;`)
+    }
     lines.push(`  pointer-events: none;`)
     lines.push(`  z-index: 5;`)
     if (f.brightness !== 1 || f.contrast !== 1 || f.vibrancy !== 1) {

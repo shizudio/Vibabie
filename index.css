@@ -202,16 +202,16 @@
    /* ── BED OVERLAY ── */
    #bed-overlay {
      position: absolute;
-     top: 1.8%;
-     left: 19.2%;
-     width: 39.5%;
-     height: 70.4%;
+     top: 0.7%;
+     left: 20.9%;
+     width: 36.2%;
+     height: 72.2%;
      object-fit: cover;
-     pointer-events: auto;
-     cursor: none;
+     object-position: 51% 62%;
+     pointer-events: none;
      z-index: 5;
      opacity: 0;
-     filter: brightness(1.00) contrast(1.00) saturate(1.20);
+     filter: brightness(1.00) contrast(1.05) saturate(1.10);
    }
    #bed-overlay.active {
      opacity: 1;
@@ -286,19 +286,31 @@
       height: auto;
       min-height: 100dvh;
       flex-direction: column;
-      align-items: center;
+      align-items: stretch;
       justify-content: flex-start;
-      padding: 90px 0 32px;
+      padding: 90px 24px 48px;
     }
 
     .frame-mount {
       padding: 0;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .frame-border {
       width: 100%;
     }
 
     .room-image {
       width: 100% !important;
       height: auto !important;
+    }
+
+    .room-image img {
+      width: 100%;
+      height: auto;
+      object-fit: unset;
     }
 
     .zone {
@@ -345,24 +357,20 @@
       to   { transform: translateY(0);    opacity: 1; }
     }
 
-    /* Hidden by default; fixed at bottom when a hotspot is tapped */
+    /* Hidden by default; appears below image when a hotspot is tapped */
     .mobile-links {
       display: none;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
       justify-content: center;
-      align-items: flex-end;
-      padding: 20px 24px calc(20px + env(safe-area-inset-bottom, 0px));
-      background: linear-gradient(to top, rgba(244, 240, 232, 0.97) 52%, transparent);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      z-index: 50;
+      align-items: center;
+      padding: 0;
     }
 
     .mobile-links.revealed {
       display: flex;
+      margin-top: 24px;
       animation: slideUpLink 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
