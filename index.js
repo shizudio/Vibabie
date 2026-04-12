@@ -51,16 +51,24 @@ if (skipLoader) {
 
 // ── FIT IMAGE TO SCREEN ───────────────────
 function fitRoom() {
-  const isMobile = window.matchMedia('(max-width: 767px)').matches
+  const mobile = window.matchMedia('(max-width: 767px)').matches
   const img = document.getElementById('room-img')
   const roomImage = document.getElementById('room-image')
+  const naturalW = img.naturalWidth || 1440
+  const naturalH = img.naturalHeight || 856
+  const ratio = naturalW / naturalH
 
-  if (isMobile) {
-    // Let CSS handle sizing on mobile
-    img.style.width = ''
-    img.style.height = ''
-    roomImage.style.width = ''
-    roomImage.style.height = ''
+  if (mobile) {
+    // Fill available height at natural aspect ratio;
+    // CSS centers the room-image and clips excess width.
+    const headerH = 80 // matches --layout-content-top-mobile
+    const availH = window.innerHeight - headerH
+    const h = availH
+    const w = h * ratio
+    img.style.width = w + 'px'
+    img.style.height = h + 'px'
+    roomImage.style.width = w + 'px'
+    roomImage.style.height = h + 'px'
     return
   }
 
@@ -68,9 +76,6 @@ function fitRoom() {
   const headerFooter = 120
   const maxW = window.innerWidth - padding - 40
   const maxH = window.innerHeight - headerFooter - padding
-  const naturalW = img.naturalWidth || 1440
-  const naturalH = img.naturalHeight || 856
-  const ratio = naturalW / naturalH
   let w = maxW, h = w / ratio
   if (h > maxH) { h = maxH; w = h * ratio }
   img.style.width = w + 'px'
@@ -83,6 +88,14 @@ const img = document.getElementById('room-img')
 if (img.complete && img.naturalWidth) { fitRoom() } else { img.addEventListener('load', fitRoom) }
 window.addEventListener('resize', fitRoom)
 window.addEventListener('load', fitRoom)
+
+// Re-fit and re-shimmer when returning via browser back (BFCache restore)
+window.addEventListener('pageshow', e => {
+  if (e.persisted) {
+    fitRoom()
+    initMobileShimmer()
+  }
+})
 
 // ── PRELOAD OVERLAY GIFS ──────────────────
 // Set srcs immediately so gifs are cached before first tap/hover (prevents black flash)
