@@ -296,8 +296,15 @@
       height: calc(100dvh - var(--layout-content-top-mobile));
       margin-top: var(--layout-content-top-mobile);
       padding: 0;
-      overflow: hidden;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
       position: relative;
+    }
+
+    .frame-mount::-webkit-scrollbar {
+      display: none;
     }
 
     .frame-border {
@@ -309,12 +316,12 @@
     }
 
     /* JS sizes room-image to fill height at natural aspect ratio;
-       overflow clips the excess width; centering keeps it symmetric */
+       frame-border is sized to the same width so frame-mount can scroll horizontally */
     .room-image {
       position: absolute !important;
       top: 0 !important;
-      left: 50% !important;
-      transform: translateX(-50%) !important;
+      left: 0 !important;
+      transform: none !important;
       height: 100% !important;
       margin: 0 !important;
       padding: 0 !important;

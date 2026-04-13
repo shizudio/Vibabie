@@ -60,7 +60,7 @@ function fitRoom() {
 
   if (mobile) {
     // Fill available height at natural aspect ratio;
-    // CSS centers the room-image and clips excess width.
+    // frame-border is set to the same width so frame-mount can scroll horizontally.
     const headerH = 80 // matches --layout-content-top-mobile
     const availH = window.innerHeight - headerH
     const h = availH
@@ -69,8 +69,18 @@ function fitRoom() {
     img.style.height = h + 'px'
     roomImage.style.width = w + 'px'
     roomImage.style.height = h + 'px'
+    // Expand frame-border so frame-mount scroll width matches the image width
+    const frameBorder = document.querySelector('.frame-border')
+    if (frameBorder) frameBorder.style.width = w + 'px'
+    // Scroll to center the image so the initial view matches the old centered crop
+    const frameMount = document.querySelector('.frame-mount')
+    if (frameMount) frameMount.scrollLeft = (w - window.innerWidth) / 2
     return
   }
+
+  // Reset frame-border width in case we came from a mobile layout
+  const frameBorder = document.querySelector('.frame-border')
+  if (frameBorder) frameBorder.style.width = ''
 
   const padding = 64 + 32 + 3
   const headerFooter = 120
