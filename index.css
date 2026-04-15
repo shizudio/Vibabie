@@ -87,6 +87,7 @@
    #camera-overlay,
    #frenchpress-overlay,
    #bed-overlay {
+     display: block;
      transition: opacity 0.15s ease;
    }
 
