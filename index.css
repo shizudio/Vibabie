@@ -371,17 +371,17 @@
       display: none;
     }
 
-    /* ── MOBILE REVEALED LINK (fixed bottom card) ── */
-    @keyframes slideUpLink {
-      from { transform: translateX(-50%) translateY(60px); opacity: 0; }
-      to   { transform: translateX(-50%) translateY(0);    opacity: 1; }
+    /* ── MOBILE REVEALED LINK (fixed top card, below header) ── */
+    @keyframes slideDownLink {
+      from { transform: translateX(-50%) translateY(-60px); opacity: 0; }
+      to   { transform: translateX(-50%) translateY(0);     opacity: 1; }
     }
 
-    /* Hidden by default; floats above the vinyl widget when a hotspot is tapped */
+    /* Hidden by default; drops in below the header when a hotspot is tapped */
     .mobile-links {
       display: none;
       position: fixed;
-      bottom: calc(116px + env(safe-area-inset-bottom, 0px));
+      top: 92px;
       left: 50%;
       transform: translateX(-50%);
       width: calc(100% - 48px);
@@ -393,7 +393,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      animation: slideUpLink 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: slideDownLink 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     /* All links hidden until individually revealed */
