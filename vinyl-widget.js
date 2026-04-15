@@ -24,13 +24,8 @@ const tracks = data?.tracks ?? []
 // ── Session cache: keep same playlist + playback state across pages ────────
 // Clear cache on manual refresh of index page so playlist re-randomizes
 const SESSION_KEY = 'vinyl-widget-session'
-const isIndexPage = location.pathname === '/' || location.pathname === '/index.html'
-const navEntries = performance.getEntriesByType('navigation')
-const isReload = navEntries.length > 0 ? navEntries[0].type === 'reload' : performance.navigation?.type === 1
-if (isIndexPage && isReload) {
-  sessionStorage.removeItem(SESSION_KEY)
-  sessionStorage.removeItem('vinyl-playing')
-}
+
+
 
 let session = null
 try { session = JSON.parse(sessionStorage.getItem(SESSION_KEY)) } catch {}
@@ -136,7 +131,6 @@ const container  = widget.querySelector('.vinyl-container')
 
 // ── Spotify playback control ────────────────────────────────────────────────
 let spotifyController = null
-let pendingPlay = false  // true if user interacted before controller was ready
 let isPlaying = false
 let currentTrackName = defaultTrack?.name || ''
 
@@ -152,28 +146,6 @@ function setPlayState(playing) {
   }))
 }
 
-// ── Early interaction listener for autoplay ─────────────────────────────────
-// Set up BEFORE the Spotify controller is ready so we never miss user gestures.
-// When the user interacts, either play immediately (if controller ready) or
-// queue the play for when the controller becomes available.
-if (!sessionStorage.getItem('vinyl-visited')) {
-  const onFirstInteraction = () => {
-    if (spotifyController) {
-      spotifyController.play()
-      setPlayState(true)
-    } else {
-      pendingPlay = true
-    }
-    document.removeEventListener('click', onFirstInteraction)
-    document.removeEventListener('keydown', onFirstInteraction)
-    document.removeEventListener('scroll', onFirstInteraction)
-    document.removeEventListener('touchstart', onFirstInteraction)
-  }
-  document.addEventListener('click', onFirstInteraction)
-  document.addEventListener('keydown', onFirstInteraction)
-  document.addEventListener('scroll', onFirstInteraction)
-  document.addEventListener('touchstart', onFirstInteraction)
-}
 
 function toggleWidgetPlay() {
   if (!spotifyController) return
@@ -349,36 +321,17 @@ function initWidget(IFrameAPI) {
       }
     })
 
-    // Auto-play on first visit in session
-    // The interaction listener was set up early (before controller ready).
-    // If user already interacted, pendingPlay is true — play now.
-    // If not, the early listener will call controller.play() when they do.
-    if (!sessionStorage.getItem('vinyl-visited')) {
-      sessionStorage.setItem('vinyl-visited', '1')
-      if (pendingPlay) {
-        controller.play()
-        setPlayState(true)
-        pendingPlay = false
-      }
-    }
-    // Resume playback if user was playing before navigation
-    else {
-      try {
-        const prev = JSON.parse(sessionStorage.getItem('vinyl-playing'))
-        if (prev && !prev.paused) {
-          // Load the last-played track, then auto-play
-          const lastTrack = tracks.find(t => t.name === prev.name)
-          if (lastTrack?.spotifyId) {
-            controller.loadUri(`spotify:track:${lastTrack.spotifyId}`)
-            currentTrackName = lastTrack.name
-          }
-          setTimeout(() => {
-            controller.play()
-            setPlayState(true)
-          }, 500)
+    // Resume last-played track position (but don't auto-play)
+    try {
+      const prev = JSON.parse(sessionStorage.getItem('vinyl-playing'))
+      if (prev?.name) {
+        const lastTrack = tracks.find(t => t.name === prev.name)
+        if (lastTrack?.spotifyId) {
+          controller.loadUri(`spotify:track:${lastTrack.spotifyId}`)
+          currentTrackName = lastTrack.name
         }
-      } catch {}
-    }
+      }
+    } catch {}
   })
 }
 
