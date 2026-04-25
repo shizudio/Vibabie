@@ -86,7 +86,8 @@
    #bulb-overlay,
    #camera-overlay,
    #frenchpress-overlay,
-   #bed-overlay {
+   #bed-overlay,
+   #laptop-overlay {
      display: block;
      transition: opacity 0.15s ease;
    }
@@ -215,6 +216,30 @@
      filter: brightness(1.00) contrast(1.05) saturate(1.10);
    }
    #bed-overlay.active {
+     opacity: 1;
+   }
+
+   /* ── LAPTOP HOTSPOT ── */
+   #laptop-hotspot {
+     position: absolute;
+     cursor: none;
+     z-index: 11;
+   }
+
+   /* ── LAPTOP OVERLAY ── */
+   #laptop-overlay {
+     position: absolute;
+     top: 58.9%;
+     left: 54.0%;
+     width: 24.1%;
+     height: 30.9%;
+     object-fit: cover;
+     pointer-events: none;
+     z-index: 5;
+     opacity: 0;
+     filter: brightness(0.95) contrast(1.00) saturate(1.05);
+   }
+   #laptop-overlay.active {
      opacity: 1;
    }
 

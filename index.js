@@ -116,11 +116,17 @@ function preloadOverlays() {
     { id: 'camera-overlay',      webm: '/hotspot/camera.webm',      mp4: '/hotspot/camera.mp4' },
     { id: 'frenchpress-overlay', webm: '/hotspot/frenchpress.webm', mp4: '/hotspot/frenchpress.mp4' },
     { id: 'bed-overlay',         webm: '/hotspot/bed.webm',         mp4: '/hotspot/bed.mp4' },
+    { id: 'laptop-overlay',     webm: '/hotspot/laptop.webm',      mp4: '/hotspot/laptop.mp4' },
   ]
-  overlays.forEach(({ id, webm, mp4 }) => {
+  overlays.forEach(({ id, webm, mp4, playbackRate }) => {
     const el = document.getElementById(id)
     if (!el) return
     el.innerHTML = `<source src="${webm}" type="video/webm"><source src="${mp4}" type="video/mp4">`
+    if (playbackRate) {
+      el.playbackRate = playbackRate
+      // Re-apply after load() since some browsers reset playbackRate
+      el.addEventListener('canplay', () => { el.playbackRate = playbackRate }, { once: false })
+    }
     el.load()
   })
 }
@@ -128,7 +134,7 @@ preloadOverlays()
 
 // Hide all overlays and the revealed bottom link card
 function hideAllOverlays() {
-  ;['vinyl-overlay', 'bulb-overlay', 'camera-overlay', 'frenchpress-overlay', 'bed-overlay'].forEach(id => {
+  ;['vinyl-overlay', 'bulb-overlay', 'camera-overlay', 'frenchpress-overlay', 'bed-overlay', 'laptop-overlay'].forEach(id => {
     const el = document.getElementById(id)
     if (!el) return
     el.classList.remove('active')
@@ -502,6 +508,118 @@ if (bedHotspot && bedOverlay) {
   bedOverlay.addEventListener('mouseleave', () => {
     if (isMobile()) return
     hideBed()
+    window.cursorMorphBack()
+    tooltip.classList.remove('visible')
+  })
+}
+
+// ── LAPTOP HOTSPOT ────────────────────────
+const laptopHotspot = document.getElementById('laptop-hotspot')
+const laptopOverlay = document.getElementById('laptop-overlay')
+
+if (laptopHotspot && laptopOverlay) {
+  let laptopFreezeTimer = null
+
+  function playLaptop() {
+    laptopOverlay.playbackRate = 10
+    laptopOverlay.currentTime = 0
+    laptopOverlay.play().catch(() => {})
+  }
+
+  // First second at 10×, then linearly ease from 5× down to 1× by end
+  laptopOverlay.addEventListener('timeupdate', () => {
+    if (!laptopOverlay.classList.contains('active')) return
+    const t = laptopOverlay.currentTime
+    const dur = laptopOverlay.duration
+    if (t < 1) {
+      laptopOverlay.playbackRate = 10
+    } else if (dur && dur > 1) {
+      const progress = (t - 1) / (dur - 1) // 0 → 1 over the post-first-second window
+      laptopOverlay.playbackRate = Math.max(1, 5 - 4 * progress) // 5× → 1×
+    } else {
+      laptopOverlay.playbackRate = 5
+    }
+  })
+
+  function showLaptop() {
+    laptopOverlay.classList.add('active')
+    playLaptop()
+  }
+
+  function hideLaptop() {
+    laptopOverlay.classList.remove('active')
+    laptopOverlay.pause()
+    laptopOverlay.currentTime = 0
+    clearTimeout(laptopFreezeTimer)
+  }
+
+  // On end: freeze for 2s on last frame, then loop
+  laptopOverlay.addEventListener('ended', () => {
+    if (!laptopOverlay.classList.contains('active')) return
+    laptopFreezeTimer = setTimeout(() => {
+      if (laptopOverlay.classList.contains('active')) playLaptop()
+    }, 2000)
+  })
+
+  // Desktop: hover
+  laptopHotspot.addEventListener('mouseenter', () => {
+    if (isMobile()) return
+    showLaptop()
+    window.cursorMorphTo('💻')
+    ttLabel.textContent = 'The Laptop'
+    ttDesc.textContent = 'Work & Projects'
+    ttLink.textContent = 'View Work ↗'
+    ttLink.href = 'work.html'
+    ttLink.target = '_self'
+    tooltip.classList.add('visible')
+  })
+  laptopHotspot.addEventListener('mouseleave', () => {
+    if (isMobile()) return
+    hideLaptop()
+    window.cursorMorphBack()
+    tooltip.classList.remove('visible')
+  })
+
+  function navigateLaptop() {
+    if (window.__softNavigate) {
+      window.__softNavigate('work.html')
+    } else {
+      window.location.href = 'work.html'
+    }
+  }
+
+  // Mobile: tap once → show overlay + reveal link card, tap again → navigate
+  laptopHotspot.addEventListener('click', () => {
+    if (isMobile()) {
+      if (laptopOverlay.classList.contains('active')) {
+        navigateLaptop()
+      } else {
+        removeShimmer()
+        hideAllOverlays()
+        showLaptop()
+        revealLink('The Laptop')
+      }
+    } else {
+      navigateLaptop()
+    }
+  })
+
+  laptopOverlay.addEventListener('click', navigateLaptop)
+
+  laptopOverlay.addEventListener('mouseenter', () => {
+    if (isMobile()) return
+    showLaptop()
+    window.cursorMorphTo('💻')
+    ttLabel.textContent = 'The Laptop'
+    ttDesc.textContent = 'Work & Projects'
+    ttLink.textContent = 'View Work ↗'
+    ttLink.href = 'work.html'
+    ttLink.target = '_self'
+    tooltip.classList.add('visible')
+  })
+  laptopOverlay.addEventListener('mouseleave', () => {
+    if (isMobile()) return
+    hideLaptop()
     window.cursorMorphBack()
     tooltip.classList.remove('visible')
   })

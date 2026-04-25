@@ -398,12 +398,22 @@ const ITEMS = [
     overlay:  { top: 28.0, left: 18.0, width: 42.0, height: 38.0, cropX: 50, cropY: 50 },
     filters: { brightness: 1, contrast: 1, vibrancy: 1 },
   },
+  {
+    id: 'laptop',
+    label: 'The Laptop',
+    color: '#66ccff',
+    src: 'hotspot/laptop.mp4',
+    isVideo: true,
+    hotspot:  { top: 47.5, left: 43.0, width: 48.0, height: 50.0 },
+    overlay:  { top: 47.5, left: 43.0, width: 48.0, height: 50.0, cropX: 50, cropY: 50 },
+    filters: { brightness: 1, contrast: 1, vibrancy: 1 },
+  },
 ]
 
 // ─────────────────────────────────────────
 //  STATE
 // ─────────────────────────────────────────
-const STATE_VERSION = '6'
+const STATE_VERSION = '7'
 
 function loadState() {
   try {
@@ -442,9 +452,14 @@ const itemEls = ITEMS.map((item, i) => {
   const el = document.createElement('div')
   el.className = 'dev-item mode-hotspot'
   el.dataset.idx = i
+
+  const mediaEl = item.isVideo
+    ? `<video class="item-gif" src="${item.src}" autoplay loop muted playsinline></video>`
+    : `<img class="item-gif" src="${item.src}" alt="" />`
+
   el.innerHTML = `
     <div class="hotspot-vis"></div>
-    <img class="item-gif" src="${item.src}" alt="" />
+    ${mediaEl}
     <div class="badge">[${i}] ${item.label}</div>
     <div class="sel-border"></div>
     <div class="rot-line"></div>
