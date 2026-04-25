@@ -1,0 +1,29 @@
+[
+  {
+    "src": "work/perena.jpg",
+    "title": "Perena",
+    "tag": "DeFi · Fintech",
+    "role": "Head of Growth",
+    "year": "2024 –",
+    "href": "https://perena.org",
+    "external": true
+  },
+  {
+    "src": "work/shizudio.jpg",
+    "title": "Shizudio",
+    "tag": "Design & Dev",
+    "role": "Creative Direction",
+    "year": "2025",
+    "href": "https://shizudio.me",
+    "external": true
+  },
+  {
+    "src": "work/H.O.P.jpg",
+    "title": "H.O.P.",
+    "tag": "Brand · Fashion",
+    "role": "Creative Direction",
+    "year": "2024",
+    "href": "#",
+    "external": false
+  }
+]

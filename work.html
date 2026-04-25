@@ -17,51 +17,38 @@
 
   <nav>
     <a href="index.html" class="nav-logo">Shina Foo</a>
-    <span class="nav-page-name">Work</span>
+    <span class="nav-page-name">The Laptop</span>
   </nav>
 
   <main class="work-page">
-    <span class="page-label fade-up" style="animation-delay: 0s">The Laptop — Work & Projects</span>
-    <h1 class="page-h1 fade-up" style="animation-delay: 0.1s">Things I've built.</h1>
 
-    <div class="divider fade-up" style="animation-delay: 0.18s"></div>
-
-    <!-- FEATURED PROJECT -->
-    <a class="work-featured fade-up" href="https://perena.org" target="_blank" style="animation-delay: 0.22s">
-      <span class="work-featured-tag">DeFi · Fintech</span>
-      <h2 class="work-featured-name">Perena</h2>
-      <p class="work-featured-tagline">A financial platform making premium investment strategies accessible to anyone, anywhere. Building growth from zero to one.</p>
-      <div class="work-meta-row">
-        <span class="work-meta-item">Head of Growth</span>
-        <span class="work-meta-sep" aria-hidden="true">·</span>
-        <span class="work-meta-item">2024 –</span>
+    <!-- ── Left: fixed catalog sidebar ── -->
+    <aside class="catalog-sidebar" id="catalog-sidebar">
+      <div class="catalog-top">
+        <span class="page-label fade-up" style="--i:0">The Laptop — Work & Projects</span>
+        <h1 class="page-h1 fade-up" style="--i:1">Things I've built.</h1>
+        <div class="divider fade-up" style="--i:2"></div>
       </div>
-      <span class="work-cta">perena.org <span class="work-cta-arrow">↗</span></span>
+
+      <ul class="catalog-index" id="catalog-index">
+        <!-- injected by work.js -->
+      </ul>
+    </aside>
+
+    <!-- CV link fixed to bottom of sidebar, always visible -->
+    <a class="catalog-resume-fixed" href="resume.pdf" download>
+      Curriculum Vitae ↓
     </a>
 
-    <!-- SECTION DIVIDER -->
-    <hr class="work-section-divider fade-up" style="animation-delay: 0.3s">
-    <span class="page-label fade-up" style="animation-delay: 0.35s">Other projects</span>
+    <!-- ── Right: scrollable editorial gallery ── -->
+    <div class="catalog-gallery" id="catalog-gallery">
+      <!-- injected by work.js -->
+    </div>
 
-    <!-- PROJECT LIST -->
-    <ul class="work-list">
-      <li>
-        <a class="work-row fade-up" href="https://shizudio.me" target="_blank" style="animation-delay: 0.4s">
-          <span class="work-row-name">Shizudio</span>
-          <span class="work-row-meta">
-            <span class="work-row-role">Design & Dev</span>
-            <span class="work-row-year">2025</span>
-          </span>
-          <span class="work-row-arrow">↗</span>
-        </a>
-      </li>
-    </ul>
-
-    <div class="divider fade-up" style="animation-delay: 0.5s"></div>
-    <p class="work-footnote fade-up" style="animation-delay: 0.55s">More coming soon.</p>
   </main>
 
   <script type="module" src="script.js"></script>
   <script type="module" src="vinyl-widget.js"></script>
+  <script type="module" src="work.js"></script>
 </body>
 </html>
