@@ -532,7 +532,8 @@ if (laptopHotspot && laptopOverlay) {
     const t = laptopOverlay.currentTime
     const dur = laptopOverlay.duration
     if (t < 1) {
-      laptopOverlay.playbackRate = 10
+      // Ramp from 1× at start up to 10× at t=1s
+      laptopOverlay.playbackRate = 1 + 9 * t
     } else if (dur && dur > 1) {
       const progress = (t - 1) / (dur - 1) // 0 → 1 over the post-first-second window
       laptopOverlay.playbackRate = Math.max(1, 5 - 4 * progress) // 5× → 1×
