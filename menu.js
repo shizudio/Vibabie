@@ -11,7 +11,7 @@ const NAV_ITEMS = [
   { label: 'The Shelf',            desc: 'Essays & Writing',    href: 'https://shinafoo.substack.com/', external: true },
   { label: 'The Light',            desc: 'Get in Touch',        href: 'contact.html' },
   { label: 'The Phone',            desc: 'Thoughts & Updates',  href: 'https://x.com/shizudio', external: true },
-  { label: 'The Laptop',           desc: 'Work & Projects',     href: 'https://perena.org', external: true },
+  { label: 'The Laptop',           desc: 'Work & Projects',     href: 'work.html' },
 ]
 
 function inject() {

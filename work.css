@@ -1,0 +1,228 @@
+/* ─────────────────────────────────────────
+   work.css — Work & Projects page styles
+   ───────────────────────────────────────── */
+
+html, body { min-height: 100%; }
+
+nav {
+  background: linear-gradient(to bottom, var(--paper), transparent);
+}
+
+/* ── PAGE LAYOUT ── */
+.work-page {
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 140px var(--page-gutter, 40px) 100px;
+}
+
+/* ── FEATURED BLOCK ── */
+.work-featured {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: 24px 20px;
+  margin: 0 -20px;
+  border-left: 3px solid transparent;
+  border-radius: var(--radius-sm);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.work-featured:hover {
+  background: var(--crimson-bg);
+  border-left-color: var(--crimson);
+}
+
+.work-featured-tag {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--stone);
+  margin-bottom: 10px;
+}
+
+.work-featured-name {
+  font-family: var(--font-serif);
+  font-size: var(--text-xl);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ink);
+  margin-bottom: 12px;
+  line-height: 1.2;
+}
+
+.work-featured-tagline {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: 300;
+  color: var(--stone);
+  line-height: 1.75;
+  margin-bottom: 16px;
+}
+
+.work-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.work-meta-item {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--stone);
+}
+
+.work-meta-sep {
+  color: var(--stone);
+  font-size: var(--text-xs);
+  opacity: 0.5;
+}
+
+.work-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-serif);
+  font-size: var(--text-base);
+  font-style: italic;
+  color: var(--crimson);
+  border-bottom: 1px solid var(--border-crimson);
+  padding-bottom: 1px;
+  text-decoration: none;
+}
+
+.work-cta-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.work-featured:hover .work-cta-arrow {
+  transform: translate(2px, -2px);
+}
+
+/* ── SECTION DIVIDER ── */
+.work-section-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 40px 0;
+}
+
+/* ── PROJECT LIST ── */
+.work-list {
+  list-style: none;
+  margin: 16px 0 0;
+}
+
+.work-list li {
+  border-bottom: 1px solid var(--border);
+}
+
+.work-list li:first-child {
+  border-top: 1px solid var(--border);
+}
+
+.work-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 56px;
+  padding: 12px 20px;
+  margin: 0 -20px;
+  text-decoration: none;
+  color: inherit;
+  border-left: 3px solid transparent;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.work-row:hover {
+  background: var(--crimson-bg);
+  border-left-color: var(--crimson);
+}
+
+.work-row-name {
+  flex: 1;
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.work-row-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.work-row-role {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--stone);
+}
+
+.work-row-year {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--stone);
+}
+
+.work-row-arrow {
+  color: var(--stone);
+  font-size: var(--text-base);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.work-row:hover .work-row-arrow {
+  color: var(--crimson);
+  transform: translate(2px, -2px);
+}
+
+/* ── FOOTNOTE ── */
+.work-footnote {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 200;
+  font-style: italic;
+  color: var(--stone);
+  margin-top: 8px;
+}
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 767px) {
+  .work-page {
+    padding: 80px var(--page-gutter) 60px;
+  }
+
+  .work-featured {
+    padding: 20px 16px;
+    margin: 0 -16px;
+  }
+
+  .work-featured-name {
+    font-size: clamp(1.4rem, 5vw, 1.7rem);
+  }
+
+  .work-row {
+    padding: 12px 16px;
+    margin: 0 -16px;
+    min-height: 56px;
+  }
+
+  .work-row-meta {
+    gap: 8px;
+  }
+
+  .divider {
+    margin: 28px 0;
+  }
+}

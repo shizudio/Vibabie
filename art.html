@@ -22,26 +22,29 @@
 
   <main class="art-page">
 
-    <header class="art-header reveal">
-      <div>
-        <span class="page-label">The Canvas — Art & Illustration</span>
-        <h1 class="page-h1">Drawn things.</h1>
+    <!-- ── Left: fixed catalog sidebar ── -->
+    <aside class="catalog-sidebar" id="catalog-sidebar">
+      <div class="catalog-top">
+        <span class="page-label fade-up" style="--i:0">The Canvas — Art & Illustration</span>
+        <h1 class="page-h1 fade-up" style="--i:1">Drawn things.</h1>
+        <div class="divider fade-up" style="--i:2"></div>
       </div>
-      <span class="art-hint">drag to browse</span>
-    </header>
 
-    <div class="art-stage" id="art-stage">
-      <!-- Cards injected by art.js -->
+      <ul class="catalog-index" id="catalog-index">
+        <!-- injected by art.js -->
+      </ul>
+
+      <footer class="catalog-sidebar-footer fade-up" style="--i:20">
+        <a class="catalog-ig" href="https://www.instagram.com/shizudio" target="_blank" rel="noopener noreferrer">
+          Instagram ↗
+        </a>
+      </footer>
+    </aside>
+
+    <!-- ── Right: scrollable editorial gallery ── -->
+    <div class="catalog-gallery" id="catalog-gallery">
+      <!-- injected by art.js -->
     </div>
-
-    <footer class="art-footer">
-      <div class="art-label">
-        <span class="art-label-title" id="art-label-title"></span>
-        <span class="art-label-meta"  id="art-label-meta"></span>
-      </div>
-      <span class="art-counter" id="art-counter"></span>
-      <a class="art-ig-link" href="https://www.instagram.com/shizudio" target="_blank" rel="noopener">Instagram ↗</a>
-    </footer>
 
   </main>
 

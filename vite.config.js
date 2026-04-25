@@ -13,6 +13,7 @@ export default defineConfig({
         instagram: resolve(__dirname, 'instagram.html'),
         art: resolve(__dirname, 'art.html'),
         record: resolve(__dirname, 'record.html'),
+        work: resolve(__dirname, 'work.html'),
       },
     },
   },

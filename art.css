@@ -1,219 +1,318 @@
 /* ─────────────────────────────────────────
-   art.css — Art & Illustration card-fan gallery
+   art.css — Art catalog layout
+   Two-column: fixed index sidebar left, editorial gallery right
    ───────────────────────────────────────── */
 
-/* ── Page shell ──────────────────────────────────────────────────────────── */
+html, body { height: 100%; }
+
+/* ── Page shell ──────────────────────────────────────────── */
 .art-page {
   display: flex;
-  flex-direction: column;
   min-height: 100vh;
-  min-height: 100dvh; /* use dvh for mobile to exclude browser chrome */
-  padding-top: 64px;
-  background: var(--paper);
-  overflow: hidden;
 }
 
-/* ── Header ──────────────────────────────────────────────────────────────── */
-.art-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  padding: 24px 40px 16px;
-  flex-shrink: 0;
-}
-
-.art-page .page-label { margin-bottom: var(--space-sm); }
-.art-page .page-h1    { font-size: var(--text-xl); letter-spacing: -0.01em; }
-
-.art-hint {
-  font-size: var(--text-xs);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--stone);
-  font-weight: 200;
-  opacity: 0.6;
-  align-self: flex-end;
-  padding-bottom: 4px;
-}
-
-/* ── Stage ───────────────────────────────────────────────────────────────── */
-.art-stage {
-  flex: 1;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  /* explicit min-height so the stage takes real vertical space */
-  min-height: clamp(260px, 52vh, 520px);
-  cursor: none; /* handled by custom cursor */
-}
-
-/* ── Cards ───────────────────────────────────────────────────────────────── */
-.art-card {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform-origin: center bottom;
-  will-change: transform, opacity;
-  transition:
-    transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-    opacity   0.45s ease,
-    z-index   0s;
-  user-select: none;
-  -webkit-user-drag: none;
-}
-
-.art-card img {
-  display: block;
-  object-fit: cover;
-  box-shadow: var(--shadow-card);
-  pointer-events: none;
-  -webkit-user-drag: none;
-  border-radius: var(--radius-sm);
-  /* height set via inline style per card */
-}
-
-/* ── Footer label area ───────────────────────────────────────────────────── */
-.art-footer {
-  flex-shrink: 0;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  padding: 18px 40px 32px;
-}
-
-.art-label {
+/* ── Left sidebar ────────────────────────────────────────── */
+.catalog-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  padding: 80px 40px 40px;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  background: var(--paper);
+  z-index: 10;
+  scrollbar-width: none;
+}
+.catalog-sidebar::-webkit-scrollbar { display: none; }
+
+/* ── Sidebar top ─────────────────────────────────────────── */
+.catalog-top .page-label {
+  margin-bottom: var(--space-sm);
+}
+.catalog-top .page-h1 {
+  font-size: clamp(1.4rem, 2vw, 1.8rem);
+}
+.catalog-top .divider {
+  margin: 24px 0 20px;
 }
 
-.art-label-title {
-  font-family: var(--font-display);
-  font-size: clamp(1rem, 1.8vw, 1.35rem);
-  font-weight: 400;
-  font-style: italic;
-  color: var(--ink);
-  line-height: 1.2;
+/* Animation: staggered via --i CSS custom property */
+.fade-up {
+  animation-delay: calc(var(--i, 0) * 0.07s) !important;
+}
+
+/* ── Catalog index list ───────────────────────────────────── */
+.catalog-index {
+  list-style: none;
+  flex: 1;
+}
+
+.catalog-entry {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  align-items: baseline;
+  column-gap: 10px;
+  padding: 8px 6px;
+  margin: 0 -6px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s ease;
+  position: relative;
+}
+.catalog-entry:first-child {
+  border-top: 1px solid var(--border);
+}
+
+.catalog-entry::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--crimson);
+  border-radius: 1px;
   opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 0.35s ease, transform 0.35s ease;
+  transition: opacity 0.2s ease;
 }
-
-.art-label-meta {
-  font-size: var(--text-xs);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--stone);
-  font-weight: 200;
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 0.35s ease 0.06s, transform 0.35s ease 0.06s;
-}
-
-.art-label-title.visible,
-.art-label-meta.visible {
+.catalog-entry.is-active::before,
+.catalog-entry:hover::before {
   opacity: 1;
-  transform: translateY(0);
 }
 
-.art-counter {
+.catalog-num {
+  font-family: var(--font-sans);
   font-size: var(--text-xs);
-  letter-spacing: 0.2em;
   color: var(--stone);
-  font-weight: 200;
-  font-family: var(--font-body);
-  align-self: flex-end;
-  padding-bottom: 2px;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  transition: color 0.2s ease;
 }
 
-.art-ig-link {
+.catalog-title {
+  font-family: var(--font-serif);
+  font-size: clamp(0.72rem, 0.9vw, 0.85rem);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.2s ease;
+}
+
+.catalog-year {
+  font-family: var(--font-sans);
   font-size: var(--text-xs);
-  letter-spacing: 0.2em;
+  color: var(--stone);
+  font-weight: 300;
+  white-space: nowrap;
+}
+
+.catalog-entry:hover .catalog-title,
+.catalog-entry.is-active .catalog-title {
+  color: var(--crimson);
+}
+.catalog-entry:hover .catalog-num,
+.catalog-entry.is-active .catalog-num {
+  color: var(--crimson);
+}
+
+/* ── Sidebar footer ──────────────────────────────────────── */
+.catalog-sidebar-footer {
+  padding-top: 28px;
+  margin-top: auto;
+}
+
+.catalog-ig {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
   text-transform: uppercase;
+  letter-spacing: 0.2em;
   color: var(--stone);
-  font-weight: 200;
+  font-weight: 300;
   text-decoration: none;
   border-bottom: 1px solid transparent;
-  align-self: flex-end;
-  padding-bottom: 2px;
-  transition: color 0.2s, border-color 0.2s;
+  padding-bottom: 1px;
+  transition: color 0.2s ease, border-color 0.2s ease;
 }
-.art-ig-link:hover {
+.catalog-ig:hover {
   color: var(--crimson);
-  border-color: var(--crimson);
+  border-color: var(--border-crimson);
 }
 
-/* ── Reveal entry ────────────────────────────────────────────────────────── */
-.reveal {
-  opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+/* ── Right gallery ───────────────────────────────────────── */
+.catalog-gallery {
+  margin-left: 280px;
+  flex: 1;
+  padding: 100px 72px 100px 64px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px 56px;
+  align-items: start;
 }
-.reveal.visible {
+
+/* Stagger the right column down for editorial feel */
+.catalog-item:nth-child(even) {
+  margin-top: 160px;
+}
+
+/* ── Gallery item ────────────────────────────────────────── */
+.catalog-item {
+  cursor: pointer;
+  transition: opacity 0.35s ease;
+}
+
+.catalog-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+  box-shadow: var(--shadow-card);
+  border-radius: var(--radius-sm);
+  transition: box-shadow 0.35s ease, transform 0.35s ease;
+}
+
+.catalog-item:hover img {
+  box-shadow: 0 12px 48px rgba(26, 22, 20, 0.18), 0 2px 8px rgba(26, 22, 20, 0.08);
+  transform: translateY(-4px);
+}
+
+/* Catalog number below image */
+.catalog-item-label {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.catalog-item-num {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--stone);
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  font-variant-numeric: tabular-nums;
+  transition: color 0.2s ease;
+}
+
+.catalog-item-title {
+  font-family: var(--font-serif);
+  font-size: clamp(0.72rem, 0.9vw, 0.82rem);
+  font-style: italic;
+  color: var(--stone);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.2s ease;
+}
+
+/* Cross-link dimming: when any item is highlighted, others dim */
+.catalog-gallery.has-hover .catalog-item {
+  opacity: 0.25;
+}
+.catalog-gallery.has-hover .catalog-item.is-active {
   opacity: 1;
-  transform: translateY(0);
+}
+.catalog-gallery.has-hover .catalog-item.is-active .catalog-item-num,
+.catalog-gallery.has-hover .catalog-item.is-active .catalog-item-title {
+  color: var(--crimson);
 }
 
-/* ── Lightbox ────────────────────────────────────────────────────────────── */
-/* Base overlay, close btn, inner, image, and caption styles live in style.css */
+/* ── Lightbox overrides ──────────────────────────────────── */
 .art-lightbox {
   padding: 32px 24px;
 }
-/* Art caption — tighter letter-spacing tweak (font set globally via --font-description) */
 .art-lb-caption {
   letter-spacing: 0.08em;
 }
 
-/* ── Mobile ──────────────────────────────────────────────────────────────── */
+/* ── Mobile ──────────────────────────────────────────────── */
 @media (max-width: 767px) {
-  .art-page { padding-top: 58px; }
-
-  .art-header {
+  .art-page {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 16px 20px 12px;
   }
 
-  .art-hint { display: none; }
-
-  /*
-    Stage: constrained height on mobile so cards don't overflow.
-    JS reads a CSS custom property --card-height-vh to scale cards down.
-    On mobile we reduce it to 36vh so the full card stays in viewport
-    even with the spread offset.
-  */
-  .art-stage {
-    /* CSS variable read by art.js for CARD_HEIGHT_VH on mobile */
-    --card-height-mobile-vh: 36;
-    min-height: clamp(220px, 40vh, 380px);
-    cursor: auto;
+  .catalog-sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 80px var(--page-gutter) 24px;
+    overflow-y: visible;
   }
 
-  .art-footer {
-    padding: 12px 20px 20px;
-    /* stack label and counter vertically on very narrow screens */
-    flex-wrap: wrap;
-    gap: 8px;
+  .catalog-top .page-h1 {
+    font-size: clamp(1.3rem, 5vw, 1.6rem);
   }
 
-  .art-label {
-    flex: 1;
-    min-width: 0; /* allow text truncation */
+  /* Show a condensed horizontal scroll of numbers on mobile */
+  .catalog-index {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 0;
+    margin: 16px -4px 0;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .catalog-index::-webkit-scrollbar { display: none; }
+
+  .catalog-entry {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    border: none;
+    border-bottom: none;
+    border-right: 1px solid var(--border);
+    padding: 6px 16px;
+    margin: 0;
+    min-width: 56px;
+    flex-shrink: 0;
+    border-radius: 0;
+  }
+  .catalog-entry:first-child { border-top: none; }
+  .catalog-entry::before { display: none; }
+
+  .catalog-title { display: none; }
+  .catalog-year  { display: none; }
+
+  .catalog-num {
+    font-size: clamp(0.55rem, 2.5vw, 0.65rem);
   }
 
-  .art-label-title {
-    font-size: clamp(0.9rem, 4vw, 1.1rem);
-    /* prevent long titles from overflowing */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .catalog-sidebar-footer { display: none; }
+
+  .catalog-gallery {
+    margin-left: 0;
+    padding: 40px var(--page-gutter) 80px;
+    grid-template-columns: 1fr;
+    gap: 48px;
   }
 
-  /* art-specific: slightly taller max-height than the shared 65vh default */
-  .art-lb-img {
-    max-height: 72vh;
+  .catalog-item:nth-child(even) {
+    margin-top: 0;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1100px) {
+  .catalog-sidebar {
+    width: 220px;
+    padding: 80px 28px 40px;
+  }
+  .catalog-gallery {
+    margin-left: 220px;
+    padding: 100px 48px 100px 48px;
+    gap: 64px 40px;
+  }
+  .catalog-item:nth-child(even) {
+    margin-top: 120px;
   }
 }
