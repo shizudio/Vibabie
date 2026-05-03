@@ -1,0 +1,529 @@
+/* ─────────────────────────────────────────
+   perena.css — Perena case study page
+   ───────────────────────────────────────── */
+
+html, body { min-height: 100%; }
+
+nav {
+  background: linear-gradient(to bottom, var(--paper), transparent);
+}
+
+/* ── PAGE SHELL ─────────────────────────── */
+.case-main {
+  max-width: 680px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 120px var(--page-gutter, 40px) 120px;
+}
+
+/* ── BACK LINK ──────────────────────────── */
+.case-back {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6b5f5c;
+  text-decoration: none;
+  margin-bottom: 48px;
+  transition: color 0.2s ease;
+}
+.case-back:hover { color: var(--crimson); }
+
+/* ── HEADER ─────────────────────────────── */
+.case-header {
+  margin-bottom: 56px;
+}
+
+.case-header .page-label {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.case-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 6vw, 3.6rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--ink);
+  line-height: 1.1;
+  margin: 0 0 20px;
+}
+
+.case-meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-bottom: 32px;
+}
+.case-meta-role,
+.case-meta-year {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 300;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6b5f5c;
+}
+.case-meta-dot {
+  color: var(--border);
+  font-size: var(--text-xs);
+}
+.case-meta-link {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--crimson);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border-crimson);
+  padding-bottom: 1px;
+  transition: all 0.2s;
+}
+.case-meta-link:hover { letter-spacing: 0.14em; }
+
+/* Opening thesis */
+.case-thesis {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  font-style: italic;
+  font-weight: 300;
+  color: #6b5f5c;
+  line-height: 1.7;
+  margin: 0;
+  padding-left: 20px;
+  border-left: 2px solid var(--border);
+}
+
+/* ── HERO IMAGE ─────────────────────────── */
+.case-image--hero {
+  margin-bottom: 64px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+.case-image--hero img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ── SECTIONS ───────────────────────────── */
+.case-section {
+  margin-bottom: 16px;
+}
+
+.case-section-label {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 300;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #6b5f5c;
+  margin-bottom: 12px;
+}
+
+.case-section-h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2.8vw, 1.8rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--ink);
+  line-height: 1.25;
+  margin: 0 0 32px;
+}
+
+.case-sub-h3 {
+  font-family: var(--font-display);
+  font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--crimson-text);
+  margin: 40px 0 16px;
+}
+
+/* ── BODY TEXT ──────────────────────────── */
+.case-body {
+  font-family: var(--font-sans);
+  font-size: clamp(0.88rem, 1.6vw, 0.98rem);
+  font-weight: 300;
+  color: #4a413e;
+  line-height: 2;
+  margin-bottom: 20px;
+}
+.case-body--em {
+  font-style: italic;
+  color: #6b5f5c;
+}
+
+/* ── PULL QUOTE ─────────────────────────── */
+.case-pullquote {
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--ink);
+  line-height: 1.65;
+  margin: 36px 0;
+  padding: 0 0 0 24px;
+  border-left: 3px solid var(--crimson);
+}
+.case-pullquote--closing {
+  font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+  color: #4a413e;
+  margin: 40px 0 32px;
+}
+
+/* ── STAT ROW ───────────────────────────── */
+.case-stat-row {
+  display: flex;
+  gap: 0;
+  margin: 40px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.case-stat-row--hero {
+  justify-content: center;
+  border: none;
+  margin-bottom: 0;
+}
+
+.case-stat {
+  flex: 1;
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-right: 1px solid var(--border);
+  padding-left: 24px;
+}
+.case-stat:first-child { padding-left: 0; }
+.case-stat:last-child { border-right: none; }
+
+.case-stat-num {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--crimson);
+  line-height: 1;
+}
+.case-stat-row--hero .case-stat-num {
+  font-size: clamp(2.4rem, 6vw, 3.6rem);
+}
+
+.case-stat-label {
+  font-family: var(--font-sans);
+  font-size: clamp(0.5rem, 0.8vw, 0.6rem);
+  font-weight: 300;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6b5f5c;
+  line-height: 1.6;
+}
+
+/* ── IMAGES ─────────────────────────────── */
+.case-image {
+  width: 100%;
+  margin: 32px 0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.case-image--placeholder {
+  aspect-ratio: 16/9;
+  background: var(--paper);
+  border: 1px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.case-image--sm {
+  aspect-ratio: 4/3;
+}
+
+.case-image-caption {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--border);
+}
+
+/* ── IMAGE GRID ─────────────────────────── */
+.case-image-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 32px 0;
+}
+
+/* ── DIVIDER ────────────────────────────── */
+.case-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 56px 0;
+}
+
+/* ── PARTNERSHIP TAGS ───────────────────── */
+.case-partners {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 32px;
+}
+.case-partners span {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6b5f5c;
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+}
+
+/* ── CLOSING SECTION ────────────────────── */
+.case-section--close {
+  text-align: center;
+  padding-top: 16px;
+}
+.case-section--close .case-stat-row--hero .case-stat {
+  align-items: center;
+  padding-left: 0;
+}
+
+/* ── CTA ────────────────────────────────── */
+.case-cta {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: clamp(0.88rem, 1.4vw, 1rem);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--crimson);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border-crimson);
+  padding-bottom: 2px;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+.case-cta:hover {
+  letter-spacing: 0.05em;
+  border-bottom-color: var(--crimson);
+}
+
+/* ── NATIVE TWEET EMBEDS ────────────────── */
+.tweet-embed-wrap {
+  margin: 32px 0;
+}
+
+.tweet-embed-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 24px;
+  margin: 24px 0;
+  /* Twitter embeds size themselves — align to top so uneven heights don't stretch */
+  align-items: start;
+}
+
+/* Force embeds to fill their grid column */
+.tweet-embed-grid .twitter-tweet,
+.tweet-embed-wrap .twitter-tweet {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+/* ── TWEET GRID ─────────────────────────── */
+.tweet-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 8px;
+}
+.tweet-grid--3 {
+  grid-template-columns: 1fr 1fr 1fr;
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
+.tweet-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+}
+.tweet-card:hover {
+  border-color: #c8bfbc;
+  box-shadow: 0 4px 20px rgba(26,22,20,0.07);
+  transform: translateY(-2px);
+}
+/* Full-width standalone card */
+.tweet-card--wide {
+  margin-top: 32px;
+  max-width: 480px;
+}
+
+.tweet-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tweet-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.tweet-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.tweet-name {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: #4a413e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tweet-handle {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 300;
+  color: #6b5f5c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tweet-x-icon {
+  width: 15px;
+  height: 15px;
+  fill: #6b5f5c;
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.tweet-text {
+  font-family: var(--font-sans);
+  font-size: clamp(0.82rem, 1.2vw, 0.9rem);
+  font-weight: 300;
+  color: #4a413e;
+  line-height: 1.75;
+  margin: 0;
+  flex: 1;
+}
+
+.tweet-date {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  color: #6b5f5c;
+  text-transform: uppercase;
+}
+
+.tweet-image {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+.tweet-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+/* Screenshot variant — fixed aspect to crop consistently */
+.tweet-image--screenshot img {
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  object-position: top;
+}
+
+/* ── MOBILE ─────────────────────────────── */
+@media (max-width: 767px) {
+  .case-main {
+    padding: 90px var(--page-gutter, 24px) 80px;
+  }
+
+  .case-back {
+    margin-bottom: 32px;
+  }
+
+  .case-header {
+    margin-bottom: 40px;
+  }
+
+  .case-title {
+    font-size: clamp(2rem, 8vw, 2.8rem);
+  }
+
+  .case-thesis {
+    font-size: clamp(0.9rem, 3.5vw, 1rem);
+    padding-left: 16px;
+  }
+
+  .case-image--hero {
+    margin-bottom: 40px;
+  }
+
+  .case-stat-row {
+    flex-wrap: wrap;
+  }
+  .case-stat {
+    flex: 1 1 calc(50% - 1px);
+    min-width: 120px;
+    padding: 18px 0 18px 16px;
+  }
+  .case-stat:first-child { padding-left: 0; }
+
+  .case-image-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tweet-grid,
+  .tweet-grid--3,
+  .tweet-embed-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .case-pullquote {
+    padding-left: 16px;
+    margin: 24px 0;
+  }
+
+  .case-section-h2 {
+    font-size: clamp(1.15rem, 5vw, 1.5rem);
+  }
+
+  .case-divider {
+    margin: 40px 0;
+  }
+
+  .case-partners {
+    gap: 6px;
+  }
+}
