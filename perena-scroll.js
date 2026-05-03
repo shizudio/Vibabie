@@ -35,7 +35,7 @@ function initTweetScrollers() {
   })
 }
 
-// ── SIDE NAV SCROLL SPY ───────────────────
+// ── SIDE NAV CLICKS + SCROLL SPY ─────────
 function initScrollSpy() {
   const links = document.querySelectorAll('.case-sidenav-item')
   if (!links.length) return
@@ -45,15 +45,30 @@ function initScrollSpy() {
     return document.getElementById(id)
   }).filter(Boolean)
 
+  // Offset for fixed top nav (~64px) + a little breathing room
+  const NAV_OFFSET = 80
+
+  // Click: smooth scroll with offset instead of native anchor jump
+  links.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault()
+      const id = link.getAttribute('href').replace('#', '')
+      const target = document.getElementById(id)
+      if (!target) return
+      const top = target.getBoundingClientRect().top + window.scrollY - NAV_OFFSET
+      window.scrollTo({ top, behavior: 'smooth' })
+    })
+  })
+
+  // Scroll spy: highlight whichever section is nearest the top
   function onScroll() {
-    const mid = window.scrollY + window.innerHeight * 0.4
+    const threshold = window.scrollY + NAV_OFFSET + 40
     let active = sections[0]
     for (const sec of sections) {
-      if (sec.offsetTop <= mid) active = sec
+      if (sec.offsetTop <= threshold) active = sec
     }
     links.forEach(l => {
-      const match = l.getAttribute('href') === '#' + active.id
-      l.classList.toggle('active', match)
+      l.classList.toggle('active', l.getAttribute('href') === '#' + active.id)
     })
   }
 
