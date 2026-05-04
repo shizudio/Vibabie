@@ -301,51 +301,116 @@ function renderMediaTab(body) {
     const listWrap = el('div')
     listWrap.innerHTML = `<div class="pe-group-label" style="margin-top:4px">Uploaded</div>`
     const list = el('div', { class: 'pe-media-list' })
-    mediaFiles.forEach(f => list.appendChild(buildMediaItem(f)))
+    mediaFiles.forEach((f, i) => list.appendChild(buildMediaItem(f, i)))
     listWrap.appendChild(list)
     body.appendChild(listWrap)
   }
 }
 
-function handleFiles(files) {
-  files.forEach(file => {
-    const url = URL.createObjectURL(file)
-    mediaFiles.push({ name: file.name, url, type: file.type })
-  })
+// Size thresholds
+const IMG_WARN_MB  = 1.5
+const VID_WARN_MB  = 15
+
+async function handleFiles(files) {
+  for (const file of files) {
+    const sizeMB = file.size / 1024 / 1024
+    const isImg  = file.type.startsWith('image/')
+    const isVid  = file.type.startsWith('video/')
+    const overLimit = (isImg && sizeMB > IMG_WARN_MB) || (isVid && sizeMB > VID_WARN_MB)
+
+    if (isImg && overLimit) {
+      // Offer compression via canvas before adding
+      const entry = { name: file.name, url: URL.createObjectURL(file), type: file.type,
+                      sizeMB: sizeMB.toFixed(1), needsCompress: true, rawFile: file }
+      mediaFiles.push(entry)
+    } else if (isVid && overLimit) {
+      const entry = { name: file.name, url: URL.createObjectURL(file), type: file.type,
+                      sizeMB: sizeMB.toFixed(1), needsCompress: true, rawFile: file }
+      mediaFiles.push(entry)
+    } else {
+      mediaFiles.push({ name: file.name, url: URL.createObjectURL(file), type: file.type,
+                        sizeMB: sizeMB.toFixed(1) })
+    }
+  }
   renderTab()
   toast('Media uploaded')
 }
 
-function buildMediaItem(f) {
+async function compressImage(file, maxPx = 1920, quality = 0.82) {
+  return new Promise(resolve => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      const scale  = Math.min(1, maxPx / Math.max(img.width, img.height))
+      const canvas = document.createElement('canvas')
+      canvas.width  = Math.round(img.width  * scale)
+      canvas.height = Math.round(img.height * scale)
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height)
+      URL.revokeObjectURL(url)
+      canvas.toBlob(blob => resolve(blob), 'image/jpeg', quality)
+    }
+    img.src = url
+  })
+}
+
+function buildMediaItem(f, idx) {
   const item = el('div', { class: 'pe-media-item' })
+
+  // Thumb
   if (f.type.startsWith('image/')) {
-    const img = el('img', { class: 'pe-media-thumb', src: f.url, alt: f.name })
-    item.appendChild(img)
+    item.appendChild(el('img', { class: 'pe-media-thumb', src: f.url, alt: f.name }))
   } else {
-    const vid = el('video', { class: 'pe-media-thumb', src: f.url, muted: '', playsinline: '' })
+    const vid = el('video', { class: 'pe-media-thumb', src: f.url, muted: '' })
     item.appendChild(vid)
   }
-  const info = el('div', { class: 'pe-media-info' })
-  const name = el('span', { class: 'pe-media-name' }, f.name)
-  const copyBtn = el('button', { class: 'pe-media-copy' }, 'Copy path')
-  const insertBtn = el('button', { class: 'pe-media-insert' }, 'Insert')
 
-  copyBtn.addEventListener('click', () => {
-    navigator.clipboard.writeText(f.url)
-    toast('Path copied')
-  })
-  insertBtn.addEventListener('click', () => {
+  // Size warning banner
+  if (f.needsCompress) {
+    const warn = el('div', { class: 'pe-media-warn' })
+    const isImg = f.type.startsWith('image/')
+    warn.innerHTML = `⚠ ${f.sizeMB} MB — ${isImg ? 'compress recommended' : 'large video'}`
+    if (isImg) {
+      const compressBtn = el('button', { class: 'pe-media-compress-btn' }, 'Compress')
+      compressBtn.addEventListener('click', async () => {
+        compressBtn.textContent = 'Compressing…'
+        compressBtn.disabled = true
+        const blob = await compressImage(f.rawFile)
+        const newMB = (blob.size / 1024 / 1024).toFixed(1)
+        f.url  = URL.createObjectURL(blob)
+        f.sizeMB = newMB
+        f.needsCompress = false
+        delete f.rawFile
+        renderTab()
+        toast(`Compressed to ${newMB} MB`)
+      })
+      warn.appendChild(compressBtn)
+    }
+    item.appendChild(warn)
+  }
+
+  // Info row
+  const info = el('div', { class: 'pe-media-info' })
+  const nameEl = el('span', { class: 'pe-media-name' }, `${f.name} (${f.sizeMB} MB)`)
+
+  const placeBtn = el('button', { class: 'pe-media-insert' }, 'Place ↓')
+  placeBtn.addEventListener('click', () => {
     const isVideo = f.type.startsWith('video/')
     const html = isVideo
       ? `<div class="case-video"><video src="${f.url}" autoplay muted loop playsinline></video></div>`
       : `<div class="case-image"><img src="${f.url}" alt="${f.name}" /></div>`
-    insertBlock(html)
-    toast('Inserted')
+    enterPlacementMode(html)
   })
 
-  info.appendChild(name)
-  info.appendChild(copyBtn)
-  info.appendChild(insertBtn)
+  const removeBtn = el('button', { class: 'pe-media-copy' }, '✕')
+  removeBtn.title = 'Remove from list'
+  removeBtn.addEventListener('click', () => {
+    mediaFiles.splice(idx, 1)
+    renderTab()
+  })
+
+  info.appendChild(nameEl)
+  info.appendChild(placeBtn)
+  info.appendChild(removeBtn)
   item.appendChild(info)
   return item
 }
@@ -479,7 +544,7 @@ function removeMediaOverlays() {
    DIMENSION / CROP PANEL
    ───────────────────────────────────────── */
 
-let dimTarget = null   // the img or video element being edited
+let dimTarget   = null
 let aspectLocked = true
 
 const CROP_POSITIONS = [
@@ -488,32 +553,68 @@ const CROP_POSITIONS = [
   ['bottom left', 'bottom center', 'bottom right'],
 ]
 
+// Convert CSS objectPosition string → closest grid cell key
+function posToKey(pos) {
+  pos = pos.toLowerCase().trim()
+  if (pos === '50% 50%' || pos === 'center') return 'center'
+  // Map percentage shortcuts
+  const map = { '0% 0%': 'top left', '50% 0%': 'top center', '100% 0%': 'top right',
+                '0% 50%': 'center left', '100% 50%': 'center right',
+                '0% 100%': 'bottom left', '50% 100%': 'bottom center', '100% 100%': 'bottom right' }
+  return map[pos] || pos
+}
+
 function openDimPanel(media, wrap) {
   dimTarget = media
   let panel = document.getElementById('pe-dim-panel')
-
   if (!panel) {
     panel = buildDimPanel()
     document.body.appendChild(panel)
   }
 
   // Populate current values
-  const cs = getComputedStyle(media)
-  panel.querySelector('#pe-w').value  = media.style.width  || Math.round(media.getBoundingClientRect().width)  + 'px'
-  panel.querySelector('#pe-h').value  = media.style.height || Math.round(media.getBoundingClientRect().height) + 'px'
-  panel.querySelector('#pe-fit').value = media.style.objectFit || cs.objectFit || 'cover'
+  const rect = media.getBoundingClientRect()
+  panel.querySelector('#pe-w').value   = media.style.width  || Math.round(rect.width)  + 'px'
+  panel.querySelector('#pe-h').value   = media.style.height || Math.round(rect.height) + 'px'
+
+  const fit = media.style.objectFit || getComputedStyle(media).objectFit || 'cover'
+  panel.querySelector('#pe-fit').value = fit
 
   // Highlight active crop cell
-  const pos = (media.style.objectPosition || cs.objectPosition || 'center').toLowerCase()
+  const rawPos = media.style.objectPosition || getComputedStyle(media).objectPosition || 'center'
+  const posKey = posToKey(rawPos)
   panel.querySelectorAll('.pe-crop-cell').forEach(c => {
-    c.classList.toggle('active', c.dataset.pos === pos || (pos.includes('center') && c.dataset.pos === 'center'))
+    c.classList.toggle('active', c.dataset.pos === posKey)
   })
 
-  // Position panel near the wrap
-  const rect = wrap.getBoundingClientRect()
-  panel.style.top  = `${Math.min(rect.bottom + window.scrollY + 8, window.scrollY + window.innerHeight - 360)}px`
-  panel.style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - 256))}px`
+  // Update live preview
+  refreshPreview()
+
+  // Position panel anchored to the right of the element
+  panel.style.top  = `${Math.min(rect.top + window.scrollY, window.scrollY + window.innerHeight - panel.offsetHeight - 16)}px`
+  const panelLeft  = Math.min(rect.right + 12, window.innerWidth - 256)
+  panel.style.left = `${Math.max(8, panelLeft)}px`
   panel.classList.add('open')
+}
+
+function refreshPreview() {
+  if (!dimTarget) return
+  const prev = document.getElementById('pe-dim-preview')
+  if (!prev) return
+  const wVal   = document.getElementById('pe-w')?.value.trim()
+  const hVal   = document.getElementById('pe-h')?.value.trim()
+  const fit    = document.getElementById('pe-fit')?.value || 'cover'
+  const active = document.querySelector('.pe-crop-cell.active')
+  const pos    = active?.dataset.pos || 'center'
+
+  prev.style.backgroundImage    = dimTarget.tagName === 'IMG'
+    ? `url(${dimTarget.src})` : 'none'
+  prev.style.backgroundSize     = fit === 'cover' ? 'cover' : fit === 'contain' ? 'contain' : '100% 100%'
+  prev.style.backgroundPosition = pos
+  prev.style.backgroundRepeat   = 'no-repeat'
+
+  const label = prev.nextElementSibling
+  if (label) label.textContent = `${wVal || '—'} × ${hVal || '—'} · ${fit} · ${pos}`
 }
 
 function buildDimPanel() {
@@ -527,34 +628,41 @@ function buildDimPanel() {
   hdr.appendChild(closeBtn)
   panel.appendChild(hdr)
 
-  // Width + Height with lock
+  // Live preview
+  const prev = el('div', { id: 'pe-dim-preview' })
+  panel.appendChild(prev)
+  panel.appendChild(el('span', { class: 'pe-dim-label', style: 'display:block;margin-bottom:4px' }, ''))
+
+  // Width + Height + lock
   const sizeRow = el('div', { class: 'pe-dim-row' })
 
   const wField = el('div', { class: 'pe-dim-field' })
   wField.appendChild(el('span', { class: 'pe-dim-label' }, 'Width'))
-  const wInput = el('input', { class: 'pe-dim-input', id: 'pe-w', placeholder: 'e.g. 100%' })
+  const wInput = el('input', { class: 'pe-dim-input', id: 'pe-w', placeholder: '100%' })
   wField.appendChild(wInput)
 
-  const lockBtn = el('button', { class: 'pe-lock-btn' + (aspectLocked ? ' locked' : ''), id: 'pe-lock', title: 'Lock aspect ratio' }, '⇔')
+  const lockBtn = el('button', { class: 'pe-lock-btn locked', id: 'pe-lock', title: 'Lock aspect ratio' }, '🔗')
   lockBtn.addEventListener('click', () => {
     aspectLocked = !aspectLocked
     lockBtn.classList.toggle('locked', aspectLocked)
-    lockBtn.textContent = aspectLocked ? '⇔' : '↕'
+    lockBtn.textContent = aspectLocked ? '🔗' : '⇕'
   })
 
   const hField = el('div', { class: 'pe-dim-field' })
   hField.appendChild(el('span', { class: 'pe-dim-label' }, 'Height'))
-  const hInput = el('input', { class: 'pe-dim-input', id: 'pe-h', placeholder: 'e.g. auto' })
+  const hInput = el('input', { class: 'pe-dim-input', id: 'pe-h', placeholder: 'auto' })
   hField.appendChild(hInput)
 
-  // Aspect ratio sync
   wInput.addEventListener('input', () => {
     if (!aspectLocked || !dimTarget) return
-    const ratio = dimTarget.naturalHeight / dimTarget.naturalWidth || dimTarget.videoHeight / dimTarget.videoWidth
-    if (!ratio) return
-    const wVal = parseFloat(wInput.value)
-    if (!isNaN(wVal) && wInput.value.includes('px')) hInput.value = Math.round(wVal * ratio) + 'px'
+    const nw = dimTarget.naturalWidth  || dimTarget.videoWidth  || 0
+    const nh = dimTarget.naturalHeight || dimTarget.videoHeight || 0
+    if (!nw) return
+    const v = parseFloat(wInput.value)
+    if (!isNaN(v) && wInput.value.includes('px')) hInput.value = Math.round(v * nh / nw) + 'px'
+    refreshPreview()
   })
+  hInput.addEventListener('input', refreshPreview)
 
   sizeRow.appendChild(wField)
   sizeRow.appendChild(lockBtn)
@@ -565,11 +673,12 @@ function buildDimPanel() {
   const fitField = el('div', { class: 'pe-dim-field' })
   fitField.appendChild(el('span', { class: 'pe-dim-label' }, 'Object Fit'))
   const fitSelect = el('select', { class: 'pe-dim-select', id: 'pe-fit' })
-  ;['cover', 'contain', 'fill', 'none', 'scale-down'].forEach(v => {
+  ;['cover', 'contain', 'fill', 'scale-down', 'none'].forEach(v => {
     const opt = document.createElement('option')
     opt.value = v; opt.textContent = v
     fitSelect.appendChild(opt)
   })
+  fitSelect.addEventListener('change', refreshPreview)
   fitField.appendChild(fitSelect)
   panel.appendChild(fitField)
 
@@ -584,6 +693,16 @@ function buildDimPanel() {
       cell.addEventListener('click', () => {
         grid.querySelectorAll('.pe-crop-cell').forEach(c => c.classList.remove('active'))
         cell.classList.add('active')
+        // Crop only works with cover — auto-switch
+        const fitSel = document.getElementById('pe-fit')
+        if (fitSel && fitSel.value !== 'cover') fitSel.value = 'cover'
+        // Ensure a height is set so cover actually clips
+        const hIn = document.getElementById('pe-h')
+        if (hIn && (!hIn.value || hIn.value === 'auto')) {
+          const rect = dimTarget?.getBoundingClientRect()
+          if (rect) hIn.value = Math.round(rect.height) + 'px'
+        }
+        refreshPreview()
       })
       grid.appendChild(cell)
     })
@@ -592,7 +711,7 @@ function buildDimPanel() {
   panel.appendChild(cropWrap)
 
   // Apply
-  const applyBtn = el('button', { class: 'pe-dim-apply' }, 'Apply')
+  const applyBtn = el('button', { class: 'pe-dim-apply' }, 'Apply to page')
   applyBtn.addEventListener('click', applyDimensions)
   panel.appendChild(applyBtn)
 
@@ -601,24 +720,125 @@ function buildDimPanel() {
 
 function applyDimensions() {
   if (!dimTarget) return
-  const wVal  = document.getElementById('pe-w')?.value.trim()
-  const hVal  = document.getElementById('pe-h')?.value.trim()
-  const fit   = document.getElementById('pe-fit')?.value
-  const activeCell = document.querySelector('.pe-crop-cell.active')
-  const pos   = activeCell?.dataset.pos || 'center'
+  const w   = document.getElementById('pe-w')?.value.trim()
+  const h   = document.getElementById('pe-h')?.value.trim()
+  const fit = document.getElementById('pe-fit')?.value
+  const pos = document.querySelector('.pe-crop-cell.active')?.dataset.pos || 'center'
 
-  if (wVal) dimTarget.style.width = wVal
-  if (hVal) dimTarget.style.height = hVal
-  if (fit)  dimTarget.style.objectFit = fit
-  dimTarget.style.objectPosition = pos
+  if (w)   dimTarget.style.width          = w
+  if (h)   dimTarget.style.height         = h
+  if (fit) dimTarget.style.objectFit      = fit
+           dimTarget.style.objectPosition = pos
+  // display:block ensures object-fit is honoured
+  dimTarget.style.display = 'block'
 
-  toast('Dimensions applied')
+  toast('Applied ✓')
 }
 
 function closeDimPanel() {
-  const panel = document.getElementById('pe-dim-panel')
-  panel?.classList.remove('open')
+  document.getElementById('pe-dim-panel')?.classList.remove('open')
   dimTarget = null
+}
+
+/* ─────────────────────────────────────────
+   PLACEMENT MODE
+   ───────────────────────────────────────── */
+
+let placementHTML = null
+
+function enterPlacementMode(html) {
+  placementHTML = html
+  const main = document.querySelector('main, .case-main')
+  if (!main) return
+
+  // Overlay
+  const overlay = el('div', { id: 'pe-place-overlay' })
+  overlay.innerHTML = `<div class="pe-place-tip">Click between blocks to place media · <kbd>Esc</kbd> to cancel</div>`
+  document.body.appendChild(overlay)
+
+  // Hover zones between every direct child of main
+  const children = Array.from(main.children).filter(c =>
+    !c.id?.startsWith('pe-') && !c.classList.contains('case-sidenav'))
+
+  children.forEach((child, i) => {
+    const zone = el('div', { class: 'pe-place-zone', 'data-index': i })
+    zone.style.cssText = buildZoneStyle(child)
+    zone.addEventListener('mouseenter', () => zone.classList.add('active'))
+    zone.addEventListener('mouseleave', () => zone.classList.remove('active'))
+    zone.addEventListener('click', () => {
+      doPlace(child, 'afterend')
+      exitPlacementMode()
+    })
+    document.body.appendChild(zone)
+  })
+
+  // Also add a zone before the first child
+  if (children[0]) {
+    const firstZone = el('div', { class: 'pe-place-zone', 'data-first': '1' })
+    firstZone.style.cssText = buildZoneStyleBefore(children[0])
+    firstZone.addEventListener('mouseenter', () => firstZone.classList.add('active'))
+    firstZone.addEventListener('mouseleave', () => firstZone.classList.remove('active'))
+    firstZone.addEventListener('click', () => {
+      doPlace(children[0], 'beforebegin')
+      exitPlacementMode()
+    })
+    document.body.appendChild(firstZone)
+  }
+
+  document.addEventListener('keydown', onPlaceEsc)
+  // Update zone positions on scroll
+  window.addEventListener('scroll', updateZones, { passive: true })
+}
+
+function buildZoneStyle(el) {
+  const r = el.getBoundingClientRect()
+  const top = r.bottom + window.scrollY - 6
+  return `top:${top}px;left:${r.left + window.scrollX}px;width:${r.width}px`
+}
+function buildZoneStyleBefore(el) {
+  const r = el.getBoundingClientRect()
+  const top = r.top + window.scrollY - 6
+  return `top:${top}px;left:${r.left + window.scrollX}px;width:${r.width}px`
+}
+
+function updateZones() {
+  const main = document.querySelector('main, .case-main')
+  if (!main) return
+  const children = Array.from(main.children).filter(c =>
+    !c.id?.startsWith('pe-') && !c.classList.contains('case-sidenav'))
+  const zones = document.querySelectorAll('.pe-place-zone:not([data-first])')
+  zones.forEach((zone, i) => {
+    if (children[i]) zone.style.cssText = buildZoneStyle(children[i])
+  })
+  const first = document.querySelector('.pe-place-zone[data-first]')
+  if (first && children[0]) first.style.cssText = buildZoneStyleBefore(children[0])
+}
+
+function doPlace(anchor, position) {
+  if (!placementHTML) return
+  const wrapper = document.createElement('div')
+  wrapper.innerHTML = placementHTML.trim()
+  const newNode = wrapper.firstElementChild
+  anchor.insertAdjacentElement(position, newNode)
+  if (isEditing) {
+    newNode.querySelectorAll('img, video').forEach(m => {
+      if (!m.closest('.pe-media-wrap')) wrapWithOverlay(m)
+    })
+  }
+  newNode.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  toast('Media placed ✓')
+}
+
+function exitPlacementMode() {
+  placementHTML = null
+  document.getElementById('pe-place-overlay')?.remove()
+  document.querySelectorAll('.pe-place-zone').forEach(z => z.remove())
+  document.removeEventListener('keydown', onPlaceEsc)
+  window.removeEventListener('scroll', updateZones)
+}
+
+function onPlaceEsc(e) {
+  if (e.key === 'Escape') exitPlacementMode()
 }
 
 function updateModeBadge() {

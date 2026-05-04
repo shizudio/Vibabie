@@ -627,6 +627,108 @@ body.pe-editing .case-main *:focus {
   outline-offset: 2px;
 }
 
+/* ── SIZE WARNING ─────────────────────── */
+.pe-media-warn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(155,44,26,0.07);
+  border-top: 1px solid rgba(155,44,26,0.15);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 300;
+  color: #9B2C1A;
+  letter-spacing: 0.05em;
+}
+.pe-media-compress-btn {
+  background: #9B2C1A;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.15s;
+}
+.pe-media-compress-btn:hover { opacity: 0.8; }
+.pe-media-compress-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* ── DIM PANEL PREVIEW ────────────────── */
+#pe-dim-preview {
+  width: 100%;
+  height: 96px;
+  border-radius: 6px;
+  background: #f0ebe8 center/cover no-repeat;
+  border: 1px solid var(--border, #E8E0DC);
+  overflow: hidden;
+  transition: background-position 0.2s, background-size 0.2s;
+}
+
+/* ── PLACEMENT MODE ───────────────────── */
+#pe-place-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9020;
+  background: rgba(26,22,20,0.35);
+  pointer-events: none;
+  backdrop-filter: blur(1px);
+}
+.pe-place-tip {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1614;
+  color: rgba(255,255,255,0.9);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  padding: 8px 20px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+.pe-place-tip kbd {
+  background: rgba(255,255,255,0.15);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-family: inherit;
+}
+.pe-place-zone {
+  position: absolute;
+  height: 12px;
+  z-index: 9021;
+  cursor: crosshair;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: height 0.15s;
+}
+.pe-place-zone::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: rgba(155,44,26,0.3);
+  border-radius: 2px;
+  transition: background 0.15s, height 0.15s;
+}
+.pe-place-zone.active {
+  height: 24px;
+}
+.pe-place-zone.active::before {
+  height: 3px;
+  background: #9B2C1A;
+  box-shadow: 0 0 0 3px rgba(155,44,26,0.18);
+}
+
 /* ── TOAST ────────────────────────────── */
 #pe-toast {
   position: fixed;
