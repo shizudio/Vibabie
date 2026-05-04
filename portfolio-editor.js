@@ -72,6 +72,14 @@ const STYLES = [
     previewCls: 'pe-style-preview--thesis',
     preview: 'Opening thesis — italic, left border.',
   },
+  {
+    id: 'bullet-list',
+    name: 'Bullet List',
+    tag: 'ul',
+    cls: 'case-achievement-list',
+    previewCls: 'pe-style-preview--bullet',
+    preview: 'Crimson dash list item',
+  },
 ]
 
 const BLOCKS = [
@@ -128,6 +136,14 @@ const BLOCKS = [
     icon: '▶',
     label: 'Video',
     html: '<div class="case-video"><video src="" autoplay muted loop playsinline></video></div>',
+  },
+  {
+    icon: '—',
+    label: 'Bullet List',
+    html: `<ul class="case-achievement-list">
+  <li>List item</li>
+  <li>List item</li>
+</ul>`,
   },
   {
     icon: '❝',
@@ -956,9 +972,29 @@ function applyStyle(style) {
   const block = resolveBlock(target, main)
   if (!block) { toast('Click a text block first'); return }
 
+  const blockTag = block.tagName.toLowerCase()
   let newBlock
-  if (block.tagName.toLowerCase() !== style.tag) {
-    // Tag change: create new element, move content, swap in-place
+
+  if (style.tag === 'ul') {
+    // Any block → bullet list: wrap content in <li> inside <ul>
+    const ul = document.createElement('ul')
+    ul.className = style.cls
+    const li = document.createElement('li')
+    li.innerHTML = blockTag === 'li' ? block.innerHTML : block.innerHTML
+    ul.appendChild(li)
+    // If block is a li, replace the whole parent ul; otherwise replace the block
+    const replaceTarget = blockTag === 'li' ? (block.closest('ul, ol') || block) : block
+    replaceTarget.replaceWith(ul)
+    newBlock = li
+  } else if (blockTag === 'li' && style.tag !== 'li') {
+    // List item → other block type: replace entire parent <ul> with new element
+    const ul = block.closest('ul, ol') || block
+    newBlock = document.createElement(style.tag)
+    newBlock.innerHTML = block.innerHTML
+    newBlock.className = style.cls
+    ul.replaceWith(newBlock)
+  } else if (blockTag !== style.tag) {
+    // General tag change
     newBlock = document.createElement(style.tag)
     newBlock.innerHTML = block.innerHTML
     newBlock.className = style.cls

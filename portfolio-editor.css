@@ -214,6 +214,21 @@
   border-left: 2px solid var(--border, #E8E0DC);
   padding-left: 8px;
 }
+.pe-style-preview--bullet {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: #4a413e;
+  padding-left: 14px;
+  position: relative;
+}
+.pe-style-preview--bullet::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: #9B2C1A;
+  font-size: 0.7rem;
+}
 
 /* ── INSERT TAB ───────────────────────── */
 .pe-insert-grid {
