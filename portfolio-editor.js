@@ -464,7 +464,7 @@ function toggleEditing() {
       .forEach(el => { el.removeAttribute('contenteditable') })
     document.body.classList.remove('pe-editing')
     removeMediaOverlays()
-    closeDimPanel()
+    closeCropUI()
     toast('Editing off')
   }
 
@@ -509,22 +509,21 @@ function wrapWithOverlay(media) {
   overlay.appendChild(replaceInput)
   overlay.appendChild(replaceBtn)
 
-  // Dimensions / Crop
-  const dimBtn = el('button', { class: 'pe-media-action' }, '⤢ Dimensions')
-  dimBtn.addEventListener('click', e => {
+  // Crop & Resize
+  const cropBtn = el('button', { class: 'pe-media-action' }, '⤢ Crop & Resize')
+  cropBtn.addEventListener('click', e => {
     e.stopPropagation()
-    openDimPanel(media, wrap)
+    openCropUI(media)
   })
-  overlay.appendChild(dimBtn)
+  overlay.appendChild(cropBtn)
 
   // Delete
   const delBtn = el('button', { class: 'pe-media-action pe-media-action--delete' }, '✕ Delete')
   delBtn.addEventListener('click', e => {
     e.stopPropagation()
-    // Remove the whole case-image / case-video wrapper if it's just a media shell
     const container = wrap.closest('.case-image, .case-video') || wrap
     container.remove()
-    closeDimPanel()
+    closeCropUI()
     toast('Deleted')
   })
   overlay.appendChild(delBtn)
@@ -541,193 +540,137 @@ function removeMediaOverlays() {
 }
 
 /* ─────────────────────────────────────────
-   DIMENSION / CROP PANEL
+   CROP & RESIZE UI
+   Drag handles on a live viewport over the image.
    ───────────────────────────────────────── */
 
-let dimTarget    = null
-let aspectLocked = true
+let cropTarget    = null   // the img or video element
+let cropContainer = null   // its .case-image/.case-video wrapper
+let cropScrollCb  = null
 
-const CROP_POSITIONS = [
-  ['top left',    'top center',    'top right'],
-  ['center left', 'center',        'center right'],
-  ['bottom left', 'bottom center', 'bottom right'],
-]
-
-function openDimPanel(media, wrap) {
-  dimTarget = media
-  let panel = document.getElementById('pe-dim-panel')
-  if (!panel) {
-    panel = buildDimPanel()
-    document.body.appendChild(panel)
-  }
-
-  // Snapshot current rendered size
-  const rect = media.getBoundingClientRect()
-  panel.querySelector('#pe-w').value = Math.round(rect.width)  + 'px'
-  panel.querySelector('#pe-h').value = Math.round(rect.height) + 'px'
-  panel.querySelector('#pe-fit').value = 'cover'
-
-  // Default crop to center
-  panel.querySelectorAll('.pe-crop-cell').forEach(c =>
-    c.classList.toggle('active', c.dataset.pos === 'center'))
-
-  // Position panel to the right of element, clamped to viewport
-  const spaceRight = window.innerWidth - rect.right
-  const left = spaceRight > 260
-    ? rect.right + 12
-    : Math.max(8, rect.left - 252)
-  const top = Math.max(16, Math.min(
-    rect.top + window.scrollY,
-    window.scrollY + window.innerHeight - 480
-  ))
-  panel.style.left = left + 'px'
-  panel.style.top  = top  + 'px'
-  panel.classList.add('open')
-
-  // Apply initial state so preview thumbnail is correct
-  applyDimensions()
+// 8 handle directions: which edges each one moves
+const HANDLE_DIRS = {
+  tl: { x: -1, y: -1 }, tc: { x:  0, y: -1 }, tr: { x:  1, y: -1 },
+  ml: { x: -1, y:  0 },                         mr: { x:  1, y:  0 },
+  bl: { x: -1, y:  1 }, bc: { x:  0, y:  1 }, br: { x:  1, y:  1 },
 }
 
-function buildDimPanel() {
-  const panel = el('div', { id: 'pe-dim-panel' })
+function openCropUI(media) {
+  closeCropUI()
+  cropTarget = media
 
-  // Header
-  const hdr = el('div', { class: 'pe-dim-header' })
-  hdr.appendChild(el('span', { class: 'pe-dim-title' }, 'Dimensions & Crop'))
-  const closeBtn = el('button', { class: 'pe-dim-close' }, '\xD7')
-  closeBtn.addEventListener('click', closeDimPanel)
-  hdr.appendChild(closeBtn)
-  panel.appendChild(hdr)
+  // Find or create the clipping container
+  cropContainer = media.closest('.case-image, .case-video') || media.parentElement
 
-  // Preview thumbnail
-  const prev = el('div', { id: 'pe-dim-preview' })
-  panel.appendChild(prev)
-  const prevLabel = el('span', { class: 'pe-dim-label', style: 'display:block;margin-bottom:2px;margin-top:4px' }, '')
-  panel.appendChild(prevLabel)
+  // Lock container to its current rendered px size
+  const cr = cropContainer.getBoundingClientRect()
+  cropContainer.style.setProperty('width',    cr.width  + 'px', 'important')
+  cropContainer.style.setProperty('height',   cr.height + 'px', 'important')
+  cropContainer.style.setProperty('overflow', 'hidden',         'important')
+  cropContainer.style.setProperty('position', 'relative',       'important')
 
-  // Width + Height + lock
-  const sizeRow = el('div', { class: 'pe-dim-row' })
+  // Media fills the container
+  media.style.setProperty('width',      '100%',  'important')
+  media.style.setProperty('height',     '100%',  'important')
+  media.style.setProperty('object-fit', 'cover', 'important')
+  media.style.setProperty('display',    'block',  'important')
+  media.style.setProperty('max-width',  'none',   'important')
 
-  const wField = el('div', { class: 'pe-dim-field' })
-  wField.appendChild(el('span', { class: 'pe-dim-label' }, 'Width'))
-  const wInput = el('input', { class: 'pe-dim-input', id: 'pe-w', placeholder: '100%' })
-  wField.appendChild(wInput)
+  buildCropFrame()
 
-  const lockBtn = el('button', { class: 'pe-lock-btn locked', id: 'pe-lock', title: 'Lock aspect ratio' }, '⇔')
-  lockBtn.addEventListener('click', () => {
-    aspectLocked = !aspectLocked
-    lockBtn.classList.toggle('locked', aspectLocked)
-    lockBtn.textContent = aspectLocked ? '⇔' : '↕'
-  })
-
-  const hField = el('div', { class: 'pe-dim-field' })
-  hField.appendChild(el('span', { class: 'pe-dim-label' }, 'Height'))
-  const hInput = el('input', { class: 'pe-dim-input', id: 'pe-h', placeholder: 'auto' })
-  hField.appendChild(hInput)
-
-  wInput.addEventListener('input', () => {
-    if (aspectLocked && dimTarget) {
-      const nw = dimTarget.naturalWidth  || dimTarget.videoWidth  || 0
-      const nh = dimTarget.naturalHeight || dimTarget.videoHeight || 0
-      if (nw) {
-        const v = parseFloat(wInput.value)
-        if (!isNaN(v)) hInput.value = Math.round(v * nh / nw) + 'px'
-      }
-    }
-    applyDimensions()
-  })
-  hInput.addEventListener('input', applyDimensions)
-
-  sizeRow.appendChild(wField)
-  sizeRow.appendChild(lockBtn)
-  sizeRow.appendChild(hField)
-  panel.appendChild(sizeRow)
-
-  // Object-fit
-  const fitField = el('div', { class: 'pe-dim-field' })
-  fitField.appendChild(el('span', { class: 'pe-dim-label' }, 'Object Fit'))
-  const fitSelect = el('select', { class: 'pe-dim-select', id: 'pe-fit' })
-  ;['cover', 'contain', 'fill', 'scale-down', 'none'].forEach(v => {
-    const opt = document.createElement('option')
-    opt.value = v; opt.textContent = v
-    fitSelect.appendChild(opt)
-  })
-  fitSelect.addEventListener('change', applyDimensions)
-  fitField.appendChild(fitSelect)
-  panel.appendChild(fitField)
-
-  // Crop position grid
-  const cropWrap = el('div', { class: 'pe-dim-field' })
-  cropWrap.appendChild(el('span', { class: 'pe-dim-label' }, 'Crop Position'))
-  const grid = el('div', { class: 'pe-crop-grid' })
-  CROP_POSITIONS.forEach(row => {
-    row.forEach(pos => {
-      const cell = el('button', { class: 'pe-crop-cell', 'data-pos': pos })
-      cell.title = pos
-      cell.addEventListener('click', () => {
-        grid.querySelectorAll('.pe-crop-cell').forEach(c => c.classList.remove('active'))
-        cell.classList.add('active')
-        fitSelect.value = 'cover'   // crop requires cover
-        applyDimensions()
-      })
-      grid.appendChild(cell)
-    })
-  })
-  cropWrap.appendChild(grid)
-  panel.appendChild(cropWrap)
-
-  return panel
+  // Keep frame in sync while user scrolls
+  cropScrollCb = () => moveCropFrame()
+  window.addEventListener('scroll', cropScrollCb, { passive: true })
 }
 
-// Live — applies every change immediately to the page element
-function applyDimensions() {
-  if (!dimTarget) return
+function buildCropFrame() {
+  const frame = document.createElement('div')
+  frame.id = 'pe-crop-frame'
 
-  const w   = (document.getElementById('pe-w')?.value || '').trim()
-  const h   = (document.getElementById('pe-h')?.value || '').trim()
-  const fit = document.getElementById('pe-fit')?.value || 'cover'
-  const pos = document.querySelector('#pe-dim-panel .pe-crop-cell.active')?.dataset.pos || 'center'
+  // 8 handles
+  Object.keys(HANDLE_DIRS).forEach(dir => {
+    const h = document.createElement('div')
+    h.className = `pe-crop-handle pe-crop-handle--${dir}`
+    h.addEventListener('mousedown', e => startCropDrag(e, dir))
+    frame.appendChild(h)
+  })
 
-  // Use setProperty + important to override any stylesheet rules
-  const set = (prop, val) => dimTarget.style.setProperty(prop, val, 'important')
-  if (w) set('width',  w)
-  if (h) set('height', h)
-  set('object-fit',      fit)
-  set('object-position', pos)
-  set('display',         'block')
+  // Info label
+  const info = document.createElement('div')
+  info.id = 'pe-crop-info'
+  frame.appendChild(info)
 
-  // Also fix parent containers that constrain the element
-  const mwrap = dimTarget.closest('.pe-media-wrap')
-  if (mwrap) {
-    mwrap.style.setProperty('overflow', 'hidden', 'important')
-    if (w) mwrap.style.setProperty('width', w, 'important')
-  }
-  const cWrap = dimTarget.closest('.case-image, .case-video, .case-image--hero')
-  if (cWrap) {
-    cWrap.style.setProperty('overflow', 'hidden', 'important')
-    if (h) cWrap.style.setProperty('height', h, 'important')
-  }
+  // Done button
+  const done = document.createElement('button')
+  done.id = 'pe-crop-done'
+  done.textContent = 'Done'
+  done.addEventListener('click', closeCropUI)
+  frame.appendChild(done)
 
-  // Update preview thumbnail
-  const prev = document.getElementById('pe-dim-preview')
-  if (prev) {
-    if (dimTarget.tagName === 'IMG') {
-      prev.style.backgroundImage    = `url(${dimTarget.src})`
-      prev.style.backgroundSize     = fit === 'cover' ? 'cover' : fit === 'contain' ? 'contain' : '100% 100%'
-      prev.style.backgroundPosition = pos
-      prev.style.backgroundRepeat   = 'no-repeat'
-    } else {
-      prev.style.background = '#1a1614'
-      prev.style.backgroundImage = 'none'
-    }
-  }
-  const lbl = prev?.nextElementSibling
-  if (lbl) lbl.textContent = `${w || 'auto'} \xD7 ${h || 'auto'} \xB7 ${fit} \xB7 ${pos}`
+  document.body.appendChild(frame)
+  moveCropFrame()
+  updateCropInfo()
 }
 
-function closeDimPanel() {
-  document.getElementById('pe-dim-panel')?.classList.remove('open')
-  dimTarget = null
+function moveCropFrame() {
+  const frame = document.getElementById('pe-crop-frame')
+  if (!frame || !cropContainer) return
+  const r = cropContainer.getBoundingClientRect()
+  frame.style.left   = r.left   + 'px'
+  frame.style.top    = r.top    + 'px'
+  frame.style.width  = r.width  + 'px'
+  frame.style.height = r.height + 'px'
+}
+
+function updateCropInfo() {
+  const info = document.getElementById('pe-crop-info')
+  if (!info || !cropContainer) return
+  const r = cropContainer.getBoundingClientRect()
+  info.textContent = `${Math.round(r.width)} × ${Math.round(r.height)} px`
+}
+
+function startCropDrag(e, dir) {
+  e.preventDefault()
+  e.stopPropagation()
+
+  const { x: dx, y: dy } = HANDLE_DIRS[dir]
+  const startX = e.clientX
+  const startY = e.clientY
+  const cr     = cropContainer.getBoundingClientRect()
+  const startW = cr.width
+  const startH = cr.height
+
+  // For top/left handles we also need to shift position — but since the
+  // container is in document flow we only resize (no reposition needed)
+  function onMove(e) {
+    const deltaX = e.clientX - startX
+    const deltaY = e.clientY - startY
+
+    const newW = Math.max(80,  startW + dx * deltaX)
+    const newH = Math.max(60,  startH + dy * deltaY)
+
+    if (dx !== 0) cropContainer.style.setProperty('width',  newW + 'px', 'important')
+    if (dy !== 0) cropContainer.style.setProperty('height', newH + 'px', 'important')
+
+    moveCropFrame()
+    updateCropInfo()
+  }
+
+  function onUp() {
+    document.removeEventListener('mousemove', onMove)
+    document.removeEventListener('mouseup',   onUp)
+  }
+
+  document.addEventListener('mousemove', onMove)
+  document.addEventListener('mouseup',   onUp)
+}
+
+function closeCropUI() {
+  document.getElementById('pe-crop-frame')?.remove()
+  if (cropScrollCb) window.removeEventListener('scroll', cropScrollCb)
+  cropTarget    = null
+  cropContainer = null
+  cropScrollCb  = null
 }
 
 /* ─────────────────────────────────────────
