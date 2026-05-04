@@ -261,6 +261,17 @@ function renderFormatTab(body) {
 
   styleGroup.appendChild(list)
   body.appendChild(styleGroup)
+
+  // Quick-insert divider — common enough to live on the Format tab
+  const dividerGroup = el('div')
+  dividerGroup.innerHTML = `<div class="pe-group-label" style="margin-top:4px">Insert</div>`
+  const divBtn = el('button', { class: 'pe-btn', style: 'width:100%;text-align:left' }, '— Add Divider')
+  divBtn.addEventListener('mousedown', e => {
+    e.preventDefault()
+    insertBlock('<div class="case-divider"></div>')
+  })
+  dividerGroup.appendChild(divBtn)
+  body.appendChild(dividerGroup)
 }
 
 // ── INSERT ────────────────────────────────
@@ -898,19 +909,43 @@ function updateModeBadge() {
    APPLY STYLE
    ───────────────────────────────────────── */
 
+/**
+ * Notion-style block resolver: finds the innermost "paragraph-level" element
+ * the cursor is in. Never climbs past a section/div/article container.
+ *
+ * Paragraph-level = p, h1-h6, blockquote, li, OR a span.case-section-label
+ * (label spans ARE content blocks — they just happen to use an inline tag).
+ */
+function resolveBlock(node, main) {
+  let el = (node?.nodeType === 3) ? node.parentElement : node
+  while (el && el !== main) {
+    const tag = el.tagName?.toLowerCase()
+    if (!tag) { el = el.parentElement; continue }
+    // Paragraph-level elements → use directly
+    if (['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li'].includes(tag)) return el
+    // Section label span → treat as a paragraph (it IS a block, just inline-tagged)
+    if (tag === 'span' && el.classList.contains('case-section-label')) return el
+    // Other inline elements (strong, a, em…) → climb
+    if (isInline(el)) { el = el.parentElement; continue }
+    // Non-inline container (section, div, article…) → stop climbing, nothing styleable here
+    break
+  }
+  return null
+}
+
 function applyStyle(style) {
   const main = document.querySelector('main, .case-main')
   if (!main) { toast('No editable area found'); return }
 
-  // 1. Active element still inside main (works when mousedown preventDefault keeps focus)
+  // 1. Active element still in main (mousedown+preventDefault keeps this valid)
   let target = null
   const ae = document.activeElement
   if (ae && main.contains(ae) && ae.isContentEditable) target = ae
 
-  // 2. Last block the user explicitly clicked into (most reliable fallback)
+  // 2. Last block the user clicked into
   if (!target && lastFocusedBlock && main.contains(lastFocusedBlock)) target = lastFocusedBlock
 
-  // 3. Saved text selection range (only set when text was drag-selected)
+  // 3. Saved selection range
   if (!target && savedRange && main.contains(savedRange.commonAncestorContainer)) {
     target = savedRange.commonAncestorContainer
     if (target.nodeType === 3) target = target.parentElement
@@ -918,24 +953,34 @@ function applyStyle(style) {
 
   if (!target) { toast('Click a text block first'); return }
 
-  // Walk up to a block-level element inside main
-  let block = target
-  while (block && block !== main && isInline(block)) {
-    block = block.parentElement
-  }
-  if (!block || block === main) { toast('Click a text block first'); return }
+  const block = resolveBlock(target, main)
+  if (!block) { toast('Click a text block first'); return }
 
-  // Change tag if needed
+  let newBlock
   if (block.tagName.toLowerCase() !== style.tag) {
-    const newEl = document.createElement(style.tag)
-    newEl.innerHTML = block.innerHTML
-    newEl.className = style.cls
-    block.replaceWith(newEl)
-    newEl.focus()
+    // Tag change: create new element, move content, swap in-place
+    newBlock = document.createElement(style.tag)
+    newBlock.innerHTML = block.innerHTML
+    newBlock.className = style.cls
+    block.replaceWith(newBlock)
   } else {
+    // Same tag: just swap class
     block.className = style.cls
+    newBlock = block
   }
 
+  // Keep the new block editable and restore cursor
+  if (isEditing) {
+    newBlock.contentEditable = 'true'
+    newBlock.focus()
+    const range = document.createRange()
+    range.selectNodeContents(newBlock)
+    range.collapse(false)
+    const sel = window.getSelection()
+    sel?.removeAllRanges()
+    sel?.addRange(range)
+  }
+  lastFocusedBlock = newBlock
   toast(`Applied: ${style.name}`)
 }
 
@@ -956,16 +1001,21 @@ function insertBlock(html) {
   const main = document.querySelector('main, .case-main')
   if (!main) return
 
-  // Find insertion point
+  // Find insertion anchor:
+  // 1. Text cursor position (selection)
+  // 2. Last focused block
+  // 3. Append to end
   let anchor = null
   const sel = window.getSelection()
   if (sel && sel.rangeCount > 0) {
     let node = sel.getRangeAt(0).commonAncestorContainer
     if (node.nodeType === 3) node = node.parentElement
-    // Walk up until direct child of main
-    while (node && node.parentElement !== main) {
-      node = node.parentElement
-    }
+    while (node && node.parentElement !== main) node = node.parentElement
+    if (node && node !== main) anchor = node
+  }
+  if (!anchor && lastFocusedBlock) {
+    let node = lastFocusedBlock
+    while (node && node.parentElement !== main) node = node.parentElement
     if (node && node !== main) anchor = node
   }
 
