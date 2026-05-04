@@ -497,10 +497,39 @@ function renderExportTab(body) {
     toast('HTML copied!')
   })
 
+  const saveBtn = el('button', { class: 'pe-btn pe-btn--primary' }, '💾 Save to file')
+  saveBtn.addEventListener('click', async () => {
+    const liveMain = document.querySelector('main, .case-main')
+    if (!liveMain) { toast('No <main> found'); return }
+    saveBtn.textContent = 'Saving…'
+    saveBtn.disabled = true
+    try {
+      const res = await fetch('/pe-save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/html; charset=utf-8',
+          'X-Page-Path': encodeURIComponent(window.location.pathname),
+        },
+        body: liveMain.innerHTML,
+      })
+      const data = await res.json()
+      if (data.ok) {
+        toast('Saved to ' + (data.file?.split('/').slice(-1)[0] || 'file') + ' ✓')
+      } else {
+        toast('Save failed: ' + (data.error || 'unknown error'))
+      }
+    } catch (err) {
+      toast('Save error: ' + err.message)
+    }
+    saveBtn.textContent = '💾 Save to file'
+    saveBtn.disabled = false
+  })
+
   const refreshBtn = el('button', { class: 'pe-btn' }, 'Refresh preview')
   refreshBtn.addEventListener('click', () => renderTab())
 
   actions.appendChild(copyBtn)
+  actions.appendChild(saveBtn)
   actions.appendChild(refreshBtn)
   group.appendChild(textarea)
   group.appendChild(actions)
