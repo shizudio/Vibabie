@@ -144,6 +144,7 @@ let isOpen = false
 let isEditing = false
 let activeTab = 'format'
 let savedRange = null
+let lastFocusedBlock = null   // last contenteditable block the user clicked
 let mediaFiles = []  // { name, url, type }
 
 /* ─────────────────────────────────────────
@@ -249,7 +250,12 @@ function renderFormatTab(body) {
       <span class="pe-style-name">${style.name}</span>
       <span class="pe-style-preview ${style.previewCls}">${style.preview}</span>
     `
-    btn.addEventListener('click', () => applyStyle(style))
+    // mousedown + preventDefault keeps focus on the contenteditable
+    // (clicking a panel button would otherwise blur the target first)
+    btn.addEventListener('mousedown', e => {
+      e.preventDefault()
+      applyStyle(style)
+    })
     list.appendChild(btn)
   })
 
@@ -540,6 +546,17 @@ function renderExportTab(body) {
    EDITING MODE
    ───────────────────────────────────────── */
 
+// Tracks which contenteditable block the user last clicked into.
+// Fires on any focusin inside <main> so we always have a valid target
+// even when the user clicked without making a text selection.
+function trackFocus(e) {
+  const main = document.querySelector('main, .case-main')
+  if (!main || !e.target.isContentEditable || !main.contains(e.target)) return
+  let block = e.target
+  while (block && block !== main && isInline(block)) block = block.parentElement
+  if (block && block !== main) lastFocusedBlock = block
+}
+
 function toggleEditing() {
   isEditing = !isEditing
   const main = document.querySelector('main, .case-main')
@@ -549,12 +566,15 @@ function toggleEditing() {
     main.querySelectorAll('p, h1, h2, h3, h4, blockquote, span.case-section-label, li')
       .forEach(el => { el.contentEditable = 'true' })
     document.body.classList.add('pe-editing')
+    document.addEventListener('focusin', trackFocus)
     bindMediaOverlays()
     toast('Editing enabled — click any text, hover media to edit')
   } else {
     main.querySelectorAll('[contenteditable]')
       .forEach(el => { el.removeAttribute('contenteditable') })
     document.body.classList.remove('pe-editing')
+    document.removeEventListener('focusin', trackFocus)
+    lastFocusedBlock = null
     removeMediaOverlays()
     closeCropUI()
     toast('Editing off')
@@ -879,18 +899,26 @@ function updateModeBadge() {
    ───────────────────────────────────────── */
 
 function applyStyle(style) {
-  // Try focused element first, then last saved selection
-  let target = document.activeElement
-  if (!target || !document.querySelector('main, .case-main')?.contains(target)) {
-    if (savedRange) {
-      target = savedRange.commonAncestorContainer
-      if (target.nodeType === 3) target = target.parentElement
-    }
+  const main = document.querySelector('main, .case-main')
+  if (!main) { toast('No editable area found'); return }
+
+  // 1. Active element still inside main (works when mousedown preventDefault keeps focus)
+  let target = null
+  const ae = document.activeElement
+  if (ae && main.contains(ae) && ae.isContentEditable) target = ae
+
+  // 2. Last block the user explicitly clicked into (most reliable fallback)
+  if (!target && lastFocusedBlock && main.contains(lastFocusedBlock)) target = lastFocusedBlock
+
+  // 3. Saved text selection range (only set when text was drag-selected)
+  if (!target && savedRange && main.contains(savedRange.commonAncestorContainer)) {
+    target = savedRange.commonAncestorContainer
+    if (target.nodeType === 3) target = target.parentElement
   }
+
   if (!target) { toast('Click a text block first'); return }
 
   // Walk up to a block-level element inside main
-  const main = document.querySelector('main, .case-main')
   let block = target
   while (block && block !== main && isInline(block)) {
     block = block.parentElement
