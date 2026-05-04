@@ -3,6 +3,46 @@
    Brand-aware devtool editor panel
    ───────────────────────────────────────── */
 
+/* ── BLOCK HANDLE (move / delete) ─────── */
+#pe-block-handle {
+  position: fixed;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 8900;
+  background: var(--paper, #FAF8F5);
+  border: 1px solid var(--border, #E8E0DC);
+  border-radius: 5px;
+  padding: 3px;
+  box-shadow: 0 2px 10px rgba(26,22,20,0.1);
+  pointer-events: auto;
+}
+#pe-block-handle button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #6b5f5c;
+  cursor: pointer;
+  border-radius: 3px;
+  font-size: 11px;
+  font-family: sans-serif;
+  line-height: 1;
+  transition: background 0.12s, color 0.12s;
+}
+#pe-block-handle button:hover {
+  background: #f0ebe8;
+  color: #1a1614;
+}
+#pe-block-handle .pe-block-handle-del:hover {
+  background: #fde8e6;
+  color: #9B2C1A;
+}
+
 /* ── TOGGLE BUTTON ────────────────────── */
 #pe-toggle {
   position: fixed;

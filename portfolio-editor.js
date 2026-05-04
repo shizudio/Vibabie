@@ -595,6 +595,7 @@ function toggleEditing() {
     document.body.classList.add('pe-editing')
     document.addEventListener('focusin', trackFocus)
     bindMediaOverlays()
+    bindBlockControls()
     toast('Editing enabled — click any text, hover media to edit')
   } else {
     main.querySelectorAll('[contenteditable]')
@@ -603,12 +604,138 @@ function toggleEditing() {
     document.removeEventListener('focusin', trackFocus)
     lastFocusedBlock = null
     removeMediaOverlays()
+    removeBlockControls()
     closeCropUI()
     toast('Editing off')
   }
 
   updateModeBadge()
   renderTab()
+}
+
+/* ─────────────────────────────────────────
+   BLOCK CONTROLS — move ↑↓ and delete
+   Floating handle that tracks whichever
+   direct-child-of-main the mouse is over.
+   ───────────────────────────────────────── */
+
+let hoveredBlock    = null
+let blockHandleEl   = null
+let hideHandleTimer = null
+
+function bindBlockControls() {
+  // Build the floating handle once
+  blockHandleEl = document.createElement('div')
+  blockHandleEl.id = 'pe-block-handle'
+
+  const upBtn  = makeHandleBtn('↑', 'Move up', moveUp)
+  const dnBtn  = makeHandleBtn('↓', 'Move down', moveDown)
+  const delBtn = makeHandleBtn('✕', 'Delete block', deleteBlock)
+  delBtn.classList.add('pe-block-handle-del')
+
+  blockHandleEl.append(upBtn, dnBtn, delBtn)
+
+  // Keep handle visible when mouse moves onto it
+  blockHandleEl.addEventListener('mouseenter', () => clearTimeout(hideHandleTimer))
+  blockHandleEl.addEventListener('mouseleave', startHideTimer)
+
+  document.body.appendChild(blockHandleEl)
+
+  // Delegate: mouseover any direct child of <main>
+  const main = document.querySelector('main, .case-main')
+  if (!main) return
+
+  main._peOver  = e => {
+    let el = e.target
+    while (el && el.parentElement !== main) el = el.parentElement
+    if (!el || el === main) return
+    if (el.id?.startsWith('pe-')) return          // skip editor UI
+    clearTimeout(hideHandleTimer)
+    hoveredBlock = el
+    blockHandleEl.style.display = 'flex'
+    positionHandle(el)
+  }
+  main._peLeave = () => startHideTimer()
+
+  main.addEventListener('mouseover',  main._peOver)
+  main.addEventListener('mouseleave', main._peLeave)
+  window.addEventListener('scroll', onScrollHandle, { passive: true })
+}
+
+function makeHandleBtn(text, title, action) {
+  const btn = document.createElement('button')
+  btn.textContent = text
+  btn.title = title
+  btn.addEventListener('mousedown', e => { e.preventDefault(); action() })
+  return btn
+}
+
+function moveUp() {
+  if (!hoveredBlock) return
+  const prev = blockSibling(hoveredBlock, -1)
+  if (prev) hoveredBlock.parentElement.insertBefore(hoveredBlock, prev)
+  positionHandle(hoveredBlock)
+  toast('Moved up')
+}
+
+function moveDown() {
+  if (!hoveredBlock) return
+  const next = blockSibling(hoveredBlock, 1)
+  if (next) next.after(hoveredBlock)
+  positionHandle(hoveredBlock)
+  toast('Moved down')
+}
+
+function deleteBlock() {
+  if (!hoveredBlock) return
+  hoveredBlock.remove()
+  hideHandle()
+  toast('Block deleted')
+}
+
+// Walk siblings in direction (+1 / -1), skipping editor-injected elements
+function blockSibling(el, dir) {
+  let s = dir > 0 ? el.nextElementSibling : el.previousElementSibling
+  while (s && s.id?.startsWith('pe-')) {
+    s = dir > 0 ? s.nextElementSibling : s.previousElementSibling
+  }
+  return s
+}
+
+function positionHandle(block) {
+  if (!blockHandleEl || !block) return
+  const r = block.getBoundingClientRect()
+  blockHandleEl.style.top  = Math.round(r.top  + 6) + 'px'
+  // sit just outside the block's left edge; clamp so it never hides off-screen
+  blockHandleEl.style.left = Math.max(4, Math.round(r.left) - 64) + 'px'
+}
+
+function startHideTimer() {
+  hideHandleTimer = setTimeout(hideHandle, 300)
+}
+
+function hideHandle() {
+  if (blockHandleEl) blockHandleEl.style.display = 'none'
+  hoveredBlock = null
+}
+
+function onScrollHandle() {
+  if (hoveredBlock && blockHandleEl?.style.display !== 'none') positionHandle(hoveredBlock)
+}
+
+function removeBlockControls() {
+  const main = document.querySelector('main, .case-main')
+  if (main) {
+    if (main._peOver)  main.removeEventListener('mouseover',  main._peOver)
+    if (main._peLeave) main.removeEventListener('mouseleave', main._peLeave)
+    delete main._peOver
+    delete main._peLeave
+  }
+  window.removeEventListener('scroll', onScrollHandle)
+  blockHandleEl?.remove()
+  blockHandleEl = null
+  hoveredBlock  = null
+  clearTimeout(hideHandleTimer)
 }
 
 /* ─────────────────────────────────────────
