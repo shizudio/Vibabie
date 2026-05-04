@@ -544,7 +544,7 @@ function removeMediaOverlays() {
    DIMENSION / CROP PANEL
    ───────────────────────────────────────── */
 
-let dimTarget   = null
+let dimTarget    = null
 let aspectLocked = true
 
 const CROP_POSITIONS = [
@@ -552,17 +552,6 @@ const CROP_POSITIONS = [
   ['center left', 'center',        'center right'],
   ['bottom left', 'bottom center', 'bottom right'],
 ]
-
-// Convert CSS objectPosition string → closest grid cell key
-function posToKey(pos) {
-  pos = pos.toLowerCase().trim()
-  if (pos === '50% 50%' || pos === 'center') return 'center'
-  // Map percentage shortcuts
-  const map = { '0% 0%': 'top left', '50% 0%': 'top center', '100% 0%': 'top right',
-                '0% 50%': 'center left', '100% 50%': 'center right',
-                '0% 100%': 'bottom left', '50% 100%': 'bottom center', '100% 100%': 'bottom right' }
-  return map[pos] || pos
-}
 
 function openDimPanel(media, wrap) {
   dimTarget = media
@@ -572,49 +561,31 @@ function openDimPanel(media, wrap) {
     document.body.appendChild(panel)
   }
 
-  // Populate current values
+  // Snapshot current rendered size
   const rect = media.getBoundingClientRect()
-  panel.querySelector('#pe-w').value   = media.style.width  || Math.round(rect.width)  + 'px'
-  panel.querySelector('#pe-h').value   = media.style.height || Math.round(rect.height) + 'px'
+  panel.querySelector('#pe-w').value = Math.round(rect.width)  + 'px'
+  panel.querySelector('#pe-h').value = Math.round(rect.height) + 'px'
+  panel.querySelector('#pe-fit').value = 'cover'
 
-  const fit = media.style.objectFit || getComputedStyle(media).objectFit || 'cover'
-  panel.querySelector('#pe-fit').value = fit
+  // Default crop to center
+  panel.querySelectorAll('.pe-crop-cell').forEach(c =>
+    c.classList.toggle('active', c.dataset.pos === 'center'))
 
-  // Highlight active crop cell
-  const rawPos = media.style.objectPosition || getComputedStyle(media).objectPosition || 'center'
-  const posKey = posToKey(rawPos)
-  panel.querySelectorAll('.pe-crop-cell').forEach(c => {
-    c.classList.toggle('active', c.dataset.pos === posKey)
-  })
-
-  // Update live preview
-  refreshPreview()
-
-  // Position panel anchored to the right of the element
-  panel.style.top  = `${Math.min(rect.top + window.scrollY, window.scrollY + window.innerHeight - panel.offsetHeight - 16)}px`
-  const panelLeft  = Math.min(rect.right + 12, window.innerWidth - 256)
-  panel.style.left = `${Math.max(8, panelLeft)}px`
+  // Position panel to the right of element, clamped to viewport
+  const spaceRight = window.innerWidth - rect.right
+  const left = spaceRight > 260
+    ? rect.right + 12
+    : Math.max(8, rect.left - 252)
+  const top = Math.max(16, Math.min(
+    rect.top + window.scrollY,
+    window.scrollY + window.innerHeight - 480
+  ))
+  panel.style.left = left + 'px'
+  panel.style.top  = top  + 'px'
   panel.classList.add('open')
-}
 
-function refreshPreview() {
-  if (!dimTarget) return
-  const prev = document.getElementById('pe-dim-preview')
-  if (!prev) return
-  const wVal   = document.getElementById('pe-w')?.value.trim()
-  const hVal   = document.getElementById('pe-h')?.value.trim()
-  const fit    = document.getElementById('pe-fit')?.value || 'cover'
-  const active = document.querySelector('.pe-crop-cell.active')
-  const pos    = active?.dataset.pos || 'center'
-
-  prev.style.backgroundImage    = dimTarget.tagName === 'IMG'
-    ? `url(${dimTarget.src})` : 'none'
-  prev.style.backgroundSize     = fit === 'cover' ? 'cover' : fit === 'contain' ? 'contain' : '100% 100%'
-  prev.style.backgroundPosition = pos
-  prev.style.backgroundRepeat   = 'no-repeat'
-
-  const label = prev.nextElementSibling
-  if (label) label.textContent = `${wVal || '—'} × ${hVal || '—'} · ${fit} · ${pos}`
+  // Apply initial state so preview thumbnail is correct
+  applyDimensions()
 }
 
 function buildDimPanel() {
@@ -623,15 +594,16 @@ function buildDimPanel() {
   // Header
   const hdr = el('div', { class: 'pe-dim-header' })
   hdr.appendChild(el('span', { class: 'pe-dim-title' }, 'Dimensions & Crop'))
-  const closeBtn = el('button', { class: 'pe-dim-close' }, '×')
+  const closeBtn = el('button', { class: 'pe-dim-close' }, '\xD7')
   closeBtn.addEventListener('click', closeDimPanel)
   hdr.appendChild(closeBtn)
   panel.appendChild(hdr)
 
-  // Live preview
+  // Preview thumbnail
   const prev = el('div', { id: 'pe-dim-preview' })
   panel.appendChild(prev)
-  panel.appendChild(el('span', { class: 'pe-dim-label', style: 'display:block;margin-bottom:4px' }, ''))
+  const prevLabel = el('span', { class: 'pe-dim-label', style: 'display:block;margin-bottom:2px;margin-top:4px' }, '')
+  panel.appendChild(prevLabel)
 
   // Width + Height + lock
   const sizeRow = el('div', { class: 'pe-dim-row' })
@@ -641,11 +613,11 @@ function buildDimPanel() {
   const wInput = el('input', { class: 'pe-dim-input', id: 'pe-w', placeholder: '100%' })
   wField.appendChild(wInput)
 
-  const lockBtn = el('button', { class: 'pe-lock-btn locked', id: 'pe-lock', title: 'Lock aspect ratio' }, '🔗')
+  const lockBtn = el('button', { class: 'pe-lock-btn locked', id: 'pe-lock', title: 'Lock aspect ratio' }, '⇔')
   lockBtn.addEventListener('click', () => {
     aspectLocked = !aspectLocked
     lockBtn.classList.toggle('locked', aspectLocked)
-    lockBtn.textContent = aspectLocked ? '🔗' : '⇕'
+    lockBtn.textContent = aspectLocked ? '⇔' : '↕'
   })
 
   const hField = el('div', { class: 'pe-dim-field' })
@@ -654,15 +626,17 @@ function buildDimPanel() {
   hField.appendChild(hInput)
 
   wInput.addEventListener('input', () => {
-    if (!aspectLocked || !dimTarget) return
-    const nw = dimTarget.naturalWidth  || dimTarget.videoWidth  || 0
-    const nh = dimTarget.naturalHeight || dimTarget.videoHeight || 0
-    if (!nw) return
-    const v = parseFloat(wInput.value)
-    if (!isNaN(v) && wInput.value.includes('px')) hInput.value = Math.round(v * nh / nw) + 'px'
-    refreshPreview()
+    if (aspectLocked && dimTarget) {
+      const nw = dimTarget.naturalWidth  || dimTarget.videoWidth  || 0
+      const nh = dimTarget.naturalHeight || dimTarget.videoHeight || 0
+      if (nw) {
+        const v = parseFloat(wInput.value)
+        if (!isNaN(v)) hInput.value = Math.round(v * nh / nw) + 'px'
+      }
+    }
+    applyDimensions()
   })
-  hInput.addEventListener('input', refreshPreview)
+  hInput.addEventListener('input', applyDimensions)
 
   sizeRow.appendChild(wField)
   sizeRow.appendChild(lockBtn)
@@ -678,7 +652,7 @@ function buildDimPanel() {
     opt.value = v; opt.textContent = v
     fitSelect.appendChild(opt)
   })
-  fitSelect.addEventListener('change', refreshPreview)
+  fitSelect.addEventListener('change', applyDimensions)
   fitField.appendChild(fitSelect)
   panel.appendChild(fitField)
 
@@ -693,16 +667,8 @@ function buildDimPanel() {
       cell.addEventListener('click', () => {
         grid.querySelectorAll('.pe-crop-cell').forEach(c => c.classList.remove('active'))
         cell.classList.add('active')
-        // Crop only works with cover — auto-switch
-        const fitSel = document.getElementById('pe-fit')
-        if (fitSel && fitSel.value !== 'cover') fitSel.value = 'cover'
-        // Ensure a height is set so cover actually clips
-        const hIn = document.getElementById('pe-h')
-        if (hIn && (!hIn.value || hIn.value === 'auto')) {
-          const rect = dimTarget?.getBoundingClientRect()
-          if (rect) hIn.value = Math.round(rect.height) + 'px'
-        }
-        refreshPreview()
+        fitSelect.value = 'cover'   // crop requires cover
+        applyDimensions()
       })
       grid.appendChild(cell)
     })
@@ -710,29 +676,53 @@ function buildDimPanel() {
   cropWrap.appendChild(grid)
   panel.appendChild(cropWrap)
 
-  // Apply
-  const applyBtn = el('button', { class: 'pe-dim-apply' }, 'Apply to page')
-  applyBtn.addEventListener('click', applyDimensions)
-  panel.appendChild(applyBtn)
-
   return panel
 }
 
+// Live — applies every change immediately to the page element
 function applyDimensions() {
   if (!dimTarget) return
-  const w   = document.getElementById('pe-w')?.value.trim()
-  const h   = document.getElementById('pe-h')?.value.trim()
-  const fit = document.getElementById('pe-fit')?.value
-  const pos = document.querySelector('.pe-crop-cell.active')?.dataset.pos || 'center'
 
-  if (w)   dimTarget.style.width          = w
-  if (h)   dimTarget.style.height         = h
-  if (fit) dimTarget.style.objectFit      = fit
-           dimTarget.style.objectPosition = pos
-  // display:block ensures object-fit is honoured
-  dimTarget.style.display = 'block'
+  const w   = (document.getElementById('pe-w')?.value || '').trim()
+  const h   = (document.getElementById('pe-h')?.value || '').trim()
+  const fit = document.getElementById('pe-fit')?.value || 'cover'
+  const pos = document.querySelector('#pe-dim-panel .pe-crop-cell.active')?.dataset.pos || 'center'
 
-  toast('Applied ✓')
+  // Use setProperty + important to override any stylesheet rules
+  const set = (prop, val) => dimTarget.style.setProperty(prop, val, 'important')
+  if (w) set('width',  w)
+  if (h) set('height', h)
+  set('object-fit',      fit)
+  set('object-position', pos)
+  set('display',         'block')
+
+  // Also fix parent containers that constrain the element
+  const mwrap = dimTarget.closest('.pe-media-wrap')
+  if (mwrap) {
+    mwrap.style.setProperty('overflow', 'hidden', 'important')
+    if (w) mwrap.style.setProperty('width', w, 'important')
+  }
+  const cWrap = dimTarget.closest('.case-image, .case-video, .case-image--hero')
+  if (cWrap) {
+    cWrap.style.setProperty('overflow', 'hidden', 'important')
+    if (h) cWrap.style.setProperty('height', h, 'important')
+  }
+
+  // Update preview thumbnail
+  const prev = document.getElementById('pe-dim-preview')
+  if (prev) {
+    if (dimTarget.tagName === 'IMG') {
+      prev.style.backgroundImage    = `url(${dimTarget.src})`
+      prev.style.backgroundSize     = fit === 'cover' ? 'cover' : fit === 'contain' ? 'contain' : '100% 100%'
+      prev.style.backgroundPosition = pos
+      prev.style.backgroundRepeat   = 'no-repeat'
+    } else {
+      prev.style.background = '#1a1614'
+      prev.style.backgroundImage = 'none'
+    }
+  }
+  const lbl = prev?.nextElementSibling
+  if (lbl) lbl.textContent = `${w || 'auto'} \xD7 ${h || 'auto'} \xB7 ${fit} \xB7 ${pos}`
 }
 
 function closeDimPanel() {
