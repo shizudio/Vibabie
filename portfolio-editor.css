@@ -339,6 +339,47 @@
 }
 .pe-media-insert:hover { opacity: 0.85; }
 
+/* ── TOOLS TAB ────────────────────────── */
+.pe-tool-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border, #E8E0DC);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+  cursor: pointer;
+}
+a.pe-tool-card:hover {
+  border-color: #9B2C1A;
+  background: rgba(155,44,26,0.04);
+}
+.pe-tool-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.pe-tool-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.pe-tool-name {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #4a413e;
+}
+a.pe-tool-card:hover .pe-tool-name { color: #9B2C1A; }
+.pe-tool-desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 300;
+  color: #9b9390;
+  line-height: 1.6;
+}
+
 /* ── EXPORT TAB ───────────────────────── */
 .pe-export-textarea {
   width: 100%;

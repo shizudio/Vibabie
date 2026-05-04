@@ -190,6 +190,7 @@ function buildUI() {
       <button class="pe-tab" data-tab="insert">Insert</button>
       <button class="pe-tab" data-tab="media">Media</button>
       <button class="pe-tab" data-tab="export">Export</button>
+      <button class="pe-tab" data-tab="tools">Tools</button>
     </div>
     <div class="pe-body" id="pe-body"></div>
   `
@@ -225,6 +226,7 @@ function renderTab() {
   else if (activeTab === 'insert') renderInsertTab(body)
   else if (activeTab === 'media') renderMediaTab(body)
   else if (activeTab === 'export') renderExportTab(body)
+  else if (activeTab === 'tools') renderToolsTab(body)
 }
 
 // ── FORMAT ────────────────────────────────
@@ -436,6 +438,44 @@ function buildMediaItem(f, idx) {
   info.appendChild(removeBtn)
   item.appendChild(info)
   return item
+}
+
+// ── TOOLS ─────────────────────────────────
+function renderToolsTab(body) {
+  const TOOLS = [
+    {
+      icon: '⊕',
+      name: 'Hotspot Editor',
+      desc: 'Drag & position room hotspots, adjust overlays and link targets on the landing page.',
+      url: '/devtool.html',
+    },
+    {
+      icon: '✏',
+      name: 'Portfolio Editor',
+      desc: 'You\'re already here — format text, insert blocks, manage media across case study pages.',
+      url: null,
+    },
+  ]
+
+  const note = el('div')
+  note.innerHTML = `<div class="pe-group-label">Developer tools</div>`
+  body.appendChild(note)
+
+  TOOLS.forEach(tool => {
+    const card = el(tool.url ? 'a' : 'div', { class: 'pe-tool-card' })
+    if (tool.url) {
+      card.href   = tool.url
+      card.target = '_blank'
+    }
+    card.innerHTML = `
+      <div class="pe-tool-icon">${tool.icon}</div>
+      <div class="pe-tool-info">
+        <div class="pe-tool-name">${tool.name}${tool.url ? ' ↗' : ''}</div>
+        <div class="pe-tool-desc">${tool.desc}</div>
+      </div>
+    `
+    body.appendChild(card)
+  })
 }
 
 // ── EXPORT ────────────────────────────────
