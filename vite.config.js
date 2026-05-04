@@ -1,7 +1,9 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
+import peUploadPlugin from './vite-plugin-pe-upload.js'
 
 export default defineConfig({
+  plugins: [peUploadPlugin()],
   build: {
     rollupOptions: {
       input: {

@@ -308,32 +308,50 @@ function renderMediaTab(body) {
 }
 
 // Size thresholds
-const IMG_WARN_MB  = 1.5
-const VID_WARN_MB  = 15
+const IMG_WARN_MB = 1.5
+const VID_WARN_MB = 15
+
+// Upload a File or Blob to the dev server → returns server path or null
+async function uploadToServer(fileOrBlob, filename) {
+  try {
+    const res = await fetch('/pe-upload', {
+      method: 'POST',
+      headers: {
+        'Content-Type': fileOrBlob.type || 'application/octet-stream',
+        'X-Filename': encodeURIComponent(filename),
+      },
+      body: fileOrBlob,
+    })
+    if (!res.ok) throw new Error(`${res.status}`)
+    return await res.json()   // { path, name }
+  } catch {
+    return null   // fallback: blob URL only (not on a dev server)
+  }
+}
 
 async function handleFiles(files) {
   for (const file of files) {
-    const sizeMB = file.size / 1024 / 1024
-    const isImg  = file.type.startsWith('image/')
-    const isVid  = file.type.startsWith('video/')
+    const sizeMB    = file.size / 1024 / 1024
+    const isImg     = file.type.startsWith('image/')
+    const isVid     = file.type.startsWith('video/')
     const overLimit = (isImg && sizeMB > IMG_WARN_MB) || (isVid && sizeMB > VID_WARN_MB)
 
-    if (isImg && overLimit) {
-      // Offer compression via canvas before adding
-      const entry = { name: file.name, url: URL.createObjectURL(file), type: file.type,
-                      sizeMB: sizeMB.toFixed(1), needsCompress: true, rawFile: file }
-      mediaFiles.push(entry)
-    } else if (isVid && overLimit) {
-      const entry = { name: file.name, url: URL.createObjectURL(file), type: file.type,
-                      sizeMB: sizeMB.toFixed(1), needsCompress: true, rawFile: file }
-      mediaFiles.push(entry)
-    } else {
-      mediaFiles.push({ name: file.name, url: URL.createObjectURL(file), type: file.type,
-                        sizeMB: sizeMB.toFixed(1) })
-    }
+    // Try to persist to public/work/ via dev server
+    const server = await uploadToServer(file, file.name)
+    const url    = server ? server.path : URL.createObjectURL(file)
+
+    mediaFiles.push({
+      name:          server ? server.name : file.name,
+      url,
+      type:          file.type,
+      sizeMB:        sizeMB.toFixed(1),
+      saved:         !!server,
+      needsCompress: !server && overLimit,
+      rawFile:       server ? null : file,
+    })
   }
   renderTab()
-  toast('Media uploaded')
+  toast(mediaFiles.some(f => f.saved) ? 'Saved to public/work/ ✓' : 'Uploaded (session only)')
 }
 
 async function compressImage(file, maxPx = 1920, quality = 0.82) {
@@ -374,14 +392,18 @@ function buildMediaItem(f, idx) {
       compressBtn.addEventListener('click', async () => {
         compressBtn.textContent = 'Compressing…'
         compressBtn.disabled = true
-        const blob = await compressImage(f.rawFile)
-        const newMB = (blob.size / 1024 / 1024).toFixed(1)
-        f.url  = URL.createObjectURL(blob)
-        f.sizeMB = newMB
+        const blob    = await compressImage(f.rawFile)
+        const newMB   = (blob.size / 1024 / 1024).toFixed(1)
+        // Try to save compressed version to disk
+        const server  = await uploadToServer(blob, f.name.replace(/\.[^.]+$/, '.jpg'))
+        f.url          = server ? server.path : URL.createObjectURL(blob)
+        f.name         = server ? server.name : f.name
+        f.sizeMB       = newMB
         f.needsCompress = false
+        f.saved        = !!server
         delete f.rawFile
         renderTab()
-        toast(`Compressed to ${newMB} MB`)
+        toast(server ? `Compressed & saved (${newMB} MB) ✓` : `Compressed to ${newMB} MB`)
       })
       warn.appendChild(compressBtn)
     }
@@ -390,7 +412,8 @@ function buildMediaItem(f, idx) {
 
   // Info row
   const info = el('div', { class: 'pe-media-info' })
-  const nameEl = el('span', { class: 'pe-media-name' }, `${f.name} (${f.sizeMB} MB)`)
+  const savedTag = f.saved ? ' ✓' : ' ⚡'
+  const nameEl = el('span', { class: 'pe-media-name' }, `${f.name} (${f.sizeMB} MB)${savedTag}`)
 
   const placeBtn = el('button', { class: 'pe-media-insert' }, 'Place ↓')
   placeBtn.addEventListener('click', () => {
@@ -497,13 +520,14 @@ function wrapWithOverlay(media) {
   // Replace
   const replaceBtn = el('button', { class: 'pe-media-action' }, '↺ Replace')
   const replaceInput = el('input', { type: 'file', accept: 'image/*,video/*', style: 'display:none' })
-  replaceInput.addEventListener('change', () => {
+  replaceInput.addEventListener('change', async () => {
     const file = replaceInput.files[0]
     if (!file) return
-    const url = URL.createObjectURL(file)
+    const server = await uploadToServer(file, file.name)
+    const url    = server ? server.path : URL.createObjectURL(file)
     if (media.tagName === 'IMG') media.src = url
     else { media.src = url; media.load(); media.play?.() }
-    toast('Media replaced')
+    toast(server ? 'Replaced & saved to public/work/ ✓' : 'Replaced (session only)')
   })
   replaceBtn.addEventListener('click', e => { e.stopPropagation(); replaceInput.click() })
   overlay.appendChild(replaceInput)
