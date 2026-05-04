@@ -389,20 +389,236 @@ function toggleEditing() {
   if (!main) return
 
   if (isEditing) {
-    // Make all text containers editable
     main.querySelectorAll('p, h1, h2, h3, h4, blockquote, span.case-section-label, li')
       .forEach(el => { el.contentEditable = 'true' })
     document.body.classList.add('pe-editing')
-    toast('Editing enabled — click any text')
+    bindMediaOverlays()
+    toast('Editing enabled — click any text, hover media to edit')
   } else {
     main.querySelectorAll('[contenteditable]')
       .forEach(el => { el.removeAttribute('contenteditable') })
     document.body.classList.remove('pe-editing')
+    removeMediaOverlays()
+    closeDimPanel()
     toast('Editing off')
   }
 
   updateModeBadge()
   renderTab()
+}
+
+/* ─────────────────────────────────────────
+   MEDIA OVERLAYS (on-page hover actions)
+   ───────────────────────────────────────── */
+
+function bindMediaOverlays() {
+  const main = document.querySelector('main, .case-main')
+  if (!main) return
+
+  main.querySelectorAll('img, video').forEach(media => {
+    if (media.closest('.pe-media-wrap')) return   // already wrapped
+    wrapWithOverlay(media)
+  })
+}
+
+function wrapWithOverlay(media) {
+  const parent = media.parentElement
+  const wrap = el('div', { class: 'pe-media-wrap' })
+  parent.insertBefore(wrap, media)
+  wrap.appendChild(media)
+
+  const overlay = el('div', { class: 'pe-media-overlay' })
+
+  // Replace
+  const replaceBtn = el('button', { class: 'pe-media-action' }, '↺ Replace')
+  const replaceInput = el('input', { type: 'file', accept: 'image/*,video/*', style: 'display:none' })
+  replaceInput.addEventListener('change', () => {
+    const file = replaceInput.files[0]
+    if (!file) return
+    const url = URL.createObjectURL(file)
+    if (media.tagName === 'IMG') media.src = url
+    else { media.src = url; media.load(); media.play?.() }
+    toast('Media replaced')
+  })
+  replaceBtn.addEventListener('click', e => { e.stopPropagation(); replaceInput.click() })
+  overlay.appendChild(replaceInput)
+  overlay.appendChild(replaceBtn)
+
+  // Dimensions / Crop
+  const dimBtn = el('button', { class: 'pe-media-action' }, '⤢ Dimensions')
+  dimBtn.addEventListener('click', e => {
+    e.stopPropagation()
+    openDimPanel(media, wrap)
+  })
+  overlay.appendChild(dimBtn)
+
+  // Delete
+  const delBtn = el('button', { class: 'pe-media-action pe-media-action--delete' }, '✕ Delete')
+  delBtn.addEventListener('click', e => {
+    e.stopPropagation()
+    // Remove the whole case-image / case-video wrapper if it's just a media shell
+    const container = wrap.closest('.case-image, .case-video') || wrap
+    container.remove()
+    closeDimPanel()
+    toast('Deleted')
+  })
+  overlay.appendChild(delBtn)
+
+  wrap.appendChild(overlay)
+}
+
+function removeMediaOverlays() {
+  document.querySelectorAll('.pe-media-wrap').forEach(wrap => {
+    const media = wrap.querySelector('img, video')
+    if (media) wrap.replaceWith(media)
+    else wrap.remove()
+  })
+}
+
+/* ─────────────────────────────────────────
+   DIMENSION / CROP PANEL
+   ───────────────────────────────────────── */
+
+let dimTarget = null   // the img or video element being edited
+let aspectLocked = true
+
+const CROP_POSITIONS = [
+  ['top left',    'top center',    'top right'],
+  ['center left', 'center',        'center right'],
+  ['bottom left', 'bottom center', 'bottom right'],
+]
+
+function openDimPanel(media, wrap) {
+  dimTarget = media
+  let panel = document.getElementById('pe-dim-panel')
+
+  if (!panel) {
+    panel = buildDimPanel()
+    document.body.appendChild(panel)
+  }
+
+  // Populate current values
+  const cs = getComputedStyle(media)
+  panel.querySelector('#pe-w').value  = media.style.width  || Math.round(media.getBoundingClientRect().width)  + 'px'
+  panel.querySelector('#pe-h').value  = media.style.height || Math.round(media.getBoundingClientRect().height) + 'px'
+  panel.querySelector('#pe-fit').value = media.style.objectFit || cs.objectFit || 'cover'
+
+  // Highlight active crop cell
+  const pos = (media.style.objectPosition || cs.objectPosition || 'center').toLowerCase()
+  panel.querySelectorAll('.pe-crop-cell').forEach(c => {
+    c.classList.toggle('active', c.dataset.pos === pos || (pos.includes('center') && c.dataset.pos === 'center'))
+  })
+
+  // Position panel near the wrap
+  const rect = wrap.getBoundingClientRect()
+  panel.style.top  = `${Math.min(rect.bottom + window.scrollY + 8, window.scrollY + window.innerHeight - 360)}px`
+  panel.style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - 256))}px`
+  panel.classList.add('open')
+}
+
+function buildDimPanel() {
+  const panel = el('div', { id: 'pe-dim-panel' })
+
+  // Header
+  const hdr = el('div', { class: 'pe-dim-header' })
+  hdr.appendChild(el('span', { class: 'pe-dim-title' }, 'Dimensions & Crop'))
+  const closeBtn = el('button', { class: 'pe-dim-close' }, '×')
+  closeBtn.addEventListener('click', closeDimPanel)
+  hdr.appendChild(closeBtn)
+  panel.appendChild(hdr)
+
+  // Width + Height with lock
+  const sizeRow = el('div', { class: 'pe-dim-row' })
+
+  const wField = el('div', { class: 'pe-dim-field' })
+  wField.appendChild(el('span', { class: 'pe-dim-label' }, 'Width'))
+  const wInput = el('input', { class: 'pe-dim-input', id: 'pe-w', placeholder: 'e.g. 100%' })
+  wField.appendChild(wInput)
+
+  const lockBtn = el('button', { class: 'pe-lock-btn' + (aspectLocked ? ' locked' : ''), id: 'pe-lock', title: 'Lock aspect ratio' }, '⇔')
+  lockBtn.addEventListener('click', () => {
+    aspectLocked = !aspectLocked
+    lockBtn.classList.toggle('locked', aspectLocked)
+    lockBtn.textContent = aspectLocked ? '⇔' : '↕'
+  })
+
+  const hField = el('div', { class: 'pe-dim-field' })
+  hField.appendChild(el('span', { class: 'pe-dim-label' }, 'Height'))
+  const hInput = el('input', { class: 'pe-dim-input', id: 'pe-h', placeholder: 'e.g. auto' })
+  hField.appendChild(hInput)
+
+  // Aspect ratio sync
+  wInput.addEventListener('input', () => {
+    if (!aspectLocked || !dimTarget) return
+    const ratio = dimTarget.naturalHeight / dimTarget.naturalWidth || dimTarget.videoHeight / dimTarget.videoWidth
+    if (!ratio) return
+    const wVal = parseFloat(wInput.value)
+    if (!isNaN(wVal) && wInput.value.includes('px')) hInput.value = Math.round(wVal * ratio) + 'px'
+  })
+
+  sizeRow.appendChild(wField)
+  sizeRow.appendChild(lockBtn)
+  sizeRow.appendChild(hField)
+  panel.appendChild(sizeRow)
+
+  // Object-fit
+  const fitField = el('div', { class: 'pe-dim-field' })
+  fitField.appendChild(el('span', { class: 'pe-dim-label' }, 'Object Fit'))
+  const fitSelect = el('select', { class: 'pe-dim-select', id: 'pe-fit' })
+  ;['cover', 'contain', 'fill', 'none', 'scale-down'].forEach(v => {
+    const opt = document.createElement('option')
+    opt.value = v; opt.textContent = v
+    fitSelect.appendChild(opt)
+  })
+  fitField.appendChild(fitSelect)
+  panel.appendChild(fitField)
+
+  // Crop position grid
+  const cropWrap = el('div', { class: 'pe-dim-field' })
+  cropWrap.appendChild(el('span', { class: 'pe-dim-label' }, 'Crop Position'))
+  const grid = el('div', { class: 'pe-crop-grid' })
+  CROP_POSITIONS.forEach(row => {
+    row.forEach(pos => {
+      const cell = el('button', { class: 'pe-crop-cell', 'data-pos': pos })
+      cell.title = pos
+      cell.addEventListener('click', () => {
+        grid.querySelectorAll('.pe-crop-cell').forEach(c => c.classList.remove('active'))
+        cell.classList.add('active')
+      })
+      grid.appendChild(cell)
+    })
+  })
+  cropWrap.appendChild(grid)
+  panel.appendChild(cropWrap)
+
+  // Apply
+  const applyBtn = el('button', { class: 'pe-dim-apply' }, 'Apply')
+  applyBtn.addEventListener('click', applyDimensions)
+  panel.appendChild(applyBtn)
+
+  return panel
+}
+
+function applyDimensions() {
+  if (!dimTarget) return
+  const wVal  = document.getElementById('pe-w')?.value.trim()
+  const hVal  = document.getElementById('pe-h')?.value.trim()
+  const fit   = document.getElementById('pe-fit')?.value
+  const activeCell = document.querySelector('.pe-crop-cell.active')
+  const pos   = activeCell?.dataset.pos || 'center'
+
+  if (wVal) dimTarget.style.width = wVal
+  if (hVal) dimTarget.style.height = hVal
+  if (fit)  dimTarget.style.objectFit = fit
+  dimTarget.style.objectPosition = pos
+
+  toast('Dimensions applied')
+}
+
+function closeDimPanel() {
+  const panel = document.getElementById('pe-dim-panel')
+  panel?.classList.remove('open')
+  dimTarget = null
 }
 
 function updateModeBadge() {
@@ -495,6 +711,13 @@ function insertBlock(html) {
       .forEach(el => { el.contentEditable = 'true' })
     if (newNode.isContentEditable) newNode.focus()
     else newNode.querySelector('[contenteditable]')?.focus()
+  }
+
+  // Attach media overlays to any new img/video
+  if (isEditing) {
+    newNode.querySelectorAll('img, video').forEach(m => {
+      if (!m.closest('.pe-media-wrap')) wrapWithOverlay(m)
+    })
   }
 
   newNode.scrollIntoView({ behavior: 'smooth', block: 'center' })
