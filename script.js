@@ -1,9 +1,11 @@
 import { inject } from '@vercel/analytics'
 import { initRouter } from './router.js'
 import { initMenu } from './menu.js'
+import { initEditor } from './portfolio-editor.js'
 inject()
 initRouter()
 initMenu()
+initEditor()
 
 /* ─────────────────────────────────────────
    Shina - Global Scripts
