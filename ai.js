@@ -114,28 +114,6 @@ const SYSTEMS = [
     evidenceType: 'Template doc',
     evidenceIcon: '□',
   },
-  {
-    id: 11,
-    category: 'ops',
-    categoryLabel: 'Ops',
-    name: "Shina's Base (Notion OS)",
-    description:
-      'Personal operating system built to be portable — daily pages, task tracking, project management across all roles.',
-    tools: ['Notion'],
-    evidenceType: 'Notion link',
-    evidenceIcon: '↗',
-  },
-  {
-    id: 12,
-    category: 'bd',
-    categoryLabel: 'BD',
-    name: 'Partnership pipeline',
-    description:
-      'Tracked and managed collaborations across Jupiter, LiFi, Huma, Meteora, Titan, Superteam, and more.',
-    tools: ['Notion'],
-    evidenceType: 'Pipeline DB',
-    evidenceIcon: '▦',
-  },
 ]
 
 const FILTERS = [
@@ -144,7 +122,6 @@ const FILTERS = [
   { key: 'brand', label: 'Brand Infrastructure' },
   { key: 'vip',   label: 'VIP Program' },
   { key: 'ops',   label: 'Ops' },
-  { key: 'bd',    label: 'BD' },
 ]
 
 // ── State ─────────────────────────────────────────────────────
