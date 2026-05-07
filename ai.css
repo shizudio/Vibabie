@@ -144,3 +144,165 @@ a.ai-card:hover .ai-card-link {
   margin-top: 52px;
   opacity: 0.65;
 }
+
+/* ═══════════════════════════════════════════
+   PERENA SYSTEMS SECTION
+   ═══════════════════════════════════════════ */
+
+.ai-systems {
+  margin-top: 0;
+}
+
+.ai-systems-head {
+  margin-bottom: 32px;
+}
+.ai-systems-head .divider {
+  margin-bottom: 28px;
+}
+.ai-systems-head .page-label {
+  display: block;
+  margin-bottom: 10px;
+}
+.ai-systems-h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 2.2vw, 1.75rem);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ink);
+  margin: 0 0 16px;
+  line-height: 1.25;
+}
+
+/* ── Filter pills ─────────────────────────────────────────── */
+.ai-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.ai-filter-btn {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 300;
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--stone);
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.ai-filter-btn:hover {
+  border-color: var(--crimson);
+  color: var(--crimson);
+}
+.ai-filter-btn.active {
+  background: var(--crimson);
+  border-color: var(--crimson);
+  color: #fff;
+}
+
+/* ── Systems card grid ────────────────────────────────────── */
+.ai-systems-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+  gap: 12px;
+}
+
+/* ── Individual system card ───────────────────────────────── */
+.sys-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.sys-card:hover {
+  border-color: rgba(127,31,18,0.25);
+  box-shadow: 0 2px 12px rgba(26,22,20,0.06);
+}
+
+.sys-card-cat {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+.sys-card-name {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.35;
+  margin: 0;
+}
+
+.sys-card-desc {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 300;
+  color: var(--stone);
+  line-height: 1.7;
+  margin: 0;
+  flex: 1;
+}
+
+.sys-card-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.sys-card-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.sys-tool-pill {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 300;
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  color: var(--stone);
+  background: transparent;
+}
+
+.sys-card-evidence {
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 300;
+  color: var(--stone);
+  opacity: 0.7;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Count line ───────────────────────────────────────────── */
+.ai-systems-count {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 300;
+  color: var(--stone);
+  opacity: 0.6;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Mobile ───────────────────────────────────────────────── */
+@media (max-width: 540px) {
+  .ai-systems-grid { grid-template-columns: 1fr; }
+}

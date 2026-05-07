@@ -22,6 +22,7 @@
 
   <main class="ai-page">
 
+    <!-- ── Header ── -->
     <span class="page-label">The Lamp — AI &amp; Automation</span>
     <h1 class="page-h1">Tools I've built<br>with AI.</h1>
     <p class="ai-intro">
@@ -32,9 +33,10 @@
 
     <div class="divider"></div>
 
+    <!-- ── Personal tools ── -->
     <div class="ai-grid">
 
-      <a class="ai-card" href="/devtool.html">
+      <a class="ai-card" href="devtool.html">
         <div class="ai-card-icon">✦</div>
         <div class="ai-card-body">
           <span class="ai-card-name">Portfolio Editor</span>
@@ -50,33 +52,45 @@
         </div>
       </a>
 
-      <div class="ai-card ai-card--wip">
+      <a class="ai-card" href="devtool.html">
         <div class="ai-card-icon">◈</div>
         <div class="ai-card-body">
-          <span class="ai-card-name">Add your tool</span>
+          <span class="ai-card-name">Hotspot &amp; Overlay Editor</span>
           <p class="ai-card-desc">
-            Describe what it does, what problem it solves and
-            what you used to build it.
+            Drag-and-drop tool for placing, resizing and wiring interactive
+            hotspots on the room illustration — with live overlay video and
+            tooltip previews.
           </p>
           <div class="ai-card-foot">
-            <span class="ai-card-tags">Coming soon</span>
+            <span class="ai-card-tags">Vanilla JS · Vite</span>
+            <span class="ai-card-link">Open tool ↗</span>
           </div>
         </div>
+      </a>
+
+    </div>
+
+    <!-- ── Perena systems ── -->
+    <div class="ai-systems">
+
+      <div class="ai-systems-head">
+        <div class="divider"></div>
+        <span class="page-label">Perena</span>
+        <h2 class="ai-systems-h2">Systems &amp; automations<br>built at Perena.</h2>
+        <p class="ai-intro">
+          Infrastructure that let the team operate without Shina in the room —
+          brand, comms, ops and data, all systematised.
+        </p>
       </div>
 
-      <div class="ai-card ai-card--wip">
-        <div class="ai-card-icon">⟡</div>
-        <div class="ai-card-body">
-          <span class="ai-card-name">Add your tool</span>
-          <p class="ai-card-desc">
-            Describe what it does, what problem it solves and
-            what you used to build it.
-          </p>
-          <div class="ai-card-foot">
-            <span class="ai-card-tags">Coming soon</span>
-          </div>
-        </div>
-      </div>
+      <!-- filter pills -->
+      <div class="ai-filters" id="ai-filters"></div>
+
+      <!-- card grid (injected by ai.js) -->
+      <div class="ai-systems-grid" id="ai-systems-grid"></div>
+
+      <!-- count -->
+      <p class="ai-systems-count" id="ai-systems-count"></p>
 
     </div>
 
@@ -86,5 +100,6 @@
 
   <script type="module" src="script.js"></script>
   <script type="module" src="vinyl-widget.js"></script>
+  <script type="module" src="ai.js"></script>
 </body>
 </html>
