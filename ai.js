@@ -49,17 +49,6 @@ const SYSTEMS = [
     evidenceIcon: '□',
   },
   {
-    id: 5,
-    category: 'brand',
-    categoryLabel: 'Brand Infrastructure',
-    name: 'Perenimals character system',
-    description:
-      'Full lore, usage rules, and character guidelines for the Perenimals universe — briefable by anyone.',
-    tools: ['Notion', 'Figma'],
-    evidenceType: 'Character doc',
-    evidenceIcon: '□',
-  },
-  {
     id: 6,
     category: 'brand',
     categoryLabel: 'Brand Infrastructure',
