@@ -9,7 +9,8 @@ const NAV_ITEMS = [
   { label: 'The Record',           desc: 'Music & Vibes',       href: 'record.html' },
   { label: 'The French Press',     desc: 'Personal Aesthetics', href: 'cosmos.html' },
   { label: 'The Shelf',            desc: 'Essays & Writing',    href: 'https://shinafoo.substack.com/', external: true },
-  { label: 'The Light',            desc: 'Get in Touch',        href: 'contact.html' },
+  { label: 'The Lamp',             desc: 'AI & Automation',     href: 'ai.html' },
+  { label: 'The Window',           desc: 'Get in Touch',        href: 'contact.html' },
   { label: 'The Phone',            desc: 'Thoughts & Updates',  href: 'https://x.com/shizudio', external: true },
   { label: 'The Laptop',           desc: 'Work & Projects',     href: 'work.html' },
 ]

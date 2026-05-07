@@ -16,6 +16,7 @@ export default defineConfig({
         art: resolve(__dirname, 'art.html'),
         record: resolve(__dirname, 'record.html'),
         work: resolve(__dirname, 'work.html'),
+        ai: resolve(__dirname, 'ai.html'),
         perena: resolve(__dirname, 'perena.html'),
       },
     },

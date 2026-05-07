@@ -1,0 +1,146 @@
+/* ─────────────────────────────────────────
+   ai.css — AI & Automation tools page
+   ───────────────────────────────────────── */
+
+/* ── Page shell ──────────────────────────────────────────── */
+.ai-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 100px var(--page-gutter, 24px) 120px;
+}
+
+.ai-page .page-label { margin-bottom: var(--space-sm, 12px); }
+
+.ai-page .page-h1 {
+  margin-bottom: 24px;
+}
+
+/* ── Intro text ───────────────────────────────────────────── */
+.ai-intro {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm, 0.9rem);
+  font-weight: 300;
+  color: var(--stone);
+  line-height: 1.9;
+  margin: 0 0 0;
+}
+
+.ai-page .divider {
+  margin: 40px 0 44px;
+}
+
+/* ── Tool card grid ───────────────────────────────────────── */
+.ai-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+@media (max-width: 540px) {
+  .ai-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Individual card ──────────────────────────────────────── */
+.ai-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 26px 22px;
+  border: 1px solid var(--border);
+  border-left: 3px solid transparent;
+  border-radius: var(--radius-sm, 4px);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+a.ai-card:hover {
+  border-left-color: var(--crimson);
+  background: var(--crimson-bg, #fdf6f5);
+  transform: translateY(-2px);
+}
+
+/* WIP / placeholder cards */
+.ai-card--wip {
+  opacity: 0.38;
+  border-style: dashed;
+}
+
+.ai-card-icon {
+  font-size: 1rem;
+  color: var(--crimson);
+  line-height: 1;
+  margin-bottom: 14px;
+}
+
+.ai-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.ai-card-name {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(0.95rem, 1.1vw, 1.05rem);
+  font-weight: 400;
+  color: var(--ink);
+  display: block;
+  margin-bottom: 10px;
+  transition: color 0.2s ease;
+}
+a.ai-card:hover .ai-card-name { color: var(--crimson); }
+
+.ai-card-desc {
+  font-family: var(--font-sans);
+  font-size: clamp(0.75rem, 0.85vw, 0.82rem);
+  font-weight: 300;
+  color: var(--stone);
+  line-height: 1.85;
+  margin: 0 0 18px;
+  flex: 1;
+}
+
+.ai-card-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.ai-card-tags {
+  font-family: var(--font-sans);
+  font-size: 0.56rem;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--stone);
+}
+
+.ai-card-link {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.82rem;
+  color: var(--crimson);
+  white-space: nowrap;
+  flex-shrink: 0;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+a.ai-card:hover .ai-card-link {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ── Footnote ─────────────────────────────────────────────── */
+.ai-footnote {
+  font-family: var(--font-sans);
+  font-weight: 200;
+  font-style: italic;
+  font-size: var(--text-sm, 0.88rem);
+  color: var(--stone);
+  margin-top: 52px;
+  opacity: 0.65;
+}
