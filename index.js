@@ -229,11 +229,11 @@ if (bulbHotspot && bulbOverlay) {
   bulbHotspot.addEventListener('mouseenter', () => {
     if (isMobile()) return
     showBulb()
-    window.cursorMorphTo('🪔')
-    ttLabel.textContent = 'The Light'
-    ttDesc.textContent = 'Get in Touch'
-    ttLink.textContent = 'Leave a Note ↗'
-    ttLink.href = 'contact.html'
+    window.cursorMorphTo('✦')
+    ttLabel.textContent = 'The Lamp'
+    ttDesc.textContent = 'AI & Automation'
+    ttLink.textContent = 'View Tools ↗'
+    ttLink.href = 'ai.html'
     ttLink.target = '_self'
     tooltip.classList.add('visible')
   })
@@ -246,9 +246,9 @@ if (bulbHotspot && bulbOverlay) {
 
   function navigateBulb() {
     if (window.__softNavigate) {
-      window.__softNavigate('contact.html')
+      window.__softNavigate('ai.html')
     } else {
-      window.location.href = 'contact.html'
+      window.location.href = 'ai.html'
     }
   }
 
@@ -261,7 +261,7 @@ if (bulbHotspot && bulbOverlay) {
         removeShimmer()
         hideAllOverlays()
         showBulb()
-        revealLink('The Light')
+        revealLink('The Lamp')
       }
     } else {
       navigateBulb()
@@ -275,11 +275,11 @@ if (bulbHotspot && bulbOverlay) {
   bulbOverlay.addEventListener('mouseenter', () => {
     if (isMobile()) return
     showBulb()
-    window.cursorMorphTo('🪔')
-    ttLabel.textContent = 'The Light'
-    ttDesc.textContent = 'Get in Touch'
-    ttLink.textContent = 'Leave a Note ↗'
-    ttLink.href = 'contact.html'
+    window.cursorMorphTo('✦')
+    ttLabel.textContent = 'The Lamp'
+    ttDesc.textContent = 'AI & Automation'
+    ttLink.textContent = 'View Tools ↗'
+    ttLink.href = 'ai.html'
     ttLink.target = '_self'
     tooltip.classList.add('visible')
   })
