@@ -543,7 +543,7 @@ a.pe-tool-card:hover .pe-tool-name { color: #9B2C1A; }
 .pe-media-wrap {
   position: relative;
 }
-.pe-media-wrap:hover .pe-media-overlay {
+body.pe-editing .pe-media-wrap:hover .pe-media-overlay {
   opacity: 1;
   pointer-events: auto;
 }

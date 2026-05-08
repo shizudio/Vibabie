@@ -29,6 +29,7 @@ PROJECTS.forEach((project, i) => {
   li.className = 'catalog-entry fade-up'
   li.style.setProperty('--i', i + 3)
   li.dataset.index = i
+  li.dataset.workInjected = 'true'
   li.innerHTML = `
     <span class="catalog-num">${num}</span>
     <div class="catalog-entry-info">
@@ -47,6 +48,7 @@ PROJECTS.forEach((project, i) => {
   div.className = 'catalog-item fade-up'
   div.style.setProperty('--i', i + 2)
   div.dataset.index = i
+  div.dataset.workInjected = 'true'
 
   if (isExternal) {
     div.href   = project.href
@@ -113,3 +115,4 @@ items.forEach((item, i) => {
   item.addEventListener('mouseenter', () => activate(i))
   item.addEventListener('mouseleave', deactivate)
 })
+

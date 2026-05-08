@@ -275,6 +275,189 @@ html, body { height: 100%; }
   color: var(--crimson);
 }
 
+/* ── Sidebar AI anchor ───────────────────────────────────── */
+.catalog-ai-link {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.catalog-ai-anchor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 300;
+  color: var(--stone);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  padding: 6px 0;
+  transition: color 0.2s ease;
+}
+.catalog-ai-anchor:hover { color: var(--crimson); }
+.catalog-ai-icon {
+  font-size: 0.75rem;
+  color: var(--crimson);
+  flex-shrink: 0;
+}
+
+/* ── AI & Automation section ─────────────────────────────── */
+.ai-section {
+  margin-left: 280px;
+  padding: 80px 72px 120px 88px;
+  border-top: 1px solid var(--border);
+}
+
+.ai-section-head {
+  max-width: 580px;
+  margin-bottom: 52px;
+}
+.ai-section-head .divider {
+  margin-bottom: 28px;
+}
+.ai-section-head .page-label {
+  display: block;
+  margin-bottom: 10px;
+}
+.ai-section-h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ink);
+  margin: 0 0 16px;
+  line-height: 1.25;
+}
+.ai-section-intro {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm, 0.9rem);
+  font-weight: 300;
+  color: var(--stone);
+  line-height: 1.85;
+  margin: 0;
+}
+
+/* ── AI card grid ────────────────────────────────────────── */
+.ai-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.ai-card {
+  display: flex;
+  gap: 18px;
+  padding: 28px 24px;
+  border: 1px solid var(--border);
+  border-left: 3px solid transparent;
+  border-radius: var(--radius-sm, 4px);
+  text-decoration: none;
+  color: inherit;
+  cursor: default;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+a.ai-card { cursor: pointer; }
+a.ai-card:hover,
+.ai-card:hover {
+  border-left-color: var(--crimson);
+  background: var(--crimson-bg, #fdf6f5);
+  transform: translateY(-2px);
+}
+.ai-card--placeholder {
+  opacity: 0.45;
+  border-style: dashed;
+}
+.ai-card--placeholder:hover {
+  opacity: 0.65;
+  transform: none;
+  border-left-color: transparent;
+  background: transparent;
+}
+
+.ai-card-icon {
+  font-size: 1.1rem;
+  color: var(--crimson);
+  flex-shrink: 0;
+  margin-top: 2px;
+  line-height: 1;
+}
+
+.ai-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+
+.ai-card-name {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(0.95rem, 1.1vw, 1.05rem);
+  font-weight: 400;
+  color: var(--ink);
+  display: block;
+  margin-bottom: 10px;
+  transition: color 0.2s ease;
+}
+a.ai-card:hover .ai-card-name { color: var(--crimson); }
+
+.ai-card-desc {
+  font-family: var(--font-sans);
+  font-size: clamp(0.75rem, 0.85vw, 0.82rem);
+  font-weight: 300;
+  color: var(--stone);
+  line-height: 1.8;
+  margin: 0 0 16px;
+  flex: 1;
+}
+
+.ai-card-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.ai-card-tags {
+  font-family: var(--font-sans);
+  font-size: 0.56rem;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--stone);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ai-card-link {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.82rem;
+  color: var(--crimson);
+  white-space: nowrap;
+  flex-shrink: 0;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+a.ai-card:hover .ai-card-link {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.ai-section-footnote {
+  font-family: var(--font-sans);
+  font-weight: 200;
+  font-style: italic;
+  font-size: var(--text-sm, 0.88rem);
+  color: var(--stone);
+  margin-top: 52px;
+  opacity: 0.7;
+}
+
 /* ── Mobile ──────────────────────────────────────────────── */
 @media (max-width: 767px) {
   .work-page {
@@ -352,6 +535,17 @@ html, body { height: 100%; }
   }
 
   .catalog-item-ext { opacity: 1; transform: none; }
+
+  .catalog-ai-link { display: none; }
+
+  .ai-section {
+    margin-left: 0;
+    padding: 56px var(--page-gutter) 80px;
+  }
+  .ai-grid {
+    grid-template-columns: 1fr;
+  }
+  .ai-card-link { opacity: 1; transform: none; }
 }
 
 /* ── Tablet ──────────────────────────────────────────────── */
@@ -367,5 +561,9 @@ html, body { height: 100%; }
   }
   .catalog-item:nth-child(even) {
     margin-top: 120px;
+  }
+  .ai-section {
+    margin-left: 220px;
+    padding: 64px 48px 100px;
   }
 }

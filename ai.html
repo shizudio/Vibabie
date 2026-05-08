@@ -22,6 +22,7 @@
 
   <main class="ai-page">
 
+
     <!-- ── Header ── -->
     <span class="page-label">The Lamp — AI &amp; Automation</span>
     <h1 class="page-h1">Tools I've built<br>with AI.</h1>
@@ -79,23 +80,143 @@
         <h2 class="ai-systems-h2">Systems &amp; automations<br>built at Perena.</h2>
         <p class="ai-intro">
           Infrastructure that let the team operate without Shina in the room —
-          brand, comms, ops and data, all systematised.
-        </p>
+          brand, comms, ops and data, all systematised. Many are cocreated with the team.</p>
       </div>
 
       <!-- filter pills -->
-      <div class="ai-filters" id="ai-filters"></div>
+      <div class="ai-filters" id="ai-filters"><button class="ai-filter-btn active">All</button><button class="ai-filter-btn">AI Content</button><button class="ai-filter-btn">Brand Infrastructure</button><button class="ai-filter-btn">VIP Program</button><button class="ai-filter-btn">Ops</button><button class="ai-filter-btn">BD</button></div>
 
       <!-- card grid (injected by ai.js) -->
-      <div class="ai-systems-grid" id="ai-systems-grid"></div>
+      <div class="ai-systems-grid" id="ai-systems-grid"><div class="sys-card">
+      <span class="sys-card-cat">AI Content</span>
+      <p class="sys-card-name">Claude content project</p>
+      <p class="sys-card-desc">Brand voice, Purple comms, and marketing copy — all runnable by the team without Shina's input.</p>
+      <div class="sys-card-foot">
+        <div class="sys-card-pills">
+          <span class="sys-tool-pill">Claude</span>
+        </div>
+        <span class="sys-card-evidence">Project link</span>
+      </div>
+    </div><div class="sys-card">
+      <span class="sys-card-cat">AI Content</span>
+      <p class="sys-card-name">ChatGPT brand context</p>
+      <p class="sys-card-desc">Persistent brand context so any team member could generate on-brand content without a briefing.</p>
+      <div class="sys-card-foot">
+        <div class="sys-card-pills">
+          <span class="sys-tool-pill">ChatGPT</span>
+        </div>
+        <span class="sys-card-evidence">GPT link</span>
+      </div>
+    </div><div class="sys-card">
+      <span class="sys-card-cat">AI Content</span>
+      <p class="sys-card-name">Midjourney prompt library</p>
+      <p class="sys-card-desc">Curated, tested prompts for Perena's visual identity — moodboards, character work, campaign assets.</p>
+      <div class="sys-card-foot">
+        <div class="sys-card-pills">
+          <span class="sys-tool-pill">Midjourney</span><span class="sys-tool-pill">Notion</span>
+        </div>
+        <span class="sys-card-evidence">Prompt doc</span>
+      </div>
+    </div><div class="sys-card">
+      <span class="sys-card-cat">Brand Infrastructure</span>
+      <p class="sys-card-name">Brand guidelines + tone of voice</p>
+      <p class="sys-card-desc">Written standards for visual identity, copy tone, and brand application — so the standard held without Shina in the room.</p>
+      <div class="sys-card-foot">
+        <div class="sys-card-pills">
+          <span class="sys-tool-pill">Notion</span><span class="sys-tool-pill">Figma</span>
+        </div>
+        <span class="sys-card-evidence">Notion doc</span>
+      </div>
+    </div><div class="sys-card">
+      <span class="sys-card-cat">Brand Infrastructure</span>
+      <p class="sys-card-name">Perenimals character system</p>
+      <p class="sys-card-desc">Full lore, usage rules, and character guidelines for the Perenimals universe — briefable by anyone.</p>
+      <div class="sys-card-foot">
+        <div class="sys-card-pills">
+          <span class="sys-tool-pill">Notion</span><span class="sys-tool-pill">Figma</span>
+        </div>
+        <span class="sys-card-evidence">Character doc</span>
+      </div>
+    </div><div class="sys-card">
+      <span class="sys-card-cat">Brand Infrastructure</span>
+      <p class="sys-card-name">Purple communication templates</p>
+      <p class="sys-card-desc">Full template library for every Purple touchpoint: onboarding, State of USD*, yield alerts, event invites.</p>
+      <div class="sys-card-foot">
+        <div class="sys-card-pills">
+          <span class="sys-tool-pill">Claude</span><span class="sys-tool-pill">Notion</span>
+        </div>
+        <span class="sys-card-evidence">Template library</span>
+      </div>
+    </div><div class="sys-card">
+      <span class="sys-card-cat">VIP Program</span>
+      <p class="sys-card-name">VIP relationship database</p>
+      <p class="sys-card-desc">Depositor history treated as relationship capital — context, preferences, and conversation history in one place.</p>
+      <div class="sys-card-foot">
+        <div class="sys-card-pills">
+          <span class="sys-tool-pill">Notion</span>
+        </div>
+        <span class="sys-card-evidence">DB screenshot</span>
+      </div>
+    </div><div class="sys-card">
+      <span class="sys-card-cat">VIP Program</span>
+      <p class="sys-card-name">VIP visualizer</p>
+      <p class="sys-card-desc">Internal tool for visualizing Purple depositor portfolio and engagement state at a glance.</p>
+      <div class="sys-card-foot">
+        <div class="sys-card-pills">
+          <span class="sys-tool-pill">Internal tool</span>
+        </div>
+        <span class="sys-card-evidence">Screenshot</span>
+      </div>
+    </div><div class="sys-card">
+      <span class="sys-card-cat">Ops</span>
+      <p class="sys-card-name">Daily PA system</p>
+      <p class="sys-card-desc">Pulls Granola, Slack, and Calendar into a structured Notion daily page. One command, full day context.</p>
+      <div class="sys-card-foot">
+        <div class="sys-card-pills">
+          <span class="sys-tool-pill">Claude</span><span class="sys-tool-pill">Notion</span><span class="sys-tool-pill">Granola</span><span class="sys-tool-pill">Slack</span>
+        </div>
+        <span class="sys-card-evidence">Skill package</span>
+      </div>
+    </div><div class="sys-card">
+      <span class="sys-card-cat">Ops</span>
+      <p class="sys-card-name">PRD + designer brief templates</p>
+      <p class="sys-card-desc">Standardised briefs so engineers built from specs, not interpretation — and designers had real ownership.</p>
+      <div class="sys-card-foot">
+        <div class="sys-card-pills">
+          <span class="sys-tool-pill">Notion</span>
+        </div>
+        <span class="sys-card-evidence">Template doc</span>
+      </div>
+    </div><div class="sys-card">
+      <span class="sys-card-cat">Ops</span>
+      <p class="sys-card-name">Shina's Base (Notion OS)</p>
+      <p class="sys-card-desc">Personal operating system built to be portable — daily pages, task tracking, project management across all roles.</p>
+      <div class="sys-card-foot">
+        <div class="sys-card-pills">
+          <span class="sys-tool-pill">Notion</span>
+        </div>
+        <span class="sys-card-evidence">Notion link</span>
+      </div>
+    </div><div class="sys-card">
+      <span class="sys-card-cat">BD</span>
+      <p class="sys-card-name">Partnership pipeline</p>
+      <p class="sys-card-desc">Tracked and managed collaborations across Jupiter, LiFi, Huma, Meteora, Titan, Superteam, and more.</p>
+      <div class="sys-card-foot">
+        <div class="sys-card-pills">
+          <span class="sys-tool-pill">Notion</span>
+        </div>
+        <span class="sys-card-evidence">Pipeline DB</span>
+      </div>
+    </div></div>
 
       <!-- count -->
-      <p class="ai-systems-count" id="ai-systems-count"></p>
+      <p class="ai-systems-count" id="ai-systems-count">12 systems</p>
 
     </div>
 
     <p class="ai-footnote">More experiments in progress.</p>
 
+  
   </main>
 
   <script type="module" src="script.js"></script>

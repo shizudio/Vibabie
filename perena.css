@@ -348,6 +348,12 @@ nav {
   overflow: hidden;
 }
 
+.case-image > img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 .case-image--placeholder {
   aspect-ratio: 16/9;
   background: var(--paper);
@@ -356,8 +362,201 @@ nav {
   align-items: center;
   justify-content: center;
 }
+
+/* ── Video-hover image block ─────────────── */
+.case-image--video-hover {
+  position: relative;
+  cursor: pointer;
+}
+
+.case-image--video-hover img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: opacity 0.4s ease;
+}
+
+.case-hover-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.case-image--video-hover:hover .case-hover-video {
+  opacity: 1;
+}
+
+.case-image--video-hover .case-image-caption {
+  position: absolute;
+  bottom: 12px;
+  left: 16px;
+  color: rgba(255,255,255,0.7);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
 .case-image--sm {
   aspect-ratio: 4/3;
+}
+
+.case-image--sm img,
+.case-image--sm video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Brand stack thumbnail ───────────────── */
+.case-brand-stack {
+  position: relative;
+  margin: 28px 0 52px;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}
+
+.case-stack-item {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(26,22,20,0.14);
+  transition: transform 0.45s cubic-bezier(0.34, 1.3, 0.64, 1),
+              box-shadow 0.35s ease;
+}
+
+/* Front card sits in normal flow to give the stack its height */
+.case-stack-item:nth-child(1) {
+  position: relative;
+  z-index: 4;
+}
+
+/* Cards 2–4 stacked behind with offset + rotation */
+.case-stack-item:nth-child(2),
+.case-stack-item:nth-child(3),
+.case-stack-item:nth-child(4) {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+}
+.case-stack-item:nth-child(2) { z-index: 3; transform: translateY(9px)  translateX(8px)  rotate(1.8deg); }
+.case-stack-item:nth-child(3) { z-index: 2; transform: translateY(16px) translateX(15px) rotate(3.5deg); }
+.case-stack-item:nth-child(4) { z-index: 1; transform: translateY(22px) translateX(22px) rotate(5.2deg); }
+
+/* Fan wider on hover */
+.case-brand-stack:hover .case-stack-item:nth-child(2) { transform: translateY(13px) translateX(12px) rotate(2.8deg); }
+.case-brand-stack:hover .case-stack-item:nth-child(3) { transform: translateY(24px) translateX(22px) rotate(5.5deg); }
+.case-brand-stack:hover .case-stack-item:nth-child(4) { transform: translateY(33px) translateX(32px) rotate(8deg);  }
+
+.case-stack-item img,
+.case-stack-item video {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  display: block;
+}
+
+.case-stack-hint {
+  display: block;
+  margin-top: 14px;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--stone);
+  opacity: 0.7;
+  text-align: center;
+  transition: opacity 0.2s ease;
+}
+.case-brand-stack:hover .case-stack-hint { opacity: 1; }
+
+/* ── Brand gallery overlay ───────────────── */
+.brand-gallery {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(18, 16, 14, 0.96);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.brand-gallery.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.brand-gallery-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: transparent;
+  color: rgba(255,255,255,0.8);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  z-index: 1;
+}
+.brand-gallery-close:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.5);
+}
+
+.brand-gallery-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 10px;
+  width: 92vw;
+  height: 88vh;
+  transform: scale(0.93) translateY(14px);
+  transition: transform 0.45s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+.brand-gallery.is-open .brand-gallery-grid {
+  transform: scale(1) translateY(0);
+}
+
+.brand-gallery-item {
+  border-radius: 8px;
+  overflow: hidden;
+}
+.brand-gallery-item img,
+.brand-gallery-item video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Mobile: single column, scroll */
+@media (max-width: 767px) {
+  .brand-gallery {
+    align-items: flex-start;
+    overflow-y: auto;
+    padding: 60px 16px 24px;
+  }
+  .brand-gallery-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    height: auto;
+    width: 100%;
+    transform: none !important;
+  }
+  .brand-gallery-item {
+    aspect-ratio: 4/3;
+  }
 }
 
 .case-image-caption {

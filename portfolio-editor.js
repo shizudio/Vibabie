@@ -537,13 +537,23 @@ function renderExportTab(body) {
     saveBtn.textContent = 'Saving…'
     saveBtn.disabled = true
     try {
+      // Clone the live DOM and clean it before saving:
+      // 1. Strip work.js-injected catalog entries (re-rendered from manifest on load)
+      // 2. Unwrap pe-media-wrap overlays back to plain img/video (editor adds them at runtime)
+      const clone = liveMain.cloneNode(true)
+      clone.querySelectorAll('[data-work-injected]').forEach(el => el.remove())
+      clone.querySelectorAll('.pe-media-wrap').forEach(wrap => {
+        const media = wrap.querySelector('img, video')
+        if (media) wrap.replaceWith(media)
+        else wrap.remove()
+      })
       const res = await fetch('/pe-save', {
         method: 'POST',
         headers: {
           'Content-Type': 'text/html; charset=utf-8',
           'X-Page-Path': encodeURIComponent(window.location.pathname),
         },
-        body: liveMain.innerHTML,
+        body: clone.innerHTML,
       })
       const data = await res.json()
       if (data.ok) {
@@ -770,7 +780,26 @@ function wrapWithOverlay(media) {
     const url    = server ? server.path : URL.createObjectURL(file)
     if (media.tagName === 'IMG') media.src = url
     else { media.src = url; media.load(); media.play?.() }
-    toast(server ? 'Replaced & saved to public/work/ ✓' : 'Replaced (session only)')
+
+    // If this image lives inside a work.js-injected gallery item,
+    // persist the new src back to work-manifest.json so it survives reload.
+    if (server) {
+      const injectedItem = media.closest('[data-work-injected]')
+      if (injectedItem) {
+        const idx = parseInt(injectedItem.dataset.index, 10)
+        const field = media.tagName === 'IMG' ? 'src' : 'src'
+        await fetch('/pe-manifest-update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ index: idx, field, value: server.path }),
+        }).catch(() => {})
+        toast('Replaced & manifest updated ✓')
+      } else {
+        toast('Replaced & saved to public/work/ ✓')
+      }
+    } else {
+      toast('Replaced (session only — no server save)')
+    }
   })
   replaceBtn.addEventListener('click', e => { e.stopPropagation(); replaceInput.click() })
   overlay.appendChild(replaceInput)

@@ -57,6 +57,35 @@ export default function peUploadPlugin() {
           res.statusCode = 500; res.end(JSON.stringify({ error: err.message }))
         })
       })
+      // ── POST /pe-manifest-update : patch a field in work-manifest.json ──
+      server.middlewares.use('/pe-manifest-update', (req, res) => {
+        if (req.method !== 'POST') {
+          res.statusCode = 405; res.end('Method Not Allowed'); return
+        }
+        const chunks = []
+        req.on('data', c => chunks.push(c))
+        req.on('end', () => {
+          try {
+            const { index, field, value } = JSON.parse(Buffer.concat(chunks).toString('utf8'))
+            const manifestPath = path.resolve(__dirname, 'public/work-manifest.json')
+            const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'))
+            if (manifest[index] === undefined) throw new Error(`No project at index ${index}`)
+            manifest[index][field] = value
+            fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf8')
+            console.log(`[pe-manifest-update] project[${index}].${field} = ${value}`)
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify({ ok: true }))
+          } catch (err) {
+            console.error('[pe-manifest-update] error:', err)
+            res.statusCode = 500
+            res.end(JSON.stringify({ error: err.message }))
+          }
+        })
+        req.on('error', err => {
+          res.statusCode = 500; res.end(JSON.stringify({ error: err.message }))
+        })
+      })
+
       const IMG_DIR = path.resolve(__dirname, 'public/work')
       const VID_DIR = path.resolve(__dirname, 'public/work/Videos')
 
