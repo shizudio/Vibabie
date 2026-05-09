@@ -110,9 +110,19 @@ entries.forEach((entry, i) => {
   })
 })
 
-// Gallery hover (items with hrefs handle their own click via <a>)
+// Gallery hover + click
 items.forEach((item, i) => {
   item.addEventListener('mouseenter', () => activate(i))
   item.addEventListener('mouseleave', deactivate)
+
+  // For non-<a> items (internal nav), wire up click manually
+  if (item.tagName !== 'A') {
+    item.addEventListener('click', () => {
+      const p = PROJECTS[i]
+      if (p.href && p.href !== '#') {
+        window.open(p.href, p.external ? '_blank' : '_self')
+      }
+    })
+  }
 })
 

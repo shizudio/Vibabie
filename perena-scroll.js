@@ -57,6 +57,48 @@ function initBrandStack() {
     galleryVideos.forEach(v => { v.pause(); v.currentTime = 0 })
   }
 
+  // ── Hover expand inside gallery ──────────
+  const galleryGrid = gallery.querySelector('.brand-gallery-grid')
+  const galleryItems = gallery.querySelectorAll('.brand-gallery-item')
+
+  galleryItems.forEach(item => {
+    item.addEventListener('mouseenter', () => {
+      if (!gallery.classList.contains('is-open')) return
+
+      const gridRect = galleryGrid.getBoundingClientRect()
+      const itemRect = item.getBoundingClientRect()
+      const isWide   = item.classList.contains('brand-gallery-item--wide')
+      const isLeft   = (itemRect.left + itemRect.width  / 2) < (gridRect.left + gridRect.width  / 2)
+      const isTop    = (itemRect.top  + itemRect.height / 2) < (gridRect.top  + gridRect.height / 2)
+
+      // Column: give more space to whichever side the item is on
+      if (!isWide) {
+        galleryGrid.classList.toggle('expand-left',  isLeft)
+        galleryGrid.classList.toggle('expand-right', !isLeft)
+      }
+
+      // Row: expand the row the item sits in, compress the others
+      if (isWide) {
+        galleryGrid.classList.add('expand-row-wide')
+      } else if (isTop) {
+        galleryGrid.classList.add('expand-row-top')
+      } else {
+        galleryGrid.classList.add('expand-row-bottom')
+      }
+
+      item.classList.add('is-expanded')
+      galleryGrid.classList.add('has-hover')
+    })
+
+    item.addEventListener('mouseleave', () => {
+      item.classList.remove('is-expanded')
+      galleryGrid.classList.remove(
+        'has-hover', 'expand-left', 'expand-right',
+        'expand-row-top', 'expand-row-bottom', 'expand-row-wide'
+      )
+    })
+  })
+
   stack.addEventListener('click', open)
   stack.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') open() })
   closeBtn?.addEventListener('click', e => { e.stopPropagation(); close() })
@@ -80,8 +122,8 @@ function initTweetScrollers() {
     const next = wrap.querySelector('.tweet-scroll-btn--next')
     if (!grid || !prev || !next) return
 
-    // Card width (272px) + gap (16px)
-    const STEP = 288
+    // Card width (272px × 0.8 zoom = 218px) + gap (24px)
+    const STEP = 242
 
     prev.addEventListener('click', () => {
       grid.scrollBy({ left: -STEP, behavior: 'smooth' })

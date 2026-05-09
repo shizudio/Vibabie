@@ -10,7 +10,7 @@
   },
   {
     "src": "work/shizudio.jpg",
-    "title": "Shizudio",
+    "title": "Shizudio (this website)",
     "tag": "Design & Dev",
     "role": "Creative Direction",
     "year": "2025",
@@ -23,7 +23,7 @@
     "tag": "Brand · Fashion",
     "role": "Creative Direction",
     "year": "2024",
-    "href": "#",
-    "external": false
+    "href": "https://houseofperena.com/",
+    "external": true
   }
 ]

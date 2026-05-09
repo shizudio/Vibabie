@@ -7,3 +7,7 @@ dist
 instagram/
 .env
 .gstack/
+
+# Large video files — over GitHub's 100MB limit
+public/work/Videos/perena-brand-collateral.mp4
+public/work/Videos/perena-purple.mov
