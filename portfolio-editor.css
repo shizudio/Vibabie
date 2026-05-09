@@ -759,3 +759,14 @@ body.pe-editing .case-main *:focus {
   pointer-events: none;
 }
 #pe-toast.show { opacity: 1; transform: translateY(0); }
+
+/* ── Hide editor on mobile/touch ─────── */
+@media (max-width: 767px) {
+  #pe-toggle,
+  #pe-panel,
+  #pe-toolbar,
+  #pe-block-handle,
+  #pe-toast {
+    display: none !important;
+  }
+}

@@ -1066,12 +1066,18 @@ nav {
 
 /* ── MOBILE ─────────────────────────────── */
 @media (max-width: 767px) {
+  /* Prevent any element from causing horizontal scroll */
+  body, .case-main {
+    overflow-x: hidden;
+  }
+
   .case-main {
     padding: 90px var(--page-gutter, 24px) 80px;
   }
 
   .case-back {
     margin-bottom: 32px;
+    font-size: 0.72rem;
   }
 
   .case-header {
@@ -1082,15 +1088,40 @@ nav {
     font-size: clamp(2rem, 8vw, 2.8rem);
   }
 
+  /* Body text: readable minimum on small screens */
+  .case-body {
+    font-size: 1rem;
+    line-height: 1.85;
+  }
+
   .case-thesis {
-    font-size: clamp(0.9rem, 3.5vw, 1rem);
+    font-size: 1rem;
     padding-left: 16px;
+  }
+
+  /* Pull quote: bigger on mobile so it reads as a quote */
+  .case-pullquote {
+    font-size: 1.1rem;
+    padding-left: 16px;
+    margin: 24px 0;
+  }
+
+  /* Section headings */
+  .case-section-h2 {
+    font-size: 1.4rem;
+  }
+  .case-sub-h3 {
+    font-size: 1rem;
+  }
+  .case-section-label {
+    font-size: 0.65rem;
   }
 
   .case-image--hero {
     margin-bottom: 40px;
   }
 
+  /* Stats: larger number, readable label */
   .case-stat-row {
     flex-wrap: wrap;
   }
@@ -1100,6 +1131,12 @@ nav {
     padding: 18px 0 18px 16px;
   }
   .case-stat:first-child { padding-left: 0; }
+  .case-stat-num {
+    font-size: 1.8rem;
+  }
+  .case-stat-label {
+    font-size: 0.65rem;
+  }
 
   .case-image-grid {
     grid-template-columns: 1fr;
@@ -1118,21 +1155,23 @@ nav {
     zoom: 0.72;
   }
 
-  .case-pullquote {
-    padding-left: 16px;
-    margin: 24px 0;
-  }
-
-  .case-section-h2 {
-    font-size: clamp(1.15rem, 5vw, 1.5rem);
-  }
-
   .case-divider {
     margin: 40px 0;
   }
 
   .case-partners {
     gap: 6px;
+  }
+  .case-partners span {
+    font-size: 0.72rem;
+  }
+
+  /* Article table: slightly larger text */
+  .article-row-title {
+    font-size: 1rem;
+  }
+  .article-row-date {
+    font-size: 0.65rem;
   }
 
   /* Single tweet embed: zoom down so 550px iframe fits */
