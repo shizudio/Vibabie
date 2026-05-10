@@ -382,7 +382,7 @@ body {
     font-weight: 300;
     font-size: clamp(1.03rem, 1.15vw, 1.13rem);
     color: var(--stone);
-    line-height: 1.8;
+    line-height: 1.45;
     text-align: center;
   }
 
