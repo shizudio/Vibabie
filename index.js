@@ -8,11 +8,26 @@
 const isMobile = () => window.matchMedia('(max-width: 767px)').matches
 
 // ── LOADER ───────────────────────────────
-const loader = document.getElementById('loader')
-const loaderNum = document.getElementById('loader-num')
+const loader      = document.getElementById('loader')
+const loaderNum   = document.getElementById('loader-num')
+const loaderLabel = document.getElementById('loader-label')
 const loaderVideo = document.getElementById('loader-video')
-const stage = document.getElementById('stage')
+const loaderWelcome = document.querySelector('.loader-welcome')
+const loaderHint    = document.getElementById('loader-hint')
+const loaderCounter = document.querySelector('.loader-counter')
+const stage       = document.getElementById('stage')
 const hangingString = document.getElementById('hanging-string')
+
+function dismissLoader() {
+  loader.classList.add('hidden')
+  stage.classList.add('visible')
+  hangingString.classList.add('visible')
+  const header = document.getElementById('site-header')
+  const footer = document.getElementById('site-footer')
+  if (header) { header.style.animationDelay = '0s'; header.classList.add('fade-up') }
+  if (footer) { footer.style.animationDelay = '0.3s'; footer.classList.add('fade-up') }
+  initMobileShimmer()
+}
 
 // Skip loader when returning from a subpage
 const skipLoader = sessionStorage.getItem('skip-loader')
@@ -27,26 +42,49 @@ if (skipLoader) {
   if (footer) { footer.classList.add('fade-up'); footer.style.animationDelay = '0s' }
   initMobileShimmer()
 } else {
+  let loadComplete = false
+
   let count = 0
   const counter = setInterval(() => {
     count += 10
     loaderNum.textContent = count
     if (count === 100) {
       clearInterval(counter)
-      setTimeout(() => {
-        loader.classList.add('hidden')
-        stage.classList.add('visible')
-        hangingString.classList.add('visible')
 
-        // Stagger entrance animations after loader
-        const header = document.getElementById('site-header')
-        const footer = document.getElementById('site-footer')
-        if (header) { header.style.animationDelay = '0s'; header.classList.add('fade-up') }
-        if (footer) { footer.style.animationDelay = '0.3s'; footer.classList.add('fade-up') }
-        initMobileShimmer()
-      }, 800)
+      // ① Wait 500ms so user sees "100" clearly
+      setTimeout(() => {
+        // ② Fade the number out first
+        if (loaderCounter) loaderCounter.classList.add('count-done')
+
+        setTimeout(() => {
+          // ③ Then fade "entering the room" out
+          if (loaderCounter) loaderCounter.classList.add('label-done')
+
+          // ④ Show welcome + tap hint on mobile
+          if (loaderWelcome) loaderWelcome.classList.add('visible')
+          if (loaderHint)    loaderHint.classList.add('visible')
+          if (loader)        loader.classList.add('ready-to-enter')
+
+          loadComplete = true
+
+          // ⑤ Desktop: auto-dismiss after a further 700ms
+          if (!isMobile()) {
+            setTimeout(dismissLoader, 700)
+          }
+          // Mobile: wait for tap (handled below)
+        }, 500)
+      }, 500)
     }
   }, 100)
+
+  // Mobile hard gate — tap anywhere on loader to enter
+  if (loader) {
+    loader.addEventListener('click', () => {
+      if (!isMobile()) return
+      if (!loadComplete) return   // ignore taps before loading finishes
+      dismissLoader()
+    }, { passive: true })
+  }
 }
 
 // ── FIT IMAGE TO SCREEN ───────────────────
