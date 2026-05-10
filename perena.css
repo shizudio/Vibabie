@@ -1274,3 +1274,125 @@ nav {
     grid-template-rows: none !important;
   }
 }
+
+/* ─────────────────────────────────────────
+   Accordion sections
+   ───────────────────────────────────────── */
+
+/* Strip browser default details/summary chrome */
+.case-accordion {
+  display: block;
+  border: none;
+}
+.case-accordion > summary {
+  list-style: none;
+  -webkit-appearance: none;
+}
+.case-accordion > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* ── Summary / trigger row ── */
+.case-accordion-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 0;
+  border-top: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease;
+}
+
+.case-accordion-summary:hover .case-accordion-title {
+  color: var(--crimson);
+}
+
+/* Meta column: label + title stacked */
+.case-accordion-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.case-accordion-label {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+.case-accordion-title {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.3;
+  transition: color 0.2s ease;
+}
+
+/* Expand / collapse icon */
+.case-accordion-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 300;
+  color: var(--stone);
+  line-height: 1;
+  transition: transform 0.35s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.case-accordion[open] > .case-accordion-summary .case-accordion-icon {
+  transform: rotate(45deg);
+  color: var(--crimson);
+  border-color: var(--border-crimson);
+}
+
+.case-accordion-summary:hover .case-accordion-icon {
+  color: var(--crimson);
+  border-color: var(--border-crimson);
+}
+
+/* ── Body: animated expand/collapse ── */
+.case-accordion-body {
+  overflow: hidden;
+  /* JS drives the max-height; start collapsed */
+  max-height: 0;
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  /* case-section padding — keep same horizontal rhythm */
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* When open via JS (class toggled), remove hard limit so content can breathe */
+.case-accordion-body.is-open {
+  /* max-height set inline by JS to scrollHeight, then 'none' after transition */
+}
+
+/* Mobile tweaks */
+@media (max-width: 767px) {
+  .case-accordion-summary {
+    padding: 18px 0;
+  }
+  .case-accordion-title {
+    font-size: 1rem;
+  }
+  .case-accordion-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 0.9rem;
+  }
+}

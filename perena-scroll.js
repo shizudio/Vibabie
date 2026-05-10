@@ -147,12 +147,60 @@ function initTweetScrollers() {
   })
 }
 
+// ── ACCORDION (smooth <details> expand/collapse) ──
+function openAccordion(details) {
+  if (details.open) return
+  const body = details.querySelector('.case-accordion-body')
+  if (!body) return
+  details.setAttribute('open', '')
+  body.style.maxHeight = '0'
+  // Let the browser paint the open state before animating
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      body.style.maxHeight = body.scrollHeight + 'px'
+      body.addEventListener('transitionend', () => {
+        if (details.open) body.style.maxHeight = 'none'
+      }, { once: true })
+    })
+  })
+}
+
+function closeAccordion(details) {
+  if (!details.open) return
+  const body = details.querySelector('.case-accordion-body')
+  if (!body) return
+  // Snap to current height so transition has a defined start point
+  body.style.maxHeight = body.scrollHeight + 'px'
+  requestAnimationFrame(() => {
+    body.style.maxHeight = '0'
+    body.addEventListener('transitionend', () => {
+      details.removeAttribute('open')
+    }, { once: true })
+  })
+}
+
+function initAccordions() {
+  document.querySelectorAll('details.case-accordion').forEach(details => {
+    const summary = details.querySelector('.case-accordion-summary')
+    if (!summary) return
+
+    summary.addEventListener('click', e => {
+      e.preventDefault()
+      if (details.open) {
+        closeAccordion(details)
+      } else {
+        openAccordion(details)
+      }
+    })
+  })
+}
+
 // ── SIDE NAV CLICKS + SCROLL SPY ─────────
 function initScrollSpy() {
   const links = document.querySelectorAll('.case-sidenav-item')
   if (!links.length) return
 
-  const sections = Array.from(links).map(l => {
+  const targets = Array.from(links).map(l => {
     const id = l.getAttribute('href').replace('#', '')
     return document.getElementById(id)
   }).filter(Boolean)
@@ -160,27 +208,39 @@ function initScrollSpy() {
   // Offset for fixed top nav (~64px) + a little breathing room
   const NAV_OFFSET = 80
 
-  // Click: smooth scroll with offset instead of native anchor jump
+  // Click: open accordion if needed, then smooth scroll
   links.forEach(link => {
     link.addEventListener('click', e => {
       e.preventDefault()
       const id = link.getAttribute('href').replace('#', '')
       const target = document.getElementById(id)
       if (!target) return
-      const top = target.getBoundingClientRect().top + window.scrollY - NAV_OFFSET
-      window.scrollTo({ top, behavior: 'smooth' })
+
+      const scrollToTarget = () => {
+        const top = target.getBoundingClientRect().top + window.scrollY - NAV_OFFSET
+        window.scrollTo({ top, behavior: 'smooth' })
+      }
+
+      // If target is a closed accordion, open it first then scroll
+      if (target.tagName === 'DETAILS' && !target.open) {
+        openAccordion(target)
+        // Wait for animation to start before scrolling
+        setTimeout(scrollToTarget, 80)
+      } else {
+        scrollToTarget()
+      }
     })
   })
 
   // Scroll spy: highlight whichever section is nearest the top
   function onScroll() {
     const threshold = window.scrollY + NAV_OFFSET + 40
-    let active = sections[0]
-    for (const sec of sections) {
-      if (sec.offsetTop <= threshold) active = sec
+    let active = targets[0]
+    for (const sec of targets) {
+      if (sec && sec.offsetTop <= threshold) active = sec
     }
     links.forEach(l => {
-      l.classList.toggle('active', l.getAttribute('href') === '#' + active.id)
+      l.classList.toggle('active', active && l.getAttribute('href') === '#' + active.id)
     })
   }
 
@@ -197,6 +257,7 @@ function reloadTwitterWidgets() {
 // Run on load; also re-run if the page is soft-navigated back to
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
+    initAccordions()
     initTweetScrollers()
     initScrollSpy()
     initVideoHovers()
@@ -205,6 +266,7 @@ if (document.readyState === 'loading') {
     reloadTwitterWidgets()
   })
 } else {
+  initAccordions()
   initTweetScrollers()
   initScrollSpy()
   initVideoHovers()
