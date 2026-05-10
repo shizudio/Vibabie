@@ -2,7 +2,7 @@
    perena.css — Perena case study page
    ───────────────────────────────────────── */
 
-html, body { min-height: 100%; overflow-x: hidden; }
+html, body { min-height: 100%; overflow-x: clip; max-width: 100%; }
 html { scroll-behavior: smooth; }
 
 /* ── SIDE NAV ───────────────────────────── */
@@ -732,11 +732,15 @@ nav {
   margin: 0 !important;
   min-width: 0;
   zoom: 0.8;
+  overflow: hidden;     /* clip white iframe background to zoomed bounds */
+  border-radius: 12px;  /* matches Twitter card radius */
 }
 
 .tweet-embed-wrap .twitter-tweet {
   margin: 0 auto !important;
   zoom: 0.8;
+  overflow: hidden;
+  border-radius: 12px;
 }
 
 .tweet-embed-wrap--centered {
@@ -1066,13 +1070,20 @@ nav {
 
 /* ── MOBILE ─────────────────────────────── */
 @media (max-width: 767px) {
-  /* Prevent any element from causing horizontal scroll */
-  body, .case-main {
-    overflow-x: hidden;
+  /* Lock entire page to viewport width — clip beats hidden on iOS */
+  html, body, .case-main {
+    overflow-x: clip;
+    max-width: 100vw;
+    width: 100%;
   }
 
   .case-main {
     padding: 90px var(--page-gutter, 24px) 80px;
+  }
+
+  /* Brand stack: clip fanning cards so they don't bleed past viewport */
+  .case-brand-stack {
+    overflow: hidden;
   }
 
   .case-back {
@@ -1147,12 +1158,21 @@ nav {
     grid-template-columns: 1fr;
   }
 
+  /* Tweet scroll grid: drop negative margins entirely on mobile.
+     Use a wrapping clip layer instead so the grid never bleeds past viewport. */
+  .tweet-scroll-wrap {
+    overflow: hidden;       /* outer clip — stops any bleed */
+    margin: 0 -24px;        /* extend to screen edge */
+    padding: 0 24px;        /* restore inner spacing */
+  }
   .tweet-embed-grid {
-    margin: 24px -24px;
-    padding: 4px 24px 16px;
+    margin: 8px 0;
+    padding: 4px 0 16px;
   }
   .tweet-embed-grid .twitter-tweet {
     zoom: 0.72;
+    overflow: hidden;
+    border-radius: 12px;
   }
 
   .case-divider {
