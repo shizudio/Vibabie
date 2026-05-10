@@ -380,7 +380,7 @@ body {
     font-family: var(--font-display);
     font-style: italic;
     font-weight: 300;
-    font-size: clamp(0.78rem, 0.9vw, 0.88rem);
+    font-size: clamp(1.03rem, 1.15vw, 1.13rem);
     color: var(--stone);
     line-height: 1.8;
     text-align: center;
