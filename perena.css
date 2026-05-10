@@ -2,8 +2,8 @@
    perena.css — Perena case study page
    ───────────────────────────────────────── */
 
-html, body { min-height: 100%; overflow-x: clip; max-width: 100%; }
-html { scroll-behavior: smooth; }
+html, body { min-height: 100%; }
+html { overflow-x: clip; scroll-behavior: smooth; }
 
 /* ── SIDE NAV ───────────────────────────── */
 .case-sidenav {
@@ -778,8 +778,8 @@ nav {
   display: flex;
   flex-direction: row;
   gap: 24px;
-  margin: 24px -40px;
-  padding: 4px 40px 16px;
+  margin: 24px calc(-1 * var(--page-gutter));
+  padding: 4px var(--page-gutter) 16px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
@@ -1216,19 +1216,19 @@ nav {
     grid-template-columns: 1fr;
   }
 
-  /* Tweet scroll strips: no zoom on mobile — 272px native width
-     is comfortable for reading on any phone. Remove all zoom artifacts. */
+  /* Tweet scroll strips: no zoom on mobile — 272px native width fits phones.
+     Use the actual gutter var so the bleed matches padding exactly. */
   .tweet-scroll-wrap {
     overflow: hidden;
-    margin: 0 -24px;
-    padding: 0 24px;
+    margin: 0 calc(-1 * var(--page-gutter));
+    padding: 0 var(--page-gutter);
   }
   .tweet-embed-grid {
     margin: 8px 0;
     padding: 4px 0 16px;
   }
   .tweet-embed-grid .twitter-tweet {
-    zoom: 1;           /* reset — no zoom, no white bleed */
+    zoom: 1;
   }
 
   .case-divider {
@@ -1256,11 +1256,11 @@ nav {
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
-    margin: 0 -24px;
-    padding: 0 24px;
+    margin: 0 calc(-1 * var(--page-gutter));
+    padding: 0 var(--page-gutter);
   }
   .tweet-embed-wrap .twitter-tweet {
-    zoom: 1;   /* no zoom — full width, user swipes to see rest */
+    zoom: 1;
   }
 
   /* Colour box rows: tighter padding on small screens */
