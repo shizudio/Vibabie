@@ -2,7 +2,7 @@
    perena.css — Perena case study page
    ───────────────────────────────────────── */
 
-html, body { min-height: 100%; }
+html, body { min-height: 100%; overflow-x: hidden; }
 html { scroll-behavior: smooth; }
 
 /* ── SIDE NAV ───────────────────────────── */

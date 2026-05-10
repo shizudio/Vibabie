@@ -5,7 +5,10 @@ import { initEditor } from './portfolio-editor.js'
 inject()
 initRouter()
 initMenu()
-initEditor()
+// Only load the portfolio editor on desktop — not on touch/mobile
+if (window.matchMedia('(pointer: fine)').matches && window.innerWidth > 767) {
+  initEditor()
+}
 
 /* ─────────────────────────────────────────
    Shina - Global Scripts
