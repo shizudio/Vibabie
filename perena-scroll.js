@@ -192,6 +192,19 @@ function initAccordions() {
         openAccordion(details)
       }
     })
+
+    // Collapse button at the foot of each section
+    const collapseBtn = details.querySelector('.case-accordion-collapse')
+    if (collapseBtn) {
+      collapseBtn.addEventListener('click', () => {
+        closeAccordion(details)
+        // After animation starts, scroll back up to the summary trigger
+        setTimeout(() => {
+          const top = details.getBoundingClientRect().top + window.scrollY - 80
+          window.scrollTo({ top, behavior: 'smooth' })
+        }, 80)
+      })
+    }
   })
 }
 

@@ -1382,6 +1382,32 @@ nav {
   /* max-height set inline by JS to scrollHeight, then 'none' after transition */
 }
 
+/* ── Collapse button at section foot ── */
+.case-accordion-collapse {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 36px;
+  padding: 14px 0;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--stone);
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.case-accordion-collapse:hover {
+  color: var(--crimson);
+}
+
 /* Mobile tweaks */
 @media (max-width: 767px) {
   .case-accordion-summary {
