@@ -1133,13 +1133,8 @@ nav {
 
 /* ── MOBILE ─────────────────────────────── */
 @media (max-width: 767px) {
-  /* Lock entire page to viewport width — clip beats hidden on iOS */
-  html, body, .case-main {
-    overflow-x: clip;
-    max-width: 100vw;
-    width: 100%;
-  }
-
+  /* html/body clip is set globally — don't add max-width to .case-main
+     here because its padding would make it 48px wider than 100vw */
   .case-main {
     padding: 90px var(--page-gutter, 24px) 80px;
   }
@@ -1221,21 +1216,19 @@ nav {
     grid-template-columns: 1fr;
   }
 
-  /* Tweet scroll grid: drop negative margins entirely on mobile.
-     Use a wrapping clip layer instead so the grid never bleeds past viewport. */
+  /* Tweet scroll strips: no zoom on mobile — 272px native width
+     is comfortable for reading on any phone. Remove all zoom artifacts. */
   .tweet-scroll-wrap {
-    overflow: hidden;       /* outer clip — stops any bleed */
-    margin: 0 -24px;        /* extend to screen edge */
-    padding: 0 24px;        /* restore inner spacing */
+    overflow: hidden;
+    margin: 0 -24px;
+    padding: 0 24px;
   }
   .tweet-embed-grid {
     margin: 8px 0;
     padding: 4px 0 16px;
   }
   .tweet-embed-grid .twitter-tweet {
-    zoom: 0.72;
-    overflow: hidden;
-    border-radius: 12px;
+    zoom: 1;           /* reset — no zoom, no white bleed */
   }
 
   .case-divider {
@@ -1257,10 +1250,17 @@ nav {
     font-size: 0.65rem;
   }
 
-  /* Single tweet embed: zoom down so 550px iframe fits */
+  /* Single tweet embed: make it horizontally scrollable on mobile
+     rather than zooming (zoom causes white background bleed on iOS) */
+  .tweet-embed-wrap {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -24px;
+    padding: 0 24px;
+  }
   .tweet-embed-wrap .twitter-tweet {
-    zoom: 0.62;
-    transform-origin: top left;
+    zoom: 1;   /* no zoom — full width, user swipes to see rest */
   }
 
   /* Colour box rows: tighter padding on small screens */
