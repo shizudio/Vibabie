@@ -361,32 +361,37 @@ body {
   }
 }
 
-/* ── Desktop: statement + welcome around the painting ── */
-.room-statement,
-.room-welcome {
-  display: none;
+/* ── Desktop: room-layout wrapper + statement/welcome ── */
+.room-layout {
+  display: none; /* hidden on mobile — mobile has loader text instead */
 }
 
 @media (min-width: 768px) {
+  .room-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* width is set by JS in fitRoom() to match exact painting width */
+  }
+
   .room-statement,
   .room-welcome {
-    display: block;
-    font-family: var(--font-sans);
+    width: 100%;
+    font-family: var(--font-display);
+    font-style: italic;
     font-weight: 300;
-    font-size: clamp(0.88rem, 1.1vw, 1rem);
-    color: var(--ink);
-    line-height: 1.75;
+    font-size: clamp(0.78rem, 0.9vw, 0.88rem);
+    color: var(--stone);
+    line-height: 1.8;
     text-align: center;
-    max-width: 560px;
-    margin: 0 auto;
   }
 
   .room-statement {
-    padding-bottom: clamp(16px, 2vh, 28px);
+    padding-bottom: clamp(12px, 1.5vh, 20px);
   }
 
   .room-welcome {
-    padding-top: clamp(16px, 2vh, 24px);
+    padding-top: clamp(12px, 1.5vh, 18px);
   }
 }
 

@@ -92,6 +92,7 @@ function fitRoom() {
   const mobile = window.matchMedia('(max-width: 767px)').matches
   const img = document.getElementById('room-img')
   const roomImage = document.getElementById('room-image')
+  const roomLayout = document.getElementById('room-layout')
   const naturalW = img.naturalWidth || 1440
   const naturalH = img.naturalHeight || 856
   const ratio = naturalW / naturalH
@@ -130,6 +131,8 @@ function fitRoom() {
   img.style.height = h + 'px'
   roomImage.style.width = w + 'px'
   roomImage.style.height = h + 'px'
+  // Match text column to exact painting width
+  if (roomLayout) roomLayout.style.width = w + 'px'
 }
 
 const img = document.getElementById('room-img')
