@@ -302,11 +302,12 @@ body {
 
   .loader-statement {
     display: block;
-    font-family: var(--font-sans);
+    font-family: var(--font-display);
+    font-style: italic;
     font-weight: 300;
-    font-size: clamp(0.88rem, 3.8vw, 1rem);
-    color: var(--ink);
-    line-height: 1.75;
+    font-size: clamp(0.9rem, 3.8vw, 1.05rem);
+    color: var(--stone);
+    line-height: 1.6;
     text-align: center;
     max-width: 320px;
     margin: 0 auto 36px;
@@ -318,11 +319,12 @@ body {
 
   .loader-welcome {
     display: block;
-    font-family: var(--font-sans);
+    font-family: var(--font-display);
+    font-style: italic;
     font-weight: 300;
     font-size: clamp(0.78rem, 3.2vw, 0.88rem);
-    color: var(--ink);
-    line-height: 1.65;
+    color: var(--stone);
+    line-height: 1.55;
     text-align: center;
     max-width: 280px;
     margin: 24px auto 0;
@@ -361,9 +363,16 @@ body {
   }
 }
 
-/* ── Desktop: room-layout wrapper + statement/welcome ── */
+/* ── room-layout wrapper + statement/welcome ── */
+/* room-layout must be visible on mobile so frame-mount (painting) renders */
 .room-layout {
-  display: none; /* hidden on mobile — mobile has loader text instead */
+  display: block;
+}
+
+/* Hide the descriptive text on mobile — it lives in the loader instead */
+.room-statement,
+.room-welcome {
+  display: none;
 }
 
 @media (min-width: 768px) {
@@ -376,6 +385,7 @@ body {
 
   .room-statement,
   .room-welcome {
+    display: block;
     width: 100%;
     font-family: var(--font-display);
     font-style: italic;
