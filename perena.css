@@ -1034,6 +1034,11 @@ nav {
   flex-shrink: 0;
   transition: color 0.2s ease;
 }
+.article-row-arrow::after {
+  content: '→';
+  font-size: 0.7rem;
+  letter-spacing: 0;
+}
 
 /* ── OPINION PIECES (legacy) ────────────── */
 .article-list {

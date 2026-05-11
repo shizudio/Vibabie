@@ -199,7 +199,7 @@ if (vinylHotspot && vinylOverlay) {
     window.cursorMorphTo('🎶')
     ttLabel.textContent = 'The Record'
     ttDesc.textContent = 'Music & Vibes'
-    ttLink.textContent = 'View Records ↗'
+    ttLink.textContent = 'View Records'
     ttLink.href = 'record.html'
     ttLink.target = '_self'
     tooltip.classList.add('visible')
@@ -245,7 +245,7 @@ if (vinylHotspot && vinylOverlay) {
     window.cursorMorphTo('🎶')
     ttLabel.textContent = 'The Record'
     ttDesc.textContent = 'Music & Vibes'
-    ttLink.textContent = 'View Records ↗'
+    ttLink.textContent = 'View Records'
     ttLink.href = 'record.html'
     ttLink.target = '_self'
     tooltip.classList.add('visible')
@@ -273,7 +273,7 @@ if (bulbHotspot && bulbOverlay) {
     window.cursorMorphTo('✦')
     ttLabel.textContent = 'The Lamp'
     ttDesc.textContent = 'AI & Automation'
-    ttLink.textContent = 'View Tools ↗'
+    ttLink.textContent = 'View Tools'
     ttLink.href = 'ai.html'
     ttLink.target = '_self'
     tooltip.classList.add('visible')
@@ -319,7 +319,7 @@ if (bulbHotspot && bulbOverlay) {
     window.cursorMorphTo('✦')
     ttLabel.textContent = 'The Lamp'
     ttDesc.textContent = 'AI & Automation'
-    ttLink.textContent = 'View Tools ↗'
+    ttLink.textContent = 'View Tools'
     ttLink.href = 'ai.html'
     ttLink.target = '_self'
     tooltip.classList.add('visible')
@@ -347,7 +347,7 @@ if (cameraHotspot && cameraOverlay) {
     window.cursorMorphTo('📷')
     ttLabel.textContent = 'The Fujifilm Camera'
     ttDesc.textContent = 'Photography'
-    ttLink.textContent = 'View Work ↗'
+    ttLink.textContent = 'View Work'
     ttLink.href = 'photography.html'
     ttLink.target = '_self'
     tooltip.classList.add('visible')
@@ -393,7 +393,7 @@ if (cameraHotspot && cameraOverlay) {
     window.cursorMorphTo('📷')
     ttLabel.textContent = 'The Fujifilm Camera'
     ttDesc.textContent = 'Photography'
-    ttLink.textContent = 'View Work ↗'
+    ttLink.textContent = 'View Work'
     ttLink.href = 'photography.html'
     ttLink.target = '_self'
     tooltip.classList.add('visible')
@@ -421,7 +421,7 @@ if (frenchpressHotspot && frenchpressOverlay) {
     window.cursorMorphTo('☕')
     ttLabel.textContent = 'The French Press'
     ttDesc.textContent = 'Personal Aesthetics'
-    ttLink.textContent = 'View Curation ↗'
+    ttLink.textContent = 'View Curation'
     ttLink.href = 'cosmos.html'
     ttLink.target = '_self'
     tooltip.classList.add('visible')
@@ -467,7 +467,7 @@ if (frenchpressHotspot && frenchpressOverlay) {
     window.cursorMorphTo('☕')
     ttLabel.textContent = 'The French Press'
     ttDesc.textContent = 'Personal Aesthetics'
-    ttLink.textContent = 'View Curation ↗'
+    ttLink.textContent = 'View Curation'
     ttLink.href = 'cosmos.html'
     ttLink.target = '_self'
     tooltip.classList.add('visible')
@@ -495,7 +495,7 @@ if (bedHotspot && bedOverlay) {
     window.cursorMorphTo('🛏')
     ttLabel.textContent = 'The Bed'
     ttDesc.textContent = 'Who I Am'
-    ttLink.textContent = 'About ↗'
+    ttLink.textContent = 'About'
     ttLink.href = 'about.html'
     ttLink.target = '_self'
     tooltip.classList.add('visible')
@@ -541,7 +541,7 @@ if (bedHotspot && bedOverlay) {
     window.cursorMorphTo('🛏')
     ttLabel.textContent = 'The Bed'
     ttDesc.textContent = 'Who I Am'
-    ttLink.textContent = 'About ↗'
+    ttLink.textContent = 'About'
     ttLink.href = 'about.html'
     ttLink.target = '_self'
     tooltip.classList.add('visible')
@@ -610,7 +610,7 @@ if (laptopHotspot && laptopOverlay) {
     window.cursorMorphTo('💻')
     ttLabel.textContent = 'The Laptop'
     ttDesc.textContent = 'Work & Projects'
-    ttLink.textContent = 'View Work ↗'
+    ttLink.textContent = 'View Work'
     ttLink.href = 'work.html'
     ttLink.target = '_self'
     tooltip.classList.add('visible')
@@ -654,7 +654,7 @@ if (laptopHotspot && laptopOverlay) {
     window.cursorMorphTo('💻')
     ttLabel.textContent = 'The Laptop'
     ttDesc.textContent = 'Work & Projects'
-    ttLink.textContent = 'View Work ↗'
+    ttLink.textContent = 'View Work'
     ttLink.href = 'work.html'
     ttLink.target = '_self'
     tooltip.classList.add('visible')

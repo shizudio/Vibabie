@@ -95,7 +95,7 @@ widget.innerHTML = `
   <div class="vinyl-widget-sleeves" id="widget-sleeves">
     ${sleeveItemsHTML}
     <a href="/record.html" class="vinyl-sleeve vinyl-sleeve-link" style="--sleeve-i: ${menuTracks.length}; --sleeve-angle: ${sleeveAngles[menuTracks.length] || 10}deg">
-      <span class="vinyl-sleeve-link-label">The Record ↗</span>
+      <span class="vinyl-sleeve-link-label">The Record</span>
     </a>
   </div>
   <div class="vinyl-widget-player">
