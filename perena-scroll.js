@@ -107,11 +107,44 @@ function initBrandStack() {
 }
 
 function initVideoHovers() {
+  const mobile = () => window.matchMedia('(max-width: 767px)').matches
+
   document.querySelectorAll('.case-image--video-hover').forEach(block => {
     const vid = block.querySelector('.case-hover-video')
     if (!vid) return
-    block.addEventListener('mouseenter', () => { vid.play().catch(() => {}) })
-    block.addEventListener('mouseleave', () => { vid.pause(); vid.currentTime = 0 })
+
+    // ── Desktop: hover to play ──────────────────────────────
+    block.addEventListener('mouseenter', () => {
+      if (mobile()) return
+      vid.play().catch(() => {})
+    })
+    block.addEventListener('mouseleave', () => {
+      if (mobile()) return
+      vid.pause()
+      vid.currentTime = 0
+    })
+
+    // ── Mobile: tap to play / tap to pause ─────────────────
+    const playBtn = block.querySelector('.case-play-btn')
+    if (playBtn) {
+      playBtn.addEventListener('click', e => {
+        e.stopPropagation()
+        vid.play().catch(() => {})
+        block.classList.add('is-playing')
+      })
+    }
+    // Tap on the video while playing → pause and restore thumbnail
+    vid.addEventListener('click', () => {
+      if (!mobile()) return
+      vid.pause()
+      vid.currentTime = 0
+      block.classList.remove('is-playing')
+    })
+    // Auto-restore when video ends (it doesn't loop on mobile)
+    vid.addEventListener('ended', () => {
+      block.classList.remove('is-playing')
+      vid.currentTime = 0
+    })
   })
 }
 
