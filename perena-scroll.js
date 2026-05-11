@@ -165,17 +165,25 @@ function openAccordion(details) {
   })
 }
 
-function closeAccordion(details) {
+function closeAccordion(details, scrollBack = false) {
   if (!details.open) return
   const body = details.querySelector('.case-accordion-body')
   if (!body) return
-  // Snap to current height so transition has a defined start point
+  // Pin to explicit px first (handles max-height: none after full open)
   body.style.maxHeight = body.scrollHeight + 'px'
+  // Double rAF: let the browser commit the px value before animating to 0
   requestAnimationFrame(() => {
-    body.style.maxHeight = '0'
-    body.addEventListener('transitionend', () => {
-      details.removeAttribute('open')
-    }, { once: true })
+    requestAnimationFrame(() => {
+      body.style.maxHeight = '0'
+      body.addEventListener('transitionend', () => {
+        details.removeAttribute('open')
+        // Scroll only after collapse is fully done — no competing animations
+        if (scrollBack) {
+          const top = details.getBoundingClientRect().top + window.scrollY - 80
+          window.scrollTo({ top, behavior: 'smooth' })
+        }
+      }, { once: true })
+    })
   })
 }
 
@@ -197,12 +205,8 @@ function initAccordions() {
     const collapseBtn = details.querySelector('.case-accordion-collapse')
     if (collapseBtn) {
       collapseBtn.addEventListener('click', () => {
-        closeAccordion(details)
-        // After animation starts, scroll back up to the summary trigger
-        setTimeout(() => {
-          const top = details.getBoundingClientRect().top + window.scrollY - 80
-          window.scrollTo({ top, behavior: 'smooth' })
-        }, 80)
+        // scrollBack=true: scroll fires after transition completes, not during
+        closeAccordion(details, true)
       })
     }
   })
