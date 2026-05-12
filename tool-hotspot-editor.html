@@ -10,6 +10,457 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="vinyl.css">
   <link rel="stylesheet" href="tool.css">
+
+  <style>
+    /* ── Demo trigger ──────────────────────────────── */
+    .tool-demo-trigger {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 8px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+      cursor: pointer;
+      margin-top: 4px;
+      overflow: hidden;
+      position: relative;
+      background-image: url('Portfoliov2.jpg');
+      background-size: cover;
+      background-position: center 30%;
+      border: 1px solid var(--border, rgba(0,0,0,0.08));
+      transition: border-color 0.25s;
+    }
+    .tool-demo-trigger::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(8,5,3,0.28) 0%,
+        rgba(8,5,3,0.70) 100%
+      );
+      transition: opacity 0.25s;
+    }
+    .tool-demo-trigger:hover::before {
+      background: linear-gradient(
+        to bottom,
+        rgba(8,5,3,0.18) 0%,
+        rgba(8,5,3,0.62) 100%
+      );
+    }
+    .tool-demo-trigger-inner {
+      position: relative;
+      z-index: 1;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      pointer-events: none;
+    }
+    .tool-demo-label {
+      font-family: var(--font-sans);
+      font-size: 0.6rem;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(253,248,242,0.6);
+    }
+    .tool-demo-heading {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: clamp(1rem, 1.6vw, 1.25rem);
+      font-weight: 400;
+      color: #fdf8f2;
+      line-height: 1.3;
+    }
+    .tool-demo-sub {
+      font-family: var(--font-sans);
+      font-size: 0.68rem;
+      color: rgba(253,248,242,0.5);
+      font-weight: 300;
+      letter-spacing: 0.02em;
+      margin-top: 2px;
+    }
+
+    /* ── Demo modal ────────────────────────────────── */
+    #demo-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      background: #0d0d14;
+      display: none;
+      font-family: monospace;
+      color: #e0e0f0;
+    }
+    #demo-modal.open { display: flex; flex-direction: column; }
+
+    .demo-modal-close {
+      position: absolute;
+      top: 14px; right: 16px;
+      background: rgba(255,215,0,0.08);
+      border: 1px solid rgba(255,215,0,0.22);
+      color: rgba(255,215,0,0.7);
+      font-family: monospace;
+      font-size: 0.62rem;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      z-index: 10;
+      letter-spacing: 0.1em;
+      transition: background 0.15s;
+    }
+    .demo-modal-close:hover { background: rgba(255,215,0,0.18); color: #FFD700; }
+
+    .demo-modal-inner { display: flex; flex: 1; height: 100%; overflow: hidden; }
+
+    /* ── Stepper (left) ─────────────────────────────── */
+    .demo-stepper {
+      width: 300px;
+      flex-shrink: 0;
+      background: #09090f;
+      border-right: 1px solid rgba(255,215,0,0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .demo-stepper-head {
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid rgba(255,215,0,0.08);
+      flex-shrink: 0;
+    }
+    .demo-stepper-title {
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,215,0,0.4);
+    }
+    .demo-stepper-cards {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .demo-stage-card {
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.05);
+      border-left: 3px solid transparent;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: opacity 0.2s, background 0.2s, border-color 0.2s;
+      opacity: 0.3;
+    }
+    .demo-stage-card.done {
+      opacity: 0.5;
+      border-left-color: rgba(255,215,0,0.25);
+    }
+    .demo-stage-card.active {
+      opacity: 1;
+      border-left-color: #FFD700;
+      background: rgba(255,215,0,0.04);
+      border-color: rgba(255,215,0,0.18);
+    }
+    .demo-stage-card:hover:not(.active) {
+      opacity: 0.65;
+      background: rgba(255,255,255,0.025);
+    }
+    .demo-card-num {
+      font-size: 0.55rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,215,0,0.4);
+      margin-bottom: 5px;
+    }
+    .demo-stage-card.active .demo-card-num { color: rgba(255,215,0,0.7); }
+    .demo-card-label {
+      font-size: 0.7rem;
+      color: #ccd;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .demo-stage-card.active .demo-card-label { color: #fff; }
+    .demo-card-prompt {
+      font-family: var(--font-sans, sans-serif);
+      font-size: 0.66rem;
+      line-height: 1.72;
+      color: rgba(200,205,225,0.62);
+      font-weight: 300;
+      margin-top: 10px;
+      display: none;
+    }
+    .demo-stage-card.active .demo-card-prompt { display: block; }
+    .demo-stepper-foot {
+      padding: 12px 14px;
+      border-top: 1px solid rgba(255,215,0,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .demo-stage-count {
+      font-size: 0.6rem;
+      color: rgba(255,215,0,0.35);
+      letter-spacing: 0.1em;
+    }
+    .demo-next-btn {
+      font-family: monospace;
+      font-size: 0.68rem;
+      background: rgba(255,215,0,0.1);
+      border: 1px solid rgba(255,215,0,0.35);
+      color: #FFD700;
+      padding: 5px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      transition: background 0.15s;
+    }
+    .demo-next-btn:hover:not(:disabled) { background: rgba(255,215,0,0.2); }
+    .demo-next-btn:disabled { opacity: 0.25; cursor: default; }
+
+    /* ── Canvas (centre) ─────────────────────────────── */
+    .demo-canvas-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow: hidden;
+      position: relative;
+    }
+    #demo-room-wrap {
+      position: relative;
+      display: inline-block;
+      line-height: 0;
+      user-select: none;
+    }
+    #demo-room-img {
+      display: block;
+      max-width: 100%;
+      max-height: calc(100dvh - 48px);
+      object-fit: contain;
+    }
+
+    /* ── Overlay items ───────────────────────────────── */
+    .demo-item { position: absolute; cursor: pointer; }
+    .demo-item .item-gif {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      opacity: 0.85;
+      filter: brightness(var(--d-br,1)) contrast(var(--d-co,1)) saturate(var(--d-vi,1));
+    }
+    .demo-item.mode-hotspot .item-gif { display: none; }
+    .demo-item.mode-hotspot .hotspot-vis {
+      display: block;
+      position: absolute;
+      inset: 0;
+      border: 2px dashed rgba(255,200,50,0.65);
+      background: rgba(255,200,50,0.07);
+      border-radius: 4px;
+    }
+    .demo-item.mode-overlay .hotspot-vis { display: none; }
+    .demo-item .sel-border { display: none; }
+    .demo-item.selected .sel-border {
+      display: block;
+      position: absolute;
+      inset: -2px;
+      border: 2px solid #FFD700;
+      border-radius: 3px;
+      pointer-events: none;
+      z-index: 30;
+    }
+    .demo-item .badge {
+      position: absolute;
+      top: -18px; left: 0;
+      font-size: 10px;
+      background: rgba(0,0,0,0.7);
+      color: #FFD700;
+      padding: 1px 5px;
+      border-radius: 3px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 31;
+    }
+    .demo-item .corner {
+      display: none;
+      position: absolute;
+      width: 10px; height: 10px;
+      background: #FFD700;
+      border: 2px solid #fff;
+      border-radius: 2px;
+      z-index: 31;
+    }
+    .corner.tl { top:-5px;left:-5px;cursor:nwse-resize; }
+    .corner.tr { top:-5px;right:-5px;cursor:nesw-resize; }
+    .corner.bl { bottom:-5px;left:-5px;cursor:nesw-resize; }
+    .corner.br { bottom:-5px;right:-5px;cursor:nwse-resize; }
+    .demo-s2 .demo-item.selected .corner,
+    .demo-s3 .demo-item.selected .corner,
+    .demo-s4 .demo-item.selected .corner { display: block; }
+
+    /* ── Right panel ─────────────────────────────────── */
+    #demo-panel {
+      width: 280px;
+      flex-shrink: 0;
+      background: #0f0f1a;
+      border-left: 1px solid rgba(255,215,0,0.18);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #demo-panel-header {
+      padding: 12px 14px 8px;
+      border-bottom: 1px solid rgba(255,215,0,0.12);
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    #demo-panel-header span {
+      font-size: 11px;
+      color: #FFD700;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    #demo-item-list {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,215,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .demo-item-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 11px;
+      border: 1px solid transparent;
+      transition: background 0.15s;
+    }
+    .demo-item-row:hover { background: rgba(255,255,255,0.04); }
+    .demo-item-row.active {
+      background: rgba(255,215,0,0.08);
+      border-color: rgba(255,215,0,0.28);
+      color: #FFD700;
+    }
+    .demo-item-dot { width:8px;height:8px;border-radius:50%;flex-shrink:0; }
+    #demo-mode-tabs {
+      display: flex;
+      padding: 8px 12px 6px;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .demo-tab-btn {
+      flex: 1;
+      font-size: 10px;
+      font-family: monospace;
+      padding: 4px 0;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: transparent;
+      color: #999;
+      border-radius: 4px;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: all 0.15s;
+    }
+    .demo-tab-btn.active {
+      background: rgba(255,215,0,0.1);
+      border-color: rgba(255,215,0,0.45);
+      color: #FFD700;
+    }
+    #demo-controls-wrap {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    /* feature sections — hidden until stage unlocks them */
+    #demo-pos-controls {
+      padding: 10px 12px;
+      flex-direction: column;
+      gap: 8px;
+      border-bottom: 1px solid rgba(255,215,0,0.1);
+      display: none;
+    }
+    .demo-s2 #demo-pos-controls,
+    .demo-s3 #demo-pos-controls,
+    .demo-s4 #demo-pos-controls { display: flex; }
+
+    #demo-filter-controls {
+      padding: 10px 12px;
+      flex-direction: column;
+      gap: 8px;
+      border-bottom: 1px solid rgba(255,215,0,0.1);
+      display: none;
+    }
+    .demo-s3 #demo-filter-controls,
+    .demo-s4 #demo-filter-controls { display: flex; }
+
+    #demo-code-block {
+      flex: 1;
+      padding: 10px 12px;
+      flex-direction: column;
+      gap: 8px;
+      display: none;
+      min-height: 0;
+    }
+    .demo-s4 #demo-code-block { display: flex; }
+
+    .demo-ctrl-row { display:flex;align-items:center;gap:8px; }
+    .demo-ctrl-label { font-size:10px;color:#666;width:52px;flex-shrink:0; }
+    .demo-ctrl-val   { font-size:10px;color:#ccc;width:40px;text-align:right;flex-shrink:0; }
+    #demo-pos-controls input[type=range],
+    #demo-filter-controls input[type=range] { flex:1;accent-color:#FFD700;height:3px; }
+    .demo-ctrl-sep { border:none;border-top:1px solid rgba(255,215,0,0.1);margin:2px 0; }
+    .demo-section-lbl {
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,215,0,0.35);
+      margin: 2px 0 2px;
+    }
+    #demo-code-pre {
+      font-size: 10px;
+      line-height: 1.65;
+      color: #8fa0bf;
+      white-space: pre;
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+    }
+    .demo-copy-btn {
+      font-size: 10px;
+      font-family: monospace;
+      border-radius: 4px;
+      padding: 4px 12px;
+      cursor: pointer;
+      border: 1px solid rgba(255,215,0,0.35);
+      background: rgba(255,215,0,0.1);
+      color: #FFD700;
+      transition: all 0.2s;
+      align-self: flex-start;
+      flex-shrink: 0;
+    }
+    .demo-copy-btn.copied {
+      background: rgba(100,255,150,0.1);
+      border-color: rgba(100,255,150,0.4);
+      color: #7efa9a;
+    }
+
+    @keyframes demoFeatIn {
+      from { opacity:0; transform:translateY(6px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .demo-feat-anim { animation: demoFeatIn 0.3s ease; }
+  </style>
 </head>
 <body>
 
@@ -52,8 +503,12 @@
         <code>index.html</code> data attributes. The hover overlay and tooltip logic
         runs separately in <code>index.js</code> at page load, reading that JSON.
       </p>
-      <div class="tool-media">
-        <span class="tool-media-placeholder">Screenshot or screen recording</span>
+      <div class="tool-demo-trigger" id="demo-open-btn" role="button" tabindex="0">
+        <div class="tool-demo-trigger-inner">
+          <span class="tool-demo-label">Interactive demo</span>
+          <span class="tool-demo-heading">Watch it get built,<br>step by step</span>
+          <span class="tool-demo-sub">Click to explore →</span>
+        </div>
       </div>
     </div>
 
@@ -70,9 +525,6 @@
         The home page immediately reflects the new hotspot layout — positions, tooltips,
         and overlay video all update from the same JSON source.
       </p>
-      <div class="tool-media">
-        <span class="tool-media-placeholder">Demo video</span>
-      </div>
     </div>
 
     <div class="divider"></div>
@@ -97,5 +549,447 @@
 
   <script type="module" src="script.js"></script>
   <script type="module" src="vinyl-widget.js"></script>
+
+  <!-- ── Demo Modal ── -->
+  <div id="demo-modal">
+    <button class="demo-modal-close" id="demo-close-btn">ESC ✕</button>
+    <div class="demo-modal-inner">
+
+      <!-- left: stepper -->
+      <div class="demo-stepper">
+        <div class="demo-stepper-head">
+          <div class="demo-stepper-title">How it was built</div>
+        </div>
+        <div class="demo-stepper-cards">
+
+          <div class="demo-stage-card active" data-stage="1">
+            <div class="demo-card-num">Stage 01</div>
+            <div class="demo-card-label">Positioning the overlays</div>
+            <div class="demo-card-prompt">So on my landing page, there's this room illustration — it's a painting of my space — and I've placed these interactive hotspots over objects in the room. When you hover over a hotspot, I want a GIF or video to appear as an overlay, like the object is coming to life. The problem is I've been manually guessing the pixel coordinates in the HTML which is a nightmare. I want a proper dev tool where I can see the room image, drag each item into position visually, and have it output the coordinates for me.</div>
+          </div>
+
+          <div class="demo-stage-card" data-stage="2">
+            <div class="demo-card-num">Stage 02</div>
+            <div class="demo-card-label">Resize &amp; crop controls</div>
+            <div class="demo-card-prompt">OK this is working but I'm realising each GIF and video has a slightly different crop — like the french press video has too much empty space around it. I want to be able to drag the corners to resize each one directly on the canvas, and also have sliders so I can fine-tune the exact position and dimensions. And I also want to be able to crop into the video — like shift the focal point — so I'm not just scaling it but actually controlling which part of the frame shows.</div>
+          </div>
+
+          <div class="demo-stage-card" data-stage="3">
+            <div class="demo-card-num">Stage 03</div>
+            <div class="demo-card-label">Lighting &amp; filter controls</div>
+            <div class="demo-card-prompt">Some of these overlays look really off compared to the room illustration. The lighting in the bed video is super warm and the room image is cooler, so they clash. I want to be able to adjust the brightness, contrast, and vibrancy of each overlay individually — like a mini image editor built right into the tool — so I can visually match each one to the scene without going back into video editing software.</div>
+          </div>
+
+          <div class="demo-stage-card" data-stage="4">
+            <div class="demo-card-num">Stage 04</div>
+            <div class="demo-card-label">Auto-generated CSS output</div>
+            <div class="demo-card-prompt">This is great, but right now I still have to manually translate these positions back into my HTML and CSS. Can you make it so the tool generates the code automatically — like a live output at the bottom that updates as I drag and adjust — and I can just copy it and paste it straight into my index.html. The CSS should already be formatted and ready to go.</div>
+          </div>
+
+        </div>
+        <div class="demo-stepper-foot">
+          <span class="demo-stage-count" id="demo-stage-count">1 / 4</span>
+          <button class="demo-next-btn" id="demo-next-btn">Next →</button>
+        </div>
+      </div>
+
+      <!-- centre: canvas -->
+      <div class="demo-canvas-area">
+        <div id="demo-room-wrap">
+          <img id="demo-room-img" src="Portfoliov2.jpg" alt="Room illustration" />
+        </div>
+      </div>
+
+      <!-- right: panel -->
+      <div id="demo-panel">
+        <div id="demo-panel-header">
+          <span>HOTSPOT DEV TOOL</span>
+        </div>
+        <div id="demo-item-list"></div>
+        <div id="demo-mode-tabs">
+          <button class="demo-tab-btn active" data-mode="hotspot">HOTSPOT</button>
+          <button class="demo-tab-btn" data-mode="overlay">OVERLAY</button>
+        </div>
+        <div id="demo-controls-wrap">
+          <div id="demo-pos-controls"></div>
+          <div id="demo-filter-controls"></div>
+          <div id="demo-code-block">
+            <pre id="demo-code-pre"></pre>
+            <button class="demo-copy-btn" id="demo-copy-btn">Copy output</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+  ;(function () {
+
+    // ── Item config ──────────────────────────────────────────────
+    const ITEMS = [
+      { id:'bulb',      label:'Lamp Bulb',       color:'#FFD700', src:'hotspot/bulb.gif',    isVideo:false,
+        hotspot:{top:57.1,left:8.7,width:14.4,height:37.7},
+        overlay:{top:52.3,left:7.0,width:19.1,height:47.0,cropX:50,cropY:50},
+        filters:{brightness:1,contrast:1,vibrancy:1.15} },
+      { id:'camera',    label:'Fujifilm Camera',  color:'#88aaff', src:'hotspot/camera.gif',  isVideo:false,
+        hotspot:{top:66.5,left:24.0,width:16.0,height:22.0},
+        overlay:{top:67.2,left:24.0,width:15.0,height:20.6,cropX:50,cropY:50},
+        filters:{brightness:1,contrast:1,vibrancy:1} },
+      { id:'laptop',    label:'The Laptop',       color:'#66ccff', src:'hotspot/laptop.mp4',  isVideo:true,
+        hotspot:{top:47.5,left:43.0,width:48.0,height:50.0},
+        overlay:{top:47.5,left:43.0,width:48.0,height:50.0,cropX:50,cropY:50},
+        filters:{brightness:1,contrast:1,vibrancy:1} },
+    ]
+
+    // ── Slider definitions ───────────────────────────────────────
+    const POS_SLIDERS = [
+      {key:'top',    label:'Top',    min:-20,max:120,step:0.1, fmt:v=>v.toFixed(1)+'%'},
+      {key:'left',   label:'Left',   min:-20,max:120,step:0.1, fmt:v=>v.toFixed(1)+'%'},
+      {key:'width',  label:'Width',  min:1,  max:150,step:0.1, fmt:v=>v.toFixed(1)+'%'},
+      {key:'height', label:'Height', min:1,  max:150,step:0.1, fmt:v=>v.toFixed(1)+'%'},
+    ]
+    const CROP_SLIDERS = [
+      {key:'cropX', label:'Crop X', min:0,max:100,step:1, fmt:v=>v.toFixed(0)+'%'},
+      {key:'cropY', label:'Crop Y', min:0,max:100,step:1, fmt:v=>v.toFixed(0)+'%'},
+    ]
+    const FILTER_SLIDERS = [
+      {key:'brightness', label:'Bright',   min:0,max:2,step:0.05, fmt:v=>v.toFixed(2)},
+      {key:'contrast',   label:'Contrast', min:0,max:2,step:0.05, fmt:v=>v.toFixed(2)},
+      {key:'vibrancy',   label:'Vibrance', min:0,max:2,step:0.05, fmt:v=>v.toFixed(2)},
+    ]
+
+    // ── State ────────────────────────────────────────────────────
+    let state = ITEMS.map(item => ({
+      hotspot: {...item.hotspot},
+      overlay: {...item.overlay},
+      filters: {...item.filters},
+    }))
+    let selIdx = 0
+    let mode   = 'hotspot'
+    let stage  = 1
+    let drag   = null
+    let initialized = false
+    let sliderRefs  = {}
+    const itemEls   = []
+
+    // ── DOM refs ─────────────────────────────────────────────────
+    const modal      = document.getElementById('demo-modal')
+    const openBtn    = document.getElementById('demo-open-btn')
+    const closeBtn   = document.getElementById('demo-close-btn')
+    const roomImg    = document.getElementById('demo-room-img')
+    const roomWrap   = document.getElementById('demo-room-wrap')
+    const itemList   = document.getElementById('demo-item-list')
+    const nextBtn    = document.getElementById('demo-next-btn')
+    const stageCount = document.getElementById('demo-stage-count')
+    const codePre    = document.getElementById('demo-code-pre')
+    const copyBtn    = document.getElementById('demo-copy-btn')
+
+    // ── Open / close ─────────────────────────────────────────────
+    openBtn.addEventListener('click', openDemo)
+    openBtn.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') openDemo() })
+    closeBtn.addEventListener('click', closeDemo)
+    document.addEventListener('keydown', e => {
+      if (e.key==='Escape' && modal.classList.contains('open')) closeDemo()
+    })
+
+    function openDemo() {
+      modal.classList.add('open')
+      document.body.style.overflow = 'hidden'
+      if (!initialized) {
+        if (roomImg.complete) init()
+        else roomImg.addEventListener('load', init, {once:true})
+      } else {
+        requestAnimationFrame(applyPositions)
+      }
+    }
+    function closeDemo() {
+      modal.classList.remove('open')
+      document.body.style.overflow = ''
+    }
+
+    // ── Init ─────────────────────────────────────────────────────
+    function init() {
+      initialized = true
+      buildItems()
+      buildItemList()
+      bindModeTabs()
+      setStage(1, false)
+      selectItem(0)
+    }
+
+    // ── Build canvas items ────────────────────────────────────────
+    function buildItems() {
+      ITEMS.forEach((item, i) => {
+        const el = document.createElement('div')
+        el.className = 'demo-item mode-hotspot'
+        el.dataset.idx = i
+        const media = item.isVideo
+          ? `<video class="item-gif" src="${item.src}" autoplay loop muted playsinline></video>`
+          : `<img class="item-gif" src="${item.src}" alt="" loading="lazy" />`
+        el.innerHTML = `
+          <div class="hotspot-vis"></div>
+          ${media}
+          <div class="badge">[${i}] ${item.label}</div>
+          <div class="sel-border"></div>
+          <div class="corner tl" data-corner="tl"></div>
+          <div class="corner tr" data-corner="tr"></div>
+          <div class="corner bl" data-corner="bl"></div>
+          <div class="corner br" data-corner="br"></div>
+        `
+        roomWrap.appendChild(el)
+        itemEls.push(el)
+
+        el.addEventListener('pointerdown', e => {
+          if (e.target.classList.contains('corner')) return
+          if (selIdx !== i) { selectItem(i); return }
+          e.preventDefault()
+          drag = {idx:i, type:'move', sx:e.clientX, sy:e.clientY, orig:{...state[i][mode]}}
+        })
+        el.querySelectorAll('.corner').forEach(corner => {
+          corner.addEventListener('pointerdown', e => {
+            e.preventDefault(); e.stopPropagation()
+            drag = {idx:i, type:'resize', corner:corner.dataset.corner, sx:e.clientX, sy:e.clientY, orig:{...state[i][mode]}}
+          })
+        })
+      })
+    }
+
+    // ── Item list ─────────────────────────────────────────────────
+    function buildItemList() {
+      ITEMS.forEach((item, i) => {
+        const row = document.createElement('div')
+        row.className = 'demo-item-row' + (i===0?' active':'')
+        row.innerHTML = `<div class="demo-item-dot" style="background:${item.color}"></div><span>${item.label}</span>`
+        row.addEventListener('click', () => selectItem(i))
+        itemList.appendChild(row)
+      })
+    }
+
+    // ── Select ────────────────────────────────────────────────────
+    function selectItem(i) {
+      selIdx = i
+      itemEls.forEach((el, idx) => el.classList.toggle('selected', idx===i))
+      itemList.querySelectorAll('.demo-item-row').forEach((row, idx) => row.classList.toggle('active', idx===i))
+      buildControls()
+      updateCode()
+    }
+
+    // ── Mode tabs ─────────────────────────────────────────────────
+    function bindModeTabs() {
+      document.querySelectorAll('.demo-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          mode = btn.dataset.mode
+          document.querySelectorAll('.demo-tab-btn').forEach(b => b.classList.toggle('active', b===btn))
+          itemEls.forEach(el => {
+            el.className = el.className.replace(/mode-\S+/,'').trim()
+            el.classList.add('mode-'+mode)
+          })
+          applyPositions()
+          buildControls()
+          updateCode()
+        })
+      })
+    }
+
+    // ── Apply positions ───────────────────────────────────────────
+    function applyPositions() {
+      const rect = roomImg.getBoundingClientRect()
+      const W = rect.width, H = rect.height
+      ITEMS.forEach((_, i) => {
+        const el = itemEls[i]
+        const c  = state[i][mode]
+        const f  = state[i].filters || {}
+        const ov = state[i].overlay
+        el.style.left   = (c.left   / 100 * W) + 'px'
+        el.style.top    = (c.top    / 100 * H) + 'px'
+        el.style.width  = (c.width  / 100 * W) + 'px'
+        el.style.height = (c.height / 100 * H) + 'px'
+        el.style.setProperty('--d-br', f.brightness ?? 1)
+        el.style.setProperty('--d-co', f.contrast   ?? 1)
+        el.style.setProperty('--d-vi', f.vibrancy   ?? 1)
+        const gif = el.querySelector('.item-gif')
+        gif.style.objectPosition = `${ov.cropX??50}% ${ov.cropY??50}%`
+      })
+    }
+
+    // ── Drag ──────────────────────────────────────────────────────
+    const rnd  = v => Math.round(v * 10) / 10
+    const clamp1 = v => Math.max(1, v)
+
+    document.addEventListener('pointermove', e => {
+      if (!drag || !modal.classList.contains('open')) return
+      const rect = roomImg.getBoundingClientRect()
+      const W = rect.width, H = rect.height
+      const dx = (e.clientX - drag.sx) / W * 100
+      const dy = (e.clientY - drag.sy) / H * 100
+      const c = state[drag.idx][mode]
+      const o = drag.orig
+
+      if (drag.type === 'move') {
+        c.left = rnd(o.left+dx); c.top = rnd(o.top+dy)
+      } else {
+        const cr = drag.corner
+        if (cr==='br') { c.width=clamp1(rnd(o.width+dx)); c.height=clamp1(rnd(o.height+dy)) }
+        else if (cr==='bl') { c.width=clamp1(rnd(o.width-dx)); c.left=rnd(o.left+dx); c.height=clamp1(rnd(o.height+dy)) }
+        else if (cr==='tr') { c.width=clamp1(rnd(o.width+dx)); c.height=clamp1(rnd(o.height-dy)); c.top=rnd(o.top+dy) }
+        else if (cr==='tl') { c.width=clamp1(rnd(o.width-dx)); c.left=rnd(o.left+dx); c.height=clamp1(rnd(o.height-dy)); c.top=rnd(o.top+dy) }
+      }
+      applyPositions()
+      syncSliders(state[drag.idx][mode])
+      updateCode()
+    })
+    document.addEventListener('pointerup', () => { drag = null })
+
+    // ── Build controls ────────────────────────────────────────────
+    function buildControls() {
+      const posWrap    = document.getElementById('demo-pos-controls')
+      const filterWrap = document.getElementById('demo-filter-controls')
+      posWrap.innerHTML = ''
+      filterWrap.innerHTML = ''
+      sliderRefs = {}
+
+      const coords  = state[selIdx][mode]
+      const filters = state[selIdx].filters || {}
+      const ov      = state[selIdx].overlay
+
+      POS_SLIDERS.forEach(def => {
+        const s = mkSlider(def, coords[def.key], v => {
+          state[selIdx][mode][def.key] = v
+          applyPositions(); updateCode()
+        })
+        posWrap.appendChild(s.el)
+        sliderRefs[def.key] = s
+      })
+
+      if (mode === 'overlay') {
+        const sep = document.createElement('hr')
+        sep.className = 'demo-ctrl-sep'
+        posWrap.appendChild(sep)
+        CROP_SLIDERS.forEach(def => {
+          const s = mkSlider(def, ov[def.key]??50, v => {
+            state[selIdx].overlay[def.key] = v
+            applyPositions(); updateCode()
+          })
+          posWrap.appendChild(s.el)
+          sliderRefs[def.key] = s
+        })
+      }
+
+      FILTER_SLIDERS.forEach(def => {
+        const s = mkSlider(def, filters[def.key]??1, v => {
+          if (!state[selIdx].filters) state[selIdx].filters = {}
+          state[selIdx].filters[def.key] = v
+          applyPositions(); updateCode()
+        })
+        filterWrap.appendChild(s.el)
+        sliderRefs['f_'+def.key] = s
+      })
+    }
+
+    function mkSlider(def, value, onChange) {
+      const el = document.createElement('div')
+      el.className = 'demo-ctrl-row'
+      const lbl = document.createElement('div')
+      lbl.className = 'demo-ctrl-label'
+      lbl.textContent = def.label
+      const slider = document.createElement('input')
+      slider.type = 'range'
+      slider.min = def.min; slider.max = def.max
+      slider.step = def.step; slider.value = value
+      const valEl = document.createElement('div')
+      valEl.className = 'demo-ctrl-val'
+      valEl.textContent = def.fmt(value)
+      slider.addEventListener('input', () => {
+        const v = parseFloat(slider.value)
+        valEl.textContent = def.fmt(v)
+        onChange(v)
+      })
+      el.append(lbl, slider, valEl)
+      return { el, slider, valEl, fmt: def.fmt }
+    }
+
+    function syncSliders(coords) {
+      POS_SLIDERS.forEach(def => {
+        const ref = sliderRefs[def.key]
+        if (ref) { ref.slider.value = coords[def.key]; ref.valEl.textContent = def.fmt(coords[def.key]) }
+      })
+    }
+
+    // ── Code output ───────────────────────────────────────────────
+    function updateCode() {
+      if (!codePre) return
+      const lines = []
+      ITEMS.forEach((item, i) => {
+        const ov = state[i].overlay
+        const f  = state[i].filters || {}
+        lines.push(`/* ${item.label} */`)
+        lines.push(`#${item.id}-overlay {`)
+        lines.push(`  top:${ov.top.toFixed(1)}%; left:${ov.left.toFixed(1)}%;`)
+        lines.push(`  width:${ov.width.toFixed(1)}%; height:${ov.height.toFixed(1)}%;`)
+        const cx = ov.cropX??50, cy = ov.cropY??50
+        if (cx!==50||cy!==50) lines.push(`  object-position:${cx}% ${cy}%;`)
+        const br=f.brightness??1, co=f.contrast??1, vi=f.vibrancy??1
+        if (br!==1||co!==1||vi!==1)
+          lines.push(`  filter:brightness(${br.toFixed(2)}) contrast(${co.toFixed(2)}) saturate(${vi.toFixed(2)});`)
+        lines.push(`}`)
+        lines.push(``)
+      })
+      codePre.textContent = lines.join('\n')
+    }
+
+    // ── Stage management ──────────────────────────────────────────
+    function setStage(n, animate) {
+      stage = n
+      modal.className = modal.className.replace(/demo-s\d/g,'').trim()
+      modal.classList.add('demo-s'+n)
+
+      document.querySelectorAll('.demo-stage-card').forEach((card, i) => {
+        card.classList.remove('active','done')
+        if (i+1===n) card.classList.add('active')
+        else if (i+1<n) card.classList.add('done')
+      })
+      stageCount.textContent = `${n} / 4`
+      nextBtn.disabled = n===4
+
+      if (animate) {
+        if (n===2) triggerAnim('demo-pos-controls')
+        if (n===3) triggerAnim('demo-filter-controls')
+        if (n===4) triggerAnim('demo-code-block')
+      }
+      buildControls()
+      updateCode()
+      applyPositions()
+    }
+
+    function triggerAnim(id) {
+      const el = document.getElementById(id)
+      if (!el) return
+      el.classList.remove('demo-feat-anim')
+      void el.offsetWidth
+      el.classList.add('demo-feat-anim')
+    }
+
+    document.querySelectorAll('.demo-stage-card').forEach((card, i) => {
+      card.addEventListener('click', () => setStage(i+1, true))
+    })
+    nextBtn.addEventListener('click', () => { if (stage<4) setStage(stage+1, true) })
+
+    // ── Copy ──────────────────────────────────────────────────────
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(codePre.textContent).then(() => {
+        copyBtn.textContent = '✓ Copied!'
+        copyBtn.classList.add('copied')
+        setTimeout(() => { copyBtn.textContent = 'Copy output'; copyBtn.classList.remove('copied') }, 2000)
+      })
+    })
+
+    // ── Resize ────────────────────────────────────────────────────
+    window.addEventListener('resize', () => {
+      if (modal.classList.contains('open') && initialized) applyPositions()
+    })
+
+  })()
+  </script>
 </body>
 </html>
