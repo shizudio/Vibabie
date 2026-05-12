@@ -38,7 +38,7 @@
 
 .tool-tagline {
   font-family: var(--font-sans);
-  font-size: var(--text-sm, 0.9rem);
+  font-size: var(--text-base);
   font-weight: 300;
   color: var(--stone);
   line-height: 1.9;
@@ -91,7 +91,7 @@
 
 .tool-body {
   font-family: var(--font-sans);
-  font-size: var(--text-sm, 0.9rem);
+  font-size: var(--text-base);
   font-weight: 300;
   color: var(--stone);
   line-height: 1.9;
