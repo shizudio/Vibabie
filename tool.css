@@ -139,6 +139,11 @@
   text-align: center;
 }
 
+/* ── Hero media (top of page) ────────────────────────────── */
+.tool-hero-media {
+  margin-top: 28px;
+}
+
 /* ── Video hover block ────────────────────────────────────── */
 .tool-video-block {
   position: relative;
