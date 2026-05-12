@@ -27,10 +27,12 @@
 
 /* ── Page header ──────────────────────────────────────────── */
 .tool-page .page-label {
+  font-family: var(--font-sans);
   margin-bottom: var(--space-sm, 12px);
 }
 
 .tool-page .page-h1 {
+  font-size: clamp(1.75rem, 3.5vw, 2.4rem);
   margin-bottom: 16px;
 }
 
