@@ -215,16 +215,38 @@ a.ai-card:hover .ai-card-link {
 .sys-card {
   background: var(--paper);
   border: 1px solid var(--border);
+  border-left: 3px solid transparent;
   border-radius: 8px;
   padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  gap: 0;
+  cursor: pointer;
+  transition: border-color 0.15s ease, border-left-color 0.2s ease,
+              box-shadow 0.15s ease, background 0.2s ease;
 }
 .sys-card:hover {
   border-color: rgba(127,31,18,0.25);
+  border-left-color: var(--crimson);
+  background: var(--crimson-bg, #fdf6f5);
   box-shadow: 0 2px 12px rgba(26,22,20,0.06);
+}
+.sys-card.is-open {
+  border-left-color: var(--crimson);
+  background: var(--crimson-bg, #fdf6f5);
+}
+
+/* ── Card face (always visible) ──────────────────────────── */
+.sys-card-face {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.sys-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .sys-card-cat {
@@ -234,6 +256,21 @@ a.ai-card:hover .ai-card-link {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--stone);
+}
+
+.sys-card-toggle {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: var(--stone);
+  line-height: 1;
+  transition: transform 0.25s ease, color 0.2s ease;
+  pointer-events: none;
+  user-select: none;
+}
+.sys-card.is-open .sys-card-toggle {
+  transform: rotate(45deg);
+  color: var(--crimson);
 }
 
 .sys-card-name {
@@ -288,6 +325,37 @@ a.ai-card:hover .ai-card-link {
   opacity: 0.7;
   white-space: nowrap;
   flex-shrink: 0;
+}
+
+/* ── Expandable details ───────────────────────────────────── */
+.sys-card-details {
+  transition: max-height 0.35s ease;
+  overflow: hidden;
+}
+
+.sys-card-details-inner {
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  margin-top: 14px;
+}
+
+.sys-card-how-label {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--crimson);
+  margin: 0 0 8px;
+}
+
+.sys-card-how {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 300;
+  color: var(--stone);
+  line-height: 1.8;
+  margin: 0;
 }
 
 /* ── Count line ───────────────────────────────────────────── */

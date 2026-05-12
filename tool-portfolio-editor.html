@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Editor — Shina Foo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400&family=EB+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="vinyl.css">
+  <link rel="stylesheet" href="tool.css">
+</head>
+<body>
+
+  <div class="cursor default-cursor" id="cursor"></div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Shina Foo</a>
+    <span class="nav-page-name">AI &amp; Automation</span>
+  </nav>
+
+  <main class="tool-page">
+
+    <a class="tool-back" href="ai.html">AI &amp; Automation</a>
+
+    <span class="page-label">Personal Tool · 2024</span>
+    <h1 class="page-h1">Portfolio Editor</h1>
+    <p class="tool-tagline">
+      An in-browser editor for writing and editing case-study pages —
+      format text, insert blocks, manage media and save directly back to
+      source files without touching code.
+    </p>
+
+    <div class="tool-meta">
+      <span class="tool-meta-stack">Claude &nbsp;·&nbsp; Vanilla JS &nbsp;·&nbsp; Vite</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ── How it's built ── -->
+    <div class="tool-section">
+      <h2 class="tool-section-h2">How it's built</h2>
+      <p class="tool-body">
+        Built entirely in vanilla JS — no React, no framework overhead. The editing surface is
+        a <code>contenteditable</code> section that mirrors the HTML structure of the case study
+        pages. A floating toolbar detects your selection and offers contextual format options:
+        heading, body text, pullquote, label, bold, italic.
+      </p>
+      <p class="tool-body">
+        Block insertion — images, videos, accordions, colour boxes — injects pre-structured
+        HTML at the cursor position. Saving calls a local Vite dev server endpoint that writes
+        the serialized DOM back to the source <code>.html</code> file directly.
+        Developed iteratively with Claude as a pair programmer.
+      </p>
+      <div class="tool-media">
+        <span class="tool-media-placeholder">Screenshot or screen recording</span>
+      </div>
+    </div>
+
+    <!-- ── How it's used ── -->
+    <div class="tool-section">
+      <h2 class="tool-section-h2">How it's used</h2>
+      <p class="tool-body">
+        Run <code>npm run dev</code>, open the case study page in your browser. The editor
+        activates on top of the live page. Select any text to see format options in the
+        floating toolbar. Click "Insert block" to drop in structured elements like image
+        grids, accordions, or pull quotes.
+      </p>
+      <p class="tool-body">
+        When done, hit save — the tool serializes the DOM and writes directly back to the
+        HTML file. No code editor required. Designed so non-technical collaborators can
+        make edits without breaking the markup.
+      </p>
+      <div class="tool-media">
+        <span class="tool-media-placeholder">Demo video</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ── GitHub ── -->
+    <div class="tool-github">
+      <p class="tool-github-label">Source code</p>
+      <p class="tool-github-name">portfolio-devtool</p>
+      <p class="tool-github-desc">
+        The full editor source — contenteditable toolbar, block insertion system,
+        and the Vite server endpoint for writing back to source files. Adapt it for
+        your own portfolio structure.
+      </p>
+      <a class="tool-github-link" href="https://github.com/shizudio/portfolio-devtool" target="_blank" rel="noopener">
+        View on GitHub →
+      </a>
+    </div>
+
+    <a class="tool-back tool-back--foot" href="ai.html">AI &amp; Automation</a>
+
+  </main>
+
+  <script type="module" src="script.js"></script>
+  <script type="module" src="vinyl-widget.js"></script>
+</body>
+</html>

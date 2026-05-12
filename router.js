@@ -7,7 +7,14 @@
  */
 
 // Pages safe for soft navigation (no complex page-specific scripts)
-const SOFT_NAV_PAGES = ['/about.html', '/work.html', '/perena.html']
+const SOFT_NAV_PAGES = [
+  '/about.html',
+  '/work.html',
+  '/perena.html',
+  '/ai.html',
+  '/tool-portfolio-editor.html',
+  '/tool-hotspot-editor.html',
+]
 
 const SWAPPABLE = ['main', 'nav', 'footer', '.page-header']
 const SKIP_SCRIPTS = ['script.js', 'vinyl-widget.js', 'router.js']

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotspot &amp; Overlay Editor — Shina Foo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400&family=EB+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="vinyl.css">
+  <link rel="stylesheet" href="tool.css">
+</head>
+<body>
+
+  <div class="cursor default-cursor" id="cursor"></div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Shina Foo</a>
+    <span class="nav-page-name">AI &amp; Automation</span>
+  </nav>
+
+  <main class="tool-page">
+
+    <a class="tool-back" href="ai.html">AI &amp; Automation</a>
+
+    <span class="page-label">Personal Tool · 2024</span>
+    <h1 class="page-h1">Hotspot &amp; Overlay Editor</h1>
+    <p class="tool-tagline">
+      A drag-and-drop canvas tool for placing, resizing and wiring interactive
+      hotspots on the room illustration — with live overlay video and tooltip previews.
+    </p>
+
+    <div class="tool-meta">
+      <span class="tool-meta-stack">Vanilla JS &nbsp;·&nbsp; Vite</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ── How it's built ── -->
+    <div class="tool-section">
+      <h2 class="tool-section-h2">How it's built</h2>
+      <p class="tool-body">
+        A canvas-style drag-and-drop tool built in vanilla JS. The room illustration is
+        the working surface — hotspots are absolutely-positioned overlay elements with
+        resize handles. Each hotspot stores its position as a percentage so it stays
+        responsive across screen sizes.
+      </p>
+      <p class="tool-body">
+        Each hotspot carries a destination URL, tooltip text, and an optional video
+        overlay path. The output is a JSON array — copy it and paste it into
+        <code>index.html</code> data attributes. The hover overlay and tooltip logic
+        runs separately in <code>index.js</code> at page load, reading that JSON.
+      </p>
+      <div class="tool-media">
+        <span class="tool-media-placeholder">Screenshot or screen recording</span>
+      </div>
+    </div>
+
+    <!-- ── How it's used ── -->
+    <div class="tool-section">
+      <h2 class="tool-section-h2">How it's used</h2>
+      <p class="tool-body">
+        Open the tool in your browser with the room image pre-loaded. Click anywhere on
+        the illustration to place a new hotspot. Drag it to the right position. Drag the
+        corner handle to resize. Fill in the label and destination URL in the right panel.
+      </p>
+      <p class="tool-body">
+        Click "Copy output" to get the JSON, then paste it into your <code>index.html</code>.
+        The home page immediately reflects the new hotspot layout — positions, tooltips,
+        and overlay video all update from the same JSON source.
+      </p>
+      <div class="tool-media">
+        <span class="tool-media-placeholder">Demo video</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ── GitHub ── -->
+    <div class="tool-github">
+      <p class="tool-github-label">Source code</p>
+      <p class="tool-github-name">hotspot-editor</p>
+      <p class="tool-github-desc">
+        The full hotspot editor — drag-and-drop canvas, position storage, JSON output,
+        and the runtime overlay system. Swap in your own illustration and adapt the
+        hotspot config for your use case.
+      </p>
+      <a class="tool-github-link" href="https://github.com/shizudio/hotspot-editor" target="_blank" rel="noopener">
+        View on GitHub →
+      </a>
+    </div>
+
+    <a class="tool-back tool-back--foot" href="ai.html">AI &amp; Automation</a>
+
+  </main>
+
+  <script type="module" src="script.js"></script>
+  <script type="module" src="vinyl-widget.js"></script>
+</body>
+</html>

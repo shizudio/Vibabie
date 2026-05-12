@@ -1,0 +1,205 @@
+/* ─────────────────────────────────────────
+   tool.css — Individual tool subpages
+   ───────────────────────────────────────── */
+
+.tool-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 100px var(--page-gutter, 24px) 120px;
+}
+
+/* ── Back nav ─────────────────────────────────────────────── */
+.tool-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 300;
+  color: var(--stone);
+  text-decoration: none;
+  margin-bottom: 40px;
+  transition: color 0.2s ease;
+  letter-spacing: 0.02em;
+}
+.tool-back:hover { color: var(--crimson); }
+.tool-back::before { content: '←'; }
+
+/* ── Page header ──────────────────────────────────────────── */
+.tool-page .page-label {
+  margin-bottom: var(--space-sm, 12px);
+}
+
+.tool-page .page-h1 {
+  margin-bottom: 16px;
+}
+
+.tool-tagline {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm, 0.9rem);
+  font-weight: 300;
+  color: var(--stone);
+  line-height: 1.9;
+  margin: 0 0 20px;
+}
+
+/* ── Meta row (stack + year) ──────────────────────────────── */
+.tool-meta {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.tool-meta-stack {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+.tool-meta-year {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  color: var(--stone);
+  opacity: 0.6;
+}
+
+.tool-page .divider {
+  margin: 40px 0 44px;
+}
+
+/* ── Content sections ─────────────────────────────────────── */
+.tool-section {
+  margin-bottom: 44px;
+}
+
+.tool-section-h2 {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1.15rem, 1.5vw, 1.3rem);
+  font-weight: 400;
+  color: var(--ink);
+  margin: 0 0 14px;
+}
+
+.tool-body {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm, 0.9rem);
+  font-weight: 300;
+  color: var(--stone);
+  line-height: 1.9;
+  margin: 0 0 24px;
+}
+
+.tool-body code {
+  font-family: monospace;
+  font-size: 0.85em;
+  background: rgba(127,31,18,0.06);
+  color: var(--crimson-text, #7f1f12);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* ── Media placeholder ────────────────────────────────────── */
+.tool-media {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--surface, #f7f3f1);
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.tool-media img,
+.tool-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.tool-media-placeholder {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 300;
+  color: var(--stone);
+  opacity: 0.45;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+/* ── GitHub block ─────────────────────────────────────────── */
+.tool-github {
+  background: var(--surface, #f7f3f1);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--crimson);
+  border-radius: 6px;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.tool-github-label {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin: 0;
+}
+
+.tool-github-name {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.tool-github-desc {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 300;
+  color: var(--stone);
+  line-height: 1.7;
+  margin: 4px 0 8px;
+}
+
+.tool-github-link {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.88rem;
+  color: var(--crimson);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-bottom: 1px solid var(--border-crimson, rgba(127,31,18,0.25));
+  padding-bottom: 1px;
+  width: fit-content;
+  transition: color 0.2s ease, border-color 0.2s ease, gap 0.2s ease;
+}
+.tool-github-link:hover {
+  color: var(--crimson-text, #7f1f12);
+  border-color: var(--crimson);
+  gap: 8px;
+}
+
+/* ── Footer back link ─────────────────────────────────────── */
+.tool-back--foot {
+  margin-top: 52px;
+  margin-bottom: 0;
+}
