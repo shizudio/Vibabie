@@ -475,22 +475,6 @@ nav {
 }
 
 /* ── HANGING STRING ── */
-.hanging-string {
-  position: fixed;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 1px;
-  height: 32px;
-  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.15));
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 1s ease 2.5s;
-}
-
-.hanging-string.visible {
-  opacity: 1;
-}
 
 /* ── SUBPAGE SHARED ── */
 .page-label {
@@ -729,9 +713,7 @@ nav {
     display: none;
   }
 
-  .hanging-string {
-    display: none;
-  }
+
 
   .site-header,
   nav {
@@ -811,9 +793,7 @@ body.menu-open .menu-toggle:hover .menu-toggle-label {
   opacity: 1;
 }
 
-body.menu-open .hanging-string {
-  opacity: 0;
-}
+
 
 body.menu-open .vinyl-widget {
   opacity: 0;

@@ -16,12 +16,10 @@ const loaderWelcome = document.querySelector('.loader-welcome')
 const loaderHint    = document.getElementById('loader-hint')
 const loaderCounter = document.querySelector('.loader-counter')
 const stage       = document.getElementById('stage')
-const hangingString = document.getElementById('hanging-string')
 
 function dismissLoader() {
   loader.classList.add('hidden')
   stage.classList.add('visible')
-  hangingString.classList.add('visible')
   const header = document.getElementById('site-header')
   const footer = document.getElementById('site-footer')
   if (header) { header.style.animationDelay = '0s'; header.classList.add('fade-up') }
