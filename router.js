@@ -88,7 +88,7 @@ async function navigate(path, pushState = true) {
     document.title = doc.title
 
     // Hide overlays from index page
-    document.querySelectorAll('.loader, .hanging-string, .tooltip')
+    document.querySelectorAll('.loader, .tooltip')
       .forEach(el => el.style.display = 'none')
 
     // Swap header

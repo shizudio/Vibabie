@@ -33,7 +33,6 @@ if (skipLoader) {
   sessionStorage.removeItem('skip-loader')
   if (loader) loader.classList.add('hidden')
   if (stage) stage.classList.add('visible')
-  if (hangingString) hangingString.classList.add('visible')
   const header = document.getElementById('site-header')
   const footer = document.getElementById('site-footer')
   if (header) { header.classList.add('fade-up'); header.style.animationDelay = '0s' }
