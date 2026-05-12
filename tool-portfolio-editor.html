@@ -53,9 +53,6 @@
         the serialized DOM back to the source <code>.html</code> file directly.
         Developed iteratively with Claude as a pair programmer.
       </p>
-      <div class="tool-media">
-        <span class="tool-media-placeholder">Screenshot or screen recording</span>
-      </div>
     </div>
 
     <!-- ── How it's used ── -->
@@ -72,8 +69,29 @@
         HTML file. No code editor required. Designed so non-technical collaborators can
         make edits without breaking the markup.
       </p>
-      <div class="tool-media">
-        <span class="tool-media-placeholder">Demo video</span>
+
+      <!-- Demo video — hover to play (desktop) / tap to play (mobile) -->
+      <div class="tool-video-block" id="pe-demo-block">
+        <img
+          src="/work/posters/portfolio-editor-demo.jpg"
+          alt="Portfolio Editor open on the Perena case study page"
+          loading="lazy"
+        />
+        <video
+          class="case-hover-video"
+          src="/work/Videos/portfolio-editor-demo.mp4"
+          muted
+          playsinline
+          loop
+          preload="none"
+          poster="/work/posters/portfolio-editor-demo.jpg"
+        ></video>
+        <span class="case-hover-hint">Hover to play</span>
+        <button class="case-play-btn" aria-label="Play demo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5,3 19,12 5,21"/>
+          </svg>
+        </button>
       </div>
     </div>
 
@@ -99,5 +117,46 @@
 
   <script type="module" src="script.js"></script>
   <script type="module" src="vinyl-widget.js"></script>
+  <script>
+    // ── Video hover: desktop hover-to-play, mobile tap-to-play ──
+    (function initToolVideos() {
+      const isMobile = () => window.matchMedia('(max-width: 767px)').matches
+
+      document.querySelectorAll('.tool-video-block').forEach(block => {
+        const vid = block.querySelector('.case-hover-video')
+        if (!vid) return
+
+        // Desktop: hover
+        block.addEventListener('mouseenter', () => {
+          if (isMobile()) return
+          vid.load(); vid.play().catch(() => {})
+        })
+        block.addEventListener('mouseleave', () => {
+          if (isMobile()) return
+          vid.pause(); vid.currentTime = 0
+        })
+
+        // Mobile: tap play button
+        const btn = block.querySelector('.case-play-btn')
+        if (btn) {
+          btn.addEventListener('click', e => {
+            e.stopPropagation()
+            vid.load(); vid.play().catch(() => {})
+            block.classList.add('is-playing')
+          })
+        }
+        // Tap video while playing → pause
+        vid.addEventListener('click', () => {
+          if (!isMobile()) return
+          vid.pause(); vid.currentTime = 0
+          block.classList.remove('is-playing')
+        })
+        vid.addEventListener('ended', () => {
+          block.classList.remove('is-playing')
+          vid.currentTime = 0
+        })
+      })
+    })()
+  </script>
 </body>
 </html>
