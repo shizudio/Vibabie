@@ -18,7 +18,8 @@
   font-weight: 300;
   color: var(--stone);
   text-decoration: none;
-  margin-bottom: 40px;
+  min-height: 44px;
+  margin-bottom: 24px;
   transition: color 0.2s ease;
   letter-spacing: 0.02em;
 }

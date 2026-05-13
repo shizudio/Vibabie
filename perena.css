@@ -68,7 +68,8 @@ nav {
 
 /* ── BACK LINK ──────────────────────────── */
 .case-back {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   font-family: var(--font-sans);
   font-size: var(--text-xs);
   font-weight: 300;
@@ -76,7 +77,8 @@ nav {
   text-transform: uppercase;
   color: var(--text-muted);
   text-decoration: none;
-  margin-bottom: 48px;
+  min-height: 44px;
+  margin-bottom: 32px;
   transition: color 0.2s ease;
 }
 .case-back:hover { color: var(--crimson); }
