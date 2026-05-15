@@ -38,14 +38,23 @@ if (skipLoader) {
   if (header) { header.classList.add('fade-up'); header.style.animationDelay = '0s' }
   if (footer) { footer.classList.add('fade-up'); footer.style.animationDelay = '0s' }
   initMobileShimmer()
-  // On mobile, ensure the room is in overview state.
-  // fitRoom() may not have run yet (image might not be decoded), so call
-  // setMobileOverview() explicitly after a rAF so layout is ready.
   if (isMobile()) {
+    // Double rAF: let the browser paint the current (full-height) state first,
+    // then apply the overview scale. The frame-border starts at opacity:0
+    // (set via data-mobile-returning in the inline HTML script), so the
+    // full-height flash is invisible. After setMobileOverview() we remove
+    // the attribute and fade the frame-border in.
     requestAnimationFrame(() => {
-      mobileExpanded = false
-      _cancelExpandTimers()
-      setMobileOverview()
+      requestAnimationFrame(() => {
+        mobileExpanded = false
+        _cancelExpandTimers()
+        setMobileOverview()
+        // Reveal the frame-border with a brief fade-in now that it's scaled
+        const fb = document.querySelector('.frame-border')
+        if (fb) fb.style.transition = 'opacity 0.25s ease'
+        document.documentElement.removeAttribute('data-mobile-returning')
+        setTimeout(() => { if (fb) fb.style.transition = '' }, 300)
+      })
     })
   }
 } else {
@@ -60,13 +69,19 @@ if (skipLoader) {
 
       // ① Wait 500ms so user sees "100" clearly
       setTimeout(() => {
-        // ② Fade num + label together in 0.2s (single class, no hairline artifact)
-        if (loaderCounter) loaderCounter.classList.add('count-done')
+        // ② Fade num + label via inline styles — bypasses CSS cascade entirely.
+        //    Inline styles are the most reliable way to ensure the fade fires.
+        if (loaderNum)   { loaderNum.style.transition   = 'opacity 0.15s ease'; loaderNum.style.opacity   = '0' }
+        if (loaderLabel) { loaderLabel.style.transition = 'opacity 0.15s ease'; loaderLabel.style.opacity = '0' }
 
-        // ③ After fade completes, show crimson tap hint and mark as ready
+        // ③ After fade completes: set visibility:hidden to fully suppress the
+        //    EB Garamond italic hairline stroke that lingers at near-zero opacity
+        //    on high-DPI screens, then show the crimson tap hint.
         setTimeout(() => {
-          if (loaderHint) loaderHint.classList.add('visible')
-          if (loader)     loader.classList.add('ready-to-enter')
+          if (loaderNum)   loaderNum.style.visibility   = 'hidden'
+          if (loaderLabel) loaderLabel.style.visibility = 'hidden'
+          if (loaderHint)  loaderHint.classList.add('visible')
+          if (loader)      loader.classList.add('ready-to-enter')
 
           loadComplete = true
 
@@ -75,7 +90,7 @@ if (skipLoader) {
             setTimeout(dismissLoader, 700)
           }
           // Mobile: wait for tap (handled below)
-        }, 250)
+        }, 200)
       }, 500)
     }
   }, 100)
@@ -974,3 +989,51 @@ document.querySelectorAll('.zone').forEach(zone => {
     }
   })
 })
+
+// ── NAV LOGO: reset to overview on mobile ───────────────────
+// When the user taps "Shina Foo" while the painting is already expanded,
+// animate back to overview state without reloading the page.
+// (A reload causes a full-height flash even with the data-mobile-returning fix.)
+const navLogo = document.querySelector('.nav-logo')
+if (navLogo) {
+  navLogo.addEventListener('click', e => {
+    if (!isMobile() || !mobileExpanded) return
+    e.preventDefault()
+    e.stopPropagation()
+
+    const ratio = getMobileRatio()
+    const vw = window.innerWidth
+    const headerH = 80
+    const availH = window.innerHeight - headerH
+    const overviewH = Math.round(vw / ratio)
+    const expandH = availH
+    const expandW = Math.round(expandH * ratio)
+    const scale = overviewH / expandH
+    const frameBorder = document.querySelector('.frame-border')
+    const frameMount = document.querySelector('.frame-mount')
+    if (!frameBorder || !frameMount) return
+
+    _cancelExpandTimers()
+    mobileExpanded = false
+
+    // Animate to overview scale — mirrors expandRoom() in reverse
+    frameBorder.style.transition = 'transform 0.6s ease-in-out'
+    frameBorder.style.transformOrigin = '50% 50%'
+    frameBorder.style.transform = `scale(${scale})`
+    frameMount.style.overflowX = 'hidden'
+    frameMount.scrollLeft = (expandW - vw) / 2
+
+    // Restore overview UI immediately
+    const ovl = document.getElementById('overview-overlay')
+    if (ovl) ovl.classList.remove('hidden')
+    const hint = document.getElementById('expand-hint')
+    if (hint) hint.classList.remove('hidden', 'fading')
+    const welcome = document.querySelector('.room-welcome')
+    if (welcome) welcome.classList.remove('hidden', 'fading')
+    document.querySelectorAll('.zone.shimmer').forEach(z => z.classList.remove('shimmer'))
+    hideRevealedLink()
+
+    // Clear transform transition after animation completes
+    setTimeout(() => { frameBorder.style.transition = '' }, 650)
+  })
+}
