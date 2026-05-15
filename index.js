@@ -129,6 +129,11 @@ function setMobileOverview() {
   if (frameBorder) {
     frameBorder.style.width = expandW + 'px'
     frameBorder.style.height = expandH + 'px'
+    // Clear any in-flight expand transition so overview scale applies instantly.
+    // (BFCache may resume a paused transition from expandRoom's 0.75s animation.)
+    frameBorder.style.transition = 'none'
+    // Force a reflow so 'none' takes effect before we set the new transform
+    void frameBorder.offsetHeight
     frameBorder.style.transition = ''
     // Scale frame-border down to overview size, expanding from the true center.
     // transform-origin: 50% 50% — both axes expand symmetrically from the element center.
@@ -202,6 +207,9 @@ function expandRoom(silent = false) {
     frameMount.scrollLeft = (expandW - window.innerWidth) / 2
 
     setTimeout(() => {
+      // Guard: if the user came back (BFCache) and overview was re-set, don't
+      // clear the transform — setMobileOverview already applied scale(s) again.
+      if (!mobileExpanded) return
       // Clear transform (scale(1) = identity, safe to remove)
       frameBorder.style.transition = ''
       frameBorder.style.transform = ''
@@ -219,12 +227,12 @@ function expandRoom(silent = false) {
   const hint = document.getElementById('expand-hint')
   if (hint && !hint.classList.contains('hidden')) {
     hint.classList.add('fading')
-    setTimeout(() => hint.classList.add('hidden'), 380)
+    setTimeout(() => { if (!mobileExpanded) return; hint.classList.add('hidden') }, 380)
   }
   const welcome = document.querySelector('.room-welcome')
   if (welcome && !welcome.classList.contains('hidden')) {
     welcome.classList.add('fading')
-    setTimeout(() => welcome.classList.add('hidden'), 380)
+    setTimeout(() => { if (!mobileExpanded) return; welcome.classList.add('hidden') }, 380)
   }
 
   initMobileShimmer()
