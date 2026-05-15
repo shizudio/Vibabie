@@ -281,11 +281,15 @@ body {
 }
 
 /* Fade out the counter block when loading completes */
-.loader-num {
-  transition: opacity 0.4s ease;
+/* Both num + label fade together in one fast pass — eliminates the hairline
+   artifact that appeared when only the number was fading (italic Garamond
+   stroke at near-zero opacity was still visible on high-DPI screens). */
+.loader-num,
+.loader-label {
+  transition: opacity 0.2s ease;
 }
-.loader-counter.count-done .loader-num  { opacity: 0; }
-.loader-counter.label-done .loader-label { opacity: 0; }
+.loader-counter.count-done .loader-num,
+.loader-counter.count-done .loader-label { opacity: 0; }
 
 /* ── Loader statement / welcome — mobile only ── */
 .loader-statement,
