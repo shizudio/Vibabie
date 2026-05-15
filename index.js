@@ -38,6 +38,16 @@ if (skipLoader) {
   if (header) { header.classList.add('fade-up'); header.style.animationDelay = '0s' }
   if (footer) { footer.classList.add('fade-up'); footer.style.animationDelay = '0s' }
   initMobileShimmer()
+  // On mobile, ensure the room is in overview state.
+  // fitRoom() may not have run yet (image might not be decoded), so call
+  // setMobileOverview() explicitly after a rAF so layout is ready.
+  if (isMobile()) {
+    requestAnimationFrame(() => {
+      mobileExpanded = false
+      _cancelExpandTimers()
+      setMobileOverview()
+    })
+  }
 } else {
   let loadComplete = false
 
@@ -50,26 +60,22 @@ if (skipLoader) {
 
       // ① Wait 500ms so user sees "100" clearly
       setTimeout(() => {
-        // ② Fade the number out first
+        // ② Fade num + label together in 0.2s (single class, no hairline artifact)
         if (loaderCounter) loaderCounter.classList.add('count-done')
 
+        // ③ After fade completes, show crimson tap hint and mark as ready
         setTimeout(() => {
-          // ③ Then fade "entering the room" out
-          if (loaderCounter) loaderCounter.classList.add('label-done')
-
-          // ④ Show welcome + tap hint on mobile
-          if (loaderWelcome) loaderWelcome.classList.add('visible')
-          if (loaderHint)    loaderHint.classList.add('visible')
-          if (loader)        loader.classList.add('ready-to-enter')
+          if (loaderHint) loaderHint.classList.add('visible')
+          if (loader)     loader.classList.add('ready-to-enter')
 
           loadComplete = true
 
-          // ⑤ Desktop: auto-dismiss after a further 700ms
+          // ④ Desktop: auto-dismiss after a further 700ms
           if (!isMobile()) {
             setTimeout(dismissLoader, 700)
           }
           // Mobile: wait for tap (handled below)
-        }, 500)
+        }, 250)
       }, 500)
     }
   }, 100)
@@ -314,7 +320,7 @@ function initPinchExpand() {
 }
 
 const img = document.getElementById('room-img')
-if (img.complete && img.naturalWidth) { fitRoom() } else { img.addEventListener('load', fitRoom) }
+if (img.complete) { fitRoom() } else { img.addEventListener('load', fitRoom) }
 window.addEventListener('resize', fitRoom)
 window.addEventListener('load', () => {
   fitRoom()
@@ -324,24 +330,25 @@ window.addEventListener('load', () => {
 // Re-fit and re-shimmer when returning via browser back (BFCache restore)
 window.addEventListener('pageshow', e => {
   if (e.persisted) {
-    // Reset to overview state on BFCache restore
+    // Cancel any thawed timers immediately (synchronous — before any rAF)
+    _cancelExpandTimers()
     if (isMobile()) {
-      _cancelExpandTimers()  // kill any thawed timers before they corrupt state
+      // Reset state flags synchronously so no code after this sees stale values
       mobileExpanded = false
-      const ovl = document.getElementById('overview-overlay')
-      if (ovl) ovl.classList.remove('hidden')
-      const hint = document.getElementById('expand-hint')
-      if (hint) hint.classList.remove('hidden', 'fading')
-      const fm = document.querySelector('.frame-mount')
-      if (fm) { fm.style.marginTop = ''; fm.style.overflowX = 'hidden' }
-      const fb = document.querySelector('.frame-border')
-      if (fb) { fb.style.transform = ''; fb.style.transformOrigin = '' }
-      const rw = document.querySelector('.room-welcome')
-      if (rw) rw.classList.remove('hidden', 'fading')
       document.querySelectorAll('.zone.shimmer').forEach(z => z.classList.remove('shimmer'))
+      // Use double-rAF so the browser has fully committed the BFCache-restored
+      // paint before we recalculate layout and re-apply the overview scale.
+      // (A single rAF can still run before the first composited frame is shown.)
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setMobileOverview()
+          initMobileShimmer()
+        })
+      })
+    } else {
+      fitRoom()
+      initMobileShimmer()
     }
-    fitRoom()
-    initMobileShimmer()
   }
 })
 
