@@ -86,6 +86,17 @@ if (skipLoader) {
 
 // ── MOBILE TWO-STATE ROOM ─────────────────
 let mobileExpanded = false
+// Timer IDs for expandRoom's delayed cleanup — stored so setMobileOverview
+// and pageshow can cancel them before they fire and corrupt overview state.
+let _expandClearTimer = null
+let _hintHideTimer    = null
+let _welcomeHideTimer = null
+
+function _cancelExpandTimers() {
+  if (_expandClearTimer) { clearTimeout(_expandClearTimer); _expandClearTimer = null }
+  if (_hintHideTimer)    { clearTimeout(_hintHideTimer);    _hintHideTimer    = null }
+  if (_welcomeHideTimer) { clearTimeout(_welcomeHideTimer); _welcomeHideTimer = null }
+}
 
 function getMobileRatio() {
   const img = document.getElementById('room-img')
@@ -97,6 +108,10 @@ function getMobileRatio() {
 // CSS transform on frame-border to visually scale it down to overview size.
 // Only transform changes on expand → GPU-composited, zero layout reflow.
 function setMobileOverview() {
+  // Cancel any pending timers from expandRoom() — prevents BFCache race where
+  // a thawed timer fires after pageshow has already restored the overview.
+  _cancelExpandTimers()
+
   const img = document.getElementById('room-img')
   const roomImage = document.getElementById('room-image')
   const frameBorder = document.querySelector('.frame-border')
@@ -206,10 +221,8 @@ function expandRoom(silent = false) {
     // Pre-set scroll target (overflow still hidden, so no visual jump)
     frameMount.scrollLeft = (expandW - window.innerWidth) / 2
 
-    setTimeout(() => {
-      // Guard: if the user came back (BFCache) and overview was re-set, don't
-      // clear the transform — setMobileOverview already applied scale(s) again.
-      if (!mobileExpanded) return
+    _expandClearTimer = setTimeout(() => {
+      _expandClearTimer = null
       // Clear transform (scale(1) = identity, safe to remove)
       frameBorder.style.transition = ''
       frameBorder.style.transform = ''
@@ -227,12 +240,12 @@ function expandRoom(silent = false) {
   const hint = document.getElementById('expand-hint')
   if (hint && !hint.classList.contains('hidden')) {
     hint.classList.add('fading')
-    setTimeout(() => { if (!mobileExpanded) return; hint.classList.add('hidden') }, 380)
+    _hintHideTimer = setTimeout(() => { _hintHideTimer = null; hint.classList.add('hidden') }, 380)
   }
   const welcome = document.querySelector('.room-welcome')
   if (welcome && !welcome.classList.contains('hidden')) {
     welcome.classList.add('fading')
-    setTimeout(() => { if (!mobileExpanded) return; welcome.classList.add('hidden') }, 380)
+    _welcomeHideTimer = setTimeout(() => { _welcomeHideTimer = null; welcome.classList.add('hidden') }, 380)
   }
 
   initMobileShimmer()
@@ -313,6 +326,7 @@ window.addEventListener('pageshow', e => {
   if (e.persisted) {
     // Reset to overview state on BFCache restore
     if (isMobile()) {
+      _cancelExpandTimers()  // kill any thawed timers before they corrupt state
       mobileExpanded = false
       const ovl = document.getElementById('overview-overlay')
       if (ovl) ovl.classList.remove('hidden')
