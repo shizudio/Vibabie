@@ -352,7 +352,7 @@
        frame-border is sized to the same width so frame-mount can scroll horizontally */
     .room-image {
       position: absolute !important;
-      top: 0 !important;
+      top: 0; /* no !important — JS overrides to center in overview state */
       left: 0 !important;
       transform: none !important;
       height: 100% !important;
@@ -516,11 +516,16 @@
     }
 
     .expand-hint {
+      position: fixed;
+      bottom: 52px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 7px;
-      padding: 20px 0 8px;
+      white-space: nowrap;
       opacity: 1;
       transition: opacity 0.35s ease;
       pointer-events: none;

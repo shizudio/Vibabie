@@ -116,20 +116,24 @@ function setMobileOverview() {
 
   mobileExpanded = false
 
+  // frame-mount fills full available height; painting is centered within it
+  const topOffset = Math.round((availH - overviewH) / 2)
+
   // Size the image to full viewport width
   img.style.transition = ''
   img.style.width = overviewW + 'px'
   img.style.height = overviewH + 'px'
   roomImage.style.width = overviewW + 'px'
   roomImage.style.height = overviewH + 'px'
+  roomImage.style.top = topOffset + 'px' // vertically centered
   if (frameBorder) {
     frameBorder.style.width = overviewW + 'px'
-    frameBorder.style.height = overviewH + 'px'
+    frameBorder.style.height = availH + 'px' // full height so room-image top offset works
   }
 
-  // frame-mount: no horizontal scroll, height = painting height
+  // frame-mount: full available height, no horizontal scroll
   frameMount.style.transition = ''
-  frameMount.style.height = overviewH + 'px'
+  frameMount.style.height = availH + 'px'
   frameMount.style.overflowX = 'hidden'
   frameMount.scrollLeft = 0
 
@@ -155,6 +159,9 @@ function expandRoom(silent = false) {
   const headerH = 80
   const expandH = window.innerHeight - headerH
   const expandW = expandH * ratio
+
+  // Reset vertical centering offset — expand fills full height from top: 0
+  roomImage.style.top = '0'
 
   if (silent) {
     // Instant resize — no animation (landscape / short viewport auto-expand)
@@ -252,36 +259,12 @@ function fitRoom() {
   if (roomLayout) roomLayout.style.width = w + 'px'
 }
 
-// ── MOBILE PINCH-TO-EXPAND ────────────────
+// ── MOBILE TAP-TO-EXPAND ─────────────────
 function initPinchExpand() {
   if (!isMobile()) return
   const ovl = document.getElementById('overview-overlay')
   if (!ovl) return
-
-  let startDist = 0
-  let pinching = false
-
-  ovl.addEventListener('touchstart', e => {
-    if (e.touches.length === 2) {
-      pinching = true
-      const t1 = e.touches[0], t2 = e.touches[1]
-      startDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY)
-    }
-  }, { passive: true })
-
-  ovl.addEventListener('touchmove', e => {
-    if (!pinching || e.touches.length !== 2) return
-    const t1 = e.touches[0], t2 = e.touches[1]
-    const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY)
-    if (dist - startDist > 22) {
-      pinching = false
-      expandRoom()
-    }
-  }, { passive: true })
-
-  ovl.addEventListener('touchend', () => { pinching = false }, { passive: true })
-
-  // Tap fallback
+  // Single tap on the painting expands to full-height interactive mode
   ovl.addEventListener('click', () => { expandRoom() })
 }
 
