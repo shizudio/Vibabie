@@ -535,11 +535,11 @@ nav {
 /* ── Below-image caption ── */
 .case-video-caption {
   font-family: var(--font-sans);
-  font-size: var(--text-xs);
-  font-weight: 400;           /* captions are small — needs 400 not 300 */
-  color: var(--text-muted);   /* slightly darker than --stone for readability */
-  letter-spacing: 0.04em;
-  line-height: 1.6;
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  line-height: 1.65;
   margin-top: 12px;
   text-align: left;
 }

@@ -74,7 +74,7 @@ i
   --blush: #EFDBE4;
   --stone: #9A928E;
   --ink: #1C1714;
-  --paper: #FDFAF7;
+  --paper: #F7F6F4;
   --border: rgba(26, 23, 20, 0.09);
 
   /* Extended palette */
@@ -86,9 +86,9 @@ i
 
   /* Semantic overlays */
   --overlay-dark: rgba(26, 22, 20, 0.94);
-  --paper-dim: rgba(253, 250, 247, 0.55);
-  --paper-mid: rgba(253, 250, 247, 0.60);
-  --paper-faint: rgba(253, 250, 247, 0.70);
+  --paper-dim: rgba(247, 246, 244, 0.55);
+  --paper-mid: rgba(247, 246, 244, 0.60);
+  --paper-faint: rgba(247, 246, 244, 0.70);
 
   /* Semantic borders */
   --border-crimson: rgba(127, 31, 18, 0.25);
