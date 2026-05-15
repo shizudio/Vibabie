@@ -130,15 +130,15 @@ function setMobileOverview() {
     frameBorder.style.width = expandW + 'px'
     frameBorder.style.height = expandH + 'px'
     frameBorder.style.transition = ''
-    // Scale frame-border down to overview size and center it vertically.
-    // transform-origin: 0 0 means scale anchors to top-left corner.
-    // translateY(topOffset) scale(s) maps:
-    //   (0,0) → (0, topOffset)  [top-left stays at left edge, pushed down]
-    //   (expandW, expandH) → (vw, topOffset + overviewH)  [fills width, overview height]
+    // Scale frame-border down to overview size, expanding from vertical center.
+    // transform-origin: 0 50% — left edge stays pinned at x=0 (painting always
+    // spans full width), y-origin at expandH/2 means the element shrinks/grows
+    // symmetrically around its vertical midpoint, which lands it centered in availH.
+    // Math: visual top = expandH/2*(1-s) = (availH-overviewH)/2 = topOffset ✓
+    // No translateY needed — origin handles the centering.
     const scale = overviewH / expandH
-    const topOffset = Math.round((availH - overviewH) / 2)
-    frameBorder.style.transformOrigin = '0 0'
-    frameBorder.style.transform = `translateY(${topOffset}px) scale(${scale})`
+    frameBorder.style.transformOrigin = '0 50%'
+    frameBorder.style.transform = `scale(${scale})`
   }
 
   // frame-mount: full height throughout (no height animation ever needed)
@@ -148,11 +148,13 @@ function setMobileOverview() {
   frameMount.style.overflowX = 'hidden'
   frameMount.scrollLeft = 0
 
-  // Show overlay + hint
+  // Show overlay + hint + welcome text
   const ovl = document.getElementById('overview-overlay')
   if (ovl) ovl.classList.remove('hidden')
   const hint = document.getElementById('expand-hint')
   if (hint) hint.classList.remove('hidden', 'fading')
+  const welcome = document.querySelector('.room-welcome')
+  if (welcome) welcome.classList.remove('hidden', 'fading')
 }
 
 // Expanded state: animate frame-border transform from scaled → natural.
@@ -188,9 +190,10 @@ function expandRoom(silent = false) {
     frameMount.style.overflowX = 'auto'
     frameMount.scrollLeft = (expandW - window.innerWidth) / 2
   } else {
-    // Animate ONLY the transform — GPU layer, no layout reflow
-    frameBorder.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)'
-    frameBorder.style.transform = 'translateY(0px) scale(1)'
+    // Animate ONLY the transform — GPU layer, no layout reflow.
+    // 0.75s ease-in-out gives a slow, symmetric expansion from the center.
+    frameBorder.style.transition = 'transform 0.75s ease-in-out'
+    frameBorder.style.transform = 'scale(1)'
 
     // Pre-set scroll target (overflow still hidden, so no visual jump)
     frameMount.scrollLeft = (expandW - window.innerWidth) / 2
@@ -202,18 +205,23 @@ function expandRoom(silent = false) {
       frameBorder.style.transformOrigin = ''
       // Unlock horizontal scroll — scrollLeft already positioned correctly
       frameMount.style.overflowX = 'auto'
-    }, 520)
+    }, 780)
   }
 
   // Hide overlay so zones receive taps
   const ovl = document.getElementById('overview-overlay')
   if (ovl) ovl.classList.add('hidden')
 
-  // Fade out hint
+  // Fade out hint + welcome text
   const hint = document.getElementById('expand-hint')
   if (hint && !hint.classList.contains('hidden')) {
     hint.classList.add('fading')
     setTimeout(() => hint.classList.add('hidden'), 380)
+  }
+  const welcome = document.querySelector('.room-welcome')
+  if (welcome && !welcome.classList.contains('hidden')) {
+    welcome.classList.add('fading')
+    setTimeout(() => welcome.classList.add('hidden'), 380)
   }
 
   initMobileShimmer()
@@ -303,6 +311,8 @@ window.addEventListener('pageshow', e => {
       if (fm) { fm.style.marginTop = ''; fm.style.overflowX = 'hidden' }
       const fb = document.querySelector('.frame-border')
       if (fb) { fb.style.transform = ''; fb.style.transformOrigin = '' }
+      const rw = document.querySelector('.room-welcome')
+      if (rw) rw.classList.remove('hidden', 'fading')
       document.querySelectorAll('.zone.shimmer').forEach(z => z.classList.remove('shimmer'))
     }
     fitRoom()
