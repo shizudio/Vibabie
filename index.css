@@ -498,12 +498,13 @@
     /* ── OVERVIEW OVERLAY (mobile only) ── */
     /* Transparent div that sits above zones; intercepts all touches in overview state */
     .overview-overlay {
+      display: block; /* override the desktop display:none */
       position: absolute;
       inset: 0;
-      z-index: 6; /* above zones and video overlays */
+      z-index: 15; /* above zones (10) and hotspots (11) — must intercept all taps */
       background: transparent;
       cursor: pointer;
-      touch-action: none; /* we handle all gestures manually */
+      touch-action: manipulation; /* fast tap, no 300ms delay */
     }
     .overview-overlay.hidden {
       display: none;
