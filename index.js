@@ -92,7 +92,7 @@ function getMobileRatio() {
   return (img.naturalWidth || 3764) / (img.naturalHeight || 2214)
 }
 
-// Overview state: painting fills viewport width at natural aspect ratio
+// Overview state: painting fills viewport width, centered vertically
 function setMobileOverview() {
   const img = document.getElementById('room-img')
   const roomImage = document.getElementById('room-image')
@@ -105,46 +105,47 @@ function setMobileOverview() {
   const headerH = 80
   const availH = window.innerHeight - headerH
   const overviewW = vw
-  const overviewH = vw / ratio
+  const overviewH = Math.round(vw / ratio)
 
-  // If the full-width painting nearly fills available height (landscape or short viewport),
-  // skip overview and go straight to expanded — no hint needed
+  // Landscape / short viewport: skip straight to expanded
   if (overviewH >= availH * 0.82) {
-    expandRoom(true) // silent expand, no animation
+    expandRoom(true)
     return
   }
 
   mobileExpanded = false
 
-  // frame-mount fills full available height; painting is centered within it
+  // Vertical centering: shift frame-mount down by topOffset
+  // This avoids fighting with CSS height:100%!important on room-image
   const topOffset = Math.round((availH - overviewH) / 2)
 
-  // Size the image to full viewport width
   img.style.transition = ''
   img.style.width = overviewW + 'px'
   img.style.height = overviewH + 'px'
   roomImage.style.width = overviewW + 'px'
-  roomImage.style.height = overviewH + 'px'
-  roomImage.style.top = topOffset + 'px' // vertically centered
+  roomImage.style.top = '' // clear any previous offset
+
+  // frame-border height controls room-image height (via height:100%)
   if (frameBorder) {
     frameBorder.style.width = overviewW + 'px'
-    frameBorder.style.height = availH + 'px' // full height so room-image top offset works
+    frameBorder.style.height = overviewH + 'px'
   }
 
-  // frame-mount: full available height, no horizontal scroll
+  // frame-mount: painting height only, pushed down to center it
   frameMount.style.transition = ''
-  frameMount.style.height = availH + 'px'
+  frameMount.style.height = overviewH + 'px'
+  frameMount.style.marginTop = (headerH + topOffset) + 'px'
   frameMount.style.overflowX = 'hidden'
   frameMount.scrollLeft = 0
 
-  // Show overlay interceptor and hint
+  // Show overlay + hint
   const ovl = document.getElementById('overview-overlay')
   if (ovl) ovl.classList.remove('hidden')
   const hint = document.getElementById('expand-hint')
-  if (hint) { hint.classList.remove('hidden', 'fading') }
+  if (hint) hint.classList.remove('hidden', 'fading')
 }
 
-// Expanded state: painting fills full available height, horizontal scroll enabled
+// Expanded state: painting fills full available height, horizontal scroll active
 function expandRoom(silent = false) {
   if (mobileExpanded) return
   mobileExpanded = true
@@ -158,36 +159,34 @@ function expandRoom(silent = false) {
   const ratio = getMobileRatio()
   const headerH = 80
   const expandH = window.innerHeight - headerH
-  const expandW = expandH * ratio
+  const expandW = Math.round(expandH * ratio)
 
-  // Reset vertical centering offset — expand fills full height from top: 0
-  roomImage.style.top = '0'
+  roomImage.style.top = ''
 
   if (silent) {
-    // Instant resize — no animation (landscape / short viewport auto-expand)
     img.style.transition = ''
     frameMount.style.transition = ''
     img.style.width = expandW + 'px'
     img.style.height = expandH + 'px'
     roomImage.style.width = expandW + 'px'
-    roomImage.style.height = expandH + 'px'
     if (frameBorder) { frameBorder.style.width = expandW + 'px'; frameBorder.style.height = expandH + 'px' }
     frameMount.style.height = expandH + 'px'
+    frameMount.style.marginTop = headerH + 'px'
     frameMount.style.overflowX = 'auto'
     frameMount.scrollLeft = (expandW - window.innerWidth) / 2
   } else {
-    // Animated expand
-    frameMount.style.transition = 'height 0.45s cubic-bezier(0.16,1,0.3,1)'
-    img.style.transition = 'width 0.45s cubic-bezier(0.16,1,0.3,1), height 0.45s cubic-bezier(0.16,1,0.3,1)'
+    // Animate height and margin-top together for a smooth rise-and-expand
+    const ease = '0.45s cubic-bezier(0.16,1,0.3,1)'
+    frameMount.style.transition = `height ${ease}, margin-top ${ease}`
+    img.style.transition = `width ${ease}, height ${ease}`
     frameMount.style.height = expandH + 'px'
+    frameMount.style.marginTop = headerH + 'px'
     img.style.width = expandW + 'px'
     img.style.height = expandH + 'px'
     roomImage.style.width = expandW + 'px'
-    roomImage.style.height = expandH + 'px'
     if (frameBorder) { frameBorder.style.width = expandW + 'px'; frameBorder.style.height = expandH + 'px' }
     frameMount.style.overflowX = 'auto'
 
-    // Scroll to center and clear transitions after animation
     setTimeout(() => {
       frameMount.scrollLeft = (expandW - window.innerWidth) / 2
       img.style.transition = ''
@@ -195,18 +194,17 @@ function expandRoom(silent = false) {
     }, 460)
   }
 
-  // Remove overlay interceptor so zones get clicks again
+  // Hide overlay so zones receive taps again
   const ovl = document.getElementById('overview-overlay')
   if (ovl) ovl.classList.add('hidden')
 
-  // Fade out and remove hint
+  // Fade out hint
   const hint = document.getElementById('expand-hint')
   if (hint && !hint.classList.contains('hidden')) {
     hint.classList.add('fading')
     setTimeout(() => hint.classList.add('hidden'), 380)
   }
 
-  // Activate shimmer dots
   initMobileShimmer()
 }
 
@@ -222,29 +220,28 @@ function fitRoom() {
 
   if (mobile) {
     if (mobileExpanded) {
-      // Re-apply expanded dimensions (e.g. after resize)
+      // Re-apply expanded dimensions on resize
       const headerH = 80
       const expandH = window.innerHeight - headerH
-      const expandW = expandH * ratio
+      const expandW = Math.round(expandH * ratio)
       img.style.width = expandW + 'px'
       img.style.height = expandH + 'px'
       roomImage.style.width = expandW + 'px'
-      roomImage.style.height = expandH + 'px'
       const frameBorder = document.querySelector('.frame-border')
       if (frameBorder) { frameBorder.style.width = expandW + 'px'; frameBorder.style.height = expandH + 'px' }
       const frameMount = document.querySelector('.frame-mount')
-      if (frameMount) { frameMount.style.height = expandH + 'px'; frameMount.style.overflowX = 'auto' }
+      if (frameMount) { frameMount.style.height = expandH + 'px'; frameMount.style.marginTop = headerH + 'px'; frameMount.style.overflowX = 'auto' }
     } else {
       setMobileOverview()
     }
     return
   }
 
-  // Desktop: reset any mobile-applied styles
+  // Desktop: clear all mobile-applied inline styles
   const frameBorder = document.querySelector('.frame-border')
   if (frameBorder) { frameBorder.style.width = ''; frameBorder.style.height = '' }
   const frameMount = document.querySelector('.frame-mount')
-  if (frameMount) { frameMount.style.height = ''; frameMount.style.overflowX = '' }
+  if (frameMount) { frameMount.style.height = ''; frameMount.style.marginTop = ''; frameMount.style.overflowX = '' }
 
   const padding = 64 + 32 + 3
   const headerFooter = 120
@@ -286,6 +283,8 @@ window.addEventListener('pageshow', e => {
       if (ovl) ovl.classList.remove('hidden')
       const hint = document.getElementById('expand-hint')
       if (hint) hint.classList.remove('hidden', 'fading')
+      const fm = document.querySelector('.frame-mount')
+      if (fm) { fm.style.marginTop = ''; fm.style.overflowX = 'hidden' }
       document.querySelectorAll('.zone.shimmer').forEach(z => z.classList.remove('shimmer'))
     }
     fitRoom()
