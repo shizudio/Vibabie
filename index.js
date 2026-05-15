@@ -128,7 +128,9 @@ function getMobileRatio() {
 // Strategy: set everything to EXPANDED dimensions upfront, then use
 // CSS transform on frame-border to visually scale it down to overview size.
 // Only transform changes on expand → GPU-composited, zero layout reflow.
-function setMobileOverview() {
+// animated=true: smooth 0.6s transition (used when tapping "Shina Foo" from expanded state)
+// animated=false: instant snap (BFCache restore, initial load, resize)
+function setMobileOverview(animated = false) {
   // Cancel any pending timers from expandRoom() — prevents BFCache race where
   // a thawed timer fires after pageshow has already restored the overview.
   _cancelExpandTimers()
@@ -162,24 +164,28 @@ function setMobileOverview() {
   roomImage.style.width = expandW + 'px'
   roomImage.style.top = ''
 
+  const scale = overviewH / expandH
+
   if (frameBorder) {
     frameBorder.style.width = expandW + 'px'
     frameBorder.style.height = expandH + 'px'
-    // Clear any in-flight expand transition so overview scale applies instantly.
-    // (BFCache may resume a paused transition from expandRoom's 0.75s animation.)
-    frameBorder.style.transition = 'none'
-    // Force a reflow so 'none' takes effect before we set the new transform
-    void frameBorder.offsetHeight
-    frameBorder.style.transition = ''
-    // Scale frame-border down to overview size, expanding from the true center.
-    // transform-origin: 50% 50% — both axes expand symmetrically from the element center.
-    // X: origin at expandW/2; visual left = expandW/2*(1-s) = (expandW-vw)/2
-    //    → set scrollLeft to (expandW-vw)/2 so the viewport shows exactly the scaled content.
-    // Y: origin at expandH/2; visual top = expandH/2*(1-s) = (availH-overviewH)/2 = topOffset ✓
-    // No translateX/Y needed — origin + scrollLeft handle positioning.
-    const scale = overviewH / expandH
     frameBorder.style.transformOrigin = '50% 50%'
-    frameBorder.style.transform = `scale(${scale})`
+
+    if (animated) {
+      // Smooth reverse of expandRoom: animate transform to overview scale.
+      // No transition:none reset needed — we WANT the animation to play.
+      frameBorder.style.transition = 'transform 0.6s ease-in-out'
+      frameBorder.style.transform = `scale(${scale})`
+      setTimeout(() => { frameBorder.style.transition = '' }, 650)
+    } else {
+      // Instant snap: kill any in-flight transition, set scale immediately.
+      // (BFCache may resume a paused transition from expandRoom's 0.75s animation.)
+      frameBorder.style.transition = 'none'
+      // Force a reflow so 'none' takes effect before we set the new transform
+      void frameBorder.offsetHeight
+      frameBorder.style.transition = ''
+      frameBorder.style.transform = `scale(${scale})`
+    }
   }
 
   // frame-mount: full height throughout (no height animation ever needed)
@@ -991,49 +997,18 @@ document.querySelectorAll('.zone').forEach(zone => {
 })
 
 // ── NAV LOGO: reset to overview on mobile ───────────────────
-// When the user taps "Shina Foo" while the painting is already expanded,
+// When the user taps "Shina Foo" while the painting is expanded,
 // animate back to overview state without reloading the page.
-// (A reload causes a full-height flash even with the data-mobile-returning fix.)
 const navLogo = document.querySelector('.nav-logo')
 if (navLogo) {
   navLogo.addEventListener('click', e => {
     if (!isMobile() || !mobileExpanded) return
     e.preventDefault()
     e.stopPropagation()
-
-    const ratio = getMobileRatio()
-    const vw = window.innerWidth
-    const headerH = 80
-    const availH = window.innerHeight - headerH
-    const overviewH = Math.round(vw / ratio)
-    const expandH = availH
-    const expandW = Math.round(expandH * ratio)
-    const scale = overviewH / expandH
-    const frameBorder = document.querySelector('.frame-border')
-    const frameMount = document.querySelector('.frame-mount')
-    if (!frameBorder || !frameMount) return
-
-    _cancelExpandTimers()
-    mobileExpanded = false
-
-    // Animate to overview scale — mirrors expandRoom() in reverse
-    frameBorder.style.transition = 'transform 0.6s ease-in-out'
-    frameBorder.style.transformOrigin = '50% 50%'
-    frameBorder.style.transform = `scale(${scale})`
-    frameMount.style.overflowX = 'hidden'
-    frameMount.scrollLeft = (expandW - vw) / 2
-
-    // Restore overview UI immediately
-    const ovl = document.getElementById('overview-overlay')
-    if (ovl) ovl.classList.remove('hidden')
-    const hint = document.getElementById('expand-hint')
-    if (hint) hint.classList.remove('hidden', 'fading')
-    const welcome = document.querySelector('.room-welcome')
-    if (welcome) welcome.classList.remove('hidden', 'fading')
+    // Remove shimmer dots and any revealed link card, then animate to overview.
+    // setMobileOverview(true) handles all geometry, transitions, and UI state.
     document.querySelectorAll('.zone.shimmer').forEach(z => z.classList.remove('shimmer'))
     hideRevealedLink()
-
-    // Clear transform transition after animation completes
-    setTimeout(() => { frameBorder.style.transition = '' }, 650)
+    setMobileOverview(true)
   })
 }
