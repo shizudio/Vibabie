@@ -130,14 +130,14 @@ function setMobileOverview() {
     frameBorder.style.width = expandW + 'px'
     frameBorder.style.height = expandH + 'px'
     frameBorder.style.transition = ''
-    // Scale frame-border down to overview size, expanding from vertical center.
-    // transform-origin: 0 50% — left edge stays pinned at x=0 (painting always
-    // spans full width), y-origin at expandH/2 means the element shrinks/grows
-    // symmetrically around its vertical midpoint, which lands it centered in availH.
-    // Math: visual top = expandH/2*(1-s) = (availH-overviewH)/2 = topOffset ✓
-    // No translateY needed — origin handles the centering.
+    // Scale frame-border down to overview size, expanding from the true center.
+    // transform-origin: 50% 50% — both axes expand symmetrically from the element center.
+    // X: origin at expandW/2; visual left = expandW/2*(1-s) = (expandW-vw)/2
+    //    → set scrollLeft to (expandW-vw)/2 so the viewport shows exactly the scaled content.
+    // Y: origin at expandH/2; visual top = expandH/2*(1-s) = (availH-overviewH)/2 = topOffset ✓
+    // No translateX/Y needed — origin + scrollLeft handle positioning.
     const scale = overviewH / expandH
-    frameBorder.style.transformOrigin = '0 50%'
+    frameBorder.style.transformOrigin = '50% 50%'
     frameBorder.style.transform = `scale(${scale})`
   }
 
@@ -146,7 +146,10 @@ function setMobileOverview() {
   frameMount.style.height = availH + 'px'
   frameMount.style.marginTop = ''  // use CSS default (headerH)
   frameMount.style.overflowX = 'hidden'
-  frameMount.scrollLeft = 0
+  // Center the viewport on the scaled content so the scale animation is symmetric.
+  // The scaled painting (expandW*scale = vw) sits at layout x = (expandW-vw)/2
+  // when transform-origin is 50% 50%. Scroll there so expand scrollLeft matches.
+  frameMount.scrollLeft = (expandW - vw) / 2
 
   // Show overlay + hint + welcome text
   const ovl = document.getElementById('overview-overlay')
