@@ -7,8 +7,8 @@
    --text-muted : secondary, labels, meta (warmer than --stone)
    ─────────────────────────────────────── */
 :root {
-  --text-body:  #4a413e;
-  --text-muted: #706460;
+  --text-body:  #2E2421;
+  --text-muted: #7a706c;
 }
 
 html, body { min-height: 100%; }
@@ -31,7 +31,7 @@ html { overflow-x: clip; scroll-behavior: smooth; }
   font-family: var(--font-sans);
   font-size: 0.62rem;
   font-weight: 300;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #c0b8b6;
   text-decoration: none;
@@ -173,7 +173,7 @@ nav {
   font-family: var(--font-sans);
   font-size: var(--text-xs);
   font-weight: 400;           /* uppercase small text reads better at 400 than 300 */
-  letter-spacing: 0.25em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-muted);
   margin-bottom: 12px;
@@ -479,7 +479,7 @@ nav {
   right: 16px;
   font-family: var(--font-sans);
   font-size: 0.58rem;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.55);
   pointer-events: none;
@@ -814,7 +814,7 @@ nav {
   font-family: var(--font-sans);
   font-size: var(--text-xs);
   font-weight: 300;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-muted);
   margin-left: auto;
@@ -1442,7 +1442,7 @@ nav {
   font-family: var(--font-sans);
   font-size: 0.65rem;
   font-weight: 400;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--stone);
 }

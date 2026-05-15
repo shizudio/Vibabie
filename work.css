@@ -147,7 +147,7 @@ html, body { height: 100%; }
   font-size: var(--text-xs);
   font-weight: 300;
   text-transform: uppercase;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.12em;
   color: var(--stone);
   text-decoration: none;
   border-bottom: 1px solid transparent;
@@ -425,7 +425,7 @@ a.ai-card:hover .ai-card-name { color: var(--crimson); }
   font-size: 0.56rem;
   font-weight: 300;
   text-transform: uppercase;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   color: var(--stone);
   white-space: nowrap;
   overflow: hidden;

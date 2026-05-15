@@ -28,12 +28,12 @@ i
 
    FONT SCALE  (--text-* in :root, all use clamp())
    ─────────────────────────────────────────
-   --text-xs      : 0.55 → 0.65 rem  — labels, metadata, uppercase caps
-   --text-sm      : 0.62 → 0.72 rem  — secondary text, hints
-   --text-base    : 0.85 → 1.00 rem  — body copy
+   --text-xs      : 0.62 → 0.70 rem  — labels, metadata, uppercase caps
+   --text-sm      : 0.70 → 0.80 rem  — secondary text, hints
+   --text-base    : 0.90 → 1.05 rem  — body copy
    --text-lg      : 1.10 → 1.30 rem  — large body / sub-headings
    --text-xl      : 1.50 → 2.00 rem  — section headings
-   --text-display : 2.80 → 4.50 rem  — hero headings (page-h1)
+   --text-display : 2.40 → 3.80 rem  — hero headings (page-h1)
    On mobile the clamp() fluid range kicks in automatically.
    Override with a tighter clamp() in the page's own @media block only
    when the default clamp still produces an oversized result.
@@ -66,49 +66,50 @@ i
 :root {
   /* Colors */
   --crimson: #7F1F12;
-  /* Reserved palette (not yet in active CSS rules) */
+  /* Reserved palette */
   --olive: #B9B94B;
   --purple: #6F4DA0;
   --amber: #FCBC43;
   --teal: #94D3D3;
   --blush: #EFDBE4;
-  --stone: #A49C9B;
-  --ink: #4a3830;
-  --paper: #FFFAF4;
-  --border: rgba(0, 0, 0, 0.08);
+  --stone: #9A928E;
+  --ink: #1C1714;
+  --paper: #FDFAF7;
+  --border: rgba(26, 23, 20, 0.09);
 
   /* Extended palette */
+  --mist: #EDE8E2;           /* hover backgrounds — neutral warm grey */
+  --crimson-bg: #EDE8E2;     /* alias kept for backward compat → same as mist */
+  --crimson-text: #5a3a34;
   --paper-cool: #f5f4f2;
   --warm-grey: #e8e2d9;
-  --crimson-bg: #FFF5EB;
-  --crimson-text: #5a3a34;
 
   /* Semantic overlays */
   --overlay-dark: rgba(26, 22, 20, 0.94);
-  --paper-dim: rgba(255, 250, 244, 0.55);
-  --paper-mid: rgba(255, 250, 244, 0.60);
-  --paper-faint: rgba(255, 250, 244, 0.70);
+  --paper-dim: rgba(253, 250, 247, 0.55);
+  --paper-mid: rgba(253, 250, 247, 0.60);
+  --paper-faint: rgba(253, 250, 247, 0.70);
 
   /* Semantic borders */
-  --border-crimson: rgba(127, 31, 18, 0.3);
+  --border-crimson: rgba(127, 31, 18, 0.25);
 
   /* Fonts */
-  --font-sans: 'DM Sans', sans-serif;
-  --font-serif: 'EB Garamond', 'Noto Serif JP', Georgia, serif;
+  --font-sans: 'Instrument Sans', sans-serif;
+  --font-serif: 'EB Garamond', Georgia, serif;
   --font-display: var(--font-serif);
   --font-body: var(--font-serif);
   --font-mono: 'Courier New', Courier, monospace;
   /* Description font token — image captions & page descriptions */
-  --font-description: 'DM Sans', sans-serif;
+  --font-description: 'Instrument Sans', sans-serif;
   --color-description: var(--stone);
 
   /* Font sizes */
-  --text-xs: clamp(0.55rem, 0.5vw, 0.65rem);
-  --text-sm: clamp(0.62rem, 0.6vw, 0.72rem);
-  --text-base: clamp(0.85rem, 1vw, 1rem);
+  --text-xs: clamp(0.62rem, 0.55vw, 0.70rem);
+  --text-sm: clamp(0.70rem, 0.70vw, 0.80rem);
+  --text-base: clamp(0.90rem, 1vw, 1.05rem);
   --text-lg: clamp(1.1rem, 1.5vw, 1.3rem);
   --text-xl: clamp(1.5rem, 2.5vw, 2rem);
-  --text-display: clamp(2.8rem, 6vw, 4.5rem);
+  --text-display: clamp(2.4rem, 5vw, 3.8rem);
 
   /* Spacing */
   --space-xs: 4px;
@@ -271,7 +272,7 @@ body {
 
 .loader-label {
   font-size: var(--text-sm);
-  letter-spacing: 0.25em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--stone);
   font-weight: 200;
@@ -346,7 +347,7 @@ body {
     font-family: var(--font-sans);
     font-size: 0.6rem;
     font-weight: 400;
-    letter-spacing: 0.22em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--stone);
     opacity: 0;
@@ -482,7 +483,7 @@ nav {
 /* ── SUBPAGE SHARED ── */
 .page-label {
   font-size: var(--text-sm);
-  letter-spacing: 0.25em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--stone);
   font-weight: 200;
@@ -879,7 +880,7 @@ body.menu-open .vinyl-widget {
 .nav-overlay-desc {
   display: block;
   font-size: clamp(0.48rem, 0.45vw, 0.58rem);
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--stone);
   font-weight: 200;

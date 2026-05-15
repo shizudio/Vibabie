@@ -58,7 +58,7 @@
   font-family: var(--font-sans);
   font-size: 0.68rem;
   font-weight: 300;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--stone);
 }
@@ -184,7 +184,7 @@
   right: 16px;
   font-family: var(--font-sans);
   font-size: 0.58rem;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.55);
   pointer-events: none;
@@ -256,7 +256,7 @@
   font-family: var(--font-sans);
   font-size: 0.6rem;
   font-weight: 400;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--stone);
   margin: 0;

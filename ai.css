@@ -114,7 +114,7 @@ a.ai-card:hover .ai-card-name { color: var(--crimson); }
   font-size: 0.56rem;
   font-weight: 300;
   text-transform: uppercase;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   color: var(--stone);
 }
 
