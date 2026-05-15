@@ -92,7 +92,10 @@ function getMobileRatio() {
   return (img.naturalWidth || 3764) / (img.naturalHeight || 2214)
 }
 
-// Overview state: painting fills viewport width, centered vertically
+// Overview state: painting at full viewport width, centered vertically
+// Strategy: set everything to EXPANDED dimensions upfront, then use
+// CSS transform on frame-border to visually scale it down to overview size.
+// Only transform changes on expand → GPU-composited, zero layout reflow.
 function setMobileOverview() {
   const img = document.getElementById('room-img')
   const roomImage = document.getElementById('room-image')
@@ -104,8 +107,9 @@ function setMobileOverview() {
   const vw = window.innerWidth
   const headerH = 80
   const availH = window.innerHeight - headerH
-  const overviewW = vw
   const overviewH = Math.round(vw / ratio)
+  const expandH = availH
+  const expandW = Math.round(expandH * ratio)
 
   // Landscape / short viewport: skip straight to expanded
   if (overviewH >= availH * 0.82) {
@@ -115,26 +119,32 @@ function setMobileOverview() {
 
   mobileExpanded = false
 
-  // Vertical centering: shift frame-mount down by topOffset
-  // This avoids fighting with CSS height:100%!important on room-image
-  const topOffset = Math.round((availH - overviewH) / 2)
-
+  // Set dimensions to full EXPANDED size (transform handles the visual scaling)
   img.style.transition = ''
-  img.style.width = overviewW + 'px'
-  img.style.height = overviewH + 'px'
-  roomImage.style.width = overviewW + 'px'
-  roomImage.style.top = '' // clear any previous offset
+  img.style.width = expandW + 'px'
+  img.style.height = expandH + 'px'
+  roomImage.style.width = expandW + 'px'
+  roomImage.style.top = ''
 
-  // frame-border height controls room-image height (via height:100%)
   if (frameBorder) {
-    frameBorder.style.width = overviewW + 'px'
-    frameBorder.style.height = overviewH + 'px'
+    frameBorder.style.width = expandW + 'px'
+    frameBorder.style.height = expandH + 'px'
+    frameBorder.style.transition = ''
+    // Scale frame-border down to overview size and center it vertically.
+    // transform-origin: 0 0 means scale anchors to top-left corner.
+    // translateY(topOffset) scale(s) maps:
+    //   (0,0) → (0, topOffset)  [top-left stays at left edge, pushed down]
+    //   (expandW, expandH) → (vw, topOffset + overviewH)  [fills width, overview height]
+    const scale = overviewH / expandH
+    const topOffset = Math.round((availH - overviewH) / 2)
+    frameBorder.style.transformOrigin = '0 0'
+    frameBorder.style.transform = `translateY(${topOffset}px) scale(${scale})`
   }
 
-  // frame-mount: painting height only, pushed down to center it
+  // frame-mount: full height throughout (no height animation ever needed)
   frameMount.style.transition = ''
-  frameMount.style.height = overviewH + 'px'
-  frameMount.style.marginTop = (headerH + topOffset) + 'px'
+  frameMount.style.height = availH + 'px'
+  frameMount.style.marginTop = ''  // use CSS default (headerH)
   frameMount.style.overflowX = 'hidden'
   frameMount.scrollLeft = 0
 
@@ -145,56 +155,57 @@ function setMobileOverview() {
   if (hint) hint.classList.remove('hidden', 'fading')
 }
 
-// Expanded state: painting fills full available height, horizontal scroll active
+// Expanded state: animate frame-border transform from scaled → natural.
+// No layout properties change during animation → smooth 60fps on device.
 function expandRoom(silent = false) {
   if (mobileExpanded) return
   mobileExpanded = true
 
-  const img = document.getElementById('room-img')
-  const roomImage = document.getElementById('room-image')
   const frameBorder = document.querySelector('.frame-border')
   const frameMount = document.querySelector('.frame-mount')
-  if (!img || !roomImage || !frameMount) return
+  const img = document.getElementById('room-img')
+  const roomImage = document.getElementById('room-image')
+  if (!frameBorder || !frameMount) return
 
   const ratio = getMobileRatio()
   const headerH = 80
   const expandH = window.innerHeight - headerH
   const expandW = Math.round(expandH * ratio)
 
-  roomImage.style.top = ''
+  // Ensure expanded dimensions are set (may already be from setMobileOverview)
+  if (img) { img.style.width = expandW + 'px'; img.style.height = expandH + 'px' }
+  if (roomImage) { roomImage.style.width = expandW + 'px'; roomImage.style.top = '' }
+  frameBorder.style.width = expandW + 'px'
+  frameBorder.style.height = expandH + 'px'
+  frameMount.style.height = expandH + 'px'
+  frameMount.style.marginTop = ''  // CSS default
 
   if (silent) {
-    img.style.transition = ''
-    frameMount.style.transition = ''
-    img.style.width = expandW + 'px'
-    img.style.height = expandH + 'px'
-    roomImage.style.width = expandW + 'px'
-    if (frameBorder) { frameBorder.style.width = expandW + 'px'; frameBorder.style.height = expandH + 'px' }
-    frameMount.style.height = expandH + 'px'
-    frameMount.style.marginTop = headerH + 'px'
+    // Instant — no animation (landscape auto-expand)
+    frameBorder.style.transition = ''
+    frameBorder.style.transform = ''
+    frameBorder.style.transformOrigin = ''
     frameMount.style.overflowX = 'auto'
     frameMount.scrollLeft = (expandW - window.innerWidth) / 2
   } else {
-    // Animate height and margin-top together for a smooth rise-and-expand
-    const ease = '0.45s cubic-bezier(0.16,1,0.3,1)'
-    frameMount.style.transition = `height ${ease}, margin-top ${ease}`
-    img.style.transition = `width ${ease}, height ${ease}`
-    frameMount.style.height = expandH + 'px'
-    frameMount.style.marginTop = headerH + 'px'
-    img.style.width = expandW + 'px'
-    img.style.height = expandH + 'px'
-    roomImage.style.width = expandW + 'px'
-    if (frameBorder) { frameBorder.style.width = expandW + 'px'; frameBorder.style.height = expandH + 'px' }
-    frameMount.style.overflowX = 'auto'
+    // Animate ONLY the transform — GPU layer, no layout reflow
+    frameBorder.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)'
+    frameBorder.style.transform = 'translateY(0px) scale(1)'
+
+    // Pre-set scroll target (overflow still hidden, so no visual jump)
+    frameMount.scrollLeft = (expandW - window.innerWidth) / 2
 
     setTimeout(() => {
-      frameMount.scrollLeft = (expandW - window.innerWidth) / 2
-      img.style.transition = ''
-      frameMount.style.transition = ''
-    }, 460)
+      // Clear transform (scale(1) = identity, safe to remove)
+      frameBorder.style.transition = ''
+      frameBorder.style.transform = ''
+      frameBorder.style.transformOrigin = ''
+      // Unlock horizontal scroll — scrollLeft already positioned correctly
+      frameMount.style.overflowX = 'auto'
+    }, 520)
   }
 
-  // Hide overlay so zones receive taps again
+  // Hide overlay so zones receive taps
   const ovl = document.getElementById('overview-overlay')
   if (ovl) ovl.classList.add('hidden')
 
@@ -228,7 +239,12 @@ function fitRoom() {
       img.style.height = expandH + 'px'
       roomImage.style.width = expandW + 'px'
       const frameBorder = document.querySelector('.frame-border')
-      if (frameBorder) { frameBorder.style.width = expandW + 'px'; frameBorder.style.height = expandH + 'px' }
+      if (frameBorder) {
+        frameBorder.style.width = expandW + 'px'
+        frameBorder.style.height = expandH + 'px'
+        frameBorder.style.transform = ''       // clear any overview-state transform
+        frameBorder.style.transformOrigin = ''
+      }
       const frameMount = document.querySelector('.frame-mount')
       if (frameMount) { frameMount.style.height = expandH + 'px'; frameMount.style.marginTop = headerH + 'px'; frameMount.style.overflowX = 'auto' }
     } else {
@@ -285,6 +301,8 @@ window.addEventListener('pageshow', e => {
       if (hint) hint.classList.remove('hidden', 'fading')
       const fm = document.querySelector('.frame-mount')
       if (fm) { fm.style.marginTop = ''; fm.style.overflowX = 'hidden' }
+      const fb = document.querySelector('.frame-border')
+      if (fb) { fb.style.transform = ''; fb.style.transformOrigin = '' }
       document.querySelectorAll('.zone.shimmer').forEach(z => z.classList.remove('shimmer'))
     }
     fitRoom()
