@@ -127,10 +127,8 @@ function getMobileRatio() {
 // Overview state: painting at full viewport width, centered vertically
 // Strategy: set everything to EXPANDED dimensions upfront, then use
 // CSS transform on frame-border to visually scale it down to overview size.
-// Only transform changes on expand → GPU-composited, zero layout reflow.
-// animated=true: smooth 0.6s transition (used when tapping "Shina Foo" from expanded state)
-// animated=false: instant snap (BFCache restore, initial load, resize)
-function setMobileOverview(animated = false) {
+// Only the transform changes on expand/collapse → GPU-composited, zero layout reflow.
+function setMobileOverview() {
   // Cancel any pending timers from expandRoom() — prevents BFCache race where
   // a thawed timer fires after pageshow has already restored the overview.
   _cancelExpandTimers()
@@ -169,23 +167,13 @@ function setMobileOverview(animated = false) {
   if (frameBorder) {
     frameBorder.style.width = expandW + 'px'
     frameBorder.style.height = expandH + 'px'
+    // Instant snap: kill any in-flight transition, then set the overview scale.
+    // BFCache may resume a paused transition from expandRoom's 0.75s animation.
+    frameBorder.style.transition = 'none'
+    void frameBorder.offsetHeight  // force reflow so 'none' commits before transform
+    frameBorder.style.transition = ''
     frameBorder.style.transformOrigin = '50% 50%'
-
-    if (animated) {
-      // Smooth reverse of expandRoom: animate transform to overview scale.
-      // No transition:none reset needed — we WANT the animation to play.
-      frameBorder.style.transition = 'transform 0.6s ease-in-out'
-      frameBorder.style.transform = `scale(${scale})`
-      setTimeout(() => { frameBorder.style.transition = '' }, 650)
-    } else {
-      // Instant snap: kill any in-flight transition, set scale immediately.
-      // (BFCache may resume a paused transition from expandRoom's 0.75s animation.)
-      frameBorder.style.transition = 'none'
-      // Force a reflow so 'none' takes effect before we set the new transform
-      void frameBorder.offsetHeight
-      frameBorder.style.transition = ''
-      frameBorder.style.transform = `scale(${scale})`
-    }
+    frameBorder.style.transform = `scale(${scale})`
   }
 
   // frame-mount: full height throughout (no height animation ever needed)
@@ -996,19 +984,8 @@ document.querySelectorAll('.zone').forEach(zone => {
   })
 })
 
-// ── NAV LOGO: reset to overview on mobile ───────────────────
-// When the user taps "Shina Foo" while the painting is expanded,
-// animate back to overview state without reloading the page.
-const navLogo = document.querySelector('.nav-logo')
-if (navLogo) {
-  navLogo.addEventListener('click', e => {
-    if (!isMobile() || !mobileExpanded) return
-    e.preventDefault()
-    e.stopPropagation()
-    // Remove shimmer dots and any revealed link card, then animate to overview.
-    // setMobileOverview(true) handles all geometry, transitions, and UI state.
-    document.querySelectorAll('.zone.shimmer').forEach(z => z.classList.remove('shimmer'))
-    hideRevealedLink()
-    setMobileOverview(true)
-  })
-}
+// ── NAV LOGO ─────────────────────────────────────────────────
+// Tapping "Shina Foo" while on index.html triggers a full page reload
+// (router.js does NOT set skip-loader in this case), so the loader
+// animation plays again — giving the "fresh landing page" experience.
+// No interceptor needed here; the router + browser handle navigation.
