@@ -281,15 +281,24 @@ body {
 }
 
 /* Fade out the counter block when loading completes */
-/* Both num + label fade together in one fast pass — eliminates the hairline
-   artifact that appeared when only the number was fading (italic Garamond
-   stroke at near-zero opacity was still visible on high-DPI screens). */
+/* CSS class is a fallback — primary fade is driven by inline JS styles
+   which bypass the cascade and pair with visibility:hidden to fully
+   suppress the italic Garamond hairline stroke at near-zero opacity. */
 .loader-num,
 .loader-label {
   transition: opacity 0.2s ease;
 }
 .loader-counter.count-done .loader-num,
 .loader-counter.count-done .loader-label { opacity: 0; }
+
+/* Hide frame-border on mobile until index.js applies the overview scale.
+   Prevents the full-height painting flash when returning from a subpage.
+   The attribute is removed (and painting fades in) inside the skip-loader
+   rAF block in index.js. */
+html[data-mobile-returning] .frame-border {
+  opacity: 0;
+  transition: none;
+}
 
 /* ── Loader statement / welcome — mobile only ── */
 .loader-statement,
