@@ -301,6 +301,12 @@
      display: none;
    }
 
+   /* ── MOBILE-ONLY ELEMENTS (hidden on desktop) ── */
+   .overview-overlay,
+   .expand-hint {
+     display: none;
+   }
+
    /* ── MOBILE RESPONSIVE ── */
 @media (max-width: 767px) {
     html, body {
@@ -322,11 +328,12 @@
       height: calc(100dvh - var(--layout-content-top-mobile));
       margin-top: var(--layout-content-top-mobile);
       padding: 0;
-      overflow-x: auto;
+      overflow-x: hidden; /* JS switches to auto after expansion */
       overflow-y: hidden;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
       position: relative;
+      transition: height 0.45s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .frame-mount::-webkit-scrollbar {
@@ -486,5 +493,56 @@
       color: var(--crimson, #7f1f12);
       flex-shrink: 0;
       margin-left: auto;
+    }
+
+    /* ── OVERVIEW OVERLAY (mobile only) ── */
+    /* Transparent div that sits above zones; intercepts all touches in overview state */
+    .overview-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 6; /* above zones and video overlays */
+      background: transparent;
+      cursor: pointer;
+      touch-action: none; /* we handle all gestures manually */
+    }
+    .overview-overlay.hidden {
+      display: none;
+    }
+
+    /* ── EXPAND HINT ── */
+    @keyframes hintPulse {
+      0%, 100% { opacity: 0.35; transform: scale(1); }
+      50%       { opacity: 0.75; transform: scale(1.2); }
+    }
+
+    .expand-hint {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 20px 0 8px;
+      opacity: 1;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+    .expand-hint.fading {
+      opacity: 0;
+    }
+    .expand-hint.hidden {
+      display: none;
+    }
+    .expand-hint-icon {
+      font-size: 0.9rem;
+      color: var(--stone);
+      animation: hintPulse 2.4s ease-in-out infinite;
+      line-height: 1;
+    }
+    .expand-hint-text {
+      font-family: var(--font-sans);
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--stone);
+      opacity: 0.7;
     }
   }

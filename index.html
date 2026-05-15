@@ -201,8 +201,17 @@
           <!-- FRENCH PRESS OVERLAY -->
           <video id="frenchpress-overlay" loop muted playsinline aria-hidden="true"></video>
 
+          <!-- Mobile overview overlay — sits above all zones; intercepts taps/pinches until expanded -->
+          <div class="overview-overlay" id="overview-overlay" aria-hidden="true"></div>
+
         </div>
       </div>
+    </div>
+
+    <!-- Mobile expand hint — visible in overview state only -->
+    <div class="expand-hint" id="expand-hint" aria-hidden="true">
+      <span class="expand-hint-icon">⊕</span>
+      <span class="expand-hint-text">pinch to explore</span>
     </div>
 
     <p class="room-welcome">Welcome to my room. Click an object to explore a part of me.</p>

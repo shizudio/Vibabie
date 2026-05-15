@@ -84,6 +84,125 @@ if (skipLoader) {
   }
 }
 
+// ── MOBILE TWO-STATE ROOM ─────────────────
+let mobileExpanded = false
+
+function getMobileRatio() {
+  const img = document.getElementById('room-img')
+  return (img.naturalWidth || 3764) / (img.naturalHeight || 2214)
+}
+
+// Overview state: painting fills viewport width at natural aspect ratio
+function setMobileOverview() {
+  const img = document.getElementById('room-img')
+  const roomImage = document.getElementById('room-image')
+  const frameBorder = document.querySelector('.frame-border')
+  const frameMount = document.querySelector('.frame-mount')
+  if (!img || !roomImage || !frameMount) return
+
+  const ratio = getMobileRatio()
+  const vw = window.innerWidth
+  const headerH = 80
+  const availH = window.innerHeight - headerH
+  const overviewW = vw
+  const overviewH = vw / ratio
+
+  // If the full-width painting nearly fills available height (landscape or short viewport),
+  // skip overview and go straight to expanded — no hint needed
+  if (overviewH >= availH * 0.82) {
+    expandRoom(true) // silent expand, no animation
+    return
+  }
+
+  mobileExpanded = false
+
+  // Size the image to full viewport width
+  img.style.transition = ''
+  img.style.width = overviewW + 'px'
+  img.style.height = overviewH + 'px'
+  roomImage.style.width = overviewW + 'px'
+  roomImage.style.height = overviewH + 'px'
+  if (frameBorder) {
+    frameBorder.style.width = overviewW + 'px'
+    frameBorder.style.height = overviewH + 'px'
+  }
+
+  // frame-mount: no horizontal scroll, height = painting height
+  frameMount.style.transition = ''
+  frameMount.style.height = overviewH + 'px'
+  frameMount.style.overflowX = 'hidden'
+  frameMount.scrollLeft = 0
+
+  // Show overlay interceptor and hint
+  const ovl = document.getElementById('overview-overlay')
+  if (ovl) ovl.classList.remove('hidden')
+  const hint = document.getElementById('expand-hint')
+  if (hint) { hint.classList.remove('hidden', 'fading') }
+}
+
+// Expanded state: painting fills full available height, horizontal scroll enabled
+function expandRoom(silent = false) {
+  if (mobileExpanded) return
+  mobileExpanded = true
+
+  const img = document.getElementById('room-img')
+  const roomImage = document.getElementById('room-image')
+  const frameBorder = document.querySelector('.frame-border')
+  const frameMount = document.querySelector('.frame-mount')
+  if (!img || !roomImage || !frameMount) return
+
+  const ratio = getMobileRatio()
+  const headerH = 80
+  const expandH = window.innerHeight - headerH
+  const expandW = expandH * ratio
+
+  if (silent) {
+    // Instant resize — no animation (landscape / short viewport auto-expand)
+    img.style.transition = ''
+    frameMount.style.transition = ''
+    img.style.width = expandW + 'px'
+    img.style.height = expandH + 'px'
+    roomImage.style.width = expandW + 'px'
+    roomImage.style.height = expandH + 'px'
+    if (frameBorder) { frameBorder.style.width = expandW + 'px'; frameBorder.style.height = expandH + 'px' }
+    frameMount.style.height = expandH + 'px'
+    frameMount.style.overflowX = 'auto'
+    frameMount.scrollLeft = (expandW - window.innerWidth) / 2
+  } else {
+    // Animated expand
+    frameMount.style.transition = 'height 0.45s cubic-bezier(0.16,1,0.3,1)'
+    img.style.transition = 'width 0.45s cubic-bezier(0.16,1,0.3,1), height 0.45s cubic-bezier(0.16,1,0.3,1)'
+    frameMount.style.height = expandH + 'px'
+    img.style.width = expandW + 'px'
+    img.style.height = expandH + 'px'
+    roomImage.style.width = expandW + 'px'
+    roomImage.style.height = expandH + 'px'
+    if (frameBorder) { frameBorder.style.width = expandW + 'px'; frameBorder.style.height = expandH + 'px' }
+    frameMount.style.overflowX = 'auto'
+
+    // Scroll to center and clear transitions after animation
+    setTimeout(() => {
+      frameMount.scrollLeft = (expandW - window.innerWidth) / 2
+      img.style.transition = ''
+      frameMount.style.transition = ''
+    }, 460)
+  }
+
+  // Remove overlay interceptor so zones get clicks again
+  const ovl = document.getElementById('overview-overlay')
+  if (ovl) ovl.classList.add('hidden')
+
+  // Fade out and remove hint
+  const hint = document.getElementById('expand-hint')
+  if (hint && !hint.classList.contains('hidden')) {
+    hint.classList.add('fading')
+    setTimeout(() => hint.classList.add('hidden'), 380)
+  }
+
+  // Activate shimmer dots
+  initMobileShimmer()
+}
+
 // ── FIT IMAGE TO SCREEN ───────────────────
 function fitRoom() {
   const mobile = window.matchMedia('(max-width: 767px)').matches
@@ -95,28 +214,30 @@ function fitRoom() {
   const ratio = naturalW / naturalH
 
   if (mobile) {
-    // Fill available height at natural aspect ratio;
-    // frame-border is set to the same width so frame-mount can scroll horizontally.
-    const headerH = 80 // matches --layout-content-top-mobile
-    const availH = window.innerHeight - headerH
-    const h = availH
-    const w = h * ratio
-    img.style.width = w + 'px'
-    img.style.height = h + 'px'
-    roomImage.style.width = w + 'px'
-    roomImage.style.height = h + 'px'
-    // Expand frame-border so frame-mount scroll width matches the image width
-    const frameBorder = document.querySelector('.frame-border')
-    if (frameBorder) frameBorder.style.width = w + 'px'
-    // Scroll to center the image so the initial view matches the old centered crop
-    const frameMount = document.querySelector('.frame-mount')
-    if (frameMount) frameMount.scrollLeft = (w - window.innerWidth) / 2
+    if (mobileExpanded) {
+      // Re-apply expanded dimensions (e.g. after resize)
+      const headerH = 80
+      const expandH = window.innerHeight - headerH
+      const expandW = expandH * ratio
+      img.style.width = expandW + 'px'
+      img.style.height = expandH + 'px'
+      roomImage.style.width = expandW + 'px'
+      roomImage.style.height = expandH + 'px'
+      const frameBorder = document.querySelector('.frame-border')
+      if (frameBorder) { frameBorder.style.width = expandW + 'px'; frameBorder.style.height = expandH + 'px' }
+      const frameMount = document.querySelector('.frame-mount')
+      if (frameMount) { frameMount.style.height = expandH + 'px'; frameMount.style.overflowX = 'auto' }
+    } else {
+      setMobileOverview()
+    }
     return
   }
 
-  // Reset frame-border width in case we came from a mobile layout
+  // Desktop: reset any mobile-applied styles
   const frameBorder = document.querySelector('.frame-border')
-  if (frameBorder) frameBorder.style.width = ''
+  if (frameBorder) { frameBorder.style.width = ''; frameBorder.style.height = '' }
+  const frameMount = document.querySelector('.frame-mount')
+  if (frameMount) { frameMount.style.height = ''; frameMount.style.overflowX = '' }
 
   const padding = 64 + 32 + 3
   const headerFooter = 120
@@ -128,18 +249,62 @@ function fitRoom() {
   img.style.height = h + 'px'
   roomImage.style.width = w + 'px'
   roomImage.style.height = h + 'px'
-  // Match text column to exact painting width
   if (roomLayout) roomLayout.style.width = w + 'px'
+}
+
+// ── MOBILE PINCH-TO-EXPAND ────────────────
+function initPinchExpand() {
+  if (!isMobile()) return
+  const ovl = document.getElementById('overview-overlay')
+  if (!ovl) return
+
+  let startDist = 0
+  let pinching = false
+
+  ovl.addEventListener('touchstart', e => {
+    if (e.touches.length === 2) {
+      pinching = true
+      const t1 = e.touches[0], t2 = e.touches[1]
+      startDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY)
+    }
+  }, { passive: true })
+
+  ovl.addEventListener('touchmove', e => {
+    if (!pinching || e.touches.length !== 2) return
+    const t1 = e.touches[0], t2 = e.touches[1]
+    const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY)
+    if (dist - startDist > 22) {
+      pinching = false
+      expandRoom()
+    }
+  }, { passive: true })
+
+  ovl.addEventListener('touchend', () => { pinching = false }, { passive: true })
+
+  // Tap fallback
+  ovl.addEventListener('click', () => { expandRoom() })
 }
 
 const img = document.getElementById('room-img')
 if (img.complete && img.naturalWidth) { fitRoom() } else { img.addEventListener('load', fitRoom) }
 window.addEventListener('resize', fitRoom)
-window.addEventListener('load', fitRoom)
+window.addEventListener('load', () => {
+  fitRoom()
+  initPinchExpand()
+})
 
 // Re-fit and re-shimmer when returning via browser back (BFCache restore)
 window.addEventListener('pageshow', e => {
   if (e.persisted) {
+    // Reset to overview state on BFCache restore
+    if (isMobile()) {
+      mobileExpanded = false
+      const ovl = document.getElementById('overview-overlay')
+      if (ovl) ovl.classList.remove('hidden')
+      const hint = document.getElementById('expand-hint')
+      if (hint) hint.classList.remove('hidden', 'fading')
+      document.querySelectorAll('.zone.shimmer').forEach(z => z.classList.remove('shimmer'))
+    }
     fitRoom()
     initMobileShimmer()
   }
@@ -705,10 +870,19 @@ function removeShimmer() {
 
 function initMobileShimmer() {
   if (!isMobile()) return
+  if (!mobileExpanded) return // shimmer only after expansion
   document.querySelectorAll('.zone').forEach((zone, i) => {
     zone.classList.add('shimmer')
     zone.style.setProperty('--shimmer-delay', `${(i * 0.35) % 2.4}s`)
   })
+}
+
+// ── INIT PINCH EXPAND ────────────────────
+// Call after DOM is ready (module is deferred; load may already have fired)
+if (document.readyState === 'complete') {
+  initPinchExpand()
+} else {
+  window.addEventListener('load', initPinchExpand, { once: true })
 }
 
 document.querySelectorAll('.zone').forEach(zone => {
