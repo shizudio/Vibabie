@@ -539,7 +539,17 @@ nav {
   font-style: italic;
   line-height: 1.1;
   color: var(--ink);
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
+}
+
+.page-h1-sub {
+  max-width: 42rem;
+  margin: 16px 0 0;
+  font-family: var(--font-description);
+  font-size: var(--text-base);
+  font-weight: 300;
+  color: var(--color-description);
+  line-height: 1.75;
 }
 
 .divider {
@@ -785,6 +795,11 @@ nav {
 
   .page-h1 {
     font-size: clamp(1.9rem, 8vw, 2.8rem);
+  }
+
+  .page-h1-sub {
+    font-size: clamp(0.98rem, 4vw, 1.08rem);
+    line-height: 1.68;
   }
 
 }

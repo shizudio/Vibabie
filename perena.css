@@ -64,6 +64,7 @@ nav {
   width: 100%;
   margin: 0 auto;
   padding: 120px var(--page-gutter, 40px) 120px;
+  text-rendering: optimizeLegibility;
 }
 
 /* ── BACK LINK ──────────────────────────── */
@@ -207,11 +208,15 @@ nav {
 /* ── BODY TEXT ──────────────────────────── */
 .case-body {
   font-family: var(--font-sans);
-  font-size: clamp(0.88rem, 1.6vw, 0.98rem);
+  font-size: clamp(0.98rem, 1.25vw, 1.08rem);
   font-weight: 300;
   color: var(--text-body);
-  line-height: 1.85;          /* was 2 (double-spaced); 1.85 still generous without floating */
-  margin-bottom: 20px;
+  line-height: 1.72;
+  margin-bottom: 1.2em;
+  overflow-wrap: break-word;
+}
+.case-body + .case-body {
+  margin-top: -0.2em;
 }
 .case-body--em {
   font-style: italic;
@@ -227,6 +232,40 @@ nav {
 .case-body em,
 .case-body i {
   font-style: italic;
+  color: var(--text-muted);
+}
+
+.case-list {
+  margin: -0.3em 0 1.35em;
+  padding: 0;
+  list-style: none;
+  counter-reset: case-list;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid var(--border);
+}
+
+.case-list li {
+  counter-increment: case-list;
+  position: relative;
+  padding: 14px 0 14px 38px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-sans);
+  font-size: clamp(0.98rem, 1.25vw, 1.08rem);
+  font-weight: 300;
+  color: var(--text-body);
+  line-height: 1.65;
+}
+
+.case-list li::before {
+  content: counter(case-list, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 16px;
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
   color: var(--text-muted);
 }
 
@@ -407,6 +446,7 @@ nav {
   border-bottom: 1px solid var(--border-crimson);
   padding-bottom: 1px;
   transition: border-color 0.2s ease, letter-spacing 0.2s ease;
+  overflow-wrap: anywhere;
 }
 .case-inline-link:hover {
   border-bottom-color: var(--crimson);
@@ -425,6 +465,15 @@ nav {
   width: 100%;
   height: auto;
   display: block;
+}
+
+.case-image--perenimals {
+  aspect-ratio: 673 / 592;
+}
+
+.case-image--perenimals > img {
+  height: 100%;
+  object-fit: cover;
 }
 
 .case-image--placeholder {
@@ -542,6 +591,7 @@ nav {
   line-height: 1.65;
   margin-top: 12px;
   text-align: left;
+  overflow-wrap: break-word;
 }
 .case-video-caption .case-inline-link {
   color: var(--crimson);
@@ -1256,7 +1306,7 @@ nav {
   /* html/body clip is set globally — don't add max-width to .case-main
      here because its padding would make it 48px wider than 100vw */
   .case-main {
-    padding: 90px var(--page-gutter, 24px) 80px;
+    padding: 96px clamp(20px, 6vw, 28px) 88px;
   }
 
   /* Brand stack: clip fanning cards so they don't bleed past viewport */
@@ -1270,7 +1320,7 @@ nav {
   }
 
   .case-header {
-    margin-bottom: 40px;
+    margin-bottom: 44px;
   }
 
   .case-title {
@@ -1279,28 +1329,34 @@ nav {
 
   /* Body text: readable minimum on small screens */
   .case-body {
-    font-size: 1rem;
-    line-height: 1.85;
+    font-size: clamp(1.04rem, 4.35vw, 1.12rem);
+    line-height: 1.72;
+    margin-bottom: 1.25em;
   }
 
   .case-thesis {
-    font-size: 1rem;
+    font-size: clamp(1.04rem, 4.2vw, 1.14rem);
+    line-height: 1.62;
     padding-left: 16px;
   }
 
   /* Pull quote: bigger on mobile so it reads as a quote */
   .case-pullquote {
-    font-size: 1.1rem;
+    font-size: clamp(1.18rem, 5vw, 1.34rem);
+    line-height: 1.55;
     padding-left: 16px;
-    margin: 24px 0;
+    margin: 30px 0;
   }
 
   /* Section headings */
   .case-section-h2 {
-    font-size: 1.4rem;
+    font-size: clamp(1.5rem, 6.4vw, 1.85rem);
+    line-height: 1.18;
   }
   .case-sub-h3 {
-    font-size: 1rem;
+    font-size: clamp(1.12rem, 4.8vw, 1.28rem);
+    line-height: 1.32;
+    margin: 34px 0 14px;
   }
   .case-section-label {
     font-size: 0.65rem;
@@ -1308,6 +1364,18 @@ nav {
 
   .case-image--hero {
     margin-bottom: 40px;
+  }
+
+  .case-list {
+    margin: -0.15em 0 1.5em;
+  }
+  .case-list li {
+    padding: 15px 0 15px 40px;
+    font-size: clamp(1.02rem, 4.25vw, 1.1rem);
+    line-height: 1.62;
+  }
+  .case-list li::before {
+    top: 18px;
   }
 
   /* Stats: larger number, readable label */
