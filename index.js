@@ -83,24 +83,29 @@ if (skipLoader) {
       // ① Wait 500ms so user sees "100" clearly
       setTimeout(() => {
         // ② Crossfade the finished counter into the tap hint.
-        if (loaderCounter) loaderCounter.classList.add('count-done')
-        if (loaderHint) loaderHint.classList.add('visible')
+        //    Double-rAF keeps Safari from merging the before/after states.
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            if (loaderCounter) loaderCounter.classList.add('count-done')
+            if (loaderHint) loaderHint.classList.add('visible')
 
-        // ③ After the crossfade completes, remove old glyphs from paint
-        //    entirely so iOS cannot keep a faint italic stroke around.
-        setTimeout(() => {
-          if (loaderNum)   { loaderNum.style.visibility = 'hidden'; loaderNum.style.display = 'none' }
-          if (loaderLabel) { loaderLabel.style.visibility = 'hidden'; loaderLabel.style.display = 'none' }
-          if (loader) loader.classList.add('ready-to-enter')
+            // ③ After the crossfade fully settles, remove old glyphs from paint
+            //    entirely so iOS cannot keep a faint italic stroke around.
+            setTimeout(() => {
+              if (loaderNum)   { loaderNum.style.visibility = 'hidden'; loaderNum.style.display = 'none' }
+              if (loaderLabel) { loaderLabel.style.visibility = 'hidden'; loaderLabel.style.display = 'none' }
+              if (loader) loader.classList.add('ready-to-enter')
 
-          loadComplete = true
+              loadComplete = true
 
-          // ④ Desktop: auto-dismiss after a further 700ms
-          if (!isMobile()) {
-            setTimeout(dismissLoader, 700)
-          }
-          // Mobile: wait for tap (handled below)
-        }, 550)
+              // ④ Desktop: auto-dismiss after a further 700ms
+              if (!isMobile()) {
+                setTimeout(dismissLoader, 700)
+              }
+              // Mobile: wait for tap (handled below)
+            }, 950)
+          })
+        })
       }, 500)
     }
   }, 100)
