@@ -291,6 +291,15 @@ body {
 .loader-counter.count-done .loader-num,
 .loader-counter.count-done .loader-label { opacity: 0; }
 
+/* Ready state: remove finished counter glyphs from paint entirely.
+   iOS Safari can keep a faint italic stroke around after opacity fades. */
+.loader.ready-to-enter .loader-num,
+.loader.ready-to-enter .loader-label {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
 /* Mobile: hide the frame-border until index.js applies the overview transform
    and adds `.room-ready` to the stage. This prevents the full-height painting
    flash between first paint and module execution on the skip-loader path. */
@@ -418,6 +427,10 @@ body {
 
   .room-welcome {
     padding-top: clamp(12px, 1.5vh, 18px);
+  }
+
+  .room-welcome span {
+    display: block;
   }
 }
 

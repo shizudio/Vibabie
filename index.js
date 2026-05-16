@@ -87,12 +87,12 @@ if (skipLoader) {
         if (loaderNum)   { loaderNum.style.transition   = 'opacity 0.15s ease'; loaderNum.style.opacity   = '0' }
         if (loaderLabel) { loaderLabel.style.transition = 'opacity 0.15s ease'; loaderLabel.style.opacity = '0' }
 
-        // ③ After fade completes: set visibility:hidden to fully suppress the
-        //    EB Garamond italic hairline stroke that lingers at near-zero opacity
-        //    on high-DPI screens, then show the crimson tap hint.
+        // ③ After fade completes: remove the finished counter from paint
+        //    entirely, then show the tap hint.
         setTimeout(() => {
-          if (loaderNum)   loaderNum.style.visibility   = 'hidden'
-          if (loaderLabel) loaderLabel.style.visibility = 'hidden'
+          if (loaderCounter) loaderCounter.classList.add('count-done')
+          if (loaderNum)   { loaderNum.style.visibility = 'hidden'; loaderNum.style.display = 'none' }
+          if (loaderLabel) { loaderLabel.style.visibility = 'hidden'; loaderLabel.style.display = 'none' }
           if (loaderHint)  loaderHint.classList.add('visible')
           if (loader)      loader.classList.add('ready-to-enter')
 
