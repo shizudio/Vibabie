@@ -17,6 +17,12 @@ const loaderHint    = document.getElementById('loader-hint')
 const loaderCounter = document.querySelector('.loader-counter')
 const stage       = document.getElementById('stage')
 
+// Mark the stage as ready: reveals the frame-border on mobile (CSS gate).
+// Safe to call multiple times — class add is idempotent.
+function markRoomReady() {
+  if (stage) stage.classList.add('room-ready')
+}
+
 function dismissLoader() {
   loader.classList.add('hidden')
   stage.classList.add('visible')
@@ -25,9 +31,12 @@ function dismissLoader() {
   if (header) { header.style.animationDelay = '0s'; header.classList.add('fade-up') }
   if (footer) { footer.style.animationDelay = '0.3s'; footer.classList.add('fade-up') }
   initMobileShimmer()
+  markRoomReady()
 }
 
-// Skip loader when returning from a subpage
+// Skip-loader path: triggered by the nav logo and any link back to index.
+// The inline script in index.html has already hidden the loader and revealed
+// the stage; we just need to apply the overview transform and unlock visibility.
 const skipLoader = sessionStorage.getItem('skip-loader')
 if (skipLoader) {
   sessionStorage.removeItem('skip-loader')
@@ -39,23 +48,17 @@ if (skipLoader) {
   if (footer) { footer.classList.add('fade-up'); footer.style.animationDelay = '0s' }
   initMobileShimmer()
   if (isMobile()) {
-    // Double rAF: let the browser paint the current (full-height) state first,
-    // then apply the overview scale. The frame-border starts at opacity:0
-    // (set via data-mobile-returning in the inline HTML script), so the
-    // full-height flash is invisible. After setMobileOverview() we remove
-    // the attribute and fade the frame-border in.
+    // Apply the overview transform on the next frame, then reveal.
+    // On mobile, .frame-border is held at visibility:hidden by CSS until
+    // .room-ready is added, so nothing paints at the wrong size.
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        mobileExpanded = false
-        _cancelExpandTimers()
-        setMobileOverview()
-        // Reveal the frame-border with a brief fade-in now that it's scaled
-        const fb = document.querySelector('.frame-border')
-        if (fb) fb.style.transition = 'opacity 0.25s ease'
-        document.documentElement.removeAttribute('data-mobile-returning')
-        setTimeout(() => { if (fb) fb.style.transition = '' }, 300)
-      })
+      mobileExpanded = false
+      _cancelExpandTimers()
+      setMobileOverview()
+      markRoomReady()
     })
+  } else {
+    markRoomReady()
   }
 } else {
   let loadComplete = false
@@ -352,11 +355,13 @@ window.addEventListener('pageshow', e => {
         requestAnimationFrame(() => {
           setMobileOverview()
           initMobileShimmer()
+          markRoomReady()
         })
       })
     } else {
       fitRoom()
       initMobileShimmer()
+      markRoomReady()
     }
   }
 })

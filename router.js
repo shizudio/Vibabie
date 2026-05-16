@@ -39,15 +39,10 @@ function handleClick(e) {
   if (link.hasAttribute('download')) return
   if (e.ctrlKey || e.metaKey || e.shiftKey) return
 
-  // Index page navigation
+  // Index page: always skip the loader and let the browser do the navigation.
+  // The skip-loader flag tells index.js to land directly in the overview state.
   if (url.pathname === '/' || url.pathname === '/index.html') {
-    const alreadyOnIndex = location.pathname === '/' || location.pathname === '/index.html'
-    if (!alreadyOnIndex) {
-      // Coming from a subpage → skip loader so there's no flash
-      sessionStorage.setItem('skip-loader', '1')
-    }
-    // If already on index → let the browser do a full reload so the
-    // loader animation plays again ("fresh landing page" experience).
+    sessionStorage.setItem('skip-loader', '1')
     return
   }
 

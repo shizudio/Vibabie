@@ -24,15 +24,11 @@
   </div>
 
   <script>
-    // Hide loader instantly when returning from subpage (before paint)
+    // Skip-loader path: hide the loader and reveal the stage instantly,
+    // before paint. The frame-border stays hidden via CSS until index.js
+    // applies the overview transform and adds `.room-ready` to the stage.
     if (sessionStorage.getItem('skip-loader')) {
       document.write('<style>.loader{display:none!important}.stage{opacity:1!important;visibility:visible!important}</style>')
-      // On mobile: mark the html element so CSS hides the frame-border until
-      // index.js has applied the correct overview scale. Prevents the full-height
-      // painting flash that occurs between the first paint and module execution.
-      if (window.innerWidth <= 767) {
-        document.documentElement.setAttribute('data-mobile-returning', '')
-      }
     }
   </script>
   <div class="loader" id="loader">

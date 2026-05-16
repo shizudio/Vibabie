@@ -291,13 +291,11 @@ body {
 .loader-counter.count-done .loader-num,
 .loader-counter.count-done .loader-label { opacity: 0; }
 
-/* Hide frame-border on mobile until index.js applies the overview scale.
-   Prevents the full-height painting flash when returning from a subpage.
-   The attribute is removed (and painting fades in) inside the skip-loader
-   rAF block in index.js. */
-html[data-mobile-returning] .frame-border {
-  opacity: 0;
-  transition: none;
+/* Mobile: hide the frame-border until index.js applies the overview transform
+   and adds `.room-ready` to the stage. This prevents the full-height painting
+   flash between first paint and module execution on the skip-loader path. */
+@media (max-width: 767px) {
+  .stage:not(.room-ready) .frame-border { visibility: hidden; }
 }
 
 /* ── Loader statement / welcome — mobile only ── */
