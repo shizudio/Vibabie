@@ -251,6 +251,7 @@ body {
 /* Counter block — same width, sits flush below the art */
 .loader-counter {
   width: clamp(120px, 15vw, 160px);
+  min-height: clamp(80px, 8.2vw, 112px);
   background: transparent;
   display: flex;
   flex-direction: column;
@@ -286,7 +287,7 @@ body {
    suppress the italic Garamond hairline stroke at near-zero opacity. */
 .loader-num,
 .loader-label {
-  transition: opacity 0.2s ease;
+  transition: opacity 0.45s ease, visibility 0.45s ease;
 }
 .loader-counter.count-done .loader-num,
 .loader-counter.count-done .loader-label { opacity: 0; }
@@ -360,21 +361,21 @@ body {
 
   .loader-hint {
     display: block;
-    /* Sits inside .loader-counter, centered over the number area */
+    /* Sits centered between the loader art and the lower statement */
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 200px;
     text-align: center;
-    font-family: var(--font-sans);
-    font-size: 0.6rem;
-    font-weight: 400;
+    font-family: inherit;
+    font-size: var(--text-sm);
+    font-weight: 200;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--crimson);
     opacity: 0;
-    transition: opacity 0.6s ease;
+    transition: opacity 0.55s ease;
     white-space: nowrap;
   }
 

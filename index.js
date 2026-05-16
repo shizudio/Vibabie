@@ -82,19 +82,16 @@ if (skipLoader) {
 
       // ① Wait 500ms so user sees "100" clearly
       setTimeout(() => {
-        // ② Fade num + label via inline styles — bypasses CSS cascade entirely.
-        //    Inline styles are the most reliable way to ensure the fade fires.
-        if (loaderNum)   { loaderNum.style.transition   = 'opacity 0.15s ease'; loaderNum.style.opacity   = '0' }
-        if (loaderLabel) { loaderLabel.style.transition = 'opacity 0.15s ease'; loaderLabel.style.opacity = '0' }
+        // ② Crossfade the finished counter into the tap hint.
+        if (loaderCounter) loaderCounter.classList.add('count-done')
+        if (loaderHint) loaderHint.classList.add('visible')
 
-        // ③ After fade completes: remove the finished counter from paint
-        //    entirely, then show the tap hint.
+        // ③ After the crossfade completes, remove old glyphs from paint
+        //    entirely so iOS cannot keep a faint italic stroke around.
         setTimeout(() => {
-          if (loaderCounter) loaderCounter.classList.add('count-done')
           if (loaderNum)   { loaderNum.style.visibility = 'hidden'; loaderNum.style.display = 'none' }
           if (loaderLabel) { loaderLabel.style.visibility = 'hidden'; loaderLabel.style.display = 'none' }
-          if (loaderHint)  loaderHint.classList.add('visible')
-          if (loader)      loader.classList.add('ready-to-enter')
+          if (loader) loader.classList.add('ready-to-enter')
 
           loadComplete = true
 
@@ -103,7 +100,7 @@ if (skipLoader) {
             setTimeout(dismissLoader, 700)
           }
           // Mobile: wait for tap (handled below)
-        }, 200)
+        }, 550)
       }, 500)
     }
   }, 100)
@@ -192,7 +189,7 @@ function setMobileOverview() {
     // iOS can restore or clamp that value during return navigation, which
     // reveals only the right edge of the room. Translate the scaled layer
     // into place directly, then swap back to scroll centering on expand.
-    frameBorder.style.transform = `translateX(${-centerScroll}px) scale(${scale})`
+    frameBorder.style.transform = `translate(${-centerScroll}px, -24px) scale(${scale})`
   }
 
   // frame-mount: full height throughout (no height animation ever needed)

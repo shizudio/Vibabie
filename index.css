@@ -513,7 +513,7 @@
     .room-welcome {
       display: block;
       position: fixed;
-      top: 185px;
+      top: 161px;
       left: 50%;
       transform: translateX(-50%);
       width: calc(100% - 48px);
@@ -559,12 +559,12 @@
     }
 
     .expand-hint {
+      display: none !important;
       position: fixed;
       bottom: 52px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 20;
-      display: flex;
       align-items: center;
       justify-content: center;
       gap: 7px;
