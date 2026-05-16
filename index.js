@@ -7,6 +7,16 @@
 // If this is below that block, `const isMobile` is in the TDZ → ReferenceError → entire module crashes.
 const isMobile = () => window.matchMedia('(max-width: 767px)').matches
 
+// ── MOBILE TWO-STATE ROOM ─────────────────
+// Declared before the skip-loader branch because returning from subpages calls
+// initMobileShimmer() synchronously before the rest of the module has run.
+let mobileExpanded = false
+// Timer IDs for expandRoom's delayed cleanup — stored so setMobileOverview
+// and pageshow can cancel them before they fire and corrupt overview state.
+let _expandClearTimer = null
+let _hintHideTimer    = null
+let _welcomeHideTimer = null
+
 // ── LOADER ───────────────────────────────
 const loader      = document.getElementById('loader')
 const loaderNum   = document.getElementById('loader-num')
@@ -108,14 +118,6 @@ if (skipLoader) {
   }
 }
 
-// ── MOBILE TWO-STATE ROOM ─────────────────
-let mobileExpanded = false
-// Timer IDs for expandRoom's delayed cleanup — stored so setMobileOverview
-// and pageshow can cancel them before they fire and corrupt overview state.
-let _expandClearTimer = null
-let _hintHideTimer    = null
-let _welcomeHideTimer = null
-
 function _cancelExpandTimers() {
   if (_expandClearTimer) { clearTimeout(_expandClearTimer); _expandClearTimer = null }
   if (_hintHideTimer)    { clearTimeout(_hintHideTimer);    _hintHideTimer    = null }
@@ -125,6 +127,24 @@ function _cancelExpandTimers() {
 function getMobileRatio() {
   const img = document.getElementById('room-img')
   return (img.naturalWidth || 3764) / (img.naturalHeight || 2214)
+}
+
+function getMobileViewportHeight() {
+  return Math.round(window.visualViewport?.height || window.innerHeight)
+}
+
+function getMobileRoomMetrics() {
+  const ratio = getMobileRatio()
+  const vw = window.innerWidth
+  const headerH = 80
+  const availH = getMobileViewportHeight() - headerH
+  const overviewH = Math.round(vw / ratio)
+  const expandH = availH
+  const expandW = Math.round(expandH * ratio)
+  const scale = overviewH / expandH
+  const centerScroll = Math.max(0, (expandW - vw) / 2)
+
+  return { ratio, vw, headerH, availH, overviewH, expandH, expandW, scale, centerScroll }
 }
 
 // Overview state: painting at full viewport width, centered vertically
@@ -142,13 +162,7 @@ function setMobileOverview() {
   const frameMount = document.querySelector('.frame-mount')
   if (!img || !roomImage || !frameMount) return
 
-  const ratio = getMobileRatio()
-  const vw = window.innerWidth
-  const headerH = 80
-  const availH = window.innerHeight - headerH
-  const overviewH = Math.round(vw / ratio)
-  const expandH = availH
-  const expandW = Math.round(expandH * ratio)
+  const { vw, availH, overviewH, expandH, expandW, scale, centerScroll } = getMobileRoomMetrics()
 
   // Landscape / short viewport: skip straight to expanded
   if (overviewH >= availH * 0.82) {
@@ -165,8 +179,6 @@ function setMobileOverview() {
   roomImage.style.width = expandW + 'px'
   roomImage.style.top = ''
 
-  const scale = overviewH / expandH
-
   if (frameBorder) {
     frameBorder.style.width = expandW + 'px'
     frameBorder.style.height = expandH + 'px'
@@ -176,7 +188,11 @@ function setMobileOverview() {
     void frameBorder.offsetHeight  // force reflow so 'none' commits before transform
     frameBorder.style.transition = ''
     frameBorder.style.transformOrigin = '50% 50%'
-    frameBorder.style.transform = `scale(${scale})`
+    // Do not rely on a hidden scrollLeft to center the scaled painting.
+    // iOS can restore or clamp that value during return navigation, which
+    // reveals only the right edge of the room. Translate the scaled layer
+    // into place directly, then swap back to scroll centering on expand.
+    frameBorder.style.transform = `translateX(${-centerScroll}px) scale(${scale})`
   }
 
   // frame-mount: full height throughout (no height animation ever needed)
@@ -184,10 +200,7 @@ function setMobileOverview() {
   frameMount.style.height = availH + 'px'
   frameMount.style.marginTop = ''  // use CSS default (headerH)
   frameMount.style.overflowX = 'hidden'
-  // Center the viewport on the scaled content so the scale animation is symmetric.
-  // The scaled painting (expandW*scale = vw) sits at layout x = (expandW-vw)/2
-  // when transform-origin is 50% 50%. Scroll there so expand scrollLeft matches.
-  frameMount.scrollLeft = (expandW - vw) / 2
+  frameMount.scrollLeft = 0
 
   // Show overlay + hint + welcome text
   const ovl = document.getElementById('overview-overlay')
@@ -210,10 +223,7 @@ function expandRoom(silent = false) {
   const roomImage = document.getElementById('room-image')
   if (!frameBorder || !frameMount) return
 
-  const ratio = getMobileRatio()
-  const headerH = 80
-  const expandH = window.innerHeight - headerH
-  const expandW = Math.round(expandH * ratio)
+  const { expandH, expandW, scale, centerScroll } = getMobileRoomMetrics()
 
   // Ensure expanded dimensions are set (may already be from setMobileOverview)
   if (img) { img.style.width = expandW + 'px'; img.style.height = expandH + 'px' }
@@ -229,15 +239,20 @@ function expandRoom(silent = false) {
     frameBorder.style.transform = ''
     frameBorder.style.transformOrigin = ''
     frameMount.style.overflowX = 'auto'
-    frameMount.scrollLeft = (expandW - window.innerWidth) / 2
+    frameMount.scrollLeft = centerScroll
   } else {
+    // Start the animation from the same visual overview state, but centered
+    // by scrollLeft instead of translateX so the expanded room ends centered.
+    frameMount.scrollLeft = centerScroll
+    frameBorder.style.transition = 'none'
+    frameBorder.style.transformOrigin = '50% 50%'
+    frameBorder.style.transform = `scale(${scale})`
+    void frameBorder.offsetHeight
+
     // Animate ONLY the transform — GPU layer, no layout reflow.
     // 0.75s ease-in-out gives a slow, symmetric expansion from the center.
     frameBorder.style.transition = 'transform 0.75s ease-in-out'
     frameBorder.style.transform = 'scale(1)'
-
-    // Pre-set scroll target (overflow still hidden, so no visual jump)
-    frameMount.scrollLeft = (expandW - window.innerWidth) / 2
 
     _expandClearTimer = setTimeout(() => {
       _expandClearTimer = null
@@ -247,6 +262,7 @@ function expandRoom(silent = false) {
       frameBorder.style.transformOrigin = ''
       // Unlock horizontal scroll — scrollLeft already positioned correctly
       frameMount.style.overflowX = 'auto'
+      frameMount.scrollLeft = centerScroll
     }, 780)
   }
 
@@ -282,9 +298,7 @@ function fitRoom() {
   if (mobile) {
     if (mobileExpanded) {
       // Re-apply expanded dimensions on resize
-      const headerH = 80
-      const expandH = window.innerHeight - headerH
-      const expandW = Math.round(expandH * ratio)
+      const { headerH, expandH, expandW, centerScroll } = getMobileRoomMetrics()
       img.style.width = expandW + 'px'
       img.style.height = expandH + 'px'
       roomImage.style.width = expandW + 'px'
@@ -296,7 +310,12 @@ function fitRoom() {
         frameBorder.style.transformOrigin = ''
       }
       const frameMount = document.querySelector('.frame-mount')
-      if (frameMount) { frameMount.style.height = expandH + 'px'; frameMount.style.marginTop = headerH + 'px'; frameMount.style.overflowX = 'auto' }
+      if (frameMount) {
+        frameMount.style.height = expandH + 'px'
+        frameMount.style.marginTop = headerH + 'px'
+        frameMount.style.overflowX = 'auto'
+        frameMount.scrollLeft = centerScroll
+      }
     } else {
       setMobileOverview()
     }
