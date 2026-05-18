@@ -1316,7 +1316,15 @@ nav {
 
   .case-back {
     margin-bottom: 32px;
-    font-size: 0.72rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+  }
+
+  .case-meta-role,
+  .case-meta-year,
+  .case-meta-link {
+    font-size: 0.74rem;
+    letter-spacing: 0.1em;
   }
 
   .case-header {
@@ -1359,7 +1367,8 @@ nav {
     margin: 34px 0 14px;
   }
   .case-section-label {
-    font-size: 0.65rem;
+    font-size: 0.74rem;
+    letter-spacing: 0.1em;
   }
 
   .case-image--hero {
@@ -1392,7 +1401,24 @@ nav {
     font-size: 1.8rem;
   }
   .case-stat-label {
-    font-size: 0.65rem;
+    font-size: 0.74rem;
+    letter-spacing: 0.1em;
+    font-weight: 400;
+  }
+
+  .case-video-caption {
+    font-size: 0.86rem;
+    line-height: 1.65;
+  }
+
+  .tweet-handle,
+  .tweet-date {
+    font-size: 0.74rem;
+  }
+
+  .tweet-text {
+    font-size: clamp(0.94rem, 3.8vw, 1rem);
+    line-height: 1.65;
   }
 
   .case-image-grid {
@@ -1427,15 +1453,24 @@ nav {
     gap: 6px;
   }
   .case-partners span {
-    font-size: 0.72rem;
+    font-size: 0.78rem;
   }
 
   /* Article table: slightly larger text */
   .article-row-title {
-    font-size: 1rem;
+    font-size: 1.06rem;
   }
   .article-row-date {
-    font-size: 0.65rem;
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+  }
+
+  .article-cta,
+  .article-author,
+  .article-pub,
+  .case-accordion-label {
+    font-size: 0.74rem;
+    letter-spacing: 0.09em;
   }
 
   /* Single tweet embed: make it horizontally scrollable on mobile
