@@ -62,17 +62,21 @@
       <div class="case-accordion-body case-section">
 
         <p class="case-body">
-          Guests land on a login page with a pencil-sketch portrait and a name field. They type their name — it's matched against a guest list client-side. If you're on it, the invitation page fades in with a video message and the event details. If not, the form shakes and asks you to check your spelling.
+          Built with React and Vite, deployed on Vercel. There's no backend — the guest list lives directly in the app, and name matching happens entirely client-side. It's a single-page app with three views: a login screen, an invitation screen, and an error state.
+        </p>
+
+        <p class="case-body">
+          The user flow is simple: you land on a login page with a pencil-sketch portrait and a name field. You type your name. If you're on the list, the page fades into the invitation — a video plays, event details appear. If you're not on the list, the form shakes and tells you to check your spelling. No second chances, no workarounds.
         </p>
 
         <div class="case-stat-row">
           <div class="case-stat">
             <span class="case-stat-num">27</span>
-            <span class="case-stat-label">People on the list</span>
+            <span class="case-stat-label">People on the guest list</span>
           </div>
           <div class="case-stat">
-            <span class="case-stat-num">React</span>
-            <span class="case-stat-label">+ Vite, deployed on Vercel</span>
+            <span class="case-stat-num">React + Vite</span>
+            <span class="case-stat-label">Deployed on Vercel</span>
           </div>
           <div class="case-stat">
             <span class="case-stat-num">3s</span>
@@ -81,34 +85,8 @@
         </div>
 
         <p class="case-body">
-          The invitation page plays a video with a slow volume fade-in, then reveals the event details after a 3-second delay — so the video always gets to breathe before the text appears. Audio is unlocked on the name submission gesture, so it plays with sound on mobile without triggering browser autoplay blocks.
+          A few intentional details: audio is unlocked the moment the user submits their name — that gesture satisfies the browser's autoplay policy, so the video plays with sound on mobile without any extra tap. The volume fades in over 2 seconds rather than starting at full. Content appears after a 3-second delay so the video always gets a moment before text competes for attention.
         </p>
-
-        <button class="case-accordion-collapse" aria-label="Collapse section">↑</button>
-      </div>
-    </details>
-
-    <details class="case-accordion">
-      <summary class="case-accordion-summary">
-        <div class="case-accordion-meta">
-          <span class="case-accordion-label">Design</span>
-          <span class="case-accordion-title">Quiet, Personal, Considered</span>
-        </div>
-        <span class="case-accordion-icon" aria-hidden="true">+</span>
-      </summary>
-      <div class="case-accordion-body case-section">
-
-        <p class="case-body">
-          The palette is warm cream and deep burgundy — chosen to feel like an envelope, something physical and deliberate. The hero image is a pencil-sketch portrait, which made the page feel handmade even though it was built in code.
-        </p>
-
-        <p class="case-body">
-          Every interaction was considered: the shake animation on a wrong name, the fade-in on correct entry, the volume ramp on the video. None of it was loud. The point was that it felt made for you.
-        </p>
-
-        <blockquote class="case-pullquote">
-          An invitation should feel like someone thought about you before you arrived.
-        </blockquote>
 
         <button class="case-accordion-collapse" aria-label="Collapse section">↑</button>
       </div>
