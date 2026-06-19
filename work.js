@@ -5,7 +5,7 @@
  */
 
 // ── Load project manifest ─────────────────────────────────
-const manifestResp = await fetch('work-manifest.json')
+const manifestResp = await fetch('work-manifest-v2.json')
 const PROJECTS = await manifestResp.json()
 
 // ── Helpers ───────────────────────────────────────────────
