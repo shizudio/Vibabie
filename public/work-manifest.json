@@ -23,8 +23,8 @@
     "tag": "Design & Dev",
     "role": "Creative Direction",
     "year": "2025",
-    "href": "https://shina26bday.vercel.app",
-    "external": true
+    "href": "birthday.html",
+    "external": false
   },
   {
     "src": "work/H.O.P.jpg",

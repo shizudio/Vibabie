@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Invite — Shina Foo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500&family=EB+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="vinyl.css">
+  <link rel="stylesheet" href="perena.css">
+</head>
+<body>
+
+  <div class="cursor default-cursor" id="cursor"></div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Shina Foo</a>
+    <span class="nav-page-name">Birthday Invite</span>
+  </nav>
+
+  <main class="case-main">
+
+    <a href="work.html" class="case-back">← Work &amp; Projects</a>
+
+    <header class="case-header">
+      <span class="page-label">The Laptop — Work &amp; Projects</span>
+      <h1 class="case-title">Shina's Birthday Invite</h1>
+      <div class="case-meta-row">
+        <span class="case-meta-role">Design &amp; Development</span>
+        <span class="case-meta-dot">·</span>
+        <span class="case-meta-year">2025</span>
+        <span class="case-meta-dot">·</span>
+        <a href="https://shina26bday.vercel.app" target="_blank" class="case-meta-link">shina26bday.vercel.app</a>
+      </div>
+      <p class="case-thesis">
+        A gated digital birthday invitation — only people on the list could get in.
+      </p>
+    </header>
+
+    <div class="case-image">
+      <img src="/work/birthday.png" alt="Shina's Birthday Invite — login screen" loading="eager">
+    </div>
+
+    <section class="case-section">
+      <p class="case-body">
+        For my birthday, I wanted the invitation itself to feel like part of the event. Instead of a group chat message or a Partiful link, I built a custom site where guests had to enter their name to access the details — if you weren't on the list, you couldn't get in.
+      </p>
+      <p class="case-body">
+        The gate wasn't about exclusivity for its own sake. It was about making each guest feel personally invited the moment they arrived. Your name was already expected. You just had to show up.
+      </p>
+    </section>
+
+    <details class="case-accordion" open>
+      <summary class="case-accordion-summary">
+        <div class="case-accordion-meta">
+          <span class="case-accordion-title">How it works</span>
+        </div>
+        <span class="case-accordion-icon" aria-hidden="true">+</span>
+      </summary>
+      <div class="case-accordion-body case-section">
+
+        <p class="case-body">
+          Guests land on a login page with a pencil-sketch portrait and a name field. They type their name — it's matched against a guest list client-side. If you're on it, the invitation page fades in with a video message and the event details. If not, the form shakes and asks you to check your spelling.
+        </p>
+
+        <div class="case-stat-row">
+          <div class="case-stat">
+            <span class="case-stat-num">27</span>
+            <span class="case-stat-label">People on the list</span>
+          </div>
+          <div class="case-stat">
+            <span class="case-stat-num">React</span>
+            <span class="case-stat-label">+ Vite, deployed on Vercel</span>
+          </div>
+          <div class="case-stat">
+            <span class="case-stat-num">3s</span>
+            <span class="case-stat-label">Delay before content reveals</span>
+          </div>
+        </div>
+
+        <p class="case-body">
+          The invitation page plays a video with a slow volume fade-in, then reveals the event details after a 3-second delay — so the video always gets to breathe before the text appears. Audio is unlocked on the name submission gesture, so it plays with sound on mobile without triggering browser autoplay blocks.
+        </p>
+
+        <button class="case-accordion-collapse" aria-label="Collapse section">↑</button>
+      </div>
+    </details>
+
+    <details class="case-accordion">
+      <summary class="case-accordion-summary">
+        <div class="case-accordion-meta">
+          <span class="case-accordion-label">Design</span>
+          <span class="case-accordion-title">Quiet, Personal, Considered</span>
+        </div>
+        <span class="case-accordion-icon" aria-hidden="true">+</span>
+      </summary>
+      <div class="case-accordion-body case-section">
+
+        <p class="case-body">
+          The palette is warm cream and deep burgundy — chosen to feel like an envelope, something physical and deliberate. The hero image is a pencil-sketch portrait, which made the page feel handmade even though it was built in code.
+        </p>
+
+        <p class="case-body">
+          Every interaction was considered: the shake animation on a wrong name, the fade-in on correct entry, the volume ramp on the video. None of it was loud. The point was that it felt made for you.
+        </p>
+
+        <blockquote class="case-pullquote">
+          An invitation should feel like someone thought about you before you arrived.
+        </blockquote>
+
+        <button class="case-accordion-collapse" aria-label="Collapse section">↑</button>
+      </div>
+    </details>
+
+    <div class="case-divider"></div>
+
+    <section class="case-section case-section--close">
+      <a href="https://shina26bday.vercel.app" target="_blank" class="case-cta">See the live site</a>
+    </section>
+
+  </main>
+
+  <script type="module" src="script.js"></script>
+  <script type="module" src="vinyl-widget.js"></script>
+</body>
+</html>

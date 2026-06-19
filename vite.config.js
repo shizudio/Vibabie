@@ -18,6 +18,7 @@ export default defineConfig({
         work: resolve(__dirname, 'work.html'),
         ai: resolve(__dirname, 'ai.html'),
         perena: resolve(__dirname, 'perena.html'),
+        birthday: resolve(__dirname, 'birthday.html'),
         toolPortfolioEditor: resolve(__dirname, 'tool-portfolio-editor.html'),
         toolHotspotEditor: resolve(__dirname, 'tool-hotspot-editor.html'),
       },

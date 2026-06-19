@@ -5,8 +5,9 @@ import { initEditor } from './portfolio-editor.js'
 inject()
 initRouter()
 initMenu()
-// Only load the portfolio editor on desktop — not on touch/mobile
-if (window.matchMedia('(pointer: fine)').matches && window.innerWidth > 767) {
+// Only load the portfolio editor on desktop in local dev — never on the published site
+if ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') &&
+    window.matchMedia('(pointer: fine)').matches && window.innerWidth > 767) {
   initEditor()
 }
 
