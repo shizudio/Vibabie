@@ -1,318 +1,374 @@
 /* ─────────────────────────────────────────
-   art.css — Art catalog layout
-   Two-column: fixed index sidebar left, editorial gallery right
+   art.css — Serpentine horizontal carousel
+   Artwork cards ride an S-curve along a horizontal track that ends
+   in a layered sketch pile. Slim progress rail at the bottom.
    ───────────────────────────────────────── */
 
 html, body { height: 100%; }
-
-/* ── Page shell ──────────────────────────────────────────── */
-.art-page {
-  display: flex;
-  min-height: 100vh;
-}
-
-/* ── Left sidebar ────────────────────────────────────────── */
-.catalog-sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 280px;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  padding: 80px 40px 40px;
-  border-right: 1px solid var(--border);
-  overflow-y: auto;
+.art-body {
+  overflow: hidden;               /* the track scrolls, not the page */
   background: var(--paper);
-  z-index: 10;
-  scrollbar-width: none;
-}
-.catalog-sidebar::-webkit-scrollbar { display: none; }
-
-/* ── Sidebar top ─────────────────────────────────────────── */
-.catalog-top .page-label {
-  margin-bottom: var(--space-sm);
-}
-.catalog-top .page-h1 {
-  font-size: clamp(1.4rem, 2vw, 1.8rem);
-}
-.catalog-top .divider {
-  margin: 24px 0 20px;
 }
 
-/* Animation: staggered via --i CSS custom property */
-.fade-up {
-  animation-delay: calc(var(--i, 0) * 0.07s) !important;
-}
-
-/* ── Catalog index list ───────────────────────────────────── */
-.catalog-index {
-  list-style: none;
-  flex: 1;
-}
-
-.catalog-entry {
-  display: grid;
-  grid-template-columns: 28px 1fr auto;
-  align-items: baseline;
-  column-gap: 10px;
-  padding: 8px 6px;
-  margin: 0 -6px;
-  border-bottom: 1px solid var(--border);
-  cursor: pointer;
-  border-radius: var(--radius-sm);
-  transition: background 0.15s ease;
-  position: relative;
-}
-.catalog-entry:first-child {
-  border-top: 1px solid var(--border);
-}
-
-.catalog-entry::before {
-  content: '';
-  position: absolute;
-  left: -6px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: var(--crimson);
-  border-radius: 1px;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-.catalog-entry.is-active::before,
-.catalog-entry:hover::before {
-  opacity: 1;
-}
-
-.catalog-num {
-  font-family: var(--font-sans);
-  font-size: var(--text-xs);
-  color: var(--stone);
-  font-weight: 300;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.04em;
-  transition: color 0.2s ease;
-}
-
-.catalog-title {
-  font-family: var(--font-serif);
-  font-size: clamp(0.72rem, 0.9vw, 0.85rem);
-  font-style: italic;
-  font-weight: 400;
-  color: var(--ink);
-  white-space: nowrap;
+/* ── Stage ─────────────────────────────────────────────── */
+.art-stage {
+  position: fixed;
+  inset: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
-  transition: color 0.2s ease;
 }
 
-.catalog-year {
+/* ── Floating heading ──────────────────────────────────── */
+.stage-head {
+  position: absolute;
+  top: clamp(76px, 12vh, 120px);
+  left: clamp(28px, 5vw, 72px);
+  z-index: 1400;
+  max-width: 360px;
+  pointer-events: none;
+}
+.stage-head .page-h1 {
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  margin-top: 6px;
+}
+.stage-hint {
+  margin-top: 14px;
   font-family: var(--font-sans);
   font-size: var(--text-xs);
-  color: var(--stone);
-  font-weight: 300;
-  white-space: nowrap;
-}
-
-.catalog-entry:hover .catalog-title,
-.catalog-entry.is-active .catalog-title {
-  color: var(--crimson);
-}
-.catalog-entry:hover .catalog-num,
-.catalog-entry.is-active .catalog-num {
-  color: var(--crimson);
-}
-
-/* ── Sidebar footer ──────────────────────────────────────── */
-.catalog-sidebar-footer {
-  padding-top: 28px;
-  margin-top: auto;
-}
-
-.catalog-ig {
-  font-family: var(--font-sans);
-  font-size: var(--text-xs);
-  text-transform: uppercase;
   letter-spacing: 0.2em;
+  text-transform: uppercase;
   color: var(--stone);
   font-weight: 300;
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  padding-bottom: 1px;
-  transition: color 0.2s ease, border-color 0.2s ease;
 }
-.catalog-ig:hover {
-  color: var(--crimson);
-  border-color: var(--border-crimson);
+.fade-up { animation-delay: calc(var(--i, 0) * 0.08s) !important; }
+
+/* ── Track viewport (the scroller) ─────────────────────── */
+.track-viewport {
+  position: absolute;
+  inset: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  cursor: grab;
+  scroll-snap-type: x proximity;
+}
+.track-viewport::-webkit-scrollbar { display: none; }
+.track-viewport.dragging { cursor: grabbing; }
+
+.track {
+  position: relative;
+  height: 100%;
+  min-width: 100%;
 }
 
-/* ── Right gallery ───────────────────────────────────────── */
-.catalog-gallery {
-  margin-left: 280px;
-  flex: 1;
-  padding: 100px 72px 100px 64px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px 56px;
-  align-items: start;
-}
-
-/* Stagger the right column down for editorial feel */
-.catalog-item:nth-child(even) {
-  margin-top: 160px;
-}
-
-/* ── Gallery item ────────────────────────────────────────── */
-.catalog-item {
+/* ── Artwork card ──────────────────────────────────────── */
+.art-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;            /* anchored to viewport centre; render() offsets it */
+  margin: 0;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+  will-change: transform, opacity;
   cursor: pointer;
-  transition: opacity 0.35s ease;
 }
 
-.catalog-item img {
-  width: 100%;
-  height: auto;
-  display: block;
-  box-shadow: var(--shadow-card);
+/* Frameless: the image is shown at its true aspect ratio with only a shadow */
+.art-card-frame {
+  display: inline-block;
+  line-height: 0;
   border-radius: var(--radius-sm);
-  transition: box-shadow 0.35s ease, transform 0.35s ease;
+  overflow: hidden;
+  box-shadow: 0 14px 40px rgba(26, 22, 20, 0.20), 0 2px 6px rgba(26, 22, 20, 0.10);
+  transition: box-shadow 0.45s ease;
+}
+.art-card-frame img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: var(--card-max, 520px);
+  max-height: 68vh;
+  user-select: none;
+}
+.art-card.is-active .art-card-frame {
+  box-shadow: 0 30px 80px rgba(26, 22, 20, 0.34), 0 6px 18px rgba(26, 22, 20, 0.16);
 }
 
-.catalog-item:hover img {
-  box-shadow: 0 12px 48px rgba(26, 22, 20, 0.18), 0 2px 8px rgba(26, 22, 20, 0.08);
-  transform: translateY(-4px);
-}
-
-/* Catalog number below image */
-.catalog-item-label {
-  display: flex;
+/* Caption under each card — only readable on the active piece */
+.art-card-cap {
+  display: inline-flex;
   align-items: baseline;
   gap: 10px;
-  margin-top: 12px;
+  margin-top: 16px;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.35s ease, color 0.35s ease;
 }
-
-.catalog-item-num {
+.art-card.is-active .art-card-cap { opacity: 1; }
+.art-card-num {
   font-family: var(--font-sans);
   font-size: var(--text-xs);
-  color: var(--stone);
   font-weight: 300;
   letter-spacing: 0.15em;
+  color: var(--stone);
   font-variant-numeric: tabular-nums;
-  transition: color 0.2s ease;
+}
+.art-card-title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(0.82rem, 1vw, 0.95rem);
+  color: var(--ink);
+  white-space: nowrap;
+}
+.art-card.is-active .art-card-title { color: var(--crimson); }
+.art-card-year {
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-size: var(--text-xs);
+  color: var(--stone);
+  margin-left: 4px;
 }
 
-.catalog-item-title {
-  font-family: var(--font-serif);
-  font-size: clamp(0.72rem, 0.9vw, 0.82rem);
-  font-style: italic;
+/* ── Sketch pile (deck index N) ────────────────────────── */
+.sketch-pile {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--card-max, 420px);
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+  will-change: transform, opacity;
+  cursor: pointer;
+  text-align: center;
+}
+.sketch-pile-stack {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  margin: 0 auto;
+}
+.sketch-pile-layer {
+  position: absolute;
+  inset: 0;
+  width: 88%;
+  height: 88%;
+  margin: auto;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  box-shadow: 0 10px 30px rgba(26, 22, 20, 0.18);
+  border: 3px solid #fff;
+  transform-origin: center bottom;
+  transform: rotate(calc((var(--k) - 2) * 4deg)) translateY(calc(var(--k) * -2px));
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.5s ease;
+}
+.sketch-pile.is-active .sketch-pile-layer,
+.sketch-pile:hover .sketch-pile-layer {
+  transform: rotate(calc((var(--k) - 2) * 9deg)) translate(calc((var(--k) - 2) * 9px), calc(var(--k) * -5px));
+}
+.sketch-pile:hover .sketch-pile-layer {
+  box-shadow: 0 18px 44px rgba(26, 22, 20, 0.26);
+}
+.sketch-pile-cap {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
+  margin: 22px 0 0;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.sketch-pile.is-active .sketch-pile-cap { opacity: 1; }
+.sketch-pile-hint {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--crimson);
+  font-weight: 300;
+}
+
+/* ── Bottom progress rail ──────────────────────────────── */
+.progress-rail {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(20px, 4vh, 40px);
+  z-index: 1400;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 20px;
+  padding: 0 clamp(96px, 11vw, 150px) 0 clamp(28px, 5vw, 72px);
+  pointer-events: none;
+}
+.progress-rail > * { pointer-events: auto; }
+
+.rail-count {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  letter-spacing: 0.16em;
   color: var(--stone);
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.rail-title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(0.82rem, 1vw, 0.95rem);
+  color: var(--crimson);
+  text-align: right;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: color 0.2s ease;
+  max-width: 30vw;
 }
 
-/* Cross-link dimming: when any item is highlighted, others dim */
-.catalog-gallery.has-hover .catalog-item {
-  opacity: 0.25;
+.rail-line {
+  position: relative;
+  height: 1px;
+  background: var(--border);
 }
-.catalog-gallery.has-hover .catalog-item.is-active {
-  opacity: 1;
+.rail-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--crimson);
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 0.1s linear;
 }
-.catalog-gallery.has-hover .catalog-item.is-active .catalog-item-num,
-.catalog-gallery.has-hover .catalog-item.is-active .catalog-item-title {
-  color: var(--crimson);
+.rail-tick {
+  position: absolute;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1px solid var(--stone);
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+}
+.rail-tick:hover { transform: scale(1.4); border-color: var(--crimson); }
+.rail-tick.is-active {
+  background: var(--crimson);
+  border-color: var(--crimson);
+  transform: scale(1.5);
 }
 
-/* ── Lightbox overrides ──────────────────────────────────── */
-.art-lightbox {
-  padding: 32px 24px;
+/* ── Sketch grid modal ─────────────────────────────────── */
+.sketch-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(24px, 5vh, 64px);
+  background: rgba(26, 22, 20, 0.55);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
 }
-.art-lb-caption {
-  letter-spacing: 0.08em;
+.sketch-modal.open { opacity: 1; visibility: visible; }
+
+.sketch-modal-panel {
+  width: min(960px, 100%);
+  max-height: 100%;
+  background: var(--paper);
+  border-radius: var(--radius-md, 14px);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+  padding: clamp(24px, 4vw, 44px);
+  overflow-y: auto;
+  transform: translateY(20px) scale(0.98);
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+  scrollbar-width: thin;
+}
+.sketch-modal.open .sketch-modal-panel { transform: none; }
+
+.sketch-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+.sketch-modal-kicker {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--stone);
+  font-weight: 300;
+}
+.sketch-modal-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 400;
+  margin-top: 4px;
+  color: var(--ink);
+}
+.sketch-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: var(--stone);
+  cursor: pointer;
+  line-height: 1;
+  padding: 8px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.sketch-modal-close:hover { color: var(--crimson); transform: rotate(90deg); }
+
+.sketch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+.sketch-cell {
+  position: relative;
+  border: none;
+  padding: 0;
+  background: var(--paper);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  aspect-ratio: 4 / 5;
+  animation: sketchIn 0.5s both;
+  animation-delay: calc(var(--d) * 0.06s);
+}
+@keyframes sketchIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+.sketch-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+.sketch-cell:hover img { transform: scale(1.05); }
+.sketch-cell-label {
+  position: absolute;
+  left: 10px;
+  bottom: 8px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.8rem;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
 
-/* ── Mobile ──────────────────────────────────────────────── */
+/* ── Mobile ─────────────────────────────────────────────── */
 @media (max-width: 767px) {
-  .art-page {
-    flex-direction: column;
-  }
-
-  .catalog-sidebar {
-    position: static;
-    width: 100%;
-    height: auto;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-    padding: 80px var(--page-gutter) 24px;
-    overflow-y: visible;
-  }
-
-  .catalog-top .page-h1 {
-    font-size: clamp(1.3rem, 5vw, 1.6rem);
-  }
-
-  /* Show a condensed horizontal scroll of numbers on mobile */
-  .catalog-index {
-    display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    gap: 0;
-    margin: 16px -4px 0;
-    padding-bottom: 4px;
-    scrollbar-width: none;
-  }
-  .catalog-index::-webkit-scrollbar { display: none; }
-
-  .catalog-entry {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    border: none;
-    border-bottom: none;
-    border-right: 1px solid var(--border);
-    padding: 6px 16px;
-    margin: 0;
-    min-width: 56px;
-    flex-shrink: 0;
-    border-radius: 0;
-  }
-  .catalog-entry:first-child { border-top: none; }
-  .catalog-entry::before { display: none; }
-
-  .catalog-title { display: none; }
-  .catalog-year  { display: none; }
-
-  .catalog-num {
-    font-size: clamp(0.55rem, 2.5vw, 0.65rem);
-  }
-
-  .catalog-sidebar-footer { display: none; }
-
-  .catalog-gallery {
-    margin-left: 0;
-    padding: 40px var(--page-gutter) 80px;
-    grid-template-columns: 1fr;
-    gap: 48px;
-  }
-
-  .catalog-item:nth-child(even) {
-    margin-top: 0;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1100px) {
-  .catalog-sidebar {
-    width: 220px;
-    padding: 80px 28px 40px;
-  }
-  .catalog-gallery {
-    margin-left: 220px;
-    padding: 100px 48px 100px 48px;
-    gap: 64px 40px;
-  }
-  .catalog-item:nth-child(even) {
-    margin-top: 120px;
-  }
+  .stage-head { max-width: 70vw; }
+  .stage-head .page-h1 { font-size: clamp(1.4rem, 6vw, 1.8rem); }
+  .art-card-frame img { max-height: 52vh; }
+  .rail-title { max-width: 40vw; }
+  .progress-rail { gap: 12px; }
+  .sketch-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
 }

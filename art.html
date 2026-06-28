@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="vinyl.css">
   <link rel="stylesheet" href="art.css">
 </head>
-<body>
+<body class="art-body">
 
   <div class="cursor default-cursor" id="cursor"></div>
 
@@ -20,35 +20,51 @@
     <span class="nav-page-name">The Canvas</span>
   </nav>
 
-  <main class="art-page">
+  <main class="art-stage">
 
-    <!-- ── Left: fixed catalog sidebar ── -->
-    <aside class="catalog-sidebar" id="catalog-sidebar">
-      <div class="catalog-top">
-        <span class="page-label fade-up" style="--i:0">The Canvas — Art & Illustration</span>
-        <h1 class="page-h1 fade-up" style="--i:1">Drawn things.</h1>
-        <div class="divider fade-up" style="--i:2"></div>
+    <!-- ── Floating page heading ── -->
+    <header class="stage-head">
+      <span class="page-label fade-up" style="--i:0">The Canvas — Art & Illustration</span>
+      <h1 class="page-h1 fade-up" style="--i:1">Drawn things.</h1>
+      <p class="stage-hint fade-up" style="--i:2">Scroll to wander the line ↔</p>
+    </header>
+
+    <!-- ── Serpentine carousel ── -->
+    <div class="track-viewport" id="viewport">
+      <div class="track" id="track">
+        <!-- cards + sketch pile injected by art.js -->
       </div>
+    </div>
 
-      <ul class="catalog-index" id="catalog-index">
-        <!-- injected by art.js -->
-      </ul>
-
-      <footer class="catalog-sidebar-footer fade-up" style="--i:20">
-        <a class="catalog-ig" href="https://www.instagram.com/shizudio" target="_blank" rel="noopener noreferrer">
-          Instagram ↗
-        </a>
-      </footer>
-    </aside>
-
-    <!-- ── Right: scrollable editorial gallery ── -->
-    <div class="catalog-gallery" id="catalog-gallery">
-      <!-- injected by art.js -->
+    <!-- ── Bottom progress rail ── -->
+    <div class="progress-rail" id="rail">
+      <span class="rail-count" id="rail-count">01 / 01</span>
+      <div class="rail-line" id="rail-line">
+        <div class="rail-fill" id="rail-fill"></div>
+        <!-- ticks injected by art.js -->
+      </div>
+      <span class="rail-title" id="rail-title"></span>
     </div>
 
   </main>
 
-  <!-- Lightbox -->
+  <!-- ── Sketches grid modal ── -->
+  <div class="sketch-modal" id="sketch-modal" aria-hidden="true">
+    <div class="sketch-modal-panel">
+      <header class="sketch-modal-head">
+        <div>
+          <span class="sketch-modal-kicker">Loose studies</span>
+          <h2 class="sketch-modal-title">The Sketchbook</h2>
+        </div>
+        <button class="sketch-modal-close" id="sketch-modal-close" aria-label="Close">&#x2715;</button>
+      </header>
+      <div class="sketch-grid" id="sketch-grid">
+        <!-- injected by art.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Lightbox ── -->
   <div class="art-lightbox" id="art-lightbox" aria-hidden="true">
     <button class="art-lb-close" id="art-lb-close" aria-label="Close">&#x2715;</button>
     <div class="art-lb-inner">
