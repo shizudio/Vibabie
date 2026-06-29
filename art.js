@@ -21,7 +21,8 @@ const track    = document.getElementById('track')
 const railLine = document.getElementById('rail-line')
 const railFill = document.getElementById('rail-fill')
 const railCount= document.getElementById('rail-count')
-const railTitle= document.getElementById('rail-title')
+const capTitle = document.getElementById('deck-caption-title')
+const capMeta  = document.getElementById('deck-caption-meta')
 
 const lightbox  = document.getElementById('art-lightbox')
 const lbImg     = document.getElementById('art-lb-img')
@@ -135,7 +136,8 @@ function render() {
     const aoff = Math.abs(off)
     const t    = Math.tanh(off * L.steep)         // spacing curve: steep at centre
     const x     = L.spread * t                     // horizontal offset (px)
-    const scale = Math.max(0.70, 1 - Math.min(aoff, 5) * 0.06)
+    // neighbours fall off; the focal piece gets a +20% boost that fades by one slot
+    const scale = Math.max(0.70, 1 - Math.min(aoff, 5) * 0.06) + 0.2 * Math.max(0, 1 - aoff)
     const rot   = -t * 7                            // slight coverflow tilt
     const y     = Math.min(aoff, 4) * 5             // tiny recede downward
     // keep every image opaque; signify depth with a gentle darkening instead
@@ -159,7 +161,13 @@ function setActive(i) {
   items.forEach(({ el, index }) => el.classList.toggle('is-active', index === i))
   ticks.forEach((t, k) => t.classList.toggle('is-active', k === i))
   railCount.textContent = `${pad(i + 1)} / ${pad(N + 1)}`
-  railTitle.textContent = i >= N ? 'The Sketchbook' : ARTWORKS[i].title
+  if (i >= N) {
+    capTitle.textContent = 'The Sketchbook'
+    capMeta.textContent  = `Loose studies · ${SKETCHES.length}`
+  } else {
+    capTitle.textContent = ARTWORKS[i].title
+    capMeta.textContent  = ARTWORKS[i].meta || ''
+  }
 }
 
 // ── Scroll, snap, render loop ─────────────────────────────
