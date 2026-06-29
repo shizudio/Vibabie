@@ -26,10 +26,19 @@ function inject() {
     btn.setAttribute('aria-label', 'Toggle navigation')
     btn.setAttribute('aria-expanded', 'false')
 
+    btn.dataset.label = span.textContent
+
+    // Hairline hamburger icon → signals "opens navigation"; morphs to ✕ when open
+    const icon = document.createElement('span')
+    icon.className = 'menu-toggle-icon'
+    icon.setAttribute('aria-hidden', 'true')
+    icon.innerHTML = '<i></i><i></i><i></i>'
+
     const labelEl = document.createElement('span')
     labelEl.className = 'menu-toggle-label'
     labelEl.textContent = span.textContent
-    btn.dataset.label = span.textContent
+
+    btn.appendChild(icon)
     btn.appendChild(labelEl)
     span.replaceWith(btn)
   }
@@ -41,6 +50,7 @@ function inject() {
   overlay.setAttribute('aria-hidden', 'true')
   overlay.setAttribute('role', 'dialog')
   overlay.setAttribute('aria-label', 'Navigation')
+  overlay.setAttribute('aria-modal', 'true')
 
   overlay.innerHTML = `
     <nav class="nav-overlay-nav">
