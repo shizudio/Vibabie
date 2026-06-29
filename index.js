@@ -331,7 +331,12 @@ function fitRoom() {
   if (frameMount) { frameMount.style.height = ''; frameMount.style.marginTop = ''; frameMount.style.overflowX = '' }
 
   const padding = 64 + 32 + 3
-  const headerFooter = 120
+  const statement = document.querySelector('.room-statement')
+  const welcome = document.querySelector('.room-welcome')
+  const statementH = statement?.offsetHeight || 0
+  const welcomeH = welcome?.offsetHeight || 0
+  const textReserve = statementH + welcomeH + 56
+  const headerFooter = Math.max(120, textReserve)
   const maxW = window.innerWidth - padding - 40
   const maxH = window.innerHeight - headerFooter - padding
   let w = maxW, h = w / ratio

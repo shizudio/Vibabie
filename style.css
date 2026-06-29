@@ -952,10 +952,14 @@ body.menu-open .vinyl-widget {
   text-align: center;
   overflow-y: auto;
   overscroll-behavior: contain;
-  scrollbar-width: thin;
+  scrollbar-width: none;
   box-sizing: border-box;
   background: transparent;
   pointer-events: none;
+}
+
+.nav-overlay-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-overlay.open .nav-overlay-nav {
