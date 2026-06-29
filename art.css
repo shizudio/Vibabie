@@ -63,7 +63,7 @@ html, body { height: 100%; }
 /* ── Artwork card ──────────────────────────────────────── */
 .art-card {
   position: absolute;
-  top: 54%;             /* deck sits below centre, balancing white space above (title) and below (caption/rail) */
+  top: 51%;             /* deck sits just below centre, balancing white space above (title) and below (caption/rail) */
   left: 50%;            /* anchored to viewport centre; render() offsets it */
   margin: 0;
   text-align: center;
@@ -124,7 +124,7 @@ html, body { height: 100%; }
 /* ── Sketch pile (deck index N) ────────────────────────── */
 .sketch-pile {
   position: absolute;
-  top: 54%;
+  top: 51%;
   left: 50%;
   width: var(--card-max, 420px);
   transform: translate(-50%, -50%);
@@ -187,7 +187,7 @@ html, body { height: 100%; }
   position: absolute;
   left: 0;
   right: 0;
-  bottom: clamp(20px, 4vh, 40px);
+  bottom: clamp(44px, 6.5vh, 64px);
   z-index: 1400;
   padding: 0 clamp(96px, 11vw, 150px) 0 clamp(28px, 5vw, 72px);
   pointer-events: none;
@@ -210,7 +210,7 @@ html, body { height: 100%; }
 .deck-caption {
   position: absolute;
   left: 50%;
-  bottom: clamp(58px, 8vh, 84px);
+  bottom: clamp(78px, 10vh, 108px);
   transform: translateX(-50%);
   z-index: 1400;
   display: flex;
