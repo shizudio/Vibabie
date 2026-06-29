@@ -42,10 +42,10 @@ let L = {}
 function computeLayout() {
   const vw = window.innerWidth
   if (vw <= 767) {
-    const cardMax = vw * 0.84
-    L = { cardMax, pileMax: vw * 0.66, step: 260, spread: vw * 0.42, steep: 0.72 }
+    const cardMax = vw * 0.72
+    L = { cardMax, pileMax: vw * 0.58, step: 260, spread: vw * 0.40, steep: 0.72 }
   } else {
-    const cardMax = Math.min(vw * 0.46, 720)
+    const cardMax = Math.min(vw * 0.37, 576)
     L = { cardMax, pileMax: cardMax * 0.78, step: 320, spread: vw * 0.35, steep: 0.62 }
   }
 }
