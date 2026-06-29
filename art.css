@@ -20,7 +20,7 @@ html, body { height: 100%; }
 /* ── Floating heading ──────────────────────────────────── */
 .stage-head {
   position: absolute;
-  top: clamp(76px, 12vh, 120px);
+  top: clamp(58px, 8vh, 88px);
   left: clamp(28px, 5vw, 72px);
   z-index: 1400;
   max-width: 360px;
@@ -63,7 +63,7 @@ html, body { height: 100%; }
 /* ── Artwork card ──────────────────────────────────────── */
 .art-card {
   position: absolute;
-  top: 50%;
+  top: 54%;             /* deck sits slightly below centre, freeing the top for the title */
   left: 50%;            /* anchored to viewport centre; render() offsets it */
   margin: 0;
   text-align: center;
@@ -124,7 +124,7 @@ html, body { height: 100%; }
 /* ── Sketch pile (deck index N) ────────────────────────── */
 .sketch-pile {
   position: absolute;
-  top: 50%;
+  top: 54%;
   left: 50%;
   width: var(--card-max, 420px);
   transform: translate(-50%, -50%);
@@ -181,22 +181,23 @@ html, body { height: 100%; }
 }
 
 /* ── Bottom progress rail ──────────────────────────────── */
+/* Count + title are positioned absolutely over the ends so the line keeps a
+   constant width regardless of title length — no reflow, no tick twitching. */
 .progress-rail {
   position: absolute;
   left: 0;
   right: 0;
   bottom: clamp(20px, 4vh, 40px);
   z-index: 1400;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 20px;
   padding: 0 clamp(96px, 11vw, 150px) 0 clamp(28px, 5vw, 72px);
   pointer-events: none;
 }
 .progress-rail > * { pointer-events: auto; }
 
 .rail-count {
+  position: absolute;
+  left: clamp(28px, 5vw, 72px);
+  bottom: 14px;
   font-family: var(--font-sans);
   font-size: var(--text-xs);
   letter-spacing: 0.16em;
@@ -206,6 +207,9 @@ html, body { height: 100%; }
   white-space: nowrap;
 }
 .rail-title {
+  position: absolute;
+  right: clamp(96px, 11vw, 150px);
+  bottom: 14px;
   font-family: var(--font-serif);
   font-style: italic;
   font-size: clamp(0.82rem, 1vw, 0.95rem);
