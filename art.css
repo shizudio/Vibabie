@@ -87,24 +87,16 @@ html, body { height: 100%; }
   width: auto;
   height: auto;
   max-width: var(--card-max, 520px);
-  max-height: 80vh;
+  max-height: 64vh;
   user-select: none;
 }
 .art-card.is-active .art-card-frame {
   box-shadow: 0 30px 80px rgba(26, 22, 20, 0.34), 0 6px 18px rgba(26, 22, 20, 0.16);
 }
 
-/* Caption under each card — only readable on the active piece */
-.art-card-cap {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 10px;
-  margin-top: 16px;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.35s ease, color 0.35s ease;
-}
-.art-card.is-active .art-card-cap { opacity: 1; }
+/* Per-card caption removed — the bottom rail names the active piece instead,
+   so the label can never overlap the neighbouring artwork. */
+.art-card-cap { display: none; }
 .art-card-num {
   font-family: var(--font-sans);
   font-size: var(--text-xs);
@@ -367,7 +359,7 @@ html, body { height: 100%; }
 @media (max-width: 767px) {
   .stage-head { max-width: 70vw; }
   .stage-head .page-h1 { font-size: clamp(1.4rem, 6vw, 1.8rem); }
-  .art-card-frame img { max-height: 62vh; }
+  .art-card-frame img { max-height: 56vh; }
   .rail-title { max-width: 40vw; }
   .progress-rail { gap: 12px; }
   .sketch-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
