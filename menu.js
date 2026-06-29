@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { label: 'The Bed',              desc: 'Who I Am',            href: 'about.html' },
   { label: 'The Fujifilm Camera',  desc: 'Photography',         href: 'photography.html' },
   { label: 'The Canvas',           desc: 'Art & Illustration',  href: 'art.html' },
+  { label: 'The Flower',           desc: 'Motif & Studies',     href: 'flowers.html' },
   { label: 'The Record',           desc: 'Music & Vibes',       href: 'record.html' },
   { label: 'The French Press',     desc: 'Personal Aesthetics', href: 'cosmos.html' },
   { label: 'The Shelf',            desc: 'Essays & Writing',    href: 'https://shinafoo.substack.com/', external: true },

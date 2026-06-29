@@ -14,6 +14,7 @@ export default defineConfig({
         contact: resolve(__dirname, 'contact.html'),
         instagram: resolve(__dirname, 'instagram.html'),
         art: resolve(__dirname, 'art.html'),
+        flowers: resolve(__dirname, 'flowers.html'),
         record: resolve(__dirname, 'record.html'),
         work: resolve(__dirname, 'work.html'),
         ai: resolve(__dirname, 'ai.html'),
