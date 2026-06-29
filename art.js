@@ -171,29 +171,48 @@ function setActive(i) {
 }
 
 // ── Scroll, snap, render loop ─────────────────────────────
-let rafPending = false, snapTimer = null
+let rafPending = false, snapTimer = null, snapAnim = null
 function onScroll() {
   if (!rafPending) { requestAnimationFrame(() => { render(); rafPending = false }); rafPending = true }
-  if (!dragging) { clearTimeout(snapTimer); snapTimer = setTimeout(snap, 150) }
+  // schedule a gentle snap once the user stops scrolling (not while dragging or
+  // already animating a snap, so they never fight each other)
+  if (!dragging && !snapAnim) { clearTimeout(snapTimer); snapTimer = setTimeout(snap, 140) }
+}
+function cancelSnap() { if (snapAnim) { cancelAnimationFrame(snapAnim); snapAnim = null } }
+
+// Custom eased tween — smoother than native scrollTo for short snap distances
+function animateScrollTo(target, duration = 520) {
+  cancelSnap()
+  const start = viewport.scrollLeft
+  const dist  = target - start
+  if (Math.abs(dist) < 1) return
+  const t0 = performance.now()
+  const ease = p => 1 - Math.pow(1 - p, 3)            // easeOutCubic
+  const tick = now => {
+    const p = Math.min(1, (now - t0) / duration)
+    viewport.scrollLeft = start + dist * ease(p)
+    snapAnim = p < 1 ? requestAnimationFrame(tick) : null
+  }
+  snapAnim = requestAnimationFrame(tick)
 }
 function snap() {
-  const target = Math.round(viewport.scrollLeft / L.step) * L.step
-  if (Math.abs(target - viewport.scrollLeft) > 2) viewport.scrollTo({ left: target, behavior: 'smooth' })
+  animateScrollTo(Math.round(viewport.scrollLeft / L.step) * L.step)
 }
 function scrollToIndex(i) {
-  viewport.scrollTo({ left: clamp(i, 0, N) * L.step, behavior: 'smooth' })
+  animateScrollTo(clamp(i, 0, N) * L.step)
 }
 viewport.addEventListener('scroll', onScroll)
 
 // vertical wheel → horizontal
 viewport.addEventListener('wheel', e => {
   if (sketchModal.classList.contains('open')) return
-  if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) { viewport.scrollLeft += e.deltaY; e.preventDefault() }
+  if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) { cancelSnap(); viewport.scrollLeft += e.deltaY; e.preventDefault() }
 }, { passive: false })
 
 // drag to scroll
 let dragging = false, dragStartX = 0, dragStartScroll = 0, moved = 0
 viewport.addEventListener('pointerdown', e => {
+  cancelSnap()
   dragging = true; moved = 0
   dragStartX = e.clientX; dragStartScroll = viewport.scrollLeft
   viewport.classList.add('dragging')
