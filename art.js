@@ -42,11 +42,11 @@ let L = {}
 function computeLayout() {
   const vw = window.innerWidth
   if (vw <= 767) {
-    const cardMax = vw * 0.80
-    L = { cardMax, pileMax: vw * 0.62, step: 260, spread: cardMax * 0.40, steep: 0.7 }
+    const cardMax = vw * 0.84
+    L = { cardMax, pileMax: vw * 0.66, step: 260, spread: vw * 0.42, steep: 0.72 }
   } else {
-    const cardMax = Math.min(vw * 0.40, 560)
-    L = { cardMax, pileMax: cardMax * 0.78, step: 300, spread: cardMax * 0.42, steep: 0.7 }
+    const cardMax = Math.min(vw * 0.46, 720)
+    L = { cardMax, pileMax: cardMax * 0.78, step: 320, spread: vw * 0.35, steep: 0.62 }
   }
 }
 
@@ -138,10 +138,12 @@ function render() {
     const scale = Math.max(0.70, 1 - Math.min(aoff, 5) * 0.06)
     const rot   = -t * 7                            // slight coverflow tilt
     const y     = Math.min(aoff, 4) * 5             // tiny recede downward
-    const op    = Math.max(0.32, 1 - Math.min(aoff, 6) * 0.12)
+    // keep every image opaque; signify depth with a gentle darkening instead
+    const bright = Math.max(0.74, 1 - Math.min(aoff, 5) * 0.055)
     el.style.left = (anchor + x) + 'px'
     el.style.transform = `translate(-50%, -50%) translate(0, ${y}px) rotate(${rot}deg) scale(${scale})`
-    el.style.opacity = op
+    el.style.opacity = 1
+    el.style.filter = aoff < 0.5 ? 'none' : `brightness(${bright})`
     el.style.zIndex = String(1000 - Math.round(aoff * 100))
   })
 

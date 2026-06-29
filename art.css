@@ -87,7 +87,7 @@ html, body { height: 100%; }
   width: auto;
   height: auto;
   max-width: var(--card-max, 520px);
-  max-height: 68vh;
+  max-height: 80vh;
   user-select: none;
 }
 .art-card.is-active .art-card-frame {
@@ -367,7 +367,7 @@ html, body { height: 100%; }
 @media (max-width: 767px) {
   .stage-head { max-width: 70vw; }
   .stage-head .page-h1 { font-size: clamp(1.4rem, 6vw, 1.8rem); }
-  .art-card-frame img { max-height: 52vh; }
+  .art-card-frame img { max-height: 62vh; }
   .rail-title { max-width: 40vw; }
   .progress-rail { gap: 12px; }
   .sketch-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
