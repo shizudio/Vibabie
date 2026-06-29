@@ -8,10 +8,11 @@
 
 import { initLightbox } from './lightbox.js'
 
-// ── Load manifest ─────────────────────────────────────────
-const data = await (await fetch('art-manifest.json')).json()
-const ARTWORKS = data.artworks || []
-const SKETCHES = data.sketches || []
+// ── Load manifest (tolerate both the new {artworks,sketches} shape and a
+//    legacy flat array, in case a stale copy is served from CDN cache) ──
+const data = await (await fetch('art-manifest-v2.json')).json()
+const ARTWORKS = Array.isArray(data) ? data : (data.artworks || [])
+const SKETCHES = Array.isArray(data) ? [] : (data.sketches || [])
 const N = ARTWORKS.length            // pile lives at index N
 
 // ── DOM refs ──────────────────────────────────────────────

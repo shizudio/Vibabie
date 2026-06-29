@@ -10,7 +10,7 @@ import { join } from 'path'
 const PUBLIC_DIR = 'public'
 const ART_DIR    = join(PUBLIC_DIR, 'Art')
 const SKETCH_DIR = join(ART_DIR, 'Sketches')
-const MANIFEST   = join(PUBLIC_DIR, 'art-manifest.json')
+const MANIFEST   = join(PUBLIC_DIR, 'art-manifest-v2.json')
 const EXTS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif'])
 
 function isImage(f) {
