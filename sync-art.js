@@ -34,14 +34,18 @@ if (existsSync(MANIFEST)) {
   else prev = { artworks: raw.artworks || [], sketches: raw.sketches || [] }
 }
 
-const prevBySrc = new Map(
-  [...prev.artworks, ...prev.sketches].map(e => [e.src, e])
-)
+const allPrev = [...prev.artworks, ...prev.sketches]
+const prevBySrc = new Map(allPrev.map(e => [e.src, e]))
+// Also index by basename so an optimized `Art/web/foo.webp` entry is recognised
+// as already covering the original `Art/foo.jpg` on disk (no duplicate adds).
+const baseOf = s => s.split('/').pop().replace(/\.[^.]+$/, '')
+const prevByBase = new Map(allPrev.map(e => [baseOf(e.src), e]))
 
 // Merge a list of srcs against previous metadata, preserving order from disk.
 function merge(srcs, added) {
   return srcs.map(src => {
     if (prevBySrc.has(src)) return prevBySrc.get(src)
+    if (prevByBase.has(baseOf(src))) return prevByBase.get(baseOf(src))
     added.push(src)
     return { src, title: '', meta: '', description: '' }
   })
