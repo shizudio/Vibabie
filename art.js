@@ -146,9 +146,11 @@ function render() {
     const t    = Math.tanh(off * L.steep)         // spacing curve: steep at centre
     const x     = L.spread * t                     // horizontal offset (px)
     // neighbours fall off; the focal piece gets a +20% boost that fades by one slot
-    const scale = Math.max(0.70, 1 - Math.min(aoff, 5) * 0.06) + 0.2 * Math.max(0, 1 - aoff)
-    const rot   = -t * 7                            // slight coverflow tilt
-    const y     = Math.min(aoff, 4) * 5             // tiny recede downward
+    const scale = mobileLayout
+      ? Math.max(0.82, 1 - Math.min(aoff, 4) * 0.04) + 0.12 * Math.max(0, 1 - aoff)
+      : Math.max(0.70, 1 - Math.min(aoff, 5) * 0.06) + 0.2 * Math.max(0, 1 - aoff)
+    const rot   = mobileLayout ? 0 : -t * 7          // rotation can feel jittery during touch inertia
+    const y     = mobileLayout ? 0 : Math.min(aoff, 4) * 5
     // keep every image opaque; signify depth with a gentle darkening instead
     const bright = Math.max(0.74, 1 - Math.min(aoff, 5) * 0.055)
     el.style.transform = `translate3d(calc(${anchor + x}px - 50%), calc(-50% + ${y}px), 0) rotate(${rot}deg) scale(${scale})`
@@ -182,9 +184,10 @@ function setActive(i) {
 let rafPending = false, snapTimer = null, snapAnim = null
 function onScroll() {
   if (!rafPending) { requestAnimationFrame(() => { render(); rafPending = false }); rafPending = true }
+  if (mobileLayout || prefersCoarsePointer()) return
   // schedule a gentle snap once the user stops scrolling (not while dragging or
   // already animating a snap, so they never fight each other)
-  if (!dragging && !snapAnim) { clearTimeout(snapTimer); snapTimer = setTimeout(snap, mobileLayout ? 220 : 140) }
+  if (!dragging && !snapAnim) { clearTimeout(snapTimer); snapTimer = setTimeout(snap, 140) }
 }
 function cancelSnap() { if (snapAnim) { cancelAnimationFrame(snapAnim); snapAnim = null } }
 
