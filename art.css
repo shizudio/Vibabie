@@ -409,4 +409,7 @@ html, body { height: 100%; }
   .rail-title { max-width: 40vw; }
   .progress-rail { gap: 12px; }
   .sketch-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  /* Ticks are ~7px and 14-wide here — un-tappable. Swipe is the nav on mobile,
+     so the rail is indicator-only (line + fill + count stay). */
+  .rail-tick { display: none; }
 }
