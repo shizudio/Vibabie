@@ -40,9 +40,13 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v))
 
 // ── Responsive tuning ─────────────────────────────────────
 let L = {}
+let mobileLayout = false
+const prefersCoarsePointer = () => window.matchMedia('(pointer: coarse)').matches
+
 function computeLayout() {
   const vw = window.innerWidth
-  if (vw <= 767) {
+  mobileLayout = vw <= 767
+  if (mobileLayout) {
     const cardMax = vw * 0.72
     L = { cardMax, pileMax: vw * 0.58, step: 260, spread: vw * 0.40, steep: 0.72 }
   } else {
@@ -67,7 +71,7 @@ function buildTrack() {
     card.dataset.index = i
     card.innerHTML = `
       <div class="art-card-frame">
-        <img src="${art.src}" alt="${art.title}" loading="${i < 4 ? 'eager' : 'lazy'}" draggable="false" />
+        <img src="${art.src}" alt="${art.title}" loading="${i < 4 ? 'eager' : 'lazy'}" decoding="async" draggable="false" />
       </div>
       <figcaption class="art-card-cap">
         <span class="art-card-num">${pad(i + 1)}</span>
@@ -87,7 +91,7 @@ function buildTrack() {
   pileEl.innerHTML = `
     <div class="sketch-pile-stack">
       ${SKETCHES.slice(0, 5).map((s, k) => `
-        <img class="sketch-pile-layer" style="--k:${k}" src="${s.src}" alt="${s.title || 'sketch'}" loading="lazy" draggable="false" />
+        <img class="sketch-pile-layer" style="--k:${k}" src="${s.src}" alt="${s.title || 'sketch'}" loading="lazy" decoding="async" draggable="false" />
       `).join('')}
     </div>
     <figcaption class="sketch-pile-cap">
@@ -134,6 +138,11 @@ function render() {
   items.forEach(({ el, index }) => {
     const off  = index - focus
     const aoff = Math.abs(off)
+    if (mobileLayout && aoff > 3.25) {
+      el.style.visibility = 'hidden'
+      return
+    }
+    el.style.visibility = 'visible'
     const t    = Math.tanh(off * L.steep)         // spacing curve: steep at centre
     const x     = L.spread * t                     // horizontal offset (px)
     // neighbours fall off; the focal piece gets a +20% boost that fades by one slot
@@ -142,10 +151,9 @@ function render() {
     const y     = Math.min(aoff, 4) * 5             // tiny recede downward
     // keep every image opaque; signify depth with a gentle darkening instead
     const bright = Math.max(0.74, 1 - Math.min(aoff, 5) * 0.055)
-    el.style.left = (anchor + x) + 'px'
-    el.style.transform = `translate(-50%, -50%) translate(0, ${y}px) rotate(${rot}deg) scale(${scale})`
+    el.style.transform = `translate3d(calc(${anchor + x}px - 50%), calc(-50% + ${y}px), 0) rotate(${rot}deg) scale(${scale})`
     el.style.opacity = 1
-    el.style.filter = aoff < 0.5 ? 'none' : `brightness(${bright})`
+    el.style.filter = mobileLayout || aoff < 0.5 ? 'none' : `brightness(${bright})`
     el.style.zIndex = String(1000 - Math.round(aoff * 100))
   })
 
@@ -176,7 +184,7 @@ function onScroll() {
   if (!rafPending) { requestAnimationFrame(() => { render(); rafPending = false }); rafPending = true }
   // schedule a gentle snap once the user stops scrolling (not while dragging or
   // already animating a snap, so they never fight each other)
-  if (!dragging && !snapAnim) { clearTimeout(snapTimer); snapTimer = setTimeout(snap, 140) }
+  if (!dragging && !snapAnim) { clearTimeout(snapTimer); snapTimer = setTimeout(snap, mobileLayout ? 220 : 140) }
 }
 function cancelSnap() { if (snapAnim) { cancelAnimationFrame(snapAnim); snapAnim = null } }
 
@@ -186,10 +194,11 @@ function animateScrollTo(target, duration = 520) {
   const start = viewport.scrollLeft
   const dist  = target - start
   if (Math.abs(dist) < 1) return
+  const runTime = mobileLayout ? Math.min(duration, 360) : duration
   const t0 = performance.now()
   const ease = p => 1 - Math.pow(1 - p, 3)            // easeOutCubic
   const tick = now => {
-    const p = Math.min(1, (now - t0) / duration)
+    const p = Math.min(1, (now - t0) / runTime)
     viewport.scrollLeft = start + dist * ease(p)
     snapAnim = p < 1 ? requestAnimationFrame(tick) : null
   }
@@ -212,6 +221,7 @@ viewport.addEventListener('wheel', e => {
 // drag to scroll
 let dragging = false, dragStartX = 0, dragStartScroll = 0, moved = 0
 viewport.addEventListener('pointerdown', e => {
+  if (prefersCoarsePointer()) return
   cancelSnap()
   dragging = true; moved = 0
   dragStartX = e.clientX; dragStartScroll = viewport.scrollLeft
@@ -245,7 +255,7 @@ document.addEventListener('keydown', e => {
 function buildSketchGrid() {
   sketchGrid.innerHTML = SKETCHES.map((s, i) => `
     <button class="sketch-cell" data-index="${i}" style="--d:${i}">
-      <img src="${s.src}" alt="${s.title || 'sketch'}" loading="lazy" />
+      <img src="${s.src}" alt="${s.title || 'sketch'}" loading="lazy" decoding="async" />
       ${s.title ? `<span class="sketch-cell-label">${s.title}</span>` : ''}
     </button>
   `).join('')

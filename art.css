@@ -49,7 +49,10 @@ html, body { height: 100%; }
   overflow-y: hidden;
   scrollbar-width: none;
   cursor: grab;
-  scroll-snap-type: x proximity;
+  scroll-snap-type: none;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  overscroll-behavior-x: contain;
 }
 .track-viewport::-webkit-scrollbar { display: none; }
 .track-viewport.dragging { cursor: grabbing; }
@@ -64,12 +67,14 @@ html, body { height: 100%; }
 .art-card {
   position: absolute;
   top: 51%;             /* deck sits just below centre, balancing white space above (title) and below (caption/rail) */
-  left: 50%;            /* anchored to viewport centre; render() offsets it */
+  left: 0;              /* render() positions cards using compositor-friendly transforms */
   margin: 0;
   text-align: center;
   transform: translate(-50%, -50%);
   transform-origin: center center;
   will-change: transform, opacity;
+  contain: layout paint style;
+  backface-visibility: hidden;
   cursor: pointer;
 }
 
@@ -125,11 +130,13 @@ html, body { height: 100%; }
 .sketch-pile {
   position: absolute;
   top: 51%;
-  left: 50%;
+  left: 0;
   width: var(--card-max, 420px);
   transform: translate(-50%, -50%);
   transform-origin: center center;
   will-change: transform, opacity;
+  contain: layout paint style;
+  backface-visibility: hidden;
   cursor: pointer;
   text-align: center;
 }
