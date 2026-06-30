@@ -71,7 +71,7 @@
   --amber: #FCBC43;
   --teal: #94D3D3;
   --blush: #EFDBE4;
-  --stone: #9A928E;
+  --stone: #756E68;   /* darkened from #9A928E for WCAG AA (2.85:1 -> 4.56:1 on paper) */
   --ink: #1C1714;
   --paper: #F7F6F4;
   --border: rgba(26, 23, 20, 0.09);
