@@ -89,7 +89,7 @@ html, body { height: 100%; }
   line-height: 0;
   border-radius: var(--radius-sm);
   overflow: hidden;
-  box-shadow: 0 14px 40px rgba(26, 22, 20, 0.20), 0 2px 6px rgba(26, 22, 20, 0.10);
+  box-shadow: none;
   transition: box-shadow 0.45s ease;
 }
 
@@ -122,7 +122,7 @@ html, body { height: 100%; }
   user-select: none;
 }
 .art-card.is-active .art-card-frame {
-  box-shadow: 0 30px 80px rgba(26, 22, 20, 0.34), 0 6px 18px rgba(26, 22, 20, 0.16);
+  box-shadow: 0 24px 70px rgba(26, 22, 20, 0.10);
 }
 
 /* Per-card caption removed — the bottom rail names the active piece instead,
@@ -161,7 +161,7 @@ html, body { height: 100%; }
   transform: translate(-50%, -50%);
   transform-origin: center center;
   will-change: transform, opacity;
-  contain: layout paint style;
+  contain: layout style;
   backface-visibility: hidden;
   cursor: pointer;
   text-align: center;
