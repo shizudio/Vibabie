@@ -106,6 +106,10 @@ function buildTrack() {
 
   // Scrollable range: N steps from first piece to the pile
   track.style.width = (N * L.step + viewport.clientWidth) + 'px'
+  maxPos = N * L.step
+  pos = clamp(pos, 0, maxPos)
+  // On mobile we drive the deck ourselves, so disable native scroll entirely.
+  viewport.classList.toggle('deck-touch', mobileLayout)
 
   buildRail()
 }
@@ -130,11 +134,13 @@ function buildRail() {
 // ── Focus-driven layout (the deck math) ───────────────────
 let activeIndex = -1
 function render() {
-  const focus  = clamp(viewport.scrollLeft / L.step, 0, N)
+  const scroll = getScroll()
+  const focus  = clamp(scroll / L.step, 0, N)
   const centeredness = 1 - Math.min(Math.abs(focus - Math.round(focus)) / 0.5, 1)
-  // anchor everything to the viewport centre (cards live inside the scroller,
-  // so we add scrollLeft to keep them visually fixed while focus drives layout)
-  const anchor = viewport.scrollLeft + viewport.clientWidth / 2
+  // Desktop cards live inside the native scroller, so we add scrollLeft to keep
+  // them visually fixed. Mobile has no native scroll (custom inertia drives a
+  // virtual position), so the anchor is just the viewport centre.
+  const anchor = (mobileLayout ? 0 : scroll) + viewport.clientWidth / 2
 
   items.forEach(({ el, index }) => {
     const off  = index - focus
@@ -162,8 +168,8 @@ function render() {
     el.style.zIndex = String(1000 - Math.round(aoff * 100))
   })
 
-  const max = viewport.scrollWidth - viewport.clientWidth
-  railFill.style.transform = `scaleX(${max > 0 ? viewport.scrollLeft / max : 0})`
+  const max = mobileLayout ? maxPos : (viewport.scrollWidth - viewport.clientWidth)
+  railFill.style.transform = `scaleX(${max > 0 ? scroll / max : 0})`
 
   const near = Math.round(focus)
   if (near !== activeIndex) setActive(near)
@@ -185,9 +191,18 @@ function setActive(i) {
 
 // ── Scroll, snap, render loop ─────────────────────────────
 let rafPending = false, snapTimer = null, snapAnim = null
-function onScroll() {
+
+// Mobile drives a virtual position (no native scroll → no compositor/main-thread
+// desync, which is what caused the swipe trembling). Desktop reads scrollLeft.
+let pos = 0, maxPos = 0
+function getScroll() { return mobileLayout ? pos : viewport.scrollLeft }
+function scheduleRender() {
   if (!rafPending) { requestAnimationFrame(() => { render(); rafPending = false }); rafPending = true }
-  if (mobileLayout || prefersCoarsePointer()) return
+}
+
+function onScroll() {
+  scheduleRender()
+  if (mobileLayout) return   // native scroll is disabled on mobile; this won't fire
   // schedule a gentle snap once the user stops scrolling (not while dragging or
   // already animating a snap, so they never fight each other)
   if (!dragging && !snapAnim) { clearTimeout(snapTimer); snapTimer = setTimeout(snap, 140) }
@@ -224,10 +239,10 @@ viewport.addEventListener('wheel', e => {
   if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) { cancelSnap(); viewport.scrollLeft += e.deltaY; e.preventDefault() }
 }, { passive: false })
 
-// drag to scroll
+// ── Desktop: drag the native scroller ─────────────────────
 let dragging = false, dragStartX = 0, dragStartScroll = 0, moved = 0
 viewport.addEventListener('pointerdown', e => {
-  if (prefersCoarsePointer()) return
+  if (mobileLayout) return
   cancelSnap()
   dragging = true; moved = 0
   dragStartX = e.clientX; dragStartScroll = viewport.scrollLeft
@@ -245,7 +260,60 @@ window.addEventListener('pointerup', () => {
   viewport.classList.remove('dragging')
   clearTimeout(snapTimer); snapTimer = setTimeout(snap, 60)
 })
-// suppress click after a real drag
+
+// ── Mobile: custom pointer + inertia (no native scroll → no swipe trembling) ──
+let mDragging = false, mLastX = 0, mLastT = 0, mVel = 0, inertiaRAF = null
+function stopInertia() { if (inertiaRAF) { cancelAnimationFrame(inertiaRAF); inertiaRAF = null } }
+function animatePos(target, dur = 320) {
+  stopInertia()
+  const start = pos, dist = target - start
+  if (Math.abs(dist) < 0.5) return
+  const t0 = performance.now(), ease = p => 1 - Math.pow(1 - p, 3)   // easeOutCubic
+  const tick = now => {
+    const p = Math.min(1, (now - t0) / dur)
+    pos = start + dist * ease(p); scheduleRender()
+    inertiaRAF = p < 1 ? requestAnimationFrame(tick) : null
+  }
+  inertiaRAF = requestAnimationFrame(tick)
+}
+function snapMobile() { animatePos(clamp(Math.round(pos / L.step), 0, N) * L.step) }
+function runInertia() {
+  stopInertia()
+  const friction = 0.92, minV = 0.15
+  const tick = () => {
+    pos = clamp(pos - mVel, 0, maxPos)
+    mVel *= friction
+    scheduleRender()
+    if (Math.abs(mVel) > minV && pos > 0 && pos < maxPos) inertiaRAF = requestAnimationFrame(tick)
+    else { inertiaRAF = null; snapMobile() }
+  }
+  inertiaRAF = requestAnimationFrame(tick)
+}
+viewport.addEventListener('pointerdown', e => {
+  if (!mobileLayout) return
+  stopInertia()
+  mDragging = true; mVel = 0; moved = 0
+  mLastX = e.clientX; mLastT = performance.now()
+}, { passive: true })
+window.addEventListener('pointermove', e => {
+  if (!mobileLayout || !mDragging) return
+  const now = performance.now()
+  const dx = e.clientX - mLastX
+  const dt = Math.max(1, now - mLastT)
+  mVel = clamp(dx * (16 / dt), -140, 140)   // px per ~frame
+  pos = clamp(pos - dx, 0, maxPos)
+  moved += Math.abs(dx)
+  mLastX = e.clientX; mLastT = now
+  scheduleRender()
+})
+window.addEventListener('pointerup', () => {
+  if (!mobileLayout || !mDragging) return
+  mDragging = false
+  if (Math.abs(mVel) > 0.4) runInertia()
+  else snapMobile()
+})
+
+// suppress click after a real drag/swipe
 viewport.addEventListener('click', e => {
   if (moved > 8) { e.stopPropagation(); e.preventDefault() }
 }, true)
