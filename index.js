@@ -403,17 +403,32 @@ function preloadOverlays() {
     { id: 'bed-overlay',         webm: '/hotspot/bed.webm',         mp4: '/hotspot/bed.mp4' },
     { id: 'laptop-overlay',     webm: '/hotspot/laptop.webm',      mp4: '/hotspot/laptop.mp4' },
   ]
+  // Assign sources but keep buffering OFF the critical path: preload="none"
+  // means nothing downloads until we warm during idle (or the user interacts),
+  // so ~6MB of overlay video no longer competes with the hero on first paint.
   overlays.forEach(({ id, webm, mp4, playbackRate }) => {
     const el = document.getElementById(id)
     if (!el) return
+    el.preload = 'none'
     el.innerHTML = `<source src="${webm}" type="video/webm"><source src="${mp4}" type="video/mp4">`
     if (playbackRate) {
       el.playbackRate = playbackRate
       // Re-apply after load() since some browsers reset playbackRate
       el.addEventListener('canplay', () => { el.playbackRate = playbackRate }, { once: false })
     }
-    el.load()
   })
+
+  // Warm the buffers during idle, after first paint, so the first hover/tap is
+  // still instant without blocking the initial room load.
+  const warm = () => overlays.forEach(({ id }) => {
+    const el = document.getElementById(id)
+    if (el) { el.preload = 'auto'; el.load() }
+  })
+  const schedule = () => (window.requestIdleCallback
+    ? requestIdleCallback(warm, { timeout: 4000 })
+    : setTimeout(warm, 1500))
+  if (document.readyState === 'complete') schedule()
+  else window.addEventListener('load', schedule, { once: true })
 }
 preloadOverlays()
 

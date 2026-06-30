@@ -272,8 +272,8 @@
    }
    .tooltip-desc {
      font-size: clamp(0.44rem, 0.4vw, 0.52rem);
-     letter-spacing: 0.14em;
-     text-transform: uppercase;
+     letter-spacing: 0.02em;
+     text-transform: none;
      color: var(--stone);
      display: block;
      margin-bottom: 11px;
@@ -490,20 +490,12 @@
     }
 
     .mobile-link.revealed .mobile-link-desc {
-      font-size: 0.52rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+      font-size: 0.6rem;
+      letter-spacing: 0.02em;
+      text-transform: none;
       color: var(--stone);
       font-weight: 200;
       text-align: left;
-    }
-
-    .mobile-link.revealed::after {
-      content: '↗';
-      font-size: 0.9rem;
-      color: var(--crimson, #7f1f12);
-      flex-shrink: 0;
-      margin-left: auto;
     }
 
     /* ── WELCOME TEXT (mobile only, sits above the painting in overview) ── */

@@ -39,6 +39,7 @@ html, body { height: 100%; }
   color: var(--stone);
   font-weight: 300;
 }
+.stage-hint-mobile { display: none; }
 .fade-up { animation-delay: calc(var(--i, 0) * 0.08s) !important; }
 
 /* ── Track viewport (the scroller) ─────────────────────── */
@@ -80,6 +81,7 @@ html, body { height: 100%; }
 
 /* Frameless: the image is shown at its true aspect ratio with only a shadow */
 .art-card-frame {
+  position: relative;
   display: inline-block;
   line-height: 0;
   border-radius: var(--radius-sm);
@@ -87,6 +89,21 @@ html, body { height: 100%; }
   box-shadow: 0 14px 40px rgba(26, 22, 20, 0.20), 0 2px 6px rgba(26, 22, 20, 0.10);
   transition: box-shadow 0.45s ease;
 }
+
+.art-card-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(237, 232, 226, 0.3);
+  opacity: 1;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.art-card.is-active .art-card-frame::after {
+  opacity: 0;
+}
+
 .art-card-frame img {
   display: block;
   width: auto;
@@ -386,6 +403,8 @@ html, body { height: 100%; }
 @media (max-width: 767px) {
   .stage-head { max-width: 70vw; }
   .stage-head .page-h1 { font-size: clamp(1.4rem, 6vw, 1.8rem); }
+  .stage-hint-desktop { display: none; }
+  .stage-hint-mobile { display: inline; }
   .art-card-frame img { max-height: 46vh; }
   .rail-title { max-width: 40vw; }
   .progress-rail { gap: 12px; }
