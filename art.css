@@ -94,14 +94,20 @@ html, body { height: 100%; }
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(237, 232, 226, 0.3);
+  background:
+    linear-gradient(
+      115deg,
+      rgba(237, 232, 226, calc(var(--veil-opacity, 0) * 0.75)),
+      rgba(237, 232, 226, var(--veil-opacity, 0)) 52%,
+      rgba(247, 246, 244, calc(var(--veil-opacity, 0) * 0.8))
+    );
   opacity: 1;
   pointer-events: none;
-  transition: opacity 0.25s ease;
+  transition: background 0.25s ease;
 }
 
 .art-card.is-active .art-card-frame::after {
-  opacity: 0;
+  --veil-opacity: 0;
 }
 
 .art-card-frame img {
@@ -186,7 +192,7 @@ html, body { height: 100%; }
   box-shadow: 0 18px 44px rgba(26, 22, 20, 0.26);
 }
 .sketch-pile-cap {
-  display: inline-flex;
+  display: none;
   align-items: baseline;
   justify-content: center;
   gap: 10px;
@@ -405,7 +411,7 @@ html, body { height: 100%; }
   .stage-head .page-h1 { font-size: clamp(1.4rem, 6vw, 1.8rem); }
   .stage-hint-desktop { display: none; }
   .stage-hint-mobile { display: inline; }
-  .art-card-frame img { max-height: 46vh; }
+  .art-card-frame img { max-height: 34.5vh; }
   .rail-title { max-width: 40vw; }
   .progress-rail { gap: 12px; }
   .sketch-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }

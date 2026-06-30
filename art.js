@@ -47,8 +47,8 @@ function computeLayout() {
   const vw = window.innerWidth
   mobileLayout = vw <= 767
   if (mobileLayout) {
-    const cardMax = vw * 0.72
-    L = { cardMax, pileMax: vw * 0.58, step: 260, spread: vw * 0.40, steep: 0.72 }
+    const cardMax = vw * 0.54
+    L = { cardMax, pileMax: vw * 0.435, step: 260, spread: vw * 0.40, steep: 0.72 }
   } else {
     const cardMax = Math.min(vw * 0.37, 576)
     L = { cardMax, pileMax: cardMax * 0.78, step: 320, spread: vw * 0.35, steep: 0.62 }
@@ -131,6 +131,7 @@ function buildRail() {
 let activeIndex = -1
 function render() {
   const focus  = clamp(viewport.scrollLeft / L.step, 0, N)
+  const centeredness = 1 - Math.min(Math.abs(focus - Math.round(focus)) / 0.5, 1)
   // anchor everything to the viewport centre (cards live inside the scroller,
   // so we add scrollLeft to keep them visually fixed while focus drives layout)
   const anchor = viewport.scrollLeft + viewport.clientWidth / 2
@@ -143,6 +144,8 @@ function render() {
       return
     }
     el.style.visibility = 'visible'
+    const veil = index === Math.round(focus) ? 0 : 0.8 * centeredness * Math.min(1, aoff)
+    el.style.setProperty('--veil-opacity', veil.toFixed(3))
     const t    = Math.tanh(off * L.steep)         // spacing curve: steep at centre
     const x     = L.spread * t                     // horizontal offset (px)
     // neighbours fall off; the focal piece gets a +20% boost that fades by one slot
@@ -173,7 +176,7 @@ function setActive(i) {
   railCount.textContent = `${pad(i + 1)} / ${pad(N + 1)}`
   if (i >= N) {
     capTitle.textContent = 'The Sketchbook'
-    capMeta.textContent  = `Loose studies · ${SKETCHES.length}`
+    capMeta.textContent  = 'Click to open'
   } else {
     capTitle.textContent = ARTWORKS[i].title
     capMeta.textContent  = ARTWORKS[i].meta || ''
