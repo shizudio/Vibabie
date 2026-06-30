@@ -340,10 +340,18 @@ function initWidget(IFrameAPI) {
 // when it loads, but ES modules are deferred. So we must set up the callback
 // via a synchronous inline script BEFORE loading the API script.
 
-if (window.SpotifyIframeApi) {
-  // API already loaded and ready (unlikely but handle it)
-  initWidget(window.SpotifyIframeApi)
-} else {
+// Defer the heavy third-party Spotify IFrame API off first paint. The widget
+// UI already renders from local spotify-data.json; the playback controller is
+// wired up during idle, or the moment the user interacts with the widget.
+function loadSpotifyApi() {
+  if (window.__spotifyApiStarted) return
+  window.__spotifyApiStarted = true
+
+  if (window.SpotifyIframeApi) {
+    initWidget(window.SpotifyIframeApi)
+    return
+  }
+
   // Inject synchronous inline script to capture the callback BEFORE the API loads
   if (!window.__spotifyWidgetReady) {
     const setup = document.createElement('script')
@@ -369,4 +377,16 @@ if (window.SpotifyIframeApi) {
 
   window.__spotifyWidgetReady.then(initWidget)
 }
+
+let __spotifyKicked = false
+const kickSpotify = () => { if (__spotifyKicked) return; __spotifyKicked = true; loadSpotifyApi() }
+// Interaction with the widget loads it immediately…
+widget.addEventListener('pointerenter', kickSpotify, { once: true })
+widget.addEventListener('click', kickSpotify, { once: true })
+// …otherwise it warms up during idle after the page has settled.
+const idleKick = () => (window.requestIdleCallback
+  ? requestIdleCallback(kickSpotify, { timeout: 3000 })
+  : setTimeout(kickSpotify, 2000))
+if (document.readyState === 'complete') idleKick()
+else window.addEventListener('load', idleKick, { once: true })
 } // end guard
