@@ -685,12 +685,14 @@
     .room-welcome.hidden { display: none; }
 
     /* ── UNDER-FRAME PLACARDS (mobile) ── */
-    /* Fixed near the bottom, centered, stacked. Sits above the painting but
-       clear of .expand-hint (bottom:52px). Fades out on room expansion,
-       mirroring the .room-welcome pattern. */
+    /* Fixed, centered, stacked. `top` is set in JS (positionMobilePlacards) to
+       sit just below the painting's real bottom edge — device-agnostic. The
+       `bottom` fallback only applies for the brief moment before JS runs (and
+       the block is [hidden] until now.json loads anyway). Fades out on room
+       expansion, mirroring the .room-welcome pattern. */
     .frame-placards {
       position: fixed;
-      bottom: 140px;
+      bottom: 120px;
       left: 50%;
       transform: translateX(-50%);
       width: calc(100% - 48px);

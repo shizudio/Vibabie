@@ -218,6 +218,22 @@ function setMobileOverview() {
   // is a no-op until the diptych is populated.
   const placards = document.getElementById('frame-placards')
   if (placards) placards.classList.remove('hidden', 'fading')
+  positionMobilePlacards()
+}
+
+// Anchor the mobile "now" placards just below the painting's REAL bottom edge.
+// A hardcoded `bottom:` value was device-specific and overlapped the painting on
+// taller phones / when the iOS URL bar shrinks the visual viewport. Measuring the
+// rendered (post-transform) painting box makes placement correct on any viewport.
+function positionMobilePlacards() {
+  if (!isMobile()) return
+  const placards = document.getElementById('frame-placards')
+  const frameBorder = document.querySelector('.frame-border')
+  if (!placards || !frameBorder) return
+  if (placards.hasAttribute('hidden') || mobileExpanded) return
+  const paintingBottom = frameBorder.getBoundingClientRect().bottom
+  placards.style.top = Math.round(paintingBottom + 18) + 'px'
+  placards.style.bottom = 'auto'
 }
 
 // Expanded state: animate frame-border transform from scaled → natural.
@@ -1084,6 +1100,9 @@ function initNowDiptych() {
         placards.removeAttribute('hidden')
         if (isMobile() && mobileExpanded) placards.classList.add('hidden')
       }
+      // setMobileOverview ran before this fetch resolved (placards were still
+      // hidden), so position them now that they're revealed.
+      if (isMobile()) positionMobilePlacards()
 
       // Enrich the room hover story with the current work
       const yearOf = s => ((s && s.match(/\b(?:19|20)\d{2}\b/)) || [])[0]
