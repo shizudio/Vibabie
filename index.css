@@ -72,7 +72,36 @@
      height: 100%;
      object-fit: cover;
    }
-   
+
+   /* ── EASEL "NOW PAINTING" OVERLAY ──
+      The artist's latest painting composited onto the white easel canvas so it
+      reads as painted into the scene. Positioned at the easel-canvas bounding
+      box (percentages of the room image), then rotated to match the canvas
+      quadrilateral: TL(58,17) TR(72,15) BR(73,60) BL(57,62) — top edge rises
+      left→right ≈4.5°. multiply + feathered mask blend it into the paint. */
+   #easel-now-overlay {
+     position: absolute;
+     /* Values tuned by Shina via the ?easel-editor dev tool (2026-07-10). */
+     top: 19.5%;
+     left: 58.4%;
+     width: 14%;
+     height: 34.6%;
+     object-fit: cover;
+     transform-origin: 50% 50%;
+     transform: rotate(6.25deg);
+     z-index: 5;                 /* same layer as video overlays: above base paint, below zones (10) */
+     pointer-events: none;       /* Canvas zone hover/click still works underneath */
+     /* normal blend: multiply ghosted the underlying sketch through the artwork.
+        The white canvas beneath makes normal blend sit naturally. */
+     opacity: 0.89;
+     /* 0.5px blur softens the digital-crisp edge to match the painting's brushwork */
+     filter: saturate(0.9) contrast(0.96) sepia(0.06) blur(0.5px);
+     /* wide feather: solid to 62%, gentle falloff to the edge — the artwork
+        dissolves into the canvas margin instead of ending in a hard line */
+     -webkit-mask-image: radial-gradient(ellipse 100% 100% at 50% 50%, #000 62%, rgba(0, 0, 0, 0.55) 82%, transparent 99%);
+     mask-image: radial-gradient(ellipse 100% 100% at 50% 50%, #000 62%, rgba(0, 0, 0, 0.55) 82%, transparent 99%);
+   }
+
    /* ── ZONES (invisible interaction areas) ── */
    .zone {
      position: absolute;
@@ -294,6 +323,132 @@
    .tooltip-link:hover {
      border-bottom-color: var(--crimson);
      letter-spacing: 0.14em;
+   }
+
+   /* ── UNDER-FRAME PLACARDS (diptych museum labels) ── */
+   .frame-placards {
+     /* One new local color note — the shipping pigment. Easily reverted. */
+     --ultramarine: #2436C7;
+     width: 100%;
+     display: flex;
+     justify-content: space-between;
+     gap: 24px;
+     margin-top: 14px;
+   }
+   /* keep [hidden] working despite display:flex above (prevents empty-shell flash) */
+   .frame-placards[hidden] { display: none; }
+
+   .placard {
+     text-decoration: none;
+     display: flex;
+     flex-direction: column;
+     gap: 2px;
+   }
+   .placard-eyebrow {
+     font-family: var(--font-sans);
+     font-size: var(--text-xs);
+     text-transform: uppercase;
+     letter-spacing: 0.18em;
+   }
+   .placard-art  .placard-eyebrow { color: var(--crimson); }
+   .placard-ship .placard-eyebrow { color: var(--ultramarine); }
+
+   .placard-title {
+     font-family: var(--font-display);
+     font-style: italic;
+     font-size: 0.95rem;
+     color: var(--ink);
+     transition: color 0.2s ease;
+   }
+   .placard-art:hover  .placard-title { color: var(--crimson); }
+   .placard-ship:hover .placard-title { color: var(--ultramarine); }
+
+   .placard-meta {
+     font-size: clamp(0.5rem, 0.5vw, 0.6rem);
+     letter-spacing: 0.06em;
+     color: var(--stone);
+   }
+
+   /* The two placards bookend the painting width */
+   .placard-ship { text-align: right; align-items: flex-end; }
+
+   @media (prefers-reduced-motion: reduce) {
+     .placard-title, .frame-placards { transition: none; }
+   }
+
+   /* ── EASEL OVERLAY EDITOR (dev tool, ?easel-editor) ── */
+   #easel-editor {
+     position: fixed;
+     top: 96px;
+     left: 20px;
+     z-index: 200;
+     width: 264px;
+     background: var(--paper);
+     border: 1px solid var(--border);
+     box-shadow: var(--shadow-md);
+     padding: 16px 18px;
+     font-family: var(--font-sans);
+     cursor: auto;
+   }
+   #easel-editor .ee-title {
+     font-size: 0.6rem;
+     letter-spacing: 0.2em;
+     text-transform: uppercase;
+     color: var(--crimson);
+     margin: 0 0 12px;
+   }
+   #easel-editor .ee-row {
+     display: grid;
+     grid-template-columns: 56px 1fr 40px;
+     align-items: center;
+     gap: 8px;
+     margin-bottom: 8px;
+   }
+   #easel-editor .ee-row span,
+   #easel-editor .ee-row output {
+     font-size: 0.6rem;
+     letter-spacing: 0.06em;
+     color: var(--stone);
+   }
+   #easel-editor .ee-row output { text-align: right; color: var(--ink); }
+   #easel-editor input[type="range"] { width: 100%; accent-color: var(--crimson); cursor: pointer; }
+   #easel-editor select { font-size: 0.62rem; font-family: var(--font-sans); }
+   #easel-editor .ee-css {
+     margin: 12px 0 10px;
+     padding: 10px;
+     background: var(--paper-dim, #efe9e0);
+     border: 1px solid var(--border);
+     font-family: monospace;
+     font-size: 0.58rem;
+     line-height: 1.6;
+     color: var(--ink);
+     white-space: pre;
+     overflow-x: auto;
+     user-select: all;
+   }
+   #easel-editor .ee-actions { display: flex; align-items: center; gap: 10px; }
+   #easel-editor .ee-copy {
+     font-family: var(--font-sans);
+     font-size: 0.6rem;
+     letter-spacing: 0.12em;
+     text-transform: uppercase;
+     background: var(--crimson);
+     color: var(--paper);
+     border: none;
+     padding: 8px 14px;
+     cursor: pointer;
+   }
+   #easel-editor .ee-copy:hover { opacity: 0.85; }
+   #easel-editor .ee-hint {
+     font-size: 0.55rem;
+     color: var(--stone);
+     font-style: italic;
+     font-family: var(--font-serif);
+   }
+   /* editor mode: make the overlay visibly editable */
+   #easel-now-overlay.ee-active {
+     outline: 1px dashed var(--crimson);
+     outline-offset: 2px;
    }
 
    /* ── MOBILE ZONE LINKS (hidden on desktop) ── */
@@ -528,6 +683,34 @@
     }
     .room-welcome.fading { opacity: 0; }
     .room-welcome.hidden { display: none; }
+
+    /* ── UNDER-FRAME PLACARDS (mobile) ── */
+    /* Fixed near the bottom, centered, stacked. Sits above the painting but
+       clear of .expand-hint (bottom:52px). Fades out on room expansion,
+       mirroring the .room-welcome pattern. */
+    .frame-placards {
+      position: fixed;
+      bottom: 140px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 48px);
+      max-width: 300px;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 16;
+      align-items: center;
+      margin-top: 0;
+      opacity: 1;
+      transition: opacity 0.35s ease;
+    }
+    /* both placards centered on mobile (override desktop right-align) */
+    .placard,
+    .placard-ship {
+      align-items: center;
+      text-align: center;
+    }
+    .frame-placards.fading { opacity: 0; }
+    .frame-placards.hidden { display: none; }
 
     /* ── OVERVIEW OVERLAY (mobile only) ── */
     /* Transparent div that sits above zones; intercepts all touches in overview state */

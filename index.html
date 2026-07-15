@@ -57,6 +57,9 @@
         <div class="room-image" id="room-image">
           <img src="Portfoliov2.webp" alt="Shina's Room" id="room-img" fetchpriority="high" decoding="async" />
 
+          <!-- EASEL "NOW PAINTING" OVERLAY — latest painting composited onto the canvas (src set by JS from now.json) -->
+          <img id="easel-now-overlay" alt="" aria-hidden="true" decoding="async">
+
           <!-- ⑨ RECORD PLAYER -->
           <div class="zone"
             data-emoji="🎶"
@@ -219,6 +222,20 @@
 
         </div>
       </div>
+    </div>
+
+    <!-- Under-frame museum placards (populated + unhidden by JS from now.json) -->
+    <div class="frame-placards" id="frame-placards" hidden>
+      <a class="placard placard-art" id="placard-painting" href="art.html">
+        <span class="placard-eyebrow"></span>
+        <span class="placard-title"></span>
+        <span class="placard-meta"></span>
+      </a>
+      <a class="placard placard-ship" id="placard-shipping" href="work.html">
+        <span class="placard-eyebrow"></span>
+        <span class="placard-title"></span>
+        <span class="placard-meta"></span>
+      </a>
     </div>
 
     <!-- Mobile expand hint — visible in overview state only -->
