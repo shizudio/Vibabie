@@ -1,6 +1,13 @@
 {
   "artworks": [
     {
+      "src": "Art/web/Pivot After.webp",
+      "beforeSrc": "Art/web/Pivot Before.webp",
+      "title": "The Pivot",
+      "meta": "Acrylic on canvas · 2025",
+      "description": "I don't always know where I'm going when I paint. Sometimes I make mistakes, sometimes I pivot. This is a painting I almost completed 10 months ago but decided to repaint the flowers entirely."
+    },
+    {
       "src": "Art/web/96A01E77-6307-4B05-A040-B77E21091EB5 1.webp",
       "title": "Night Market",
       "meta": "Oil on canvas",

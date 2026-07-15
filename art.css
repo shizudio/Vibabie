@@ -106,12 +106,17 @@ html, body { height: 100%; }
     );
   opacity: 1;
   pointer-events: none;
-  transition: background 0.25s ease;
+  /* No CSS transition here — --veil-opacity is an untyped custom property, so
+     the browser can't interpolate it as a number; a transition on background
+     would just restart every frame instead of smoothing anything. The JS-side
+     damping in art.js's render() (VEIL_DAMPING) owns the smoothing instead. */
 }
 
-.art-card.is-active .art-card-frame::after {
-  --veil-opacity: 0;
-}
+/* No .is-active override on --veil-opacity here on purpose: JS already damps
+   the active card's veil toward 0 like every other card (see render() in
+   art.js). An instant CSS override here would re-introduce a snap exactly
+   where index-crossings happen most during fast scroll — the opposite of
+   what the damping is for. */
 
 .art-card-frame img {
   display: block;
@@ -124,6 +129,36 @@ html, body { height: 100%; }
 .art-card.is-active .art-card-frame {
   box-shadow: 0 24px 70px rgba(26, 22, 20, 0.10);
 }
+
+/* Opt-in before/after flip tag — only rendered for manifest entries with
+   beforeSrc (currently just "The Pivot"). Sits like a museum wall label. */
+.art-card-flip {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 2;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 300;
+  color: var(--paper);
+  background: rgba(26, 22, 20, 0.55);
+  backdrop-filter: blur(6px);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.25s ease, transform 0.25s ease, background 0.2s ease;
+}
+.art-card.is-active .art-card-flip {
+  opacity: 1;
+  transform: none;
+}
+.art-card-flip:hover,
+.art-card-flip.is-before { background: var(--crimson); }
 
 /* Per-card caption removed — the bottom rail names the active piece instead,
    so the label can never overlap the neighbouring artwork. */

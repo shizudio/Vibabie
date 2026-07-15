@@ -72,15 +72,35 @@ function buildTrack() {
     card.innerHTML = `
       <div class="art-card-frame">
         <img src="${art.src}" alt="${art.title}" loading="${i < 4 ? 'eager' : 'lazy'}" decoding="async" draggable="false" />
+        ${art.beforeSrc ? '<button type="button" class="art-card-flip">before / after</button>' : ''}
       </div>
       <figcaption class="art-card-cap">
         <span class="art-card-num">${pad(i + 1)}</span>
         <span class="art-card-title">${art.title}${parseYear(art.meta) ? ` <span class="art-card-year">${parseYear(art.meta)}</span>` : ''}</span>
       </figcaption>
     `
-    card.querySelector('img').addEventListener('click', () => openLightbox(art.src, art.description || art.title))
+    const img = card.querySelector('img')
+    img.addEventListener('click', () => openLightbox(img.src, art.description || art.title))
+
+    // Opt-in before/after flip — only rendered when a manifest entry has beforeSrc.
+    const flipBtn = card.querySelector('.art-card-flip')
+    if (flipBtn) {
+      let showingBefore = false
+      flipBtn.addEventListener('click', e => {
+        e.stopPropagation()
+        showingBefore = !showingBefore
+        img.src = showingBefore ? art.beforeSrc : art.src
+        flipBtn.textContent = showingBefore ? 'after ↻' : 'before / after'
+        flipBtn.classList.toggle('is-before', showingBefore)
+      })
+    }
+
     track.appendChild(card)
-    items.push({ el: card, index: i, isPile: false })
+    // veil starts null so the item's first-ever render() snaps straight to its
+    // correct value instead of easing in from 0 (which would flash undimmed
+    // on load / after a resize rebuild). Only later frames, driven by actual
+    // scrolling, get the damped ease — see render().
+    items.push({ el: card, index: i, isPile: false, veil: null })
   })
 
   // ── Sketch pile (index N) ──
@@ -102,7 +122,7 @@ function buildTrack() {
   `
   pileEl.addEventListener('click', openSketchModal)
   track.appendChild(pileEl)
-  items.push({ el: pileEl, index: N, isPile: true })
+  items.push({ el: pileEl, index: N, isPile: true, veil: null })
 
   // Scrollable range: N steps from first piece to the pile
   track.style.width = (N * L.step + viewport.clientWidth) + 'px'
@@ -133,6 +153,12 @@ function buildRail() {
 
 // ── Focus-driven layout (the deck math) ───────────────────
 let activeIndex = -1
+// Per-frame lerp factor for the veil fade: displayed value eases toward its
+// target instead of snapping to it, so fast scrolling doesn't strobe the
+// opacity (the CSS transition on .art-card-frame::after can't smooth this
+// itself — --veil-opacity is an untyped custom property, so the browser
+// can't interpolate it as a number; JS owns the smoothing instead).
+const VEIL_DAMPING = 0.18
 function render() {
   const scroll = getScroll()
   const focus  = clamp(scroll / L.step, 0, N)
@@ -142,7 +168,9 @@ function render() {
   // virtual position), so the anchor is just the viewport centre.
   const anchor = (mobileLayout ? 0 : scroll) + viewport.clientWidth / 2
 
-  items.forEach(({ el, index }) => {
+  let veilSettling = false
+  items.forEach(item => {
+    const { el, index } = item
     const off  = index - focus
     const aoff = Math.abs(off)
     if (mobileLayout && aoff > 3.25) {
@@ -150,8 +178,11 @@ function render() {
       return
     }
     el.style.visibility = 'visible'
-    const veil = index === Math.round(focus) ? 0 : 0.8 * centeredness * Math.min(1, aoff)
-    el.style.setProperty('--veil-opacity', veil.toFixed(3))
+    const veilTarget = index === Math.round(focus) ? 0 : 0.8 * centeredness * Math.min(1, aoff)
+    if (item.veil === null) item.veil = veilTarget   // first render for this item: snap, don't ease in
+    else item.veil += (veilTarget - item.veil) * VEIL_DAMPING
+    if (Math.abs(veilTarget - item.veil) > 0.001) veilSettling = true
+    el.style.setProperty('--veil-opacity', item.veil.toFixed(3))
     const t    = Math.tanh(off * L.steep)         // spacing curve: steep at centre
     const x     = L.spread * t                     // horizontal offset (px)
     // neighbours fall off; the focal piece gets a +20% boost that fades by one slot
@@ -173,6 +204,10 @@ function render() {
 
   const near = Math.round(focus)
   if (near !== activeIndex) setActive(near)
+
+  // Keep ticking a few extra frames after scrolling stops so the damped veil
+  // values finish easing to their targets instead of freezing mid-fade.
+  if (veilSettling) scheduleRender()
 }
 
 function setActive(i) {
@@ -197,7 +232,10 @@ let rafPending = false, snapTimer = null, snapAnim = null
 let pos = 0, maxPos = 0
 function getScroll() { return mobileLayout ? pos : viewport.scrollLeft }
 function scheduleRender() {
-  if (!rafPending) { requestAnimationFrame(() => { render(); rafPending = false }); rafPending = true }
+  // rafPending clears BEFORE render() runs (not after) so that render() can
+  // self-schedule its own next frame via scheduleRender() while the veil
+  // damping is still settling — see the settle continuation at the end of render().
+  if (!rafPending) { requestAnimationFrame(() => { rafPending = false; render() }); rafPending = true }
 }
 
 function onScroll() {
