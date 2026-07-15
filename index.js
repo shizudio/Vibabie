@@ -16,6 +16,7 @@ let mobileExpanded = false
 let _expandClearTimer = null
 let _hintHideTimer    = null
 let _welcomeHideTimer = null
+let _placardsHideTimer = null
 
 // ── LOADER ───────────────────────────────
 const loader      = document.getElementById('loader')
@@ -124,6 +125,7 @@ function _cancelExpandTimers() {
   if (_expandClearTimer) { clearTimeout(_expandClearTimer); _expandClearTimer = null }
   if (_hintHideTimer)    { clearTimeout(_hintHideTimer);    _hintHideTimer    = null }
   if (_welcomeHideTimer) { clearTimeout(_welcomeHideTimer); _welcomeHideTimer = null }
+  if (_placardsHideTimer) { clearTimeout(_placardsHideTimer); _placardsHideTimer = null }
 }
 
 function getMobileRatio() {
@@ -211,6 +213,11 @@ function setMobileOverview() {
   if (hint) hint.classList.remove('hidden', 'fading')
   const welcome = document.querySelector('.room-welcome')
   if (welcome) welcome.classList.remove('hidden', 'fading')
+  // Restore the placards to overview state. The [hidden] attribute (cleared only
+  // once now.json loads) still governs base visibility, so clearing these classes
+  // is a no-op until the diptych is populated.
+  const placards = document.getElementById('frame-placards')
+  if (placards) placards.classList.remove('hidden', 'fading')
 }
 
 // Expanded state: animate frame-border transform from scaled → natural.
@@ -284,6 +291,13 @@ function expandRoom(silent = false) {
     _welcomeHideTimer = setTimeout(() => { _welcomeHideTimer = null; welcome.classList.add('hidden') }, 380)
   }
 
+  // Fade out the placards on expansion (only if populated/visible)
+  const placards = document.getElementById('frame-placards')
+  if (placards && !placards.hasAttribute('hidden') && !placards.classList.contains('hidden')) {
+    placards.classList.add('fading')
+    _placardsHideTimer = setTimeout(() => { _placardsHideTimer = null; placards.classList.add('hidden') }, 380)
+  }
+
   initMobileShimmer()
 }
 
@@ -335,7 +349,10 @@ function fitRoom() {
   const welcome = document.querySelector('.room-welcome')
   const statementH = statement?.offsetHeight || 0
   const welcomeH = welcome?.offsetHeight || 0
-  const textReserve = statementH + welcomeH + 56
+  // Fold the under-frame placard row into the reserve so the painting shrinks
+  // to leave room for it (measured, not hardcoded; 0 until now.json unhides it).
+  const placardsH = document.querySelector('.frame-placards')?.offsetHeight || 0
+  const textReserve = statementH + welcomeH + placardsH + 56
   const headerFooter = Math.max(120, textReserve)
   const maxW = window.innerWidth - padding - 40
   const maxH = window.innerHeight - headerFooter - padding
@@ -1030,8 +1047,192 @@ document.querySelectorAll('.zone').forEach(zone => {
   })
 })
 
+// ── "NOW" DIPTYCH: easel overlay + under-frame placards ──────
+// Driven by public/now.json. Fail-silent: if the fetch fails, the placards stay
+// hidden and the easel overlay stays empty — the page never breaks.
+function initNowDiptych() {
+  fetch('/now.json', { cache: 'no-cache' })
+    .then(r => { if (!r.ok) throw new Error('now.json ' + r.status); return r.json() })
+    .then(data => {
+      const painting = data?.painting
+      const shipping = data?.shipping
+
+      // Composite the latest painting onto the easel canvas
+      const easel = document.getElementById('easel-now-overlay')
+      if (easel && painting?.image) easel.src = painting.image
+
+      // Populate a placard <a> from a now.json entry
+      const fill = (id, entry) => {
+        const el = document.getElementById(id)
+        if (!el || !entry) return
+        if (entry.href) el.href = entry.href
+        const eyebrow = el.querySelector('.placard-eyebrow')
+        const title   = el.querySelector('.placard-title')
+        const meta    = el.querySelector('.placard-meta')
+        if (eyebrow) eyebrow.textContent = entry.eyebrow || ''
+        if (title)   title.textContent   = entry.title   || ''
+        if (meta)    meta.textContent    = entry.meta    || ''
+      }
+      fill('placard-painting', painting)
+      fill('placard-shipping', shipping)
+
+      // Reveal now that content is in place (prevents empty-shell flash).
+      // If the user already expanded the mobile room before the fetch resolved,
+      // keep the placards hidden so they don't pop into the expanded view.
+      const placards = document.getElementById('frame-placards')
+      if (placards) {
+        placards.removeAttribute('hidden')
+        if (isMobile() && mobileExpanded) placards.classList.add('hidden')
+      }
+
+      // Enrich the room hover story with the current work
+      const yearOf = s => ((s && s.match(/\b(?:19|20)\d{2}\b/)) || [])[0]
+      const canvasZone = document.querySelector('.zone[data-label="The Canvas"]')
+      if (canvasZone && painting?.title) {
+        const yr = yearOf(painting.meta)
+        canvasZone.dataset.desc = `now painting — ${painting.title}` + (yr ? ` (${yr})` : '')
+      }
+      const laptopZone = document.querySelector('.zone[data-label="The Laptop"]')
+      if (laptopZone && shipping?.title) {
+        laptopZone.dataset.desc = `now shipping — ${shipping.title}`
+      }
+
+      // now.json resolves after the initial fitRoom(); re-fit on desktop so the
+      // reserve accounts for the newly-visible placard row. (Mobile is fixed-pos.)
+      if (!isMobile()) requestAnimationFrame(fitRoom)
+    })
+    .catch(() => { /* fail silent — placards stay hidden, page unaffected */ })
+}
+initNowDiptych()
+
 // ── NAV LOGO ─────────────────────────────────────────────────
 // Tapping "Shina Foo" while on index.html triggers a full page reload
 // (router.js does NOT set skip-loader in this case), so the loader
 // animation plays again — giving the "fresh landing page" experience.
 // No interceptor needed here; the router + browser handle navigation.
+
+// ── EASEL OVERLAY EDITOR (dev tool) ──────────────────────────
+// Open index.html?easel-editor to tune the "now painting" composite live:
+// sliders for position/size/rotation/opacity/blend, drag the overlay to move
+// it, and copy the finished CSS block to paste into index.css.
+// Desktop-only. Ships to production but is inert without the URL param.
+function initEaselEditor() {
+  if (!new URLSearchParams(location.search).has('easel-editor')) return
+  if (isMobile()) return
+  const overlay = document.getElementById('easel-now-overlay')
+  if (!overlay) return
+
+  // Current values — keep in sync with the #easel-now-overlay defaults in index.css
+  const v = { top: 19.5, left: 58.4, width: 14, height: 34.6, rotate: 6.25, opacity: 0.89, blend: 'normal', mask: true }
+
+  function apply() {
+    overlay.style.top = v.top + '%'
+    overlay.style.left = v.left + '%'
+    overlay.style.width = v.width + '%'
+    overlay.style.height = v.height + '%'
+    overlay.style.transform = `rotate(${v.rotate}deg)`
+    overlay.style.opacity = v.opacity
+    overlay.style.mixBlendMode = v.blend
+    const mask = v.mask ? '' : 'none'
+    overlay.style.webkitMaskImage = mask
+    overlay.style.maskImage = mask
+    cssOut.textContent = cssBlock()
+  }
+
+  function cssBlock() {
+    return [
+      '#easel-now-overlay {',
+      `  top: ${v.top}%;`,
+      `  left: ${v.left}%;`,
+      `  width: ${v.width}%;`,
+      `  height: ${v.height}%;`,
+      `  transform: rotate(${v.rotate}deg);`,
+      `  opacity: ${v.opacity};`,
+      `  mix-blend-mode: ${v.blend};`,
+      v.mask ? '  /* feathered mask: keep the existing mask-image lines */' : '  mask-image: none; -webkit-mask-image: none;',
+      '}',
+    ].join('\n')
+  }
+
+  // ── panel UI ──
+  const panel = document.createElement('div')
+  panel.id = 'easel-editor'
+  const sliders = [
+    { key: 'top',     label: 'top %',    min: 5,   max: 35, step: 0.1 },
+    { key: 'left',    label: 'left %',   min: 45,  max: 75, step: 0.1 },
+    { key: 'width',   label: 'width %',  min: 6,   max: 28, step: 0.1 },
+    { key: 'height',  label: 'height %', min: 20,  max: 60, step: 0.1 },
+    { key: 'rotate',  label: 'rotate °', min: -15, max: 10, step: 0.25 },
+    { key: 'opacity', label: 'opacity',  min: 0.5, max: 1,  step: 0.01 },
+  ]
+  panel.innerHTML =
+    '<p class="ee-title">Easel Overlay Editor</p>' +
+    sliders.map(s =>
+      `<label class="ee-row"><span>${s.label}</span>` +
+      `<input type="range" data-key="${s.key}" min="${s.min}" max="${s.max}" step="${s.step}" value="${v[s.key]}">` +
+      `<output data-out="${s.key}">${v[s.key]}</output></label>`
+    ).join('') +
+    '<label class="ee-row"><span>blend</span><select data-key="blend">' +
+    '<option value="normal">normal</option><option value="multiply">multiply</option></select>' +
+    '<output></output></label>' +
+    '<label class="ee-row"><span>mask</span><input type="checkbox" data-key="mask" checked><output></output></label>' +
+    '<pre class="ee-css"></pre>' +
+    '<div class="ee-actions"><button type="button" class="ee-copy">Copy CSS</button>' +
+    '<span class="ee-hint">drag the artwork to move it</span></div>'
+  document.body.appendChild(panel)
+  const cssOut = panel.querySelector('.ee-css')
+
+  panel.addEventListener('input', e => {
+    const key = e.target.dataset.key
+    if (!key) return
+    if (key === 'mask') v.mask = e.target.checked
+    else if (key === 'blend') v.blend = e.target.value
+    else {
+      v[key] = parseFloat(e.target.value)
+      const out = panel.querySelector(`[data-out="${key}"]`)
+      if (out) out.textContent = v[key]
+    }
+    apply()
+  })
+
+  panel.querySelector('.ee-copy').addEventListener('click', () => {
+    const btn = panel.querySelector('.ee-copy')
+    const done = () => { btn.textContent = 'Copied ✓'; setTimeout(() => { btn.textContent = 'Copy CSS' }, 1200) }
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(cssBlock()).then(done).catch(() => {})
+    } else {
+      const r = document.createRange(); r.selectNodeContents(cssOut)
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r)
+      document.execCommand('copy'); done()
+    }
+  })
+
+  // ── drag the overlay to move it ──
+  overlay.style.pointerEvents = 'auto'
+  overlay.style.cursor = 'move'
+  overlay.classList.add('ee-active')
+  let drag = null
+  overlay.addEventListener('pointerdown', e => {
+    e.preventDefault()
+    const room = document.getElementById('room-image').getBoundingClientRect()
+    drag = { x: e.clientX, y: e.clientY, top: v.top, left: v.left, rw: room.width, rh: room.height }
+    overlay.setPointerCapture(e.pointerId)
+  })
+  overlay.addEventListener('pointermove', e => {
+    if (!drag) return
+    v.left = Math.round((drag.left + ((e.clientX - drag.x) / drag.rw) * 100) * 10) / 10
+    v.top  = Math.round((drag.top  + ((e.clientY - drag.y) / drag.rh) * 100) * 10) / 10
+    const syncKey = k => {
+      const inp = panel.querySelector(`input[data-key="${k}"]`)
+      const out = panel.querySelector(`[data-out="${k}"]`)
+      if (inp) inp.value = v[k]
+      if (out) out.textContent = v[k]
+    }
+    syncKey('left'); syncKey('top')
+    apply()
+  })
+  overlay.addEventListener('pointerup', () => { drag = null })
+
+  apply()
+}
+initEaselEditor()
