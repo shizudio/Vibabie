@@ -23,6 +23,12 @@ const items   = []
 
 PROJECTS.forEach((project, i) => {
   const num = pad(i + 1)
+  const currentBadge = project.current
+    ? '<span class="catalog-badge catalog-badge--current"><span class="catalog-badge-dot"></span>Currently building</span>'
+    : ''
+  const soonBadge = project.comingSoon
+    ? '<span class="catalog-badge catalog-badge--soon">Coming soon</span>'
+    : ''
 
   // ── Left sidebar entry ──────────────────────────────────
   const li = document.createElement('li')
@@ -35,6 +41,7 @@ PROJECTS.forEach((project, i) => {
     <div class="catalog-entry-info">
       <span class="catalog-title">${project.title}</span>
       <span class="catalog-tag">${project.tag}</span>
+      ${currentBadge}${soonBadge}
     </div>
   `
   indexEl.appendChild(li)
@@ -45,7 +52,7 @@ PROJECTS.forEach((project, i) => {
   const tag        = isExternal ? 'a' : 'div'
 
   const div = document.createElement(tag)
-  div.className = 'catalog-item fade-up'
+  div.className = 'catalog-item fade-up' + (project.comingSoon ? ' catalog-item--coming-soon' : '')
   div.style.setProperty('--i', i + 2)
   div.dataset.index = i
   div.dataset.workInjected = 'true'
@@ -58,13 +65,20 @@ PROJECTS.forEach((project, i) => {
     div.style.cursor = 'pointer'
   }
 
-  div.innerHTML = `
-    <div class="catalog-item-img-wrap">
-      <img
+  // "Coming soon" projects have no screenshot yet — a placeholder card
+  // instead of a broken/missing <img>.
+  const imgOrPlaceholder = project.comingSoon
+    ? `<div class="catalog-item-placeholder"><span>Coming soon</span></div>`
+    : `<img
         src="${project.src}"
         alt="${project.title}"
         loading="${i === 0 ? 'eager' : 'lazy'}"
-      />
+      />`
+
+  div.innerHTML = `
+    <div class="catalog-item-img-wrap">
+      ${imgOrPlaceholder}
+      ${currentBadge}
     </div>
     <div class="catalog-item-label">
       <span class="catalog-item-num">${num}</span>

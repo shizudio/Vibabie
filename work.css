@@ -137,6 +137,79 @@ html, body { height: 100%; }
   color: var(--crimson);
 }
 
+/* ── Status badges (current project / coming soon) ─────────── */
+.catalog-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-sans);
+  font-size: 0.56rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 3px;
+  width: fit-content;
+}
+.catalog-badge--current { color: var(--crimson); }
+.catalog-badge--soon { color: var(--stone); opacity: 0.75; }
+
+@keyframes catalogBadgePulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.25); }
+}
+.catalog-badge-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--crimson);
+  flex-shrink: 0;
+  animation: catalogBadgePulse 1.8s ease-in-out infinite;
+}
+
+/* Gallery card: current badge floats as a pill over the image corner */
+.catalog-item-img-wrap { position: relative; }
+.catalog-item-img-wrap .catalog-badge--current {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
+  background: var(--paper);
+  padding: 6px 11px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(26,22,20,0.12));
+  margin-top: 0;
+}
+
+/* ── Coming-soon placeholder (no screenshot yet) ────────────── */
+.catalog-item-placeholder {
+  width: 100%;
+  aspect-ratio: 4 / 2.2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface, #f7f3f1);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+}
+.catalog-item-placeholder span {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--stone);
+  opacity: 0.55;
+}
+.catalog-item--coming-soon .catalog-item-img-wrap {
+  box-shadow: none;
+}
+.catalog-item--coming-soon:hover .catalog-item-img-wrap {
+  box-shadow: none;
+  transform: none;
+}
+.catalog-item--coming-soon:hover .catalog-item-placeholder {
+  border-color: var(--crimson);
+}
+
 /* ── CV link — fixed to bottom of sidebar, always visible ─── */
 .catalog-resume-fixed {
   position: fixed;

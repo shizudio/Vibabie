@@ -22,6 +22,7 @@ export default defineConfig({
         birthday: resolve(__dirname, 'birthday.html'),
         toolPortfolioEditor: resolve(__dirname, 'tool-portfolio-editor.html'),
         toolHotspotEditor: resolve(__dirname, 'tool-hotspot-editor.html'),
+        brandedInSec: resolve(__dirname, 'branded-in-sec.html'),
       },
     },
   },

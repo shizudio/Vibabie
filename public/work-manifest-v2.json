@@ -9,13 +9,14 @@
     "external": false
   },
   {
-    "src": "work/shizudio.jpg",
-    "title": "Shizudio (this website)",
-    "tag": "Design & Dev",
+    "src": "work/stoneflower.jpg",
+    "title": "StoneFlower 岩花",
+    "tag": "Brand · Fashion",
     "role": "Creative Direction",
-    "year": "2025",
-    "href": "https://shizudio.me",
-    "external": true
+    "year": "2026 –",
+    "href": "https://stoneflower-3.myshopify.com/",
+    "external": true,
+    "current": true
   },
   {
     "src": "work/birthday.png",
@@ -27,12 +28,12 @@
     "external": false
   },
   {
-    "src": "work/H.O.P.jpg",
-    "title": "H.O.P.",
-    "tag": "Brand · Fashion",
-    "role": "Creative Direction",
-    "year": "2024",
-    "href": "https://houseofperena.com/",
-    "external": true
+    "title": "Branded in Sec",
+    "tag": "Brand Tools",
+    "role": "Product & Creative Direction",
+    "year": "2026",
+    "href": "branded-in-sec.html",
+    "external": false,
+    "comingSoon": true
   }
 ]
