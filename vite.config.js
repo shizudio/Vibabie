@@ -1,15 +1,13 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 import peUploadPlugin from './vite-plugin-pe-upload.js'
 
 export default defineConfig({
-  plugins: [react(), peUploadPlugin()],
+  plugins: [peUploadPlugin()],
   build: {
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        v2: resolve(__dirname, 'v2.html'),
         about: resolve(__dirname, 'about.html'),
         photography: resolve(__dirname, 'photography.html'),
         cosmos: resolve(__dirname, 'cosmos.html'),
@@ -21,8 +19,6 @@ export default defineConfig({
         work: resolve(__dirname, 'work.html'),
         ai: resolve(__dirname, 'ai.html'),
         perena: resolve(__dirname, 'perena.html'),
-        perenaV2: resolve(__dirname, 'perena-v2.html'),
-        stoneflower: resolve(__dirname, 'stoneflower.html'),
         birthday: resolve(__dirname, 'birthday.html'),
         toolPortfolioEditor: resolve(__dirname, 'tool-portfolio-editor.html'),
         toolHotspotEditor: resolve(__dirname, 'tool-hotspot-editor.html'),
