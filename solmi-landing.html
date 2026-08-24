@@ -1,0 +1,1586 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Solmi — Turn your track into a world.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400;1,9..40,500&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   SOLMI — landing
+   Type   DM Sans (display + UI) · DM Mono (metadata, subhead)
+   H1     Figma spec: DM Sans Medium 500, 64/72, opsz 14, no gradient
+   Colour brand board + CTA stops from Figma make-cta (2250:1982)
+   ========================================================================== */
+:root{
+  color-scheme:light dark;
+  /* Vertical budget above the cards (header + h1 + sub + gaps) and below them
+     (composer + breathing). The cards absorb whatever is left, so the whole
+     panel lands inside the first viewport at any desktop height. */
+  --above:562px; --below:94px;
+  --card-h:clamp(168px, calc(100vh - var(--above) - var(--below)), 400px);
+  /* The action colour never changes — it is the one fixed point on the page.
+     Spotify's model: the play button stays brand-green whatever the artwork,
+     while the surfaces around it take the colour of what you picked. */
+  --action:#1ED760; --action-hi:#3BE87A;
+  /* --accent is that borrowed colour, swapped per selected style */
+  --accent:#1ED760;
+  --spectrum:linear-gradient(-75.45deg,#FC7501 0%,#55960F 17%,#0AB073 84%,#00C4E7 107%);
+  --dot:#5AA632;
+  --paper:#F6FAFF; --raised:#FFFFFF; --ctrl:#F1F3F6; --ctrl-hi:#E7EAEE;
+  --ink:#101110; --ink-2:rgba(16,17,16,.66); --ink-3:rgba(16,17,16,.45);
+  --charcoal:#1A1C1B; --charcoal-2:#242625;
+  --hair:rgba(16,17,16,.08); --hair-2:rgba(16,17,16,.13);
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --gut:64px;
+  /* Stacked shadows in the iOS manner: a tight contact pass plus progressively
+     wider, fainter ones. One large blur reads as fog; four small ones read as
+     an object sitting above a surface. */
+  --lift-rest:0 1px 2px rgba(16,17,16,.05),
+              0 4px 8px rgba(16,17,16,.045),
+              0 10px 20px rgba(16,17,16,.055),
+              0 20px 38px rgba(16,17,16,.06);
+  --lift-hover:0 2px 4px rgba(16,17,16,.06),
+               0 8px 16px rgba(16,17,16,.065),
+               0 18px 34px rgba(16,17,16,.08),
+               0 36px 64px rgba(16,17,16,.10);
+}
+
+/* ============ dark theme ============
+   Paired to the light system rather than mirrored from it: hairlines carry a
+   higher alpha because white-on-dark reads weaker, muted text is lifted off
+   its light-mode floor, and the action colour does not move at all — its
+   contrast is against its own label, so the ground behind it is irrelevant. */
+@media (prefers-color-scheme:dark){ :root:not([data-theme=light]){ 
+  --paper:#141614; --raised:#1C1F1D; --ctrl:#262A28; --ctrl-hi:#313634;
+  --ink:#F2F5F3; --ink-2:rgba(242,245,243,.68); --ink-3:rgba(242,245,243,.52);
+  --hair:rgba(255,255,255,.09); --hair-2:rgba(255,255,255,.16);
+  --charcoal:#0F1110;
+  --lift-rest:0 1px 2px rgba(0,0,0,.34),
+              0 4px 10px rgba(0,0,0,.28),
+              0 12px 24px rgba(0,0,0,.26),
+              0 24px 46px rgba(0,0,0,.24);
+  --lift-hover:0 2px 5px rgba(0,0,0,.40),
+               0 10px 20px rgba(0,0,0,.34),
+               0 22px 42px rgba(0,0,0,.32),
+               0 44px 78px rgba(0,0,0,.30);
+} }
+:root[data-theme=dark]{
+  --paper:#141614; --raised:#1C1F1D; --ctrl:#262A28; --ctrl-hi:#313634;
+  --ink:#F2F5F3; --ink-2:rgba(242,245,243,.68); --ink-3:rgba(242,245,243,.52);
+  --hair:rgba(255,255,255,.09); --hair-2:rgba(255,255,255,.16);
+  --charcoal:#0F1110;
+  --lift-rest:0 1px 2px rgba(0,0,0,.34),
+              0 4px 10px rgba(0,0,0,.28),
+              0 12px 24px rgba(0,0,0,.26),
+              0 24px 46px rgba(0,0,0,.24);
+  --lift-hover:0 2px 5px rgba(0,0,0,.40),
+               0 10px 20px rgba(0,0,0,.34),
+               0 22px 42px rgba(0,0,0,.32),
+               0 44px 78px rgba(0,0,0,.30);
+}
+*{box-sizing:border-box}
+/* The domes are deliberately wider than the viewport. `clip` contains them
+   without creating a scroll container — `hidden` would, and that would break
+   the gallery's sticky pinning. */
+html{scroll-behavior:smooth;overflow-x:clip}
+body{overflow-x:clip}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"DM Sans",system-ui,sans-serif;font-optical-sizing:auto;
+  -webkit-font-smoothing:antialiased}
+.mono{font-family:"DM Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-3)}
+button,input{font-family:inherit}
+
+/* ============ header ============ */
+header{position:relative;z-index:20;display:flex;align-items:center;justify-content:space-between;
+  padding:28px var(--gut)}
+.mark{font-size:39px;font-weight:500;letter-spacing:-.04em;line-height:1;color:var(--ink);
+  text-decoration:none;font-variation-settings:"opsz" 14}
+.mark i{font-style:normal;color:var(--dot)}
+.head-r{display:flex;align-items:center;gap:24px}
+.head-r a.login{font-size:14px;font-weight:500;color:var(--ink);text-decoration:none;
+  letter-spacing:-.01em}
+.join{background:none;border:1px solid var(--hair-2);color:var(--ink);border-radius:999px;
+  padding:10px 20px;font-size:14px;font-weight:700;letter-spacing:-.012em;cursor:pointer;
+  transition:transform .18s var(--ease)}
+.join:hover{transform:translateY(-1px);border-color:var(--ink)}
+.join .short{display:none}
+
+/* ============ hero ============ */
+.hero{position:relative;padding:0 0 88px;
+  --dome-y:-640px; --dome-w:2600px; --dome-h:1100px}   /* no clip: the arc may leak */
+/* The brand dome, used as artwork rather than approximated in CSS.
+   The SVG already carries its own pale field and soft falloff, so it needs no
+   blur and no opacity fade — those were propping up a cruder shape. */
+/* The record replaces the dome. The label already carries the dome gradient and
+   the wordmark, so the artwork and the brand mark are the same object.
+   --vinyl-d  disc diameter
+   --vinyl-y  centre of the disc, as a share of the hero height
+   Rotation is slow enough that it reads as light moving on lacquer. */
+/* The dome — a solid body with a clean silhouette, not a glow.
+   Wider than any viewport so its sides never show as cropped edges, and tall
+   enough to run past the hero; only its foot is faded, so the colour dissolves
+   into the section below instead of stopping at a line.
+   --dome-y  how far below the hero the body extends
+   --dome-w  width (kept > 100vw on purpose) */
+.dome{display:none;position:absolute;left:50%;z-index:1;pointer-events:none;
+  --dome-o:.9;
+  bottom:var(--dome-y);width:var(--dome-w);height:var(--dome-h);
+  margin-left:calc(var(--dome-w) / -2);
+  border-radius:50% 50% 0 0 / 100% 100% 0 0;
+  /* --dome-fade is driven by scroll: the world sinks as you leave the hero */
+  opacity:calc(var(--dome-o) * var(--dome-fade,1));
+  background:radial-gradient(38% 72% at 50% 1%,
+    #FF6A00 0%,
+    #F5811A 13%,
+    #DCA637 26%,
+    #9CBD3B 41%,
+    #45A85E 57%,
+    #14AE92 73%,
+    #00C4E7 89%,
+    #63C0F5 100%);
+  background-size:150% 150%;
+  background-position:50% 0%;
+  /* only the foot fades — the arc itself keeps its edge */
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 46%,rgba(0,0,0,.55) 66%,transparent 84%);
+          mask-image:linear-gradient(180deg,#000 0%,#000 46%,rgba(0,0,0,.55) 66%,transparent 84%);
+  animation:domeDrift 6s ease-in-out infinite alternate,
+            domeBreathe 9.5s ease-in-out infinite alternate}
+/* Two axes on different periods: the light wanders sideways on one clock and
+   the field swells on another, so the loop never lands in the same place
+   twice and the movement reads as weather rather than as a cycle. */
+
+
+/* The green field the disk sits on, with your diagonal texture over it at the
+   same 17.157px tile and overlay blend as the Figma. It rides the scroll at
+   half the disk's rate, so the two separate slightly as they leave. */
+.disk-field{position:absolute;left:0;right:0;bottom:-340px;
+  height:calc(72% + 340px);z-index:0;
+  pointer-events:none;overflow:hidden;
+  /* it continues past the hero and dissolves, rather than being cut off at
+     the fold — the hero does not clip, so there is nothing to crop against */
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 68%,rgba(0,0,0,.45) 84%,transparent 100%);
+          mask-image:linear-gradient(180deg,#000 0%,#000 68%,rgba(0,0,0,.45) 84%,transparent 100%);
+  opacity:calc(1 * var(--dome-fade,1));
+  transform:translate3d(0,calc(var(--disk-lift,0px) * .5),0);
+  background:linear-gradient(180deg,
+    rgba(16,32,18,0) 0%,
+    rgba(18,44,22,.5) 26%,
+    rgba(28,70,25,.82) 56%,
+    rgba(52,106,26,.94) 80%,
+    rgba(72,136,28,1) 100%)}
+.disk-field::after{content:"";position:absolute;inset:0;
+  background:url("assets/disk/diagonal-texture.webp") 0 0 / 17.157px 17.157px repeat;
+  mix-blend-mode:overlay;opacity:.31}
+
+/* Which backdrop each theme wears. The disk composition is authored for a dark
+   ground — its field is a dark-green wash and the record is near-black, both of
+   which turn to grey sludge on paper. Light keeps the dome it was designed with. */
+/* Light variant. The record artwork is the same — a dark disc on paper reads as
+   a graphic object, not a mistake — but the field has to be rebuilt: the dark
+   greens that sit under it on charcoal turn to grey sludge over #F6FAFF. */
+:root[data-theme=light] .disk-field{
+  background:linear-gradient(180deg,
+    rgba(214,236,198,0) 0%,
+    rgba(200,230,178,.55) 26%,
+    rgba(168,214,138,.82) 56%,
+    rgba(138,198,102,.93) 80%,
+    rgba(116,184,78,1) 100%)}
+:root[data-theme=light] .disk-field::after{opacity:.16}
+:root[data-theme=light] .disk{opacity:calc(.92 * var(--dome-fade,1))}
+
+/* ============ rotating disk — Figma node 2315:53 ============
+   Your artwork, not an approximation: ten exported layers at their exact
+   positions, sizes and paint order from a 1099.115px frame, expressed as
+   percentages so the whole thing scales. The ring stack turns; the label,
+   the centre art and the play indicator counter-turn at the same rate so
+   they stay upright without breaking the stacking order. */
+.disk{position:absolute;left:50%;z-index:1;pointer-events:none;
+  --disk-d:1000px; --disk-y:calc(var(--disk-d) * -.745);
+  bottom:var(--disk-y);width:var(--disk-d);height:var(--disk-d);
+  margin-left:calc(var(--disk-d) / -2);
+  opacity:calc(1 * var(--dome-fade,1));
+  /* Origin at the top edge — the only part on screen. Shrinking toward the
+     centre would drag the visible arc downward, which is the wrong direction
+     for something meant to lift away. */
+  transform-origin:50% 0%;
+  transform:translate3d(0,var(--disk-lift,0px),0) scale(var(--disk-scale,1));
+  will-change:transform,opacity}
+.disk-spin{position:absolute;inset:0;animation:diskTurn 46s linear infinite}
+.disk-spin > *{position:absolute;display:block}
+.disk-upright{animation:diskTurn 46s linear infinite reverse}
+@keyframes diskTurn{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){
+  .disk-spin,.disk-upright{animation:none}
+}
+/* exact geometry, all values divided by 1099.115 */
+.dl-outer-rainbow{left:0;top:0;width:100%;height:100%;opacity:.8}
+.dl-outer-hollow{left:3.6586%;top:3.6583%;width:92.6828%;height:92.6828%}
+.dl-teal-1{left:8.5366%;top:8.5365%;width:82.9271%;height:82.9271%}
+.dl-mid-rainbow{left:13.4145%;top:13.4145%;width:73.1710%;height:73.1710%}
+.dl-inner-rainbow{left:30.4879%;top:30.4877%;width:39.0243%;height:39.0243%}
+.dl-label-solid{left:31.2195%;top:31.2195%;width:37.5610%;height:37.5610%}
+.dl-indicator{left:47.5603%;top:47.0724%;width:4.8781%;height:5.8537%}
+.dl-teal-2{left:19.5122%;top:19.5122%;width:60.9756%;height:60.9756%}
+.dl-groove-3{left:35.0219%;top:35.0219%;width:30.0001%;height:30.0001%}
+.dl-center-art{left:37.3765%;top:37.3765%;width:25.2851%;height:25.2851%;
+  border-radius:50%;object-fit:cover}
+
+/* Rim light. The same ellipse a few pixels larger, sitting behind the dome so
+   only its edge shows — a line of light caught on the horizon. Brightest at the
+   apex and gone by the shoulders, because that is where a light source above
+   would actually catch a curve. */
+.dome-rim{display:none;position:absolute;left:50%;z-index:0;pointer-events:none;
+  --rim-w:calc(var(--dome-w) + 6px);
+  bottom:calc(var(--dome-y) - 1px);
+  width:var(--rim-w);height:calc(var(--dome-h) + 4px);
+  margin-left:calc(var(--rim-w) / -2);
+  border-radius:50% 50% 0 0 / 100% 100% 0 0;
+  opacity:calc(.5 * var(--dome-fade,1));
+  background:linear-gradient(90deg,
+    transparent 22%,
+    rgba(255,232,198,.45) 37%,
+    rgba(255,249,238,.95) 50%,
+    rgba(255,232,198,.45) 63%,
+    transparent 78%);
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 3%,rgba(0,0,0,.32) 11%,transparent 24%);
+          mask-image:linear-gradient(180deg,#000 0%,#000 3%,rgba(0,0,0,.32) 11%,transparent 24%)}
+
+@keyframes domeDrift{
+  from{background-position:26% 0%}
+  to  {background-position:74% 0%}
+}
+@keyframes domeBreathe{
+  from{background-size:126% 132%}
+  to  {background-size:194% 172%}
+}
+@media (prefers-reduced-motion:reduce){.dome{animation:none}}
+/* dark needs a touch more of it to clear the ground */
+:root[data-theme=dark] .dome{--dome-o:.86}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .dome{--dome-o:.86}}
+
+/* only enough of a lift to keep the headline off the artwork */
+.hero::before{content:"";position:absolute;inset:0 0 auto;height:46%;z-index:1;
+  pointer-events:none;
+  background:linear-gradient(180deg,var(--paper) 24%,rgba(246,250,255,0) 100%)}
+.hero-in{position:relative;z-index:2;text-align:center;padding-top:56px}
+
+/* h1 — A / Figma spec */
+h1{font-size:64px;font-weight:500;line-height:72px;margin:0;color:var(--ink);
+  font-variation-settings:"opsz" 14;letter-spacing:0}
+
+/* sub — DM Mono 20/27 */
+.sub{font-family:"DM Mono",monospace;font-weight:400;font-size:20px;line-height:27px;
+  letter-spacing:-.2px;color:var(--ink-2);margin:26px auto 0;max-width:52ch;
+  text-wrap:balance}
+
+/* short desktops (13" laptops, 1280x800 and friends) */
+@media (min-width:821px) and (max-height:860px){
+  :root{--above:498px;--below:84px}
+  .hero-in{padding-top:34px}
+  h1{font-size:54px;line-height:60px}
+  .sub{font-size:18px;line-height:25px;margin-top:20px}
+  .picker{margin-top:26px}
+  .composer{margin-top:30px}
+}
+@media (min-width:821px) and (max-height:720px){
+  :root{--above:454px;--below:78px}
+  h1{font-size:44px;line-height:50px}
+  .sub{font-size:16px;line-height:23px}
+}
+
+/* ---- style picker ---- */
+/* A frame around the looks: narrower than the page so the row reads as one
+   control, and titled so it is obvious a choice is expected. */
+.picker-frame{position:relative;z-index:2;
+  width:min(1140px, calc(100% - var(--gut) * 2));margin:34px auto 0;
+  /* glass: the disk's colour reads through the panel instead of being hidden
+     by it, so the frame sits in the scene rather than on top of it */
+  background:color-mix(in srgb, var(--raised) 58%, transparent);
+  -webkit-backdrop-filter:blur(20px) saturate(1.25);
+          backdrop-filter:blur(20px) saturate(1.25);
+  border:1px solid var(--hair-2);border-radius:24px;
+  padding:14px;box-shadow:var(--lift-rest)}
+.picker-head{display:flex;align-items:baseline;justify-content:space-between;
+  padding:2px 8px 12px}
+.picker-head .req{color:var(--accent)}
+/* The accent is a light-on-dark green: at 11px on a near-white frame it measures
+   1.92:1. Dark keeps the accent; light gets a darkened green at 6.64:1. */
+:root[data-theme=light] .picker-head .req{color:#0C6B31}
+.picker{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
+  padding:0;margin:0}
+.style{position:relative;border:0;padding:0;background:none;cursor:pointer;text-align:left}
+.style .art{position:relative;height:var(--card-h);border-radius:16px;overflow:hidden;
+  outline:0 solid transparent;box-shadow:var(--lift-rest);
+  transition:transform .28s var(--ease),box-shadow .3s var(--ease),
+             filter .34s var(--ease),opacity .34s var(--ease),outline-color .3s var(--ease)}
+.picker.has-pick .style:not([aria-pressed=true]) .art::before{opacity:.62}
+.picker.has-pick .style:not([aria-pressed=true]) .ph{transform:scale(1.06);
+  filter:saturate(.45) blur(2.5px)}
+.picker.has-pick .style:not([aria-pressed=true]):hover .art{transform:translateY(-6px)}
+.picker.has-pick .style:not([aria-pressed=true]):hover .art::before{opacity:.12}
+.picker.has-pick .style:not([aria-pressed=true]):hover .ph{filter:saturate(.92) blur(0);
+  transform:scale(1.02)}
+.style .art::after{content:"";position:absolute;inset:0;z-index:2;
+  background:linear-gradient(180deg,transparent 44%,rgba(8,10,9,.66) 100%)}
+.style:hover .art{transform:translateY(-6px);box-shadow:var(--lift-hover)}
+.style[aria-pressed=true] .art{transform:translateY(-6px);
+  outline:2.5px solid var(--accent);outline-offset:3px;
+  box-shadow:var(--lift-hover),0 0 0 6px color-mix(in srgb,var(--accent) 16%,transparent)}
+.style .nm{position:absolute;left:13px;right:13px;bottom:12px;z-index:3;color:#fff;
+  font-size:13px;font-weight:500;letter-spacing:-.012em;line-height:1.25}
+.style .ix{position:absolute;top:11px;left:13px;z-index:3;font-family:"DM Mono",monospace;
+  font-size:10px;letter-spacing:.12em;color:rgba(255,255,255,.78)}
+.style .tick{position:absolute;top:10px;right:10px;z-index:4;width:20px;height:20px;
+  border-radius:50%;background:var(--accent);display:none;place-items:center;
+  box-shadow:0 2px 10px color-mix(in srgb,var(--accent) 55%,transparent)}
+.style[aria-pressed=true] .tick{display:grid}
+/* photography sits on the gradient; the gradient stays as the loading tint */
+.ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;z-index:0;
+  transition:filter .34s var(--ease),transform .34s var(--ease)}
+/* An opaque veil, not element opacity: a translucent card would let the beam
+   show through it and stop reading as a card at all. It darkens rather than
+   whitens — these are frames going dark, not washing out. */
+.style .art::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:#0A0C0B;opacity:0;transition:opacity .34s var(--ease)}
+.style .art .ph{transition:transform .5s var(--ease)}
+/* The clip rides on top of its own poster frame, so the card shows something
+   real before a single byte of video is fetched — and .ph stays an <img>, which
+   is what the dock reads to build its swatch and blurred plate. */
+.style .art .clip{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  display:block;opacity:0;transition:opacity .5s var(--ease),transform .5s var(--ease),
+  filter .34s var(--ease)}
+.style .art .clip.on{opacity:1}
+.picker.has-pick .style:not([aria-pressed=true]) .clip{transform:scale(1.06);
+  filter:saturate(.45) blur(2.5px)}
+.picker.has-pick .style:not([aria-pressed=true]):hover .clip{filter:saturate(.92) blur(0);
+  transform:scale(1.02)}
+.style:hover .art .ph{transform:scale(1.045)}
+/* gradient fallbacks — also the tint behind each frame while it loads */
+.s1{background:radial-gradient(125% 90% at 50% 118%,#F7A35C,#E8672B 34%,#A83E18 100%)}
+.s2{background:radial-gradient(125% 90% at 50% 118%,#C6DE7A,#93B83C 32%,#2C7A44 100%)}
+.s3{background:radial-gradient(125% 90% at 50% 118%,#D8F0F8,#79CBE0 34%,#3E93AE 100%)}
+.s4{background:radial-gradient(125% 90% at 50% 118%,#E4E9EA,#A9B4B6 34%,#2C3132 100%)}
+.s5{background:radial-gradient(125% 90% at 50% 118%,#F2C778,#D98A2B 34%,#7C4E22 100%)}
+.s6{background:radial-gradient(125% 90% at 50% 118%,#BFEFE4,#33A891 34%,#1E7A72 100%)}
+
+/* ---- composer ---- */
+.composer{position:relative;z-index:5;
+  width:820px;max-width:calc(100% - var(--gut)*2);margin:40px auto 0;
+  background:var(--raised);border:1px solid var(--hair);border-radius:28px;padding:14px;
+  box-shadow:0 22px 50px rgba(16,17,16,.10);text-align:left}
+.c-top{display:flex;align-items:center;gap:14px}
+.c-field{flex:1;display:flex;align-items:center;gap:10px;min-width:0;padding-left:16px;
+  overflow:hidden}
+.c-field input{flex:1;min-width:0;background:none;border:0;outline:none;font-size:16px;
+  color:var(--ink);text-overflow:ellipsis;letter-spacing:-.011em}
+.c-field input::placeholder{color:var(--ink-3)}
+.cta{flex:none;height:56px;padding:0 32px;border:0;border-radius:16px;cursor:pointer;
+  background:var(--action);color:#04140D;font-size:17px;font-weight:700;
+  letter-spacing:-.018em;white-space:nowrap;position:relative;overflow:hidden;
+  transition:transform .2s var(--ease)}
+/* Resting state is the flat brand green. On hover the spectrum drifts across it —
+   the palette in motion, over the colour that never moves. */
+.cta::before{content:"";position:absolute;inset:0;opacity:0;
+  background:linear-gradient(100deg,#2BC4C4 0%,#1ED760 28%,#9BCB3C 52%,#E9A02C 78%,#F0821F 100%);
+  background-size:240% 100%;background-position:0% 50%;
+  transition:opacity .3s var(--ease)}
+.cta > .lbl{position:relative;z-index:1}
+.cta:hover,.cta:focus-visible{transform:translateY(-2px)}
+.cta:hover::before,.cta:focus-visible::before{opacity:1;animation:flow 2.2s linear infinite alternate}
+.cta:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.cta:active{transform:translateY(0)}
+@keyframes flow{from{background-position:0% 50%}to{background-position:100% 50%}}
+@media (prefers-reduced-motion:reduce){
+  .cta:hover::before,.cta:focus-visible::before{animation:none;background-position:50% 50%}
+}
+
+/* secondary strip — three ways in, one way forward */
+.c-bot{display:flex;align-items:center;gap:8px;margin-top:12px;padding:0 2px;flex-wrap:wrap}
+.chip{display:flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:12px;
+  background:var(--ctrl);border:1px solid var(--hair-2);cursor:pointer;color:var(--ink);
+  font-size:13.5px;font-weight:500;letter-spacing:-.01em;white-space:nowrap;
+  transition:background .18s var(--ease)}
+.chip:hover{background:var(--ctrl-hi)}
+.chip svg{flex:none}
+.chip.icon-only{width:38px;padding:0;justify-content:center}
+.chip.dice.rolling svg{animation:roll .5s var(--ease)}
+@keyframes roll{50%{transform:rotate(180deg) scale(.85)}100%{transform:rotate(360deg)}}
+.c-bot .spacer{flex:1}
+.chip.ghost{background:none;border-color:transparent;color:var(--ink-3);
+  font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.chip.ghost:hover{background:var(--ctrl)}
+
+/* select-a-song dropdown */
+.drop{position:relative}
+.menu{position:absolute;z-index:30;top:calc(100% + 8px);left:0;width:320px;padding:6px;
+  background:var(--raised);border:1px solid var(--hair-2);border-radius:16px;
+  box-shadow:0 20px 44px rgba(16,17,16,.16);display:none}
+.drop[data-open=true] .menu{display:block}
+.menu .lbl{padding:9px 12px 6px;font-family:"DM Mono",monospace;font-size:10px;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+.menu button{display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;
+  padding:10px 12px;border:0;background:none;border-radius:10px;cursor:pointer;text-align:left;
+  font-size:14px;font-weight:500;color:var(--ink);letter-spacing:-.01em}
+.menu button:hover{background:var(--ctrl)}
+.menu button span{font-family:"DM Mono",monospace;font-size:11px;color:var(--ink-3)}
+
+/* ============ shared section furniture ============ */
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:24px;
+  padding:0 var(--gut);margin:0 0 22px}
+.sec-head .l{display:flex;align-items:baseline;gap:16px}
+.sec-head h2{margin:0;font-size:27px;font-weight:500;font-style:italic;letter-spacing:-.03em}
+.sec-head .r{display:flex;align-items:center;gap:16px}
+.browse{display:flex;align-items:center;gap:8px;background:none;border:0;cursor:pointer;
+  font-size:14px;font-weight:500;color:var(--ink);letter-spacing:-.012em}
+.browse .n{font-family:"DM Mono",monospace;font-size:11px;color:var(--ink-3)}
+.nav{display:flex;gap:8px}
+.nav button{width:36px;height:36px;border-radius:50%;background:var(--ctrl);
+  border:1px solid var(--hair-2);color:var(--ink);cursor:pointer;display:grid;place-items:center;
+  transition:background .18s var(--ease)}
+.nav button:hover{background:var(--ctrl-hi)}
+
+/* ============ gallery — masonry marquee wall ============
+   Tiles share ONE width; each one's height comes from its own aspect ratio, so
+   a portrait clip is genuinely tall next to a landscape one. They stack into
+   columns, every column nudged vertically so no two rows line up, and the whole
+   track drifts sideways forever. Hovering stops the drift and previews the tile
+   under the cursor — nothing plays until you show interest in something. */
+/* Above the hero's disk. The disk is z-index 1 inside .hero and deliberately
+   bleeds past it; with the gallery static it painted straight over the tiles.
+   Now it shows through the gaps instead of across the videos. */
+.gallery{position:relative;z-index:2;padding:168px 0 0}
+.wall{position:relative;overflow:hidden;
+  --tw:168px; --gap:12px;
+  height:clamp(340px, 44vw, 560px);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%);
+          mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%)}
+.wall-track{display:flex;gap:var(--gap);width:max-content;
+  animation:wallDrift var(--dur,80s) linear infinite;will-change:transform}
+@keyframes wallDrift{
+  from{transform:translate3d(0,0,0)}
+  to  {transform:translate3d(calc(var(--half,0px) * -1),0,0)}
+}
+/* the drift is a background behaviour, not a queue — any interest stops it */
+.wall:hover .wall-track,
+.wall:focus-within .wall-track,
+.wall.hold .wall-track{animation-play-state:paused}
+.wcol{display:flex;flex-direction:column;gap:var(--gap);width:var(--tw);flex:none;
+  transform:translateY(var(--off,0px))}
+.wtile{position:relative;display:block;width:100%;padding-top:calc(100% * var(--r,.5625));
+  border:0;border-radius:14px;overflow:hidden;cursor:pointer;background:#0C0D0C;
+  box-shadow:0 10px 26px rgba(0,0,0,.28);
+  transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.wtile:hover,.wtile:focus-visible{transform:scale(1.045);z-index:3;
+  box-shadow:0 20px 46px rgba(0,0,0,.5)}
+.wtile.is-live{outline:2px solid var(--accent);outline-offset:2px}
+.wtile .wph,.wtile video{position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;display:block}
+.wtile video{opacity:0;z-index:1;transition:opacity .4s var(--ease)}
+.wtile video.on{opacity:1}
+.wtile::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(180deg,transparent 46%,rgba(8,10,9,.82) 100%);
+  opacity:0;transition:opacity .28s var(--ease)}
+.wtile:hover::after,.wtile.is-live::after{opacity:1}
+.wtile .wmeta{position:absolute;left:10px;right:10px;bottom:9px;z-index:3;color:#fff;
+  text-align:left;opacity:0;transform:translateY(6px);pointer-events:none;
+  transition:opacity .26s var(--ease),transform .26s var(--ease)}
+.wtile:hover .wmeta,.wtile.is-live .wmeta{opacity:1;transform:none}
+.wtile .wmeta b{display:block;font-size:12.5px;font-weight:700;letter-spacing:-.012em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wtile .wmeta i{display:block;font-style:normal;font-size:10px;margin-top:2px;
+  color:rgba(255,255,255,.66);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wtile .wdur{position:absolute;top:8px;left:8px;z-index:3;font-family:"DM Mono",monospace;
+  font-size:9.5px;color:#fff;background:rgba(0,0,0,.46);padding:2px 5px;border-radius:5px;
+  opacity:0;transition:opacity .26s var(--ease)}
+.wtile:hover .wdur,.wtile.is-live .wdur{opacity:1}
+@media (prefers-reduced-motion:reduce){
+  .wall-track{animation:none}
+  .wall{overflow-x:auto;-webkit-mask-image:none;mask-image:none}
+}
+
+/* ============ how it works ============
+   No heading here: the three beats are the statement. */
+/* The whole section holds still while the page scrolls through it: heading and
+   all three steps stay on the left, the visual on the right. Scroll position —
+   not the steps' own geometry — decides which step is live, so 01 and 03 can be
+   given a longer dwell than 02 without making their cards taller. */
+.hiw-track{position:relative;height:300vh}
+.hiw-sticky{position:sticky;top:0;height:100vh;display:grid;
+  grid-template-columns:minmax(0,0.82fr) minmax(0,1.18fr);
+  gap:56px;align-items:center;
+  /* the floating bar sits at the foot of the screen — keep the steps above it */
+  padding:0 var(--gut) 118px}
+.hiw-left{display:flex;flex-direction:column;gap:14px}
+.hiw-head{display:block;text-align:left;margin:0 0 6px}
+.beats{display:flex;flex-direction:column;gap:12px;overflow:visible;
+  scroll-snap-type:none;padding:0}
+/* steps are controls now, not cards */
+.beat{cursor:pointer;text-align:left;font-family:inherit;color:inherit;
+  border:1px solid var(--hair);
+  transition:transform .26s var(--ease),box-shadow .26s var(--ease),
+             border-color .26s var(--ease),background .26s var(--ease)}
+.beat:hover{transform:translateY(-3px);box-shadow:var(--lift-rest)}
+.beat[aria-pressed=true]{border-color:color-mix(in srgb,var(--step) 55%,var(--hair));
+  box-shadow:var(--lift-hover),0 0 0 5px color-mix(in srgb,var(--step) 14%,transparent);
+  transform:translateY(-3px)}
+.beat[aria-pressed=true] .arc{background:var(--step)}
+  .beat .h{font-size:22px;font-weight:500;letter-spacing:-.028em;display:block}
+.beat:nth-child(1){--step:#F5811A} .beat:nth-child(2){--step:#45A85E} .beat:nth-child(3){--step:#00A9C7}
+.beat:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+/* the visual that explains the selected step */
+.hiw-visual{position:static;margin:0}
+.hiw-visual .stage{position:relative;aspect-ratio:4/3;border-radius:24px;
+  border:1px dashed var(--hair-2);background:var(--raised);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  padding:32px;text-align:center;overflow:hidden;
+  transition:background .4s var(--ease),border-color .4s var(--ease)}
+.hiw-visual .stage::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(60% 90% at 50% 110%,color-mix(in srgb,var(--step,#F5811A) 26%,transparent),transparent 70%);
+  transition:background .4s var(--ease)}
+.hiw-visual .tag{position:relative;padding:6px 12px;border-radius:999px;
+  background:color-mix(in srgb,var(--step,#F5811A) 16%,var(--ctrl));color:var(--ink)}
+.hiw-visual p{position:relative;margin:0;font-size:17px;line-height:1.5;
+  letter-spacing:-.012em;color:var(--ink-2);max-width:46ch}
+.hiw-visual .hint{position:relative;color:var(--ink-3)}
+@media (max-width:1100px){
+  .hiw-track{height:auto}
+  .hiw-sticky{position:static;height:auto;grid-template-columns:1fr;gap:26px;padding:0 var(--gut)}
+  .hiw-visual{order:-1}
+}
+@media (max-width:820px){
+  .hiw-visual .stage{aspect-ratio:4/3;padding:24px;gap:10px}
+  .hiw-visual p{font-size:15px}
+}
+
+.hiw{padding:168px 0 0}
+.beat{width:100%;background:var(--raised);border:1px solid var(--hair);
+  border-radius:20px;padding:20px 24px;display:flex;flex-direction:column;gap:8px;
+  min-height:0}
+.beat .arc{height:3px;width:46px;border-radius:2px;background:var(--spectrum)}
+.beat .n{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.14em;color:var(--ink-3)}
+.beat h3{margin:0;font-size:25px;font-weight:500;letter-spacing:-.028em}
+.beat p{margin:0;font-size:14.5px;line-height:1.45;color:var(--ink-2);letter-spacing:-.008em}
+.beat .det{margin-top:auto;font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3)}
+
+/* ============ closing CTA ============ */
+.close{margin:168px var(--gut) 0;background:var(--charcoal);border-radius:32px;
+  padding:96px 40px;position:relative;overflow:hidden}
+/* the soft wash the record sits on, inside the frame */
+.close .glow{position:absolute;left:50%;transform:translateX(-50%);bottom:-340px;
+  width:1200px;height:460px;border-radius:50%;filter:blur(90px);opacity:.3;z-index:0;
+  background:linear-gradient(180deg,#E8672B 0%,#D98A2B 12%,#93B83C 34%,#3FA55C 54%,
+    #33A891 72%,#79CBE0 88%,#A9DCEF 100%)}
+/* The record, shown whole for the only time on the page. Its label already
+   carries the dome and the wordmark, so the closing image is the brand object
+   itself rather than one more gradient. It enters from the right so the copy
+   never sits on it. */
+.close .record{position:absolute;left:84%;top:50%;width:620px;height:620px;
+  margin:-310px 0 0 -310px;z-index:1;pointer-events:none;opacity:.62;
+  background:url("assets/vinyl.webp") center / contain no-repeat;
+  animation:spin 42s linear infinite;
+  filter:drop-shadow(0 30px 70px rgba(0,0,0,.55))}
+.close .veil{position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(90deg,var(--charcoal) 34%,rgba(26,28,27,.72) 56%,rgba(26,28,27,0) 78%)}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.close .record{animation:none}}
+.close .in{position:relative;z-index:3;text-align:left;max-width:640px;margin-left:64px}
+.close h2{margin:0;font-size:44px;line-height:52px;font-weight:500;color:#fff;
+  font-variation-settings:"opsz" 14}
+.close p{margin:18px 0 34px;font-family:"DM Mono",monospace;font-size:15px;line-height:24px;
+  letter-spacing:-.15px;color:rgba(255,255,255,.72);max-width:46ch}
+
+/* ============ page foot ============
+   The same dome, at page level rather than inside the closing frame: it rises
+   behind the card and the footer, so the page ends the way it opened. */
+main{position:relative}
+.dome-foot{position:absolute;left:50%;bottom:-260px;width:2000px;height:550px;
+  margin-left:-1000px;z-index:0;pointer-events:none;
+  border-radius:50% 50% 0 0 / 100% 100% 0 0;opacity:.5;
+  background:radial-gradient(38% 72% at 50% 1%,
+    #FF6A00 0%,#F5811A 13%,#DCA637 26%,#9CBD3B 41%,
+    #45A85E 57%,#14AE92 73%,#00C4E7 89%,#63C0F5 100%);
+  background-size:150% 150%;background-position:50% 0%;
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 44%,rgba(0,0,0,.5) 66%,transparent 86%);
+          mask-image:linear-gradient(180deg,#000 0%,#000 44%,rgba(0,0,0,.5) 66%,transparent 86%);
+  animation:domeDrift 7s ease-in-out infinite alternate,
+            domeBreathe 11s ease-in-out infinite alternate}
+@media (prefers-reduced-motion:reduce){.dome-foot{animation:none}}
+.close{z-index:1}
+
+/* ============ footer ============ */
+footer{position:relative;z-index:1;margin-top:140px;border-top:1px solid var(--hair);padding:34px var(--gut) 56px;
+  display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+footer nav{display:flex;gap:26px;flex-wrap:wrap}
+footer a{font-size:14px;color:var(--ink-2);text-decoration:none;letter-spacing:-.01em}
+footer a:hover{color:var(--ink)}
+
+/* ============ sticky composer (transport bar) ============ */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:60;pointer-events:none;
+  padding:0 var(--gut) 18px}
+.dock-in{pointer-events:auto;display:flex;align-items:center;gap:12px;
+  width:min(1120px,100%);margin:0 auto;height:68px;padding:10px;
+  position:relative;background:var(--raised);
+  border:1px solid var(--hair-2);border-radius:20px;
+  box-shadow:0 -2px 6px rgba(16,17,16,.03),0 18px 44px rgba(16,17,16,.18);
+  transition:transform .42s var(--ease),opacity .28s var(--ease);
+  transform:translateY(calc(100% + 24px));opacity:0}
+/* The bar carries the frame you picked: the still itself, blurred out of
+   legibility, under a 90% white plate. Its own clipping layer — .dock-in must
+   stay overflow:visible so the popovers can open above it. */
+.dock-bg{position:absolute;inset:0;z-index:0;border-radius:inherit;overflow:hidden;
+  pointer-events:none;opacity:1;transition:opacity .34s var(--ease)}
+.dock-bg::before{content:"";position:absolute;inset:-28%;
+  background-image:var(--art,none);background-size:cover;background-position:center;
+  filter:blur(26px) saturate(1.35);transform:scale(1.08)}
+.dock-bg::after{content:"";position:absolute;inset:0;background:rgba(255,255,255,.86)}
+.dock-in > *:not(.dock-bg){position:relative;z-index:1}
+.dock[data-show=true] .dock-in{transform:none;opacity:1}
+/* the closing CTA owns the screen — the bar steps back rather than leaving */
+.dock[data-fade=true] .dock-in{opacity:0;transform:translateY(10px);pointer-events:none}
+
+/* each slot is the control — no separate edit button */
+.dwrap{position:relative;min-width:0}
+.dwrap.look{flex:0 1 210px}
+.dwrap.song{flex:1 1 auto}
+.dslot{display:flex;align-items:center;gap:10px;width:100%;min-width:0;height:48px;
+  padding:0 12px;border:1px solid transparent;border-radius:12px;background:none;
+  cursor:pointer;text-align:left;transition:background .18s var(--ease),border-color .18s var(--ease)}
+.dslot:hover,.dwrap[data-open=true] .dslot{background:var(--ctrl);border-color:var(--hair-2)}
+.dslot .swatch{flex:none;width:26px;height:34px;border-radius:7px;
+  border:1px solid var(--hair-2);
+  background:var(--ctrl);overflow:hidden}
+.dslot .txt{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1}
+.dslot .k{font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3)}
+.dslot .v{font-size:14px;font-weight:500;letter-spacing:-.012em;color:var(--ink);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dslot .v.empty{color:var(--ink-3);font-weight:400}
+.dslot .chev{flex:none;color:var(--ink-3);transition:transform .2s var(--ease)}
+.dwrap[data-open=true] .chev{transform:rotate(180deg)}
+.dock .rule{flex:none;width:1px;height:30px;background:var(--hair-2)}
+.dock .cta{height:48px;padding:0 24px;font-size:15.5px;border-radius:14px}
+.cta .short{display:none}
+
+/* popovers open upward, out of the bar */
+.dpop{position:absolute;bottom:calc(100% + 10px);left:0;z-index:70;padding:10px;
+  background:var(--raised);border:1px solid var(--hair-2);border-radius:18px;
+  box-shadow:0 18px 44px rgba(16,17,16,.20);display:none}
+.dwrap[data-open=true] .dpop{display:block}
+.dpop .lbl{padding:4px 6px 8px;font-family:"DM Mono",monospace;font-size:9.5px;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+.dpop.looks{width:392px;display:none}
+.dwrap[data-open=true] .dpop.looks{display:block}
+.look-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.look-opt{position:relative;border:0;padding:0;background:none;cursor:pointer}
+.look-opt .fr{display:block;position:relative;height:92px;border-radius:10px;overflow:hidden;
+  border:1px solid var(--hair);transition:transform .2s var(--ease)}
+.look-opt:hover .fr{transform:translateY(-3px)}
+.look-opt[aria-pressed=true] .fr{outline:2px solid var(--accent);outline-offset:2px}
+.look-opt img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.look-opt .cap{display:block;margin-top:6px;font-size:11px;font-weight:500;
+  letter-spacing:-.01em;color:var(--ink-2);line-height:1.2}
+.dpop.songs{width:340px}
+.dpop.songs .row{display:flex;gap:8px;margin-bottom:8px}
+.dpop.songs input{flex:1;min-width:0;height:38px;padding:0 12px;border-radius:10px;
+  border:1px solid var(--hair-2);background:var(--ctrl);outline:none;font-size:13.5px;
+  color:var(--ink);letter-spacing:-.01em}
+.dpop.songs input:focus{border-color:var(--ink-3)}
+.dpop.songs .mini{flex:none;width:38px;height:38px;display:grid;place-items:center;
+  border-radius:10px;border:1px solid var(--hair-2);background:var(--ctrl);cursor:pointer;
+  color:var(--ink)}
+.dpop.songs .mini:hover{background:var(--ctrl-hi)}
+.dpop.songs .mini.rolling svg{animation:roll .5s var(--ease)}
+.dpop.songs .list{max-height:200px;overflow:auto}
+.dpop.songs .list button{display:flex;width:100%;align-items:center;justify-content:space-between;
+  gap:12px;padding:9px 10px;border:0;background:none;border-radius:9px;cursor:pointer;
+  text-align:left;font-size:13.5px;font-weight:500;color:var(--ink);letter-spacing:-.01em}
+.dpop.songs .list button:hover{background:var(--ctrl)}
+.dpop.songs .list button span{font-family:"DM Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+
+/* ---- dark: the audit fixes ---------------------------------------------- */
+/* the frosted plate inverts, and the still switches to screen so its colour
+   adds instead of being subtracted by a dark overlay */
+.dock-bg::after{background:rgba(255,255,255,.86)}
+:root[data-theme=dark] .dock-bg::after{background:rgba(18,20,19,.82)}
+:root[data-theme=dark] .dock-bg::before{mix-blend-mode:screen;opacity:.42}
+/* the neutral accent is the one that fails on charcoal — lift it, dark only */
+:root[data-theme=dark] .style[data-accent="#8A8F8C"],
+:root[data-theme=dark] .look-opt[data-accent="#8A8F8C"]{--noir:#B9BEBB}
+/* the composer must not be the brightest object on a dark page */
+:root[data-theme=dark] .composer{box-shadow:0 28px 60px rgba(0,0,0,.55)}
+:root[data-theme=dark] .beat,
+:root[data-theme=dark] .menu{box-shadow:0 20px 44px rgba(0,0,0,.5)}
+:root[data-theme=dark] .join{color:var(--ink)}
+:root[data-theme=dark] .close{border:1px solid var(--hair)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme=light]) .dock-bg::after{background:rgba(18,20,19,.82)}
+  :root:not([data-theme=light]) .dock-bg::before{mix-blend-mode:screen;opacity:.42}
+  :root:not([data-theme=light]) .composer{box-shadow:0 28px 60px rgba(0,0,0,.55)}
+  :root:not([data-theme=light]) .beat,
+  :root:not([data-theme=light]) .menu{box-shadow:0 20px 44px rgba(0,0,0,.5)}
+  :root:not([data-theme=light]) .close{border:1px solid var(--hair)}
+}
+
+/* theme toggle */
+.theme{display:grid;place-items:center;width:36px;height:36px;border-radius:999px;
+  background:none;border:1px solid var(--hair-2);color:var(--ink);cursor:pointer;
+  transition:background .18s var(--ease)}
+.theme:hover{background:var(--ctrl)}
+.theme .moon{display:none}
+:root[data-theme=dark] .theme .sun{display:none}
+:root[data-theme=dark] .theme .moon{display:block}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme=light]) .theme .sun{display:none}
+  :root:not([data-theme=light]) .theme .moon{display:block}
+}
+
+/* ============ FAQ ============
+   <details> rather than scripted accordions: keyboard, find-in-page and
+   screen readers all work without a line of JS. */
+.faq{padding:168px 0 0}
+.faq-list{max-width:860px;margin:0 auto;padding:0 var(--gut)}
+.faq details{border-top:1px solid var(--hair);}
+.faq details:last-of-type{border-bottom:1px solid var(--hair)}
+.faq summary{display:flex;align-items:flex-start;gap:20px;padding:24px 2px;cursor:pointer;
+  list-style:none;font-size:19px;font-weight:500;letter-spacing:-.018em;color:var(--ink);
+  transition:color .18s var(--ease)}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary:hover{color:var(--ink-2)}
+.faq summary .q{flex:1}
+.faq summary .pm{flex:none;position:relative;width:16px;height:16px;margin-top:5px}
+.faq summary .pm::before,.faq summary .pm::after{content:"";position:absolute;left:50%;top:50%;
+  background:var(--ink-3);border-radius:1px;transition:transform .28s var(--ease)}
+.faq summary .pm::before{width:16px;height:1.5px;margin:-.75px 0 0 -8px}
+.faq summary .pm::after{width:1.5px;height:16px;margin:-8px 0 0 -.75px}
+.faq details[open] summary .pm::after{transform:scaleY(0)}
+.faq details[open] summary{color:var(--ink)}
+.faq .a{padding:0 44px 26px 2px;font-size:15.5px;line-height:1.62;color:var(--ink-2);
+  letter-spacing:-.008em;max-width:66ch}
+.faq .a b{font-weight:700;color:var(--ink)}
+@media (max-width:820px){
+  .faq{padding:96px 0 0}
+  .faq summary{font-size:17px;padding:20px 2px}
+  .faq .a{padding-right:0}
+}
+
+/* ============ hero entrance ============
+   A CSS animation rather than a scripted reveal: nothing sets a static
+   opacity:0, so if animations never run the hero simply renders. */
+@keyframes enter{from{opacity:0;transform:translateY(26px) scale(.985)}to{opacity:1;transform:none}}
+[data-enter]{animation:enter 1.1s cubic-bezier(.16,.84,.28,1) both;animation-delay:var(--d,0ms)}
+.picker .style{animation:enter 1.1s cubic-bezier(.16,.84,.28,1) both;
+  animation-delay:calc(1400ms + var(--i,0) * 90ms)}
+
+/* The disk arrives with the headline and takes its time — a long, soft rise
+   that sets the pace everything else follows. Its own layer, because .disk
+   owns the scroll transform and .disk-spin owns the rotation. */
+@keyframes diskEnter{
+  from{opacity:0;transform:scale(.9) translateY(52px)}
+  to  {opacity:1;transform:none}
+}
+.disk-enter{position:absolute;inset:0;
+  animation:diskEnter 1.9s cubic-bezier(.16,.84,.28,1) both}
+/* backwards, not both: after it lands the field returns to its scroll-driven
+   opacity instead of being pinned at 1 by the animation */
+@keyframes fieldEnter{from{opacity:0}to{opacity:1}}
+.disk-field{animation:fieldEnter 1.9s cubic-bezier(.16,.84,.28,1) backwards}
+@media (prefers-reduced-motion:reduce){
+  .disk-enter,.disk-field{animation:none}
+}
+.picker .style:nth-child(1){--i:0} .picker .style:nth-child(2){--i:1}
+.picker .style:nth-child(3){--i:2} .picker .style:nth-child(4){--i:3}
+@media (prefers-reduced-motion:reduce){
+  [data-enter],.picker .style{animation:none}
+}
+
+/* ============ reveals ============
+   Sections rise into place as they arrive and settle back as they leave, so
+   scrolling reads as moving through the page rather than past it. */
+/* The hidden state only exists once JS has confirmed it can reveal things
+   again — otherwise a failed observer, a script error or an old browser would
+   leave the page permanently blank. Reveals must fail visible. */
+.js-reveal [data-reveal]{opacity:0;transform:translateY(22px) scale(.992);
+  transition:opacity .68s var(--ease),transform .68s var(--ease);
+  transition-delay:var(--d,0ms);will-change:opacity,transform}
+.js-reveal [data-reveal].in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .js-reveal [data-reveal]{opacity:1;transform:none;transition:none}
+}
+
+/* ============ responsive ============ */
+@media (max-width:1180px){
+  :root{--gut:40px}
+  .picker{grid-template-columns:repeat(4,1fr)}
+}
+@media (max-width:820px){
+  :root{--gut:20px}
+  header{padding:20px var(--gut)}
+  .mark{font-size:30px}
+  h1{font-size:38px;line-height:44px}
+  .sub{font-size:16px;line-height:23px;margin-top:20px}
+  /* ---- the whole choice fits one viewport ----
+     A horizontal scroller hid four of six looks behind a swipe nobody makes,
+     and the composer + picker ran 29px past an 812px screen. All six show at
+     once, and the type and padding are tuned so the fold ends below them. */
+  .hero-in{padding-top:14px}
+  h1{font-size:32px;line-height:37px}
+  .sub{font-size:15px;line-height:21px;margin-top:12px}
+  .composer{max-width:calc(100% - var(--gut)*2);padding:10px;border-radius:20px;
+    margin-top:22px}
+  .c-top{flex-direction:column;align-items:stretch;gap:8px}
+  .c-field{padding:4px 12px}
+  .cta{width:100%;font-size:16px;height:50px}
+  .c-bot{margin-top:8px;gap:6px}
+  .picker-frame{margin-top:18px;padding:10px;border-radius:20px}
+  .picker-head{margin-bottom:8px}
+  .picker{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;
+    overflow:visible;padding:0}
+  .style{flex:none}
+  /* dvh, not vh: on a phone the URL bar eats ~100px that vh happily ignores.
+     575px is everything else in the fold measured — header, headline, sub,
+     composer, frame chrome — so the two card rows take exactly what is left. */
+  .style .art{height:clamp(66px, calc((100dvh - 575px) / 2), 112px);
+    border-radius:12px}
+  .menu{width:min(320px,78vw)}
+  .close{padding:56px 24px;border-radius:24px;margin-top:96px}
+  .close .in{margin-left:0}
+  .close .record{left:96%;width:420px;height:420px;margin:-210px 0 0 -210px;opacity:.4}
+  .close .veil{background:linear-gradient(180deg,rgba(26,28,27,.55) 0%,rgba(26,28,27,.2) 100%)}
+  .close h2{font-size:32px;line-height:38px}
+  .sec-head{flex-direction:column;align-items:flex-start;gap:14px}
+  .beat{flex:0 0 min(356px,84vw)}
+  .gallery{padding:96px 0 0}
+  .wall{--tw:118px;--gap:9px;height:clamp(280px, 78vw, 400px)}
+  .wtile .wmeta b{font-size:11.5px}
+  .wtile .wmeta i{font-size:9.5px}
+  /* ---- the bar is one 64px row, and it waits for a pick ----
+     Two wrapped rows cost 134px — two thirds of the style picker was underneath
+     it on a 812px-tall screen. */
+  .dock{padding:0 12px 12px}
+  .dock-in{height:64px;flex-wrap:nowrap;padding:8px;gap:8px;border-radius:18px}
+  .dock .rule{display:none}
+  .dwrap.look{flex:0 0 48px}
+  .dwrap.look .txt,.dwrap.look .chev{display:none}   /* the still IS the control */
+  .dwrap.look .dslot{justify-content:center;padding:0}
+  .dwrap.song{flex:1 1 auto;min-width:0}
+  .dslot{height:48px;padding:0 8px;gap:8px}
+  .dock .cta{flex:0 0 auto;width:auto;order:0;height:48px;padding:0 16px;font-size:14.5px}
+  .dock .cta .long{display:none}
+  .dock .cta .short{display:inline}
+  /* ---- 44px touch targets ---- */
+  .chip{height:44px;padding:0 16px}
+  .chip.icon-only{width:44px}
+  .browse{padding:10px 2px;min-height:44px}
+  .nav button{width:44px;height:44px;flex:none}
+  .theme{width:44px;height:44px;flex:none}
+  .login{display:inline-flex;align-items:center;justify-content:center;
+    min-height:44px;min-width:44px;padding:0 6px;white-space:nowrap}
+  /* "Join Solmi for free" ran 15px past the right edge at 375. The promise is
+     carried by the composer CTA; the header only needs the verb. */
+  .join{white-space:nowrap;font-size:13px;padding:0 14px;min-height:44px}
+  .join .long{display:none}
+  .join .short{display:inline}
+  header{gap:8px}
+  .head-r{gap:12px}
+  .mark{margin-right:2px}
+  .mark{display:inline-flex;align-items:center;min-height:44px}
+  /* ---- hero: gutter + room for the bar ---- */
+  .hero{padding-bottom:104px}
+  .hero-in{padding-left:var(--gut);padding-right:var(--gut)}
+  .disk{--disk-d:min(1000px, 170vw)}
+  .dpop.looks{width:min(474px,86vw)}
+  .look-grid{grid-template-columns:repeat(2,1fr)}
+  .dpop.songs{width:min(340px,86vw)}
+  .dpop{left:auto;right:0}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header data-enter style="--d:760ms">
+  <a class="mark" href="/">solmi<i>.</i></a>
+  <div class="head-r">
+    <button class="theme" id="theme" aria-label="Switch theme" title="Switch theme">
+      <svg class="sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <svg class="moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+    <a class="login" href="#">Log in</a>
+    <button class="join"><span class="long">Join Solmi for free</span><span class="short">Join free</span></button>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="dome-rim" aria-hidden="true"></div>
+  <div class="dome" aria-hidden="true"></div>
+  <div class="disk-field" aria-hidden="true"></div>
+  <div class="disk" aria-hidden="true">
+    <div class="disk-enter">
+    <div class="disk-spin">
+      <img class="dl-outer-rainbow" src="assets/disk/outer-rainbow-ring.webp" alt="">
+      <img class="dl-outer-hollow" src="assets/disk/outer-ring-hollow.svg" alt="">
+      <img class="dl-teal-1" src="assets/disk/teal-gap-ring-1.svg" alt="">
+      <img class="dl-mid-rainbow" src="assets/disk/middle-rainbow-ring.webp" alt="">
+      <img class="dl-inner-rainbow" src="assets/disk/inner-rainbow-ring.svg" alt="">
+      <img class="dl-label-solid disk-upright" src="assets/disk/center-label-solid.svg" alt="">
+      <img class="dl-indicator disk-upright" src="assets/disk/center-play-indicator.svg" alt="">
+      <img class="dl-teal-2" src="assets/disk/teal-gap-ring-2.svg" alt="">
+      <img class="dl-groove-3" src="assets/disk/groove-line-3.svg" alt="">
+      <img class="dl-center-art disk-upright" src="assets/disk/center-art.webp" alt="">
+    </div>
+    </div>
+  </div>
+  <div class="hero-in">
+
+    <h1 data-enter style="--d:0ms">Turn your track into a world.</h1>
+    <p class="sub" data-enter style="--d:520ms">Pick a format. Bring a song. Direct your music&nbsp;video in one&nbsp;click.</p>
+
+    <!-- composer -->
+    <div class="composer" data-enter style="--d:980ms">
+      <div class="c-top">
+        <label class="c-field">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(16,17,16,.42)" stroke-width="1.8" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          <input id="song" type="text" placeholder="Upload a song, or paste a link">
+        </label>
+        <button class="cta"><span class="lbl">Make a 5s video for free</span></button>
+      </div>
+
+      <div class="c-bot">
+        <button class="chip" id="upload">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v13"/></svg>
+          Upload
+        </button>
+
+        <div class="drop" id="drop" data-open="false">
+          <button class="chip" id="dropbtn" aria-haspopup="true" aria-expanded="false">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            <span id="droplabel">Select a song</span>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="menu" role="menu">
+            <div class="lbl">Your library</div>
+            <button role="menuitem">Neon Exit <span>1:01</span></button>
+            <button role="menuitem">Static Bound <span>1:01</span></button>
+            <button role="menuitem">Verdigris Afterglow <span>1:34</span></button>
+            <div class="lbl">Recently imported</div>
+            <button role="menuitem">Paper Boats &amp; City Lights <span>0:40</span></button>
+            <button role="menuitem">The Rain Remembers <span>4:33</span></button>
+          </div>
+        </div>
+
+        <button class="chip dice icon-only" id="dice" aria-label="Toss me a song" title="Toss me a song">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="8.5" cy="8.5" r="1.35" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.35" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.35" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.35" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.35" fill="currentColor" stroke="none"/></svg>
+        </button>
+
+        <span class="spacer"></span>
+        <button class="chip ghost">Options ⌄</button>
+      </div>
+    </div>
+
+    <!-- style first -->
+    <div class="picker-frame" data-enter style="--d:1220ms">
+      <div class="picker-head">
+        <span class="mono">Pick a format</span>
+        <span class="mono req">Required</span>
+      </div>
+    <div class="picker" role="group" aria-label="Choose what to make">
+      <button class="style" aria-pressed="false" data-accent="#7B6FD6"><div class="art s1"><img class="ph" src="assets/types/music-video.webp" alt="Music video" decoding="async"><video class="clip" src="assets/types/music-video.mp4" poster="assets/types/music-video.webp" muted loop playsinline preload="none" aria-hidden="true"></video><span class="ix">01</span><span class="nm">Music video</span><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></div></button>
+      <button class="style" aria-pressed="false" data-accent="#D8434F"><div class="art s2"><img class="ph" src="assets/types/singing-video.webp" alt="Singing video" decoding="async"><video class="clip" src="assets/types/singing-video.mp4" poster="assets/types/singing-video.webp" muted loop playsinline preload="none" aria-hidden="true"></video><span class="ix">02</span><span class="nm">Singing video</span><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></div></button>
+      <button class="style" aria-pressed="false" data-accent="#19ADE6"><div class="art s3"><img class="ph" src="assets/types/lyric-video.webp" alt="Lyric video" decoding="async"><video class="clip" src="assets/types/lyric-video.mp4" poster="assets/types/lyric-video.webp" muted loop playsinline preload="none" aria-hidden="true"></video><span class="ix">03</span><span class="nm">Lyric video</span><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></div></button>
+      <button class="style" aria-pressed="false" data-accent="#E68A19"><div class="art s4"><img class="ph" src="assets/types/song.webp" alt="Song" decoding="async"><span class="ix">04</span><span class="nm">Song</span><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></div></button>
+    </div>
+    </div>
+  </div>
+</section>
+
+<!-- gallery -->
+<section class="gallery">
+  <div class="sec-head" data-reveal>
+    <div class="l"><h2>Music videos created with Solmi</h2></div>
+    <div class="r">
+      <button class="browse">Browse all <span class="n">1,240</span> →</button>
+    </div>
+  </div>
+  <div class="wall" id="wall" data-reveal>
+    <div class="wall-track" id="wallTrack"></div>
+  </div>
+  <script type="application/json" id="wallData">[{"ar": "16/9", "vid": "https://media.solmi.ai/ai-music-video/narrative-video-1e2a0e8a-153e-4f5b-ad33-294da962b943.mp4", "ph": "https://media.solmi.ai/ai-music-video/narrative-thumb-1e2a0e8a-153e-4f5b-ad33-294da962b943.jpg", "alt": "Heaven", "dur": "4:22", "title": "Heaven", "sub": "Cloudlight Reverie"}, {"ar": "16/9", "vid": "https://media.solmi.ai/ai-music-video/narrative-video-fba31b5e-0a28-418d-833a-f7c3393552d0.mp4", "ph": "https://media.solmi.ai/ai-music-video/narrative-thumb-fba31b5e-0a28-418d-833a-f7c3393552d0.jpg", "alt": "Engine On", "dur": "0:51", "title": "Engine On", "sub": "HD Digital Film"}, {"ar": "16/9", "vid": "https://media.solmi.ai/ai-music-video/narrative-video-b5769b43-eaeb-443f-9db9-80a36750661a.mp4", "ph": "https://media.solmi.ai/ai-music-video/narrative-thumb-b5769b43-eaeb-443f-9db9-80a36750661a.jpg", "alt": "Rhythmic Liberation", "dur": "0:39", "title": "Rhythmic Liberation", "sub": "K-Pop Performance Editorial"}, {"ar": "9/16", "vid": "https://media.solmi.ai/ai-music-video/narrative-video-eafb79a1-1e60-4461-a68d-a13e440d1365.mp4", "ph": "https://media.solmi.ai/ai-music-video/narrative-thumb-eafb79a1-1e60-4461-a68d-a13e440d1365.jpg", "alt": "Color Field: Dissolve", "dur": "0:50", "title": "Color Field: Dissolve", "sub": "Grainy Gradient"}, {"ar": "16/9", "vid": "https://media.solmi.ai/ai-music-video/narrative-video-8ed8c341-2582-466b-a1fb-8a0a1b823765.mp4", "ph": "https://media.solmi.ai/ai-music-video/narrative-thumb-8ed8c341-2582-466b-a1fb-8a0a1b823765.jpg", "alt": "Down The Road", "dur": "5:10", "title": "Down The Road", "sub": "HD Digital Film"}, {"ar": "16/9", "vid": "https://media.solmi.ai/ai-music-video/narrative-video-3840eb9f-9f41-44f7-bb00-ccf1e9bbeb0a.mp4", "ph": "https://media.solmi.ai/ai-music-video/narrative-thumb-3840eb9f-9f41-44f7-bb00-ccf1e9bbeb0a.jpg", "alt": "Paper Boats &amp; City Lights", "dur": "0:40", "title": "Paper Boats &amp; City Lights", "sub": "Love Actually Inspired"}, {"ar": "9/16", "vid": "https://media.solmi.ai/ai-music-video/narrative-video-fc64d50f-1875-4f9f-8327-2aac78e9ec2b.mp4", "ph": "https://media.solmi.ai/ai-music-video/narrative-thumb-fc64d50f-1875-4f9f-8327-2aac78e9ec2b.jpg", "alt": "The Letter Never Sent", "dur": "0:59", "title": "The Letter Never Sent", "sub": "Shunji Iwai Inspired"}, {"ar": "9/16", "vid": "https://media.solmi.ai/ai-music-video/narrative-video-a9b21c5d-0b8c-481f-a602-cfd99b0227ba.mp4", "ph": "https://media.solmi.ai/ai-music-video/narrative-thumb-a9b21c5d-0b8c-481f-a602-cfd99b0227ba.jpg", "alt": "Static Bound", "dur": "1:01", "title": "Static Bound", "sub": "90s MTV Aesthetic"}]</script>
+</section>
+
+<!-- how it works -->
+<section class="hiw">
+  <div class="hiw-track">
+  <div class="hiw-sticky">
+  <div class="hiw-left">
+  <div class="hiw-head" data-reveal>
+    <h2>How it works</h2>
+  </div>
+  <div class="beats">
+    <button class="beat" type="button" data-step="0" aria-pressed="true" data-reveal style="--d:0ms"><div class="arc"></div><span class="n">01</span><span class="h">Pick a format</span>
+      <p>Choose a director's style. We read tempo, key and sections, then cast it.</p>
+      <span class="det">Style · Cast · References</span></button>
+    <button class="beat" type="button" data-step="1" aria-pressed="false" data-reveal style="--d:90ms"><div class="arc"></div><span class="n">02</span><span class="h">Bring a song</span>
+      <p>Upload, choose from your library, paste a link — or toss the dice and we'll pick.</p>
+      <span class="det">Upload · Library · Link · Dice</span></button>
+    <button class="beat" type="button" data-step="2" aria-pressed="false" data-reveal style="--d:180ms"><div class="arc"></div><span class="n">03</span><span class="h">We direct the rest</span>
+      <p>Storyboard first, so you can change your mind before anything renders.</p>
+      <span class="det">Storyboard · Review · Render</span></button>
+  </div>
+  </div>
+
+  <div class="hiw-visual" data-reveal>
+    <div class="stage" id="hiwStage">
+      <span class="tag mono" id="hiwTag">Placeholder · Step 01</span>
+      <p id="hiwCaption">Screen recording or still of the style picker with a look being chosen.</p>
+      <span class="hint mono">[ DROP THE REAL VISUAL HERE ]</span>
+    </div>
+  </div>
+  </div>
+  </div>
+</section>
+
+<!-- faq -->
+<section class="faq">
+  <div class="sec-head" data-reveal>
+    <div class="l"><span class="mono">Quick answers</span><h2>Frequently asked questions.</h2></div>
+  </div>
+  <div class="faq-list">
+    <details data-reveal style="--d:0ms">
+      <summary><span class="q">How long does it take to make a music video?</span><span class="pm"></span></summary>
+      <div class="a">The free five-second preview renders in about twenty seconds. A full-length video takes roughly three minutes once you have approved the storyboard — you are not waiting on a queue while you decide.</div>
+    </details>
+    <details data-reveal style="--d:70ms">
+      <summary><span class="q">What audio can I bring?</span><span class="pm"></span></summary>
+      <div class="a">Upload a file, choose something from your library, or paste a Suno, TikTok or YouTube link. If you do not have a track to hand, the dice will pick one for you so you can see what Solmi does before committing anything.</div>
+    </details>
+    <details data-reveal style="--d:140ms">
+      <summary><span class="q">Do I need the rights to the song?</span><span class="pm"></span></summary>
+      <div class="a">For anything you publish, yes — bring music you own or are licensed to use. Videos you make with Solmi are yours: <b>you keep the rights to what you create here.</b> [CONFIRM EXACT LICENSING WORDING WITH LEGAL]</div>
+    </details>
+    <details data-reveal style="--d:210ms">
+      <summary><span class="q">What formats and resolutions can I export?</span><span class="pm"></span></summary>
+      <div class="a">[YOUR SUPPORTED RATIOS — e.g. 16:9, 9:16, 1:1] at [YOUR RESOLUTIONS — e.g. 480p, 1080p, 4K], with captions optional on every export.</div>
+    </details>
+    <details data-reveal style="--d:280ms">
+      <summary><span class="q">Is there a free plan?</span><span class="pm"></span></summary>
+      <div class="a">Your first five-second video is free and needs no card. You will be asked to sign in before it renders, so the result is saved to your library rather than lost. [YOUR PAID TIERS AND CREDIT ALLOWANCES]</div>
+    </details>
+    <details data-reveal style="--d:350ms">
+      <summary><span class="q">Does Solmi handle lyrics and other languages?</span><span class="pm"></span></summary>
+      <div class="a">Solmi reads tempo, key, sections and lyrics, and uses them to time the cuts — so the edit lands on the song rather than beside it. [CONFIRM WHICH LANGUAGES ARE SUPPORTED]</div>
+    </details>
+  </div>
+</section>
+
+<!-- closing -->
+<section class="close">
+    <div class="glow" aria-hidden="true"></div>
+    <div class="record" aria-hidden="true"></div>
+    <div class="veil" aria-hidden="true"></div>
+  <div class="in" data-reveal>
+    <h2>Your track already has a world.<br>Let's go find it.</h2>
+    <p>Pick a format, bring a song, and watch the first five seconds render.</p>
+    <button class="cta"><span class="lbl">Make a 5s video for free</span></button>
+  </div>
+</section>
+  <div class="dome-foot" aria-hidden="true"></div>
+</main>
+
+<!-- sticky composer — docks once the hero composer leaves, edits in place -->
+<div class="dock" id="dock" data-show="false" aria-hidden="true">
+  <div class="dock-in">
+    <span class="dock-bg" id="dockBg" aria-hidden="true"></span>
+
+    <div class="dwrap look" id="lookWrap" data-open="false">
+      <button class="dslot" id="lookBtn" aria-haspopup="true" aria-expanded="false">
+        <span class="swatch" id="dockSwatch"></span>
+        <span class="txt"><span class="k">Format</span>
+          <span class="v empty" id="dockStyle">Not picked yet</span></span>
+        <svg class="chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="dpop looks" role="dialog" aria-label="Choose a format">
+        <div class="lbl">Pick a format</div>
+        <div class="look-grid">
+          <button class="look-opt" data-i="0" data-accent="#7B6FD6" aria-pressed="false"><span class="fr"><img src="assets/types/music-video.webp" alt="" loading="lazy" decoding="async"></span><span class="cap">Music video</span></button>
+          <button class="look-opt" data-i="1" data-accent="#D8434F" aria-pressed="false"><span class="fr"><img src="assets/types/singing-video.webp" alt="" loading="lazy" decoding="async"></span><span class="cap">Singing video</span></button>
+          <button class="look-opt" data-i="2" data-accent="#19ADE6" aria-pressed="false"><span class="fr"><img src="assets/types/lyric-video.webp" alt="" loading="lazy" decoding="async"></span><span class="cap">Lyric video</span></button>
+          <button class="look-opt" data-i="3" data-accent="#E68A19" aria-pressed="false"><span class="fr"><img src="assets/types/song.webp" alt="" loading="lazy" decoding="async"></span><span class="cap">Song</span></button>
+        </div>
+      </div>
+    </div>
+
+    <span class="rule"></span>
+
+    <div class="dwrap song" id="songWrap" data-open="false">
+      <button class="dslot" id="songBtn" aria-haspopup="true" aria-expanded="false">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(16,17,16,.42)" stroke-width="1.8" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        <span class="txt"><span class="k">Song</span>
+          <span class="v empty" id="dockSong">No song yet</span></span>
+        <svg class="chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="dpop songs" role="dialog" aria-label="Choose a song">
+        <div class="row">
+          <input id="dockInput" type="text" placeholder="Paste a link, or type a title">
+          <button class="mini" id="dockUpload" aria-label="Upload a song" title="Upload">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v13"/></svg>
+          </button>
+          <button class="mini" id="dockDice" aria-label="Toss me a song" title="Toss me a song">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="8.5" cy="8.5" r="1.35" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.35" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.35" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.35" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.35" fill="currentColor" stroke="none"/></svg>
+          </button>
+        </div>
+        <div class="lbl">Your library</div>
+        <div class="list">
+          <button data-t="Neon Exit" data-d="1:01">Neon Exit <span>1:01</span></button>
+          <button data-t="Static Bound" data-d="1:01">Static Bound <span>1:01</span></button>
+          <button data-t="Verdigris Afterglow" data-d="1:34">Verdigris Afterglow <span>1:34</span></button>
+          <button data-t="Paper Boats &amp; City Lights" data-d="0:40">Paper Boats &amp; City Lights <span>0:40</span></button>
+          <button data-t="The Rain Remembers" data-d="4:33">The Rain Remembers <span>4:33</span></button>
+        </div>
+      </div>
+    </div>
+
+    <button class="cta"><span class="lbl"><span class="long">Make a 5s video for free</span><span class="short">Make 5s · free</span></span></button>
+  </div>
+</div>
+
+<footer data-reveal>
+  <nav>
+    <a href="#">Gallery</a><a href="#">Pricing</a><a href="#">Blog</a>
+    <a href="#">Discord</a><a href="#">Terms</a><a href="#">Privacy</a>
+  </nav>
+  <span class="mono">© 2026 Solmi</span>
+</footer>
+
+<script>
+/* --- theme ---------------------------------------------------------------
+   System preference by default; an explicit choice is remembered and wins. */
+const root=document.documentElement;
+/* Dark is the default — the markup ships with data-theme="dark", so there is
+   no flash of light before JS runs. A stored choice overrides it. */
+const storedTheme=(()=>{try{return localStorage.getItem('solmi-theme')}catch(e){return null}})();
+if(storedTheme) root.dataset.theme=storedTheme;
+const isDark=()=> root.dataset.theme
+  ? root.dataset.theme==='dark'
+  : matchMedia('(prefers-color-scheme: dark)').matches;
+document.getElementById('theme').onclick=()=>{
+  const next=isDark()?'light':'dark';
+  root.dataset.theme=next;
+  try{localStorage.setItem('solmi-theme',next)}catch(e){}
+  if(typeof pushDock==='function') pushDock();
+  if(typeof request==='function') request();
+};
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{
+  if(!root.dataset.theme){ if(typeof pushDock==='function') pushDock();
+                           if(typeof request==='function') request(); }
+});
+
+/* --- dice --- */
+const TOSS=["Neon Exit — 1:01","水墨月 — 0:39","Paper Boats & City Lights — 0:40",
+  "Static Bound — 1:01","The Rain Remembers — 4:33","Midnight Almost — 0:35",
+  "Verdigris Afterglow — 1:34","Engine On — 0:51"];
+let last=-1;
+const dice=document.getElementById('dice'), song=document.getElementById('song');
+function roll(btn){
+  let i; do{i=Math.floor(Math.random()*TOSS.length)}while(i===last&&TOSS.length>1);
+  last=i;
+  btn.classList.remove('rolling'); void btn.offsetWidth; btn.classList.add('rolling');
+  setSong(TOSS[i]);
+}
+dice.onclick=()=>roll(dice);
+
+/* --- upload --- */
+function pickFile(){
+  const f=document.createElement('input');
+  f.type='file'; f.accept='audio/*';
+  f.onchange=()=>{ if(f.files[0]) setSong(f.files[0].name); };
+  f.click();
+}
+document.getElementById('upload').onclick=pickFile;
+
+/* --- select a song --- */
+const drop=document.getElementById('drop'), dropbtn=document.getElementById('dropbtn'),
+      droplabel=document.getElementById('droplabel');
+const setOpen=v=>{drop.dataset.open=v; dropbtn.setAttribute('aria-expanded',String(v))};
+dropbtn.onclick=e=>{e.stopPropagation(); setOpen(drop.dataset.open!=='true')};
+drop.querySelectorAll('.menu button').forEach(b=>{
+  b.onclick=()=>{
+    const t=b.childNodes[0].textContent.trim(), d=b.querySelector('span').textContent;
+    droplabel.textContent=t; setOpen(false); setSong(t+' — '+d);
+  };
+});
+document.addEventListener('click',()=>setOpen(false));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')setOpen(false)});
+
+/* --- style picker --- */
+document.querySelectorAll('.style').forEach(s=>{
+  s.onclick=()=>{
+    const on=s.getAttribute('aria-pressed')==='true';
+    document.querySelectorAll('.style').forEach(x=>x.setAttribute('aria-pressed','false'));
+    s.setAttribute('aria-pressed',String(!on));
+    pushDock();
+  };
+});
+
+/* --- sticky composer --- */
+const dock=document.getElementById('dock'),
+      dockStyle=document.getElementById('dockStyle'),
+      dockSong=document.getElementById('dockSong'),
+      dockSwatch=document.getElementById('dockSwatch'),
+      dockInput=document.getElementById('dockInput'),
+      dockBg=document.getElementById('dockBg'),
+      composer=document.querySelector('.composer');
+
+/* visible for the whole scroll once the hero composer is gone,
+   fading only while the closing CTA holds the screen */
+let past=false, atClose=false;
+/* On a phone the bar costs 16% of the screen, so it earns its place only once
+   there is a look to show. On desktop it is the persistent transport bar. */
+const dockEarned=()=>innerWidth>820 ||
+  !!document.querySelector('.style[aria-pressed=true]');
+const applyDock=()=>{
+  const show=past && dockEarned();
+  dock.dataset.show=String(show);
+  dock.dataset.fade=String(atClose);
+  const live=show && !atClose;
+  dock.setAttribute('aria-hidden',String(!live));
+  if(!live) closePops();
+};
+new IntersectionObserver(([e])=>{past=!e.isIntersecting;applyDock()},
+  {rootMargin:'-40px 0px 0px 0px'}).observe(composer);
+new IntersectionObserver(([e])=>{atClose=e.isIntersecting;applyDock()},
+  {threshold:.3}).observe(document.querySelector('.close'));
+
+/* Format clips play on hover only — the hero should be still until you show
+   interest in one. Touch has no hover, so there the picked card plays instead. */
+(()=>{
+  const cards=[...document.querySelectorAll('.picker .style')];
+  if(!cards.length) return;
+  const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
+  const start=v=>{
+    if(!v||reduce) return;
+    if(v.preload==='none'){ v.preload='auto'; v.load(); }
+    const p=v.play();
+    if(p) p.then(()=>v.classList.add('on')).catch(()=>{});
+  };
+  const stop=v=>{ if(!v) return; v.pause(); v.currentTime=0; v.classList.remove('on'); };
+
+  if(fine){
+    cards.forEach(c=>{
+      const v=c.querySelector('.clip');
+      c.addEventListener('pointerenter',()=>start(v));
+      c.addEventListener('pointerleave',()=>stop(v));
+      c.addEventListener('focus',()=>start(v));
+      c.addEventListener('blur',()=>stop(v));
+    });
+  }else{
+    /* the one you picked is the one that moves */
+    const sync=()=>cards.forEach(c=>{
+      const v=c.querySelector('.clip');
+      c.getAttribute('aria-pressed')==='true' ? start(v) : stop(v);
+    });
+    cards.forEach(c=>c.addEventListener('click',()=>setTimeout(sync,0)));
+  }
+})();
+
+/* ---- single source of truth: the hero picker + the hero field ---- */
+const styles=[...document.querySelectorAll('.style')];
+function selectStyle(i){
+  styles.forEach((x,n)=>x.setAttribute('aria-pressed',String(n===i)));
+  pushDock();
+}
+function setSong(v){ song.value=v; pushDock(); }
+
+const BASE_ACCENT='#1ED760';
+let plateSrc=null;
+function setPlate(src){
+  if(src===plateSrc) return;              // background-image can't tween — fade the layer
+  plateSrc=src;
+  dockBg.style.opacity='0';
+  requestAnimationFrame(()=>{
+    dockBg.style.setProperty('--art',src?'url("'+src+'")':'none');
+    requestAnimationFrame(()=>{dockBg.style.opacity='1'});
+  });
+}
+function pushDock(){
+  const i=styles.findIndex(x=>x.getAttribute('aria-pressed')==='true');
+  /* the page borrows the colour of the look you picked; the CTA never moves */
+  let acc = i>-1 ? (styles[i].dataset.accent||BASE_ACCENT) : BASE_ACCENT;
+  if(acc==='#8A8F8C' && isDark()) acc='#B9BEBB';   /* Film Noir, dark only */
+  document.documentElement.style.setProperty('--accent',acc);
+  if(i>-1){
+    dockStyle.textContent=styles[i].querySelector('.nm').textContent;
+    dockStyle.classList.remove('empty');
+    const im=styles[i].querySelector('.ph');
+    const src=im?(im.currentSrc||im.src):'';
+    dockSwatch.style.background=src?'url('+src+') center/cover':'';
+    setPlate(src);
+  }else{
+    dockStyle.textContent='Not picked yet'; dockStyle.classList.add('empty');
+    dockSwatch.style.background='';
+    setPlate('');
+  }
+  document.querySelectorAll('.look-opt').forEach((b,n)=>
+    b.setAttribute('aria-pressed',String(n===i)));
+  applyDock();                    /* a pick can bring the mobile bar into play */
+  document.querySelector('.picker').classList.toggle('has-pick',i>-1);
+  const v=song.value.trim();
+  dockSong.textContent=v||'No song yet';
+  dockSong.classList.toggle('empty',!v);
+  if(dockInput && document.activeElement!==dockInput) dockInput.value=v;
+}
+
+/* ---- popovers: the slot IS the control ---- */
+const wraps={look:document.getElementById('lookWrap'),song:document.getElementById('songWrap')};
+const closePops=except=>{
+  Object.values(wraps).forEach(w=>{
+    if(w===except) return;
+    w.dataset.open='false';
+    w.querySelector('.dslot').setAttribute('aria-expanded','false');
+  });
+};
+const togglePop=w=>{
+  const open=w.dataset.open!=='true';
+  closePops(w);
+  w.dataset.open=String(open);
+  w.querySelector('.dslot').setAttribute('aria-expanded',String(open));
+  if(open && w===wraps.song) setTimeout(()=>dockInput.focus(),40);
+};
+document.getElementById('lookBtn').onclick=e=>{e.stopPropagation();togglePop(wraps.look)};
+document.getElementById('songBtn').onclick=e=>{e.stopPropagation();togglePop(wraps.song)};
+document.querySelectorAll('.dpop').forEach(d=>d.addEventListener('click',e=>e.stopPropagation()));
+document.addEventListener('click',()=>closePops());
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePops()});
+
+document.querySelectorAll('.look-opt').forEach(b=>{
+  b.onclick=()=>{ selectStyle(+b.dataset.i); closePops(); };
+});
+dockInput.addEventListener('input',()=>setSong(dockInput.value));
+document.querySelectorAll('.dpop.songs .list button').forEach(b=>{
+  b.onclick=()=>{ setSong(b.dataset.t+' — '+b.dataset.d); closePops(); };
+});
+document.getElementById('dockUpload').onclick=()=>pickFile();
+const dockDice=document.getElementById('dockDice');
+dockDice.onclick=()=>{ roll(dockDice); };
+
+/* --- hero dome sinks on scroll -----------------------------------------
+   Driven by scroll position rather than an observer: the fade needs to track
+   the scroll continuously, not flip at a threshold. */
+const heroDome=document.querySelector('.dome');
+if(heroDome && !matchMedia('(prefers-reduced-motion:reduce)').matches){
+  let queued=false;
+  const fade=()=>{
+    queued=false;
+    const t=Math.min(1,Math.max(0,scrollY/(innerHeight*1.5)));
+    root.style.setProperty('--dome-fade',String(1-t));
+    /* it shrinks a little and rises faster than the page, so it leaves the
+       frame ahead of the content rather than merely scrolling off it */
+    root.style.setProperty('--disk-lift',(-380*t).toFixed(1)+'px');
+    root.style.setProperty('--disk-scale',(1-0.30*t).toFixed(4));
+  };
+  addEventListener('scroll',()=>{ if(!queued){queued=true;requestAnimationFrame(fade)} },{passive:true});
+  addEventListener('resize',fade);
+  fade();
+}
+
+/* --- how it works: steps drive the visual below them --------------------- */
+const steps=[...document.querySelectorAll('.beat')];
+const hiwStage=document.getElementById('hiwStage'),
+      hiwTag=document.getElementById('hiwTag'),
+      hiwCaption=document.getElementById('hiwCaption');
+const STEP_VISUALS=[
+  {tint:'#F5811A', caption:'Screen recording or still of the style picker with a look being chosen.'},
+  {tint:'#45A85E', caption:'The composer accepting a file, a pasted link, and the dice landing on a track.'},
+  {tint:'#00A9C7', caption:'A storyboard being reviewed frame by frame, then the finished render playing.'}
+];
+if(steps.length && hiwStage){
+  const pick=i=>{
+    steps.forEach((b,n)=>b.setAttribute('aria-pressed',String(n===i)));
+    const v=STEP_VISUALS[i];
+    hiwStage.style.setProperty('--step',v.tint);
+    hiwTag.textContent='Placeholder · Step 0'+(i+1);
+    hiwCaption.textContent=v.caption;
+  };
+  /* Scroll position drives the selection, with a weighted dwell: 01 and 03 hold
+     for longer than 02 without their cards being any taller. */
+  const track=document.querySelector('.hiw-track');
+  /* Every band is now wider than a single scroll gesture, so 02 cannot be
+     flicked past: 38% / 28% / 34% of a 200vh run. */
+  const BANDS=[0,.38,.66,1];
+  const progress=()=>{
+    if(!track||getComputedStyle(track).height==='auto') return null;
+    const r=track.getBoundingClientRect();
+    const travel=r.height-innerHeight;
+    if(travel<=0) return null;
+    return Math.max(0,Math.min(1,-r.top/travel));
+  };
+  const fromScroll=()=>{
+    const p=progress();
+    if(p===null) return;
+    let i=0;
+    for(let n=0;n<3;n++) if(p>=BANDS[n] && p<BANDS[n+1]) i=n;
+    if(p>=BANDS[3]) i=2;
+    pick(i);
+  };
+  let queued=false;
+  addEventListener('scroll',()=>{ if(!queued){queued=true;requestAnimationFrame(()=>{queued=false;fromScroll()})} },{passive:true});
+  addEventListener('resize',fromScroll);
+  /* clicking jumps the page to the middle of that step's band */
+  steps.forEach((b,i)=>b.addEventListener('click',()=>{
+    if(!track||getComputedStyle(track).height==='auto'){ pick(i); return; }
+    const travel=track.offsetHeight-innerHeight;
+    const mid=(BANDS[i]+BANDS[i+1])/2;
+    scrollTo({top:track.offsetTop+travel*mid,behavior:'smooth'});
+  }));
+  pick(0);
+  fromScroll();}
+
+/* --- reveals -------------------------------------------------------------
+   Enter and leave both matter: elements settle back out as they scroll away,
+   so a long page reads as a sequence of arrivals rather than one long slab. */
+const revealed=document.querySelectorAll('[data-reveal]');
+const canReveal = 'IntersectionObserver' in window
+  && !matchMedia('(prefers-reduced-motion:reduce)').matches
+  && revealed.length;
+if(canReveal){
+  document.documentElement.classList.add('js-reveal');   // arms the hidden state
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(en=>en.target.classList.toggle('in',en.isIntersecting));
+  },{threshold:.14,rootMargin:'-6% 0px -12% 0px'});
+  revealed.forEach(el=>io.observe(el));
+  /* Anything already on screen at load is revealed synchronously — not on a
+     frame callback, which some environments never run. */
+  const showIfOnScreen=()=>revealed.forEach(el=>{
+    const r=el.getBoundingClientRect();
+    if(r.top<innerHeight*0.94 && r.bottom>0) el.classList.add('in');
+  });
+  showIfOnScreen();
+  addEventListener('load',showIfOnScreen);
+}
+
+/* --- gallery wall -------------------------------------------------------
+   A masonry marquee: one tile width, heights from each clip's own ratio,
+   columns staggered vertically, two identical sets in the track so the drift
+   can loop seamlessly. Videos mount only on hover and unmount on leave, so the
+   page never holds more than one decoder for this section. */
+(()=>{
+const wall=document.getElementById('wall'), track=document.getElementById('wallTrack');
+const data=document.getElementById('wallData');
+if(!wall||!track||!data) return;
+const CLIPS=JSON.parse(data.textContent);
+const fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
+const SPEED=34;                                   /* px per second of drift */
+let live=null;
+
+function tile(c,i){
+  const [w,h]=(c.ar||'16/9').split('/').map(Number);
+  const el=document.createElement('button');
+  el.className='wtile';
+  el.type='button';
+  el.style.setProperty('--r',(h/w).toFixed(4));
+  el.dataset.vid=c.vid;
+  el.setAttribute('aria-label','Play '+c.title);
+  el.innerHTML='<img class="wph" src="'+c.ph+'" alt="" loading="lazy" decoding="async">'+
+    '<span class="wdur">'+c.dur+'</span>'+
+    '<span class="wmeta"><b>'+c.title+'</b><i>'+c.sub+'</i></span>';
+  return el;
+}
+function build(){
+  const cs=getComputedStyle(wall);
+  const tw=parseFloat(cs.getPropertyValue('--tw'));
+  const gap=parseFloat(cs.getPropertyValue('--gap'));
+  /* enough columns to overfill the viewport, or the loop seam becomes visible */
+  const cols=Math.max(6, Math.ceil(innerWidth/(tw+gap))+2);
+  track.textContent='';
+  const set=document.createDocumentFragment();
+  for(let i=0;i<cols;i++){
+    const col=document.createElement('div');
+    col.className='wcol';
+    col.style.setProperty('--off', (-((i*53)%112))+'px');   /* the masonry stagger */
+    for(let k=0;k<3;k++) col.appendChild(tile(CLIPS[(i*3+k)%CLIPS.length],i));
+    set.appendChild(col);
+  }
+  const setNode=document.createElement('div');
+  setNode.style.cssText='display:flex;gap:'+gap+'px';
+  setNode.appendChild(set);
+  track.appendChild(setNode);
+  track.appendChild(setNode.cloneNode(true));       /* the second lap */
+  const half=cols*(tw+gap);
+  track.style.setProperty('--half', half+'px');
+  track.style.setProperty('--dur', Math.round(half/SPEED)+'s');
+}
+
+function mount(el){
+  let v=el.querySelector('video');
+  if(v) return v;
+  v=document.createElement('video');
+  v.src=el.dataset.vid; v.loop=true; v.muted=true; v.playsInline=true; v.preload='auto';
+  el.insertBefore(v, el.querySelector('.wph').nextSibling);
+  v.addEventListener('canplay',()=>v.classList.add('on'),{once:true});
+  return v;
+}
+function unmount(el){
+  const v=el.querySelector('video');
+  if(!v) return;
+  v.pause(); v.removeAttribute('src'); v.load(); v.remove();
+}
+function preview(el){
+  const v=mount(el);
+  const go=()=>{ const p=v.play(); if(p) p.catch(()=>{}); };
+  go();
+  /* a play() issued before the first frame is ready can be dropped silently */
+  if(v.readyState<3) v.addEventListener('canplay',go,{once:true});
+}
+function release(el){
+  if(el===live) return;                    /* the clicked one keeps running */
+  unmount(el);
+}
+function activate(el){
+  if(live&&live!==el){ live.classList.remove('is-live'); unmount(live); }
+  if(el===live){ live.classList.remove('is-live'); unmount(el); live=null;
+                 wall.classList.remove('hold'); return; }
+  live=el; el.classList.add('is-live'); wall.classList.add('hold');
+  const v=mount(el);
+  v.muted=false;
+  const p=v.play();
+  if(p) p.catch(()=>{ v.muted=true; v.play().catch(()=>{}); });
+}
+
+build();
+if(fine){
+  track.addEventListener('pointerover',e=>{
+    const el=e.target.closest('.wtile');
+    if(el&&!el.contains(e.relatedTarget)) preview(el);
+  });
+  track.addEventListener('pointerout',e=>{
+    const el=e.target.closest('.wtile');
+    if(el&&!el.contains(e.relatedTarget)) release(el);
+  });
+}
+track.addEventListener('click',e=>{
+  const el=e.target.closest('.wtile');
+  if(el) activate(el);
+});
+/* stop everything once the wall is off screen */
+new IntersectionObserver(([e])=>{
+  if(e.isIntersecting) return;
+  if(live){ live.classList.remove('is-live'); unmount(live); live=null; }
+  wall.classList.remove('hold');
+},{threshold:0}).observe(wall);
+
+let rz=0;
+addEventListener('resize',()=>{ clearTimeout(rz); rz=setTimeout(()=>{
+  if(live){ live.classList.remove('is-live'); live=null; wall.classList.remove('hold'); }
+  build();
+},180); });
+})();
+</script>
+</body>
+</html>

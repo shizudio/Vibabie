@@ -1,0 +1,20 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="1018.69" height="1018.69" viewBox="0 0 1018.69 1018.69" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="outer-ring-hollow">
+<circle cx="509.346" cy="509.346" r="509.346" fill="#0A2822"/>
+<circle cx="509.346" cy="509.346" r="509.346" fill="url(#paint0_linear_2314_1682)"/>
+<circle cx="509.346" cy="509.346" r="509.346" fill="url(#paint1_linear_2314_1682)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_2314_1682" x1="509.346" y1="0" x2="509.346" y2="1293.94" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0A2822"/>
+<stop offset="0.674532" stop-color="#55960F"/>
+<stop offset="1" stop-color="#FDCB32"/>
+</linearGradient>
+<linearGradient id="paint1_linear_2314_1682" x1="509.346" y1="0" x2="509.346" y2="1293.94" gradientUnits="userSpaceOnUse">
+<stop/>
+<stop offset="0.331731" stop-color="#0A2822"/>
+<stop offset="0.725962" stop-color="#55960F"/>
+<stop offset="1" stop-color="#FDCB32"/>
+</linearGradient>
+</defs>
+</svg>
