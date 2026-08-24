@@ -462,10 +462,11 @@ h1{font-size:64px;font-weight:500;line-height:72px;margin:0;color:var(--ink);
   flex-direction:column;justify-content:center;gap:26px}
 .wall{position:relative;overflow:hidden;
   --tw:236px; --gap:14px;
-  height:clamp(420px, 52vw, 680px);
+  height:clamp(460px, 54vw, 680px);
   -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%);
           mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%)}
-.wall-track{display:flex;gap:var(--gap);width:max-content;will-change:transform}
+.wall-track{display:flex;align-items:center;gap:var(--gap);width:max-content;
+  height:100%;will-change:transform}
 .wcol{display:flex;flex-direction:column;gap:var(--gap);width:var(--tw);flex:none;
   transform:translateY(var(--off,0px))}
 .wtile{position:relative;display:block;width:100%;padding-top:calc(100% * var(--r,.5625));
@@ -904,7 +905,7 @@ footer a:hover{color:var(--ink)}
   .sec-head{flex-direction:column;align-items:flex-start;gap:14px}
   .beat{flex:0 0 min(356px,84vw)}
   .gallery{padding:96px 0 0}
-  .wall{--tw:152px;--gap:10px;height:clamp(330px, 92vw, 470px)}
+  .wall{--tw:152px;--gap:10px;height:clamp(360px, 112vw, 440px)}
   .wtile .wmeta b{font-size:11.5px}
   .wtile .wmeta i{font-size:9.5px}
   /* ---- the bar is one 64px row, and it waits for a pick ----
@@ -1572,12 +1573,17 @@ const fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
 const SPEED=34;                                   /* px per second of drift */
 let live=null;
 
+/* Frame shapes, not raw aspect ratios. freebeat's wall is one width with three
+   tidy heights — 16:9, 1:1 and 3:4 — and crucially never a 9:16 skyscraper.
+   Ours were using each clip's own ratio, so a portrait tile stood 419px tall in
+   a 468px band and got sliced by the frame. Portrait clips now sit in a 3:4
+   card (cover trims 25% of their height) and landscape keeps 16:9 uncropped. */
+const SHAPE={'16/9':0.5625, '9/16':1.3333};
 function tile(c,i){
-  const [w,h]=(c.ar||'16/9').split('/').map(Number);
   const el=document.createElement('button');
   el.className='wtile';
   el.type='button';
-  el.style.setProperty('--r',(h/w).toFixed(4));
+  el.style.setProperty('--r',(SHAPE[c.ar]||0.5625).toFixed(4));
   el.dataset.vid=CDN+'narrative-video-'+c.u+'.mp4';
   el.setAttribute('aria-label','Play '+c.title);
   if(c.z) el.style.setProperty('--zoom',c.z);
@@ -1593,6 +1599,11 @@ function build(){
   const gap=parseFloat(cs.getPropertyValue('--gap'));
   /* enough columns to overfill the viewport, or the loop seam becomes visible */
   const cols=Math.max(6, Math.ceil(innerWidth/(tw+gap))+2);
+  /* Every column is one 3:4 plus two 16:9, so its height is known up front.
+     The stagger gets whatever vertical slack the band has left and no more —
+     a fixed swing overshot on mobile, where the column nearly fills the band. */
+  const colH=tw*SHAPE['9/16'] + 2*(tw*SHAPE['16/9']) + 2*gap;
+  const swing=Math.max(0, Math.min(28, Math.floor((wall.clientHeight-colH)/2)));
   track.textContent='';
   /* Deal from two piles so every column mixes orientations — three landscape
      clips in a row makes a stubby column and three portraits a tower. Each pile
@@ -1607,13 +1618,17 @@ function build(){
   for(let i=0;i<cols;i++){
     const col=document.createElement('div');
     col.className='wcol';
-    col.style.setProperty('--off', (-((i*53)%112))+'px');   /* the masonry stagger */
+    col.style.setProperty('--off', (swing?((i*37)%(swing*2+1))-swing:0)+'px');
     const tall=i%3;                       /* rotate where the portrait sits */
     for(let k=0;k<3;k++) col.appendChild(tile(k===tall?nextP():nextL(),i));
     set.appendChild(col);
   }
   const setNode=document.createElement('div');
-  setNode.style.cssText='display:flex;gap:'+gap+'px';
+  /* height:100% so the columns inside can centre against the band rather than
+     against their own content — otherwise the stagger only ever pushes up. */
+  /* align-items:center so each column sits on the band's centre line and the
+     stagger can swing both ways instead of only pushing tops out of frame. */
+  setNode.style.cssText='display:flex;align-items:center;gap:'+gap+'px;height:100%';
   setNode.appendChild(set);
   track.appendChild(setNode);
   track.appendChild(setNode.cloneNode(true));       /* the second lap */
@@ -1639,7 +1654,10 @@ function frame(now){
   if(!paused()) drift+=dt*SPEED/1000;
   if(half>0){
     const p=pinProgress();
-    const x=(drift + (p===null?0:p*half)) % half;
+    /* 0.18 of a set across the whole pin — about 0.36px of wall per px of scroll.
+       At 0.45 it moved almost 1:1 with the page and a single flick threw it
+       three tiles sideways. */
+    const x=(drift + (p===null?0:p*half*0.18)) % half;
     track.style.transform='translate3d('+(-x)+'px,0,0)';
   }
   requestAnimationFrame(frame);
