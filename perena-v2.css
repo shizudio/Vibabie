@@ -1,0 +1,381 @@
+/* ─────────────────────────────────────────
+   perena-v2.css — Editorial variant of the case-study template
+   Same shell as project.css (topbar + sticky rail + scroll column),
+   but the right column is a READ, not a lookbook: narrow text measure,
+   wide media, section index in the rail. Content leads; visuals punctuate.
+   ───────────────────────────────────────── */
+
+/* Wider rail to hold the section index */
+.project-page.editorial {
+  grid-template-columns: minmax(300px, 34%) 1fr;
+}
+
+/* ── Rail: brand logo lockup ── */
+.editorial .project-title {
+  margin: 0 0 22px;
+  line-height: 1;
+}
+.editorial .project-logo {
+  max-width: 280px;
+}
+
+/* ── Rail section index ── */
+.project-index {
+  list-style: none;
+  margin: 0 0 34px;
+  padding: 22px 0 0;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.project-index a {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--stone);
+  text-decoration: none;
+  padding: 8px 0;
+  transition: color 0.2s ease, padding-left 0.2s ease;
+}
+.project-index a:hover,
+.project-index a.is-current {
+  color: var(--crimson);
+  padding-left: 6px;
+}
+
+/* ── Editorial column ── */
+.editorial-col {
+  display: flex;
+  flex-direction: column;
+  padding: 48px clamp(24px, 4vw, 72px) 96px 0;
+  max-width: 1000px;
+}
+@media (max-width: 900px) {
+  .editorial-col { padding: 8px 24px 72px; }
+}
+
+/* text blocks get a reading measure; media breaks wider */
+.ed-lead,
+.ed-body,
+.ed-h2,
+.ed-sub,
+.ed-pullquote,
+.ed-list,
+.ed-label,
+.ed-article-table,
+.ed-credits { max-width: 660px; }
+
+/* Lead thesis */
+.ed-lead {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  line-height: 1.36;
+  color: var(--ink);
+  margin: 0 0 64px;
+}
+
+/* Outcome metric tiles (up top) */
+.ed-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 0 0 64px;
+}
+.ed-metrics { margin-bottom: 96px; }
+.ed-metric {
+  background: #FFFFFF;
+  padding: 30px 26px;
+}
+.ed-metric-num {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: clamp(1.9rem, 2.8vw, 2.5rem);
+  color: var(--crimson);
+  line-height: 1;
+  margin-bottom: 10px;
+}
+.ed-metric-label {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color: var(--stone);
+  line-height: 1.5;
+}
+
+/* Sections */
+.ed-section {
+  padding: 80px 0;
+  border-top: 1px solid var(--border);
+}
+.ed-section:first-of-type { border-top: none; padding-top: 0; }
+.ed-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--crimson);
+  margin: 0 0 20px;
+}
+.ed-h2 {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.7rem, 2.6vw, 2.2rem);
+  line-height: 1.22;
+  color: var(--ink);
+  margin: 0 0 32px;
+}
+.ed-sub {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.4rem;
+  color: var(--ink);
+  margin: 52px 0 20px;
+}
+
+.ed-body {
+  font-family: var(--font-sans);
+  font-size: clamp(1.02rem, 1.1vw, 1.16rem);
+  font-weight: 300;
+  line-height: 1.95;
+  color: var(--ink);
+  margin: 0 0 26px;
+}
+.ed-body--em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.12rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.ed-body a, .ed-inline-link {
+  color: var(--crimson);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border-crimson, rgba(127,31,18,0.25));
+}
+.ed-body a:hover { border-color: var(--crimson); }
+
+.ed-list {
+  margin: 0 0 26px;
+  padding-left: 1.1em;
+}
+.ed-list li {
+  font-family: var(--font-sans);
+  font-size: clamp(1.02rem, 1.1vw, 1.16rem);
+  font-weight: 300;
+  line-height: 1.85;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+
+.ed-pullquote {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1.45rem, 2.1vw, 1.85rem);
+  line-height: 1.42;
+  color: var(--crimson);
+  margin: 56px 0;
+  padding-left: 28px;
+  border-left: 2px solid var(--crimson);
+}
+
+/* Stat row (inline within a section) */
+.ed-stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 36px;
+  margin: 52px 0;
+  max-width: 660px;
+}
+.ed-stat-num {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 1.9rem;
+  color: var(--ink);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.ed-stat-label {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 300;
+  color: var(--stone);
+  line-height: 1.4;
+}
+
+/* Media — breaks wider than the text measure, with generous air around it */
+.ed-media {
+  margin: 60px 0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.ed-media img,
+.ed-media video {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.ed-media-caption {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 300;
+  color: var(--stone);
+  margin-top: 12px;
+}
+
+/* Media grid (brand visuals) */
+.ed-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 60px 0;
+}
+.ed-grid img, .ed-grid video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+.ed-grid .ed-grid--wide { grid-column: 1 / -1; }
+
+/* Collapsible — tucks secondary depth (tweets, deep detail) behind an opt-in */
+.ed-more {
+  margin: 44px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.ed-more[open] { padding-bottom: 24px; }
+.ed-more > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--stone);
+  padding: 22px 0;
+  transition: color 0.2s ease;
+}
+.ed-more > summary::-webkit-details-marker { display: none; }
+.ed-more > summary::before {
+  content: '+';
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--crimson);
+}
+.ed-more[open] > summary::before { content: '–'; }
+.ed-more > summary:hover { color: var(--crimson); }
+.ed-more > .ed-body:first-of-type,
+.ed-more > .ed-sub:first-of-type { margin-top: 0; }
+
+/* Colour box */
+.ed-colour-box {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+  margin: 60px 0;
+  padding: 32px;
+  background: var(--paper-dim, #f2ede4);
+  border-radius: var(--radius-sm);
+}
+.ed-colour-box img { width: 100%; height: auto; border-radius: var(--radius-sm); display: block; }
+.ed-colour-row { display: flex; gap: 12px; margin-bottom: 16px; }
+.ed-colour-row:last-child { margin-bottom: 0; }
+.ed-colour-swatch { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+.ed-colour-row p { font-family: var(--font-sans); font-size: 0.82rem; font-weight: 300; line-height: 1.6; color: var(--ink); margin: 0; }
+
+/* Partners */
+.ed-partners {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin: 20px 0 28px;
+}
+.ed-partners span {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--stone);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 12px;
+}
+
+/* Tweet grid */
+.ed-tweets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  align-items: start;
+  margin: 24px 0;
+}
+.ed-tweets .twitter-tweet { margin: 0 !important; max-width: 100% !important; }
+
+/* Article table */
+.ed-article-table { margin: 12px 0; }
+.ed-article-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: baseline;
+  padding: 16px 4px;
+  border-top: 1px solid var(--border);
+  text-decoration: none;
+  transition: padding-left 0.2s ease, background 0.2s ease;
+}
+.ed-article-row:last-child { border-bottom: 1px solid var(--border); }
+.ed-article-row:hover { padding-left: 12px; background: var(--paper-dim, #f6f2ec); }
+.ed-article-title { font-family: var(--font-serif); font-style: italic; font-size: 1.1rem; color: var(--ink); }
+.ed-article-row:hover .ed-article-title { color: var(--crimson); }
+.ed-article-date { font-family: var(--font-sans); font-size: 0.72rem; color: var(--stone); white-space: nowrap; }
+
+/* Credits */
+.ed-credits { margin: 12px 0; }
+.ed-credit { padding: 18px 0; border-top: 1px solid var(--border); }
+.ed-credit-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+.ed-credit-name { font-family: var(--font-serif); font-style: italic; font-size: 1.05rem; color: var(--ink); }
+.ed-credit-handle { font-family: var(--font-sans); font-size: 0.78rem; color: var(--crimson); text-decoration: none; }
+.ed-credit-role { font-family: var(--font-sans); font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--stone); margin-left: auto; }
+.ed-credit-note { font-family: var(--font-sans); font-size: 0.85rem; font-weight: 300; line-height: 1.7; color: var(--stone); margin: 0; max-width: 620px; }
+
+/* Close */
+.ed-close {
+  margin-top: 24px;
+  padding-top: 40px;
+  border-top: 1px solid var(--border);
+}
+.ed-close .ed-metric-num { font-size: clamp(2.4rem, 4vw, 3.4rem); }
+.ed-close-quote {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1.3rem, 2vw, 1.7rem);
+  line-height: 1.4;
+  color: var(--ink);
+  margin: 28px 0 32px;
+  max-width: 720px;
+}
+
+@media (max-width: 900px) {
+  /* collapse to one column — .editorial specificity beats project.css's mobile rule */
+  .project-page.editorial { grid-template-columns: 1fr; }
+  .editorial-col { max-width: 100%; }
+  .ed-metrics { grid-template-columns: 1fr 1fr; }
+  .ed-colour-box { grid-template-columns: 1fr; }
+  .ed-grid { grid-template-columns: 1fr; }
+  .project-index { flex-flow: row wrap; gap: 4px 16px; border-top: none; padding-top: 0; }
+}

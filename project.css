@@ -1,0 +1,169 @@
+/* ─────────────────────────────────────────
+   project.css — Reusable case-study template
+   Spread topbar + sticky nameplate rail (left) + scrolling image stack (right).
+   The label stays; the work scrolls past it. Minimal words, maximum work.
+   ───────────────────────────────────────── */
+
+html, body { background: #FFFFFF; }
+
+/* ── TOPBAR: evenly-spread nav, scrolls away ─────────────────── */
+.project-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px clamp(24px, 3vw, 44px);
+  background: #FFFFFF;
+}
+.project-topbar a {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.project-topbar a:hover { color: var(--crimson); }
+
+/* ── PAGE GRID ───────────────────────────────────────────────── */
+.project-page {
+  display: grid;
+  grid-template-columns: minmax(320px, 38%) 1fr;
+  align-items: start;
+}
+
+/* ── LEFT: sticky nameplate rail ─────────────────────────────── */
+.project-rail {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  padding: 48px clamp(24px, 3vw, 44px) 40px;
+  box-sizing: border-box;
+}
+
+.project-title {
+  margin: 0 0 34px;
+  line-height: 1;
+}
+/* Wordmark logo image (replaces live text when a brand mark exists) */
+.project-logo {
+  display: block;
+  width: 100%;
+  max-width: 340px;
+  height: auto;
+}
+
+.project-meta {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--stone);
+  margin: 0 0 24px;
+}
+
+.project-desc {
+  font-family: var(--font-serif);
+  font-size: clamp(0.98rem, 1.1vw, 1.1rem);
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--ink);
+  max-width: 30ch;
+  margin: 0 0 20px;
+}
+
+.project-credit {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: 300;
+  color: var(--stone);
+  margin: 0 0 30px;
+}
+
+/* Action row: external link + contact CTA */
+.project-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 20px;
+}
+.project-visit {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--crimson);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border-crimson, rgba(127,31,18,0.25));
+  padding-bottom: 1px;
+  transition: border-color 0.2s ease;
+}
+.project-visit:hover { border-color: var(--crimson); }
+
+.project-cta {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm, 0.9rem);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  background: var(--ink);
+  padding: 16px 32px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+.project-cta:hover { background: var(--crimson); }
+
+/* ── RIGHT: scrolling image stack ────────────────────────────── */
+.project-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 10px 10px 0;
+}
+.project-stack figure { margin: 0; }
+.project-stack img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Foot back-link at the very bottom of the stack */
+.project-foot {
+  padding: 36px 10px 80px 0;
+}
+.project-back {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color: var(--stone);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.project-back::before { content: '← '; }
+.project-back:hover { color: var(--crimson); }
+
+/* ── MOBILE ──────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .project-topbar {
+    padding: 18px 24px;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .project-page {
+    grid-template-columns: 1fr;
+  }
+  .project-rail {
+    position: static;
+    padding: 24px 24px 32px;
+  }
+  .project-desc { max-width: 44ch; }
+  .project-stack {
+    padding: 0 24px 24px;
+    gap: 12px;
+  }
+  .project-foot { padding: 24px 24px 72px; }
+}
