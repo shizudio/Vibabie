@@ -454,21 +454,18 @@ h1{font-size:64px;font-weight:500;line-height:72px;margin:0;color:var(--ink);
    bleeds past it; with the gallery static it painted straight over the tiles.
    Now it shows through the gaps instead of across the videos. */
 .gallery{position:relative;z-index:2;padding:168px 0 0}
+/* Pinned for a limited run: the page's own vertical scroll pushes the wall
+   sideways for about one viewport-and-a-bit, then lets go and the page carries
+   on. The drift underneath is time-based, so it keeps moving when you stop. */
+.wall-pin{position:relative;height:210vh}
+.wall-stage{position:sticky;top:0;min-height:100vh;display:flex;
+  flex-direction:column;justify-content:center;gap:26px}
 .wall{position:relative;overflow:hidden;
-  --tw:168px; --gap:12px;
-  height:clamp(340px, 44vw, 560px);
+  --tw:236px; --gap:14px;
+  height:clamp(420px, 52vw, 680px);
   -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%);
           mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%)}
-.wall-track{display:flex;gap:var(--gap);width:max-content;
-  animation:wallDrift var(--dur,80s) linear infinite;will-change:transform}
-@keyframes wallDrift{
-  from{transform:translate3d(0,0,0)}
-  to  {transform:translate3d(calc(var(--half,0px) * -1),0,0)}
-}
-/* the drift is a background behaviour, not a queue — any interest stops it */
-.wall:hover .wall-track,
-.wall:focus-within .wall-track,
-.wall.hold .wall-track{animation-play-state:paused}
+.wall-track{display:flex;gap:var(--gap);width:max-content;will-change:transform}
 .wcol{display:flex;flex-direction:column;gap:var(--gap);width:var(--tw);flex:none;
   transform:translateY(var(--off,0px))}
 .wtile{position:relative;display:block;width:100%;padding-top:calc(100% * var(--r,.5625));
@@ -504,8 +501,42 @@ h1{font-size:64px;font-weight:500;line-height:72px;margin:0;color:var(--ink);
   opacity:0;transition:opacity .26s var(--ease)}
 .wtile:hover .wdur,.wtile.is-live .wdur{opacity:1}
 @media (prefers-reduced-motion:reduce){
-  .wall-track{animation:none}
+  .wall-pin{height:auto}
+  .wall-stage{position:static;min-height:0}
   .wall{overflow-x:auto;-webkit-mask-image:none;mask-image:none}
+}
+
+/* ============ gallery lightbox ============
+   Click a tile and it leaves the wall: the clip plays large, with sound, over
+   a dimmed page. Escape or the backdrop closes it. */
+.lb{position:fixed;inset:0;z-index:200;display:none;place-items:center;
+  padding:clamp(16px,4vw,56px)}
+.lb[data-open=true]{display:grid}
+.lb-scrim{position:absolute;inset:0;background:rgba(6,8,7,.82);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  animation:lbFade .28s var(--ease)}
+@keyframes lbFade{from{opacity:0}to{opacity:1}}
+@keyframes lbRise{from{opacity:0;transform:translateY(14px) scale(.97)}
+                  to{opacity:1;transform:none}}
+.lb-box{position:relative;z-index:1;display:flex;flex-direction:column;gap:14px;
+  max-width:min(1180px,100%);animation:lbRise .34s var(--ease)}
+.lb-frame{position:relative;border-radius:18px;overflow:hidden;background:#0A0C0B;
+  box-shadow:0 40px 90px rgba(0,0,0,.6);line-height:0}
+.lb-frame video{display:block;max-width:100%;max-height:min(78vh,900px);
+  width:auto;height:auto;border-radius:inherit;background:#0A0C0B}
+.lb-meta{display:flex;align-items:baseline;gap:12px;color:#fff;flex-wrap:wrap}
+.lb-meta b{font-size:17px;font-weight:700;letter-spacing:-.014em}
+.lb-meta i{font-style:normal;font-size:13px;color:rgba(255,255,255,.62)}
+.lb-meta .d{font-family:"DM Mono",monospace;font-size:11px;
+  color:rgba(255,255,255,.5);margin-left:auto}
+.lb-close{position:absolute;top:-8px;right:-8px;z-index:2;width:40px;height:40px;
+  border:0;border-radius:50%;cursor:pointer;display:grid;place-items:center;
+  background:var(--raised);color:var(--ink);box-shadow:0 8px 22px rgba(0,0,0,.4);
+  transition:transform .18s var(--ease),background .18s var(--ease)}
+.lb-close:hover{transform:scale(1.07);background:var(--ctrl-hi)}
+@media (max-width:820px){
+  .wall-pin{height:170vh}
+  .lb-close{top:6px;right:6px;background:rgba(0,0,0,.55);color:#fff}
 }
 
 /* ============ how it works ============
@@ -873,7 +904,7 @@ footer a:hover{color:var(--ink)}
   .sec-head{flex-direction:column;align-items:flex-start;gap:14px}
   .beat{flex:0 0 min(356px,84vw)}
   .gallery{padding:96px 0 0}
-  .wall{--tw:118px;--gap:9px;height:clamp(280px, 78vw, 400px)}
+  .wall{--tw:152px;--gap:10px;height:clamp(330px, 92vw, 470px)}
   .wtile .wmeta b{font-size:11.5px}
   .wtile .wmeta i{font-size:9.5px}
   /* ---- the bar is one 64px row, and it waits for a pick ----
@@ -1019,14 +1050,18 @@ footer a:hover{color:var(--ink)}
 
 <!-- gallery -->
 <section class="gallery">
-  <div class="sec-head" data-reveal>
-    <div class="l"><h2>Music videos created with Solmi</h2></div>
-    <div class="r">
-      <button class="browse">Browse all <span class="n">1,240</span> →</button>
+  <div class="wall-pin">
+    <div class="wall-stage">
+      <div class="sec-head" data-reveal>
+        <div class="l"><h2>Music videos created with Solmi</h2></div>
+        <div class="r">
+          <button class="browse">Browse all <span class="n">1,240</span> →</button>
+        </div>
+      </div>
+      <div class="wall" id="wall" data-reveal>
+        <div class="wall-track" id="wallTrack"></div>
+      </div>
     </div>
-  </div>
-  <div class="wall" id="wall" data-reveal>
-    <div class="wall-track" id="wallTrack"></div>
   </div>
   <script type="application/json" id="wallData">[{"u": "1e2a0e8a-153e-4f5b-ad33-294da962b943", "dur": "4:22", "title": "Heaven", "sub": "Cloudlight Reverie", "ar": "16/9"}, {"u": "fba31b5e-0a28-418d-833a-f7c3393552d0", "dur": "0:51", "title": "Engine On", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "b5769b43-eaeb-443f-9db9-80a36750661a", "dur": "0:39", "title": "Rhythmic Liberation", "sub": "K-Pop Performance Editorial", "ar": "16/9"}, {"u": "eafb79a1-1e60-4461-a68d-a13e440d1365", "dur": "0:50", "title": "Color Field: Dissolve", "sub": "Grainy Gradient", "ar": "9/16"}, {"u": "8ed8c341-2582-466b-a1fb-8a0a1b823765", "dur": "5:10", "title": "Down The Road", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "3840eb9f-9f41-44f7-bb00-ccf1e9bbeb0a", "dur": "0:40", "title": "Paper Boats & City Lights", "sub": "Love Actually Inspired", "ar": "16/9"}, {"u": "60aa6c89-4a74-4de7-aabe-8c5810c64fc7", "dur": "1:12", "title": "Skyline Chase: A Chromatic Ascent", "sub": "Euphoria Inspired", "ar": "16/9"}, {"u": "0223f398-94cb-4bba-b03f-30dc78528ffd", "dur": "4:09", "title": "The Path of Life", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "9a1fb7a0-b13a-414c-8839-acd2651344f0", "dur": "0:35", "title": "Bunny's Pastel Day", "sub": "Soft Toybox 3D", "ar": "16/9"}, {"u": "30418047-390e-4366-b627-2764004e36bf", "dur": "0:35", "title": "Midnight Almost", "sub": "Wong Kar-wai Inspired", "ar": "16/9"}, {"u": "ebe5a4bc-c755-4143-aa5b-27c4467963a8", "dur": "4:03", "title": "Love Street", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "fc64d50f-1875-4f9f-8327-2aac78e9ec2b", "dur": "0:59", "title": "The Letter Never Sent", "sub": "Shunji Iwai Inspired", "ar": "9/16"}, {"u": "319a3dca-2402-49e5-a3b3-133b17af1bd5", "dur": "0:48", "title": "The Last Confession", "sub": "Classic Film Noir", "ar": "16/9"}, {"u": "05a399b9-83da-448c-b15c-da952b31f2b1", "dur": "0:39", "title": "水墨月", "sub": "Ink Wash Memory", "ar": "16/9"}, {"u": "4b679f57-0dfa-4ffb-a540-96324a487849", "dur": "4:06", "title": "Crooked Roads/Highway", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "e128a574-f2b0-4b1f-a991-f93a03049278", "dur": "0:55", "title": "The Ultimate Guide: Curtis Home Inspections", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "8b62d143-84cc-4325-a5b1-bf7866a17252", "dur": "3:35", "title": "Already Gone", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "743e313f-642f-473d-8ece-3ac7c9f19f27", "dur": "3:29", "title": "Strumming On", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "9f2516c9-9508-4e81-bccb-485a9abd8948", "dur": "4:24", "title": "Spirits Call Me Home", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "a9b21c5d-0b8c-481f-a602-cfd99b0227ba", "dur": "1:01", "title": "Static Bound", "sub": "90s MTV Aesthetic", "ar": "9/16"}, {"u": "5e53bfb8-edf7-4be4-a8a2-3849b6f4352b", "dur": "4:14", "title": "Love Finds You Where You Are", "sub": "Classic Film Noir", "ar": "16/9"}, {"u": "49294bc9-d2cb-4ee1-bff8-545ddfb0d93e", "dur": "4:09", "title": "The Last Stop", "sub": "Desert Mirage", "ar": "16/9"}, {"u": "367e68cd-01a9-4de0-a350-260181b4e240", "dur": "4:41", "title": "We Outside: Neon Friday", "sub": "Euphoria Style Inspired", "ar": "16/9"}, {"u": "0d3befdc-7037-4230-9ec0-1a1d41aa789a", "dur": "3:57", "title": "Unity_retake", "sub": "Grainy Gradient", "ar": "16/9"}, {"u": "72da0757-e66e-4afe-bb88-af333c2fb427", "dur": "4:38", "title": "Once in a Lifetime: An Urban Love Story", "sub": "Love Actually Inspired", "ar": "16/9"}, {"u": "385b13b8-90a2-446b-9511-6e6960010d2e", "dur": "2:50", "title": "Años Veinte: The Golden Echo", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "e4dd833d-7cb4-4999-8013-0ebcccbcd8fc", "dur": "3:00", "title": "Big Bad Wolf: Afterhours Payroll", "sub": "Afterhours Gloom", "ar": "16/9"}, {"u": "b51cb4b6-fcde-4c7a-b186-a110046d1408", "dur": "1:34", "title": "Verdigris Afterglow", "sub": "Saturated 35mm Film", "ar": "9/16"}, {"u": "703ff102-dea9-4459-8db4-9318ebe6a5e4", "dur": "2:21", "title": "Northern Regime: The Afterhours Score", "sub": "Afterhours Gloom", "ar": "16/9"}, {"u": "e9e8b577-ff0b-438d-b223-89c921289660", "dur": "4:14", "title": "The Horizon's Kiss", "sub": "Love Actually Inspired", "ar": "16/9"}, {"u": "49baa8ae-b205-4cfb-aebb-dd54dee684fe", "dur": "3:11", "title": "Smooth Vibe: The Studio Sessions", "sub": "Wong Kar-wai Inspired", "ar": "16/9"}, {"u": "e66ca6be-cb7b-40dc-83a3-f96ddf3a8a4a", "dur": "3:41", "title": "Floating Home", "sub": "Cloudlight Reverie", "ar": "16/9"}, {"u": "f20dce55-8c17-4fa3-85ab-c21118e27f75", "dur": "2:17", "title": "AudioJet Saloon 4.1.1: The Cyber-Can-Can", "sub": "Metro Tech Noir", "ar": "16/9"}, {"u": "a46cdbbf-01ab-4ca9-a530-a7fdfd590d7d", "dur": "4:44", "title": "The Cowboy's Prayer", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "5a7fc3e0-7d6a-4659-b5aa-24eae7a0674a", "dur": "2:41", "title": "Benefits in the Sun", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "fb186718-d1bf-4e6e-965f-1428ae2f7459", "dur": "1:36", "title": "Sweet Caffeine Rewind", "sub": "Retro VHS", "ar": "9/16"}, {"u": "4467353a-20ec-4a49-b76a-7fe970d5bf9d", "dur": "4:43", "title": "Dreaming of the Mirage", "sub": "Desert Mirage", "ar": "16/9"}, {"u": "977f4243-10fd-4035-a989-e8ce75deec3d", "dur": "2:42", "title": "Sheldon McCann: Chrome Celebration", "sub": "Liquid Chrome Futurism", "ar": "16/9"}, {"u": "8d98c0d1-4e54-414b-a6ae-a9b5ea60e2f0", "dur": "4:29", "title": "Only Your Presence", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "c246bded-e482-4908-91ee-e5762c83e56d", "dur": "4:14", "title": "Snowbelt Surprise", "sub": "Holiday Atmosphere", "ar": "16/9"}, {"u": "19b17c4f-4964-4195-9c25-0379204b2777", "dur": "2:22", "title": "Yéyé Retrospective", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "476807de-e26b-4949-a6d6-e4b6f98707a7", "dur": "2:22", "title": "Détache-toi", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "7203027c-9b23-49ac-be8d-8abff2536411", "dur": "4:33", "title": "The Rain Remembers", "sub": "Wong Kar-wai Inspired", "ar": "16/9"}, {"u": "3d6bfc63-dd32-42fb-b094-b5f7b65787b2", "dur": "1:01", "title": "Neon Exit", "sub": "Y2K Glossy Futuristic", "ar": "9/16"}, {"u": "d4d3b098-2d3c-4f82-81b5-b28e38ddb0a8", "dur": "3:21", "title": "Redline Signal", "sub": "Metro Tech Noir", "ar": "16/9"}, {"u": "9d69db14-5c78-4e7b-9d22-13343e2101a5", "dur": "4:03", "title": "Magical Brazil: The Global Odyssey", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "d4150c62-ace2-470d-9b12-243de65f9b3b", "dur": "2:48", "title": "Alice in Wonder Rave: Pantofelek o Północy", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "08229c1c-e5a0-4c03-8fcd-88f82852ec72", "dur": "2:20", "title": "Te Vreau - A Winter Memory", "sub": "Wong Kar-wai Inspired", "ar": "16/9"}, {"u": "6084317f-f2eb-4748-9e02-f28212f3c3e4", "dur": "1:30", "title": "Neon Ghost Arcade", "sub": "Retro VHS", "ar": "9/16"}, {"u": "08678045-e603-43b9-bb7a-03dff94c322b", "dur": "1:50", "title": "The Sun Burns Out", "sub": "Cinematic", "ar": "9/16"}, {"u": "4ab7ecfa-2c21-41db-b26f-36ce8a5ca42e", "dur": "1:52", "title": "Sweet-Talking Remedy", "sub": "Editorial", "ar": "9/16"}, {"u": "0139be73-9d58-45c2-a3df-61fdaeef5a05", "dur": "1:15", "title": "Compass in the Neon Rain", "sub": "Cyber-Noir", "ar": "9/16"}, {"u": "ba722ca6-7e20-450a-8ec2-3a4ff2e98478", "dur": "1:22", "title": "Static in the Midnight City", "sub": "French New Wave Film", "ar": "9/16"}, {"u": "2f4f93f5-d83b-42f6-bcd6-b72d7af4b801", "dur": "1:10", "title": "Electric Current", "sub": "Vogue Editorial Studio", "ar": "9/16"}, {"u": "7d401f9f-aa57-497b-bb78-5607a0fa4dc3", "dur": "1:10", "title": "Double Take: Digital Eyes", "sub": "Y2K Cyber-Glitch", "ar": "9/16"}]</script>
 </section>
@@ -1110,6 +1145,23 @@ footer a:hover{color:var(--ink)}
 </section>
   <div class="dome-foot" aria-hidden="true"></div>
 </main>
+
+<!-- gallery lightbox -->
+<div class="lb" id="lb" data-open="false" role="dialog" aria-modal="true"
+     aria-label="Video player" hidden>
+  <div class="lb-scrim" id="lbScrim"></div>
+  <div class="lb-box">
+    <div class="lb-frame">
+      <video id="lbVideo" playsinline controls loop></video>
+      <button class="lb-close" id="lbClose" aria-label="Close video">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="lb-meta">
+      <b id="lbTitle"></b><i id="lbSub"></i><span class="d" id="lbDur"></span>
+    </div>
+  </div>
+</div>
 
 <!-- sticky composer — docks once the hero composer leaves, edits in place -->
 <div class="dock" id="dock" data-show="false" aria-hidden="true">
@@ -1565,9 +1617,32 @@ function build(){
   setNode.appendChild(set);
   track.appendChild(setNode);
   track.appendChild(setNode.cloneNode(true));       /* the second lap */
-  const half=cols*(tw+gap);
-  track.style.setProperty('--half', half+'px');
-  track.style.setProperty('--dur', Math.round(half/SPEED)+'s');
+  half=cols*(tw+gap);
+}
+
+/* One transform, two inputs: time (a slow ambient drift) and the pinned scroll
+   (which pushes it much harder while the section holds the screen). Wrapping on
+   the set width means either input can run forever without a seam. */
+const pin=document.querySelector('.wall-pin');
+let half=0, drift=0, last=0;
+const paused=()=>wall.classList.contains('hold')||wall.matches(':hover')||
+                 lb.dataset.open==='true';
+function pinProgress(){
+  if(!pin) return null;
+  const r=pin.getBoundingClientRect();
+  const travel=r.height-innerHeight;
+  if(travel<=40) return null;                 /* not pinned: reduced motion */
+  return Math.max(0, Math.min(1, -r.top/travel));
+}
+function frame(now){
+  const dt=last?Math.min(64, now-last):0; last=now;
+  if(!paused()) drift+=dt*SPEED/1000;
+  if(half>0){
+    const p=pinProgress();
+    const x=(drift + (p===null?0:p*half)) % half;
+    track.style.transform='translate3d('+(-x)+'px,0,0)';
+  }
+  requestAnimationFrame(frame);
 }
 
 /* Letterbox crop. I measured all 55 clips in the library: every one is exactly
@@ -1600,18 +1675,39 @@ function release(el){
   if(el===live) return;                    /* the clicked one keeps running */
   unmount(el);
 }
-function activate(el){
-  if(live&&live!==el){ live.classList.remove('is-live'); unmount(live); }
-  if(el===live){ live.classList.remove('is-live'); unmount(el); live=null;
-                 wall.classList.remove('hold'); return; }
-  live=el; el.classList.add('is-live'); wall.classList.add('hold');
-  const v=mount(el);
-  v.muted=false;
-  const p=v.play();
-  if(p) p.catch(()=>{ v.muted=true; v.play().catch(()=>{}); });
+/* ---- lightbox: the clip leaves the wall and plays large ---- */
+const lb=document.getElementById('lb'), lbVideo=document.getElementById('lbVideo'),
+      lbTitle=document.getElementById('lbTitle'), lbSub=document.getElementById('lbSub'),
+      lbDur=document.getElementById('lbDur'), lbClose=document.getElementById('lbClose');
+let lastFocus=null;
+function openLightbox(el){
+  const c=CLIPS.find(x=>el.dataset.vid.indexOf(x.u)>-1);
+  if(!c) return;
+  if(live){ live.classList.remove('is-live'); unmount(live); live=null; }
+  lastFocus=document.activeElement;
+  lbTitle.textContent=c.title; lbSub.textContent=c.sub; lbDur.textContent=c.dur;
+  lbVideo.poster=CDN+'narrative-thumb-'+c.u+'.jpg';
+  lbVideo.src=CDN+'narrative-video-'+c.u+'.mp4';
+  lb.hidden=false; lb.dataset.open='true';
+  document.body.style.overflow='hidden';       /* the page must not scroll behind */
+  lbVideo.muted=false;
+  const p=lbVideo.play();
+  if(p) p.catch(()=>{ lbVideo.muted=true; lbVideo.play().catch(()=>{}); });
+  lbClose.focus();
 }
+function closeLightbox(){
+  if(!lb || lb.dataset.open!=='true') return;
+  lb.dataset.open='false'; lb.hidden=true;
+  lbVideo.pause(); lbVideo.removeAttribute('src'); lbVideo.load();
+  document.body.style.overflow='';
+  if(lastFocus&&lastFocus.focus) lastFocus.focus();
+}
+lbClose.addEventListener('click',closeLightbox);
+document.getElementById('lbScrim').addEventListener('click',closeLightbox);
+addEventListener('keydown',e=>{ if(e.key==='Escape') closeLightbox(); });
 
 build();
+requestAnimationFrame(frame);
 if(fine){
   track.addEventListener('pointerover',e=>{
     const el=e.target.closest('.wtile');
@@ -1624,13 +1720,14 @@ if(fine){
 }
 track.addEventListener('click',e=>{
   const el=e.target.closest('.wtile');
-  if(el) activate(el);
+  if(el) openLightbox(el);
 });
 /* stop everything once the wall is off screen */
 new IntersectionObserver(([e])=>{
   if(e.isIntersecting) return;
   if(live){ live.classList.remove('is-live'); unmount(live); live=null; }
   wall.classList.remove('hold');
+  closeLightbox();
 },{threshold:0}).observe(wall);
 
 let rz=0;
