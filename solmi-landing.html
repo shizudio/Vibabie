@@ -547,6 +547,17 @@ h1{font-size:64px;font-weight:500;line-height:72px;margin:0;color:var(--ink);
 .hiw-visual p{position:relative;margin:0;font-size:17px;line-height:1.5;
   letter-spacing:-.012em;color:var(--ink-2);max-width:46ch}
 .hiw-visual .hint{position:relative;color:var(--ink-3)}
+/* The real product shots are tall; the stage crops to its top edge so the part
+   that names the step stays visible at any size. */
+.hiw-visual .stage{border-style:solid;overflow:hidden;justify-content:flex-end;
+  align-items:flex-start;padding:0}
+.hiw-visual .shot{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  object-position:50% 0;opacity:0;transition:opacity .45s var(--ease)}
+.hiw-visual .shot.on{opacity:1}
+.hiw-visual .stage::after{content:"";position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg,transparent 40%,rgba(8,10,9,.90) 100%)}
+.hiw-visual .tag{z-index:2;margin:0 0 0 22px}
+.hiw-visual p{z-index:2;margin:10px 22px 22px;color:#fff;font-size:15.5px;max-width:42ch}
 @media (max-width:1100px){
   .hiw-track{height:auto}
   .hiw-sticky{position:static;height:auto;grid-template-columns:1fr;gap:26px;padding:0 var(--gut)}
@@ -1011,7 +1022,7 @@ footer a:hover{color:var(--ink)}
   <div class="wall" id="wall" data-reveal>
     <div class="wall-track" id="wallTrack"></div>
   </div>
-  <script type="application/json" id="wallData">[{"ar": "16/9", "vid": "https://media.solmi.ai/ai-music-video/narrative-video-1e2a0e8a-153e-4f5b-ad33-294da962b943.mp4", "ph": "https://media.solmi.ai/ai-music-video/narrative-thumb-1e2a0e8a-153e-4f5b-ad33-294da962b943.jpg", "alt": "Heaven", "dur": "4:22", "title": "Heaven", "sub": "Cloudlight Reverie"}, {"ar": "16/9", "vid": "https://media.solmi.ai/ai-music-video/narrative-video-fba31b5e-0a28-418d-833a-f7c3393552d0.mp4", "ph": "https://media.solmi.ai/ai-music-video/narrative-thumb-fba31b5e-0a28-418d-833a-f7c3393552d0.jpg", "alt": "Engine On", "dur": "0:51", "title": "Engine On", "sub": "HD Digital Film"}, {"ar": "16/9", "vid": "https://media.solmi.ai/ai-music-video/narrative-video-b5769b43-eaeb-443f-9db9-80a36750661a.mp4", "ph": "https://media.solmi.ai/ai-music-video/narrative-thumb-b5769b43-eaeb-443f-9db9-80a36750661a.jpg", "alt": "Rhythmic Liberation", "dur": "0:39", "title": "Rhythmic Liberation", "sub": "K-Pop Performance Editorial"}, {"ar": "9/16", "vid": "https://media.solmi.ai/ai-music-video/narrative-video-eafb79a1-1e60-4461-a68d-a13e440d1365.mp4", "ph": "https://media.solmi.ai/ai-music-video/narrative-thumb-eafb79a1-1e60-4461-a68d-a13e440d1365.jpg", "alt": "Color Field: Dissolve", "dur": "0:50", "title": "Color Field: Dissolve", "sub": "Grainy Gradient"}, {"ar": "16/9", "vid": "https://media.solmi.ai/ai-music-video/narrative-video-8ed8c341-2582-466b-a1fb-8a0a1b823765.mp4", "ph": "https://media.solmi.ai/ai-music-video/narrative-thumb-8ed8c341-2582-466b-a1fb-8a0a1b823765.jpg", "alt": "Down The Road", "dur": "5:10", "title": "Down The Road", "sub": "HD Digital Film"}, {"ar": "16/9", "vid": "https://media.solmi.ai/ai-music-video/narrative-video-3840eb9f-9f41-44f7-bb00-ccf1e9bbeb0a.mp4", "ph": "https://media.solmi.ai/ai-music-video/narrative-thumb-3840eb9f-9f41-44f7-bb00-ccf1e9bbeb0a.jpg", "alt": "Paper Boats &amp; City Lights", "dur": "0:40", "title": "Paper Boats &amp; City Lights", "sub": "Love Actually Inspired"}, {"ar": "9/16", "vid": "https://media.solmi.ai/ai-music-video/narrative-video-fc64d50f-1875-4f9f-8327-2aac78e9ec2b.mp4", "ph": "https://media.solmi.ai/ai-music-video/narrative-thumb-fc64d50f-1875-4f9f-8327-2aac78e9ec2b.jpg", "alt": "The Letter Never Sent", "dur": "0:59", "title": "The Letter Never Sent", "sub": "Shunji Iwai Inspired"}, {"ar": "9/16", "vid": "https://media.solmi.ai/ai-music-video/narrative-video-a9b21c5d-0b8c-481f-a602-cfd99b0227ba.mp4", "ph": "https://media.solmi.ai/ai-music-video/narrative-thumb-a9b21c5d-0b8c-481f-a602-cfd99b0227ba.jpg", "alt": "Static Bound", "dur": "1:01", "title": "Static Bound", "sub": "90s MTV Aesthetic"}]</script>
+  <script type="application/json" id="wallData">[{"u": "1e2a0e8a-153e-4f5b-ad33-294da962b943", "dur": "4:22", "title": "Heaven", "sub": "Cloudlight Reverie", "ar": "16/9"}, {"u": "fba31b5e-0a28-418d-833a-f7c3393552d0", "dur": "0:51", "title": "Engine On", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "b5769b43-eaeb-443f-9db9-80a36750661a", "dur": "0:39", "title": "Rhythmic Liberation", "sub": "K-Pop Performance Editorial", "ar": "16/9"}, {"u": "eafb79a1-1e60-4461-a68d-a13e440d1365", "dur": "0:50", "title": "Color Field: Dissolve", "sub": "Grainy Gradient", "ar": "9/16"}, {"u": "8ed8c341-2582-466b-a1fb-8a0a1b823765", "dur": "5:10", "title": "Down The Road", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "3840eb9f-9f41-44f7-bb00-ccf1e9bbeb0a", "dur": "0:40", "title": "Paper Boats & City Lights", "sub": "Love Actually Inspired", "ar": "16/9"}, {"u": "60aa6c89-4a74-4de7-aabe-8c5810c64fc7", "dur": "1:12", "title": "Skyline Chase: A Chromatic Ascent", "sub": "Euphoria Inspired", "ar": "16/9"}, {"u": "0223f398-94cb-4bba-b03f-30dc78528ffd", "dur": "4:09", "title": "The Path of Life", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "9a1fb7a0-b13a-414c-8839-acd2651344f0", "dur": "0:35", "title": "Bunny's Pastel Day", "sub": "Soft Toybox 3D", "ar": "16/9"}, {"u": "30418047-390e-4366-b627-2764004e36bf", "dur": "0:35", "title": "Midnight Almost", "sub": "Wong Kar-wai Inspired", "ar": "16/9"}, {"u": "ebe5a4bc-c755-4143-aa5b-27c4467963a8", "dur": "4:03", "title": "Love Street", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "fc64d50f-1875-4f9f-8327-2aac78e9ec2b", "dur": "0:59", "title": "The Letter Never Sent", "sub": "Shunji Iwai Inspired", "ar": "9/16"}, {"u": "319a3dca-2402-49e5-a3b3-133b17af1bd5", "dur": "0:48", "title": "The Last Confession", "sub": "Classic Film Noir", "ar": "16/9"}, {"u": "05a399b9-83da-448c-b15c-da952b31f2b1", "dur": "0:39", "title": "水墨月", "sub": "Ink Wash Memory", "ar": "16/9"}, {"u": "4b679f57-0dfa-4ffb-a540-96324a487849", "dur": "4:06", "title": "Crooked Roads/Highway", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "e128a574-f2b0-4b1f-a991-f93a03049278", "dur": "0:55", "title": "The Ultimate Guide: Curtis Home Inspections", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "8b62d143-84cc-4325-a5b1-bf7866a17252", "dur": "3:35", "title": "Already Gone", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "743e313f-642f-473d-8ece-3ac7c9f19f27", "dur": "3:29", "title": "Strumming On", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "9f2516c9-9508-4e81-bccb-485a9abd8948", "dur": "4:24", "title": "Spirits Call Me Home", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "a9b21c5d-0b8c-481f-a602-cfd99b0227ba", "dur": "1:01", "title": "Static Bound", "sub": "90s MTV Aesthetic", "ar": "9/16"}, {"u": "5e53bfb8-edf7-4be4-a8a2-3849b6f4352b", "dur": "4:14", "title": "Love Finds You Where You Are", "sub": "Classic Film Noir", "ar": "16/9"}, {"u": "49294bc9-d2cb-4ee1-bff8-545ddfb0d93e", "dur": "4:09", "title": "The Last Stop", "sub": "Desert Mirage", "ar": "16/9"}, {"u": "367e68cd-01a9-4de0-a350-260181b4e240", "dur": "4:41", "title": "We Outside: Neon Friday", "sub": "Euphoria Style Inspired", "ar": "16/9"}, {"u": "0d3befdc-7037-4230-9ec0-1a1d41aa789a", "dur": "3:57", "title": "Unity_retake", "sub": "Grainy Gradient", "ar": "16/9"}, {"u": "72da0757-e66e-4afe-bb88-af333c2fb427", "dur": "4:38", "title": "Once in a Lifetime: An Urban Love Story", "sub": "Love Actually Inspired", "ar": "16/9"}, {"u": "385b13b8-90a2-446b-9511-6e6960010d2e", "dur": "2:50", "title": "Años Veinte: The Golden Echo", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "e4dd833d-7cb4-4999-8013-0ebcccbcd8fc", "dur": "3:00", "title": "Big Bad Wolf: Afterhours Payroll", "sub": "Afterhours Gloom", "ar": "16/9"}, {"u": "b51cb4b6-fcde-4c7a-b186-a110046d1408", "dur": "1:34", "title": "Verdigris Afterglow", "sub": "Saturated 35mm Film", "ar": "9/16"}, {"u": "703ff102-dea9-4459-8db4-9318ebe6a5e4", "dur": "2:21", "title": "Northern Regime: The Afterhours Score", "sub": "Afterhours Gloom", "ar": "16/9"}, {"u": "e9e8b577-ff0b-438d-b223-89c921289660", "dur": "4:14", "title": "The Horizon's Kiss", "sub": "Love Actually Inspired", "ar": "16/9"}, {"u": "49baa8ae-b205-4cfb-aebb-dd54dee684fe", "dur": "3:11", "title": "Smooth Vibe: The Studio Sessions", "sub": "Wong Kar-wai Inspired", "ar": "16/9"}, {"u": "e66ca6be-cb7b-40dc-83a3-f96ddf3a8a4a", "dur": "3:41", "title": "Floating Home", "sub": "Cloudlight Reverie", "ar": "16/9"}, {"u": "f20dce55-8c17-4fa3-85ab-c21118e27f75", "dur": "2:17", "title": "AudioJet Saloon 4.1.1: The Cyber-Can-Can", "sub": "Metro Tech Noir", "ar": "16/9"}, {"u": "a46cdbbf-01ab-4ca9-a530-a7fdfd590d7d", "dur": "4:44", "title": "The Cowboy's Prayer", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "5a7fc3e0-7d6a-4659-b5aa-24eae7a0674a", "dur": "2:41", "title": "Benefits in the Sun", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "fb186718-d1bf-4e6e-965f-1428ae2f7459", "dur": "1:36", "title": "Sweet Caffeine Rewind", "sub": "Retro VHS", "ar": "9/16"}, {"u": "4467353a-20ec-4a49-b76a-7fe970d5bf9d", "dur": "4:43", "title": "Dreaming of the Mirage", "sub": "Desert Mirage", "ar": "16/9"}, {"u": "977f4243-10fd-4035-a989-e8ce75deec3d", "dur": "2:42", "title": "Sheldon McCann: Chrome Celebration", "sub": "Liquid Chrome Futurism", "ar": "16/9"}, {"u": "8d98c0d1-4e54-414b-a6ae-a9b5ea60e2f0", "dur": "4:29", "title": "Only Your Presence", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "c246bded-e482-4908-91ee-e5762c83e56d", "dur": "4:14", "title": "Snowbelt Surprise", "sub": "Holiday Atmosphere", "ar": "16/9"}, {"u": "19b17c4f-4964-4195-9c25-0379204b2777", "dur": "2:22", "title": "Yéyé Retrospective", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "476807de-e26b-4949-a6d6-e4b6f98707a7", "dur": "2:22", "title": "Détache-toi", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "7203027c-9b23-49ac-be8d-8abff2536411", "dur": "4:33", "title": "The Rain Remembers", "sub": "Wong Kar-wai Inspired", "ar": "16/9"}, {"u": "3d6bfc63-dd32-42fb-b094-b5f7b65787b2", "dur": "1:01", "title": "Neon Exit", "sub": "Y2K Glossy Futuristic", "ar": "9/16"}, {"u": "d4d3b098-2d3c-4f82-81b5-b28e38ddb0a8", "dur": "3:21", "title": "Redline Signal", "sub": "Metro Tech Noir", "ar": "16/9"}, {"u": "9d69db14-5c78-4e7b-9d22-13343e2101a5", "dur": "4:03", "title": "Magical Brazil: The Global Odyssey", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "d4150c62-ace2-470d-9b12-243de65f9b3b", "dur": "2:48", "title": "Alice in Wonder Rave: Pantofelek o Północy", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "08229c1c-e5a0-4c03-8fcd-88f82852ec72", "dur": "2:20", "title": "Te Vreau - A Winter Memory", "sub": "Wong Kar-wai Inspired", "ar": "16/9"}, {"u": "6084317f-f2eb-4748-9e02-f28212f3c3e4", "dur": "1:30", "title": "Neon Ghost Arcade", "sub": "Retro VHS", "ar": "9/16"}, {"u": "08678045-e603-43b9-bb7a-03dff94c322b", "dur": "1:50", "title": "The Sun Burns Out", "sub": "Cinematic", "ar": "9/16"}, {"u": "4ab7ecfa-2c21-41db-b26f-36ce8a5ca42e", "dur": "1:52", "title": "Sweet-Talking Remedy", "sub": "Editorial", "ar": "9/16"}, {"u": "0139be73-9d58-45c2-a3df-61fdaeef5a05", "dur": "1:15", "title": "Compass in the Neon Rain", "sub": "Cyber-Noir", "ar": "9/16"}, {"u": "ba722ca6-7e20-450a-8ec2-3a4ff2e98478", "dur": "1:22", "title": "Static in the Midnight City", "sub": "French New Wave Film", "ar": "9/16"}, {"u": "2f4f93f5-d83b-42f6-bcd6-b72d7af4b801", "dur": "1:10", "title": "Electric Current", "sub": "Vogue Editorial Studio", "ar": "9/16"}, {"u": "7d401f9f-aa57-497b-bb78-5607a0fa4dc3", "dur": "1:10", "title": "Double Take: Digital Eyes", "sub": "Y2K Cyber-Glitch", "ar": "9/16"}]</script>
 </section>
 
 <!-- how it works -->
@@ -1037,9 +1048,10 @@ footer a:hover{color:var(--ink)}
 
   <div class="hiw-visual" data-reveal>
     <div class="stage" id="hiwStage">
-      <span class="tag mono" id="hiwTag">Placeholder · Step 01</span>
-      <p id="hiwCaption">Screen recording or still of the style picker with a look being chosen.</p>
-      <span class="hint mono">[ DROP THE REAL VISUAL HERE ]</span>
+      <img class="shot" id="hiwShot" src="assets/workflow/visual-style.webp"
+           alt="Choosing a visual style in Solmi" loading="lazy" decoding="async">
+      <span class="tag mono" id="hiwTag">Step 01</span>
+      <p id="hiwCaption">The director's picks for your track — each style steers the brief, the references and the storyboard.</p>
     </div>
   </div>
   </div>
@@ -1394,19 +1406,34 @@ if(heroDome && !matchMedia('(prefers-reduced-motion:reduce)').matches){
 const steps=[...document.querySelectorAll('.beat')];
 const hiwStage=document.getElementById('hiwStage'),
       hiwTag=document.getElementById('hiwTag'),
-      hiwCaption=document.getElementById('hiwCaption');
+      hiwCaption=document.getElementById('hiwCaption'),
+      hiwShot=document.getElementById('hiwShot');
+/* Real screens from solmi.ai's own workflow tour, one per step. */
 const STEP_VISUALS=[
-  {tint:'#F5811A', caption:'Screen recording or still of the style picker with a look being chosen.'},
-  {tint:'#45A85E', caption:'The composer accepting a file, a pasted link, and the dice landing on a track.'},
-  {tint:'#00A9C7', caption:'A storyboard being reviewed frame by frame, then the finished render playing.'}
+  {tint:'#F5811A', shot:'assets/workflow/visual-style.webp',
+   alt:'Choosing a visual style in Solmi',
+   caption:"The director's picks for your track — each style steers the brief, the references and the storyboard."},
+  {tint:'#45A85E', shot:'assets/workflow/add-music.webp',
+   alt:'Adding a song to Solmi',
+   caption:'Paste a link, upload a file, or pull one from your library — the song comes first.'},
+  {tint:'#00A9C7', shot:'assets/workflow/storyboard.webp',
+   alt:'Reviewing the storyboard in Solmi',
+   caption:'Every shot is boarded before a frame renders, and anything you dislike can be regenerated.'}
 ];
 if(steps.length && hiwStage){
   const pick=i=>{
     steps.forEach((b,n)=>b.setAttribute('aria-pressed',String(n===i)));
     const v=STEP_VISUALS[i];
     hiwStage.style.setProperty('--step',v.tint);
-    hiwTag.textContent='Placeholder · Step 0'+(i+1);
+    hiwTag.textContent='Step 0'+(i+1);
     hiwCaption.textContent=v.caption;
+    /* fade through: drop the old frame, raise the new one once it has decoded */
+    if(hiwShot.getAttribute('src')!==v.shot){
+      hiwShot.classList.remove('on');
+      const next=new Image();
+      next.onload=()=>{ hiwShot.src=v.shot; hiwShot.alt=v.alt; hiwShot.classList.add('on'); };
+      next.src=v.shot;
+    }else hiwShot.classList.add('on');
   };
   /* Scroll position drives the selection, with a weighted dwell: 01 and 03 hold
      for longer than 02 without their cards being any taller. */
@@ -1421,7 +1448,12 @@ if(steps.length && hiwStage){
     if(travel<=0) return null;
     return Math.max(0,Math.min(1,-r.top/travel));
   };
+  /* A click scrolls smoothly, and every frame of that animation fires a scroll
+     event — which would re-pick the band the page is still passing through and
+     flash the old step back. Ignore scroll-driven picking until it lands. */
+  let lockUntil=0;
   const fromScroll=()=>{
+    if(performance.now()<lockUntil) return;
     const p=progress();
     if(p===null) return;
     let i=0;
@@ -1434,7 +1466,9 @@ if(steps.length && hiwStage){
   addEventListener('resize',fromScroll);
   /* clicking jumps the page to the middle of that step's band */
   steps.forEach((b,i)=>b.addEventListener('click',()=>{
-    if(!track||getComputedStyle(track).height==='auto'){ pick(i); return; }
+    pick(i);                       /* answer the click now, not when the scroll lands */
+    if(!track||getComputedStyle(track).height==='auto') return;
+    lockUntil=performance.now()+900;
     const travel=track.offsetHeight-innerHeight;
     const mid=(BANDS[i]+BANDS[i+1])/2;
     scrollTo({top:track.offsetTop+travel*mid,behavior:'smooth'});
@@ -1475,6 +1509,7 @@ const wall=document.getElementById('wall'), track=document.getElementById('wallT
 const data=document.getElementById('wallData');
 if(!wall||!track||!data) return;
 const CLIPS=JSON.parse(data.textContent);
+const CDN='https://media.solmi.ai/ai-music-video/';
 const fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
 const SPEED=34;                                   /* px per second of drift */
 let live=null;
@@ -1485,9 +1520,10 @@ function tile(c,i){
   el.className='wtile';
   el.type='button';
   el.style.setProperty('--r',(h/w).toFixed(4));
-  el.dataset.vid=c.vid;
+  el.dataset.vid=CDN+'narrative-video-'+c.u+'.mp4';
   el.setAttribute('aria-label','Play '+c.title);
-  el.innerHTML='<img class="wph" src="'+c.ph+'" alt="" loading="lazy" decoding="async">'+
+  el.innerHTML='<img class="wph" src="'+CDN+'narrative-thumb-'+c.u+'.jpg" alt="" '+
+      'loading="lazy" decoding="async">'+
     '<span class="wdur">'+c.dur+'</span>'+
     '<span class="wmeta"><b>'+c.title+'</b><i>'+c.sub+'</i></span>';
   return el;
@@ -1499,12 +1535,22 @@ function build(){
   /* enough columns to overfill the viewport, or the loop seam becomes visible */
   const cols=Math.max(6, Math.ceil(innerWidth/(tw+gap))+2);
   track.textContent='';
+  /* Deal from two piles so every column mixes orientations — three landscape
+     clips in a row makes a stubby column and three portraits a tower. Each pile
+     is consumed in order, so no clip appears twice in a set unless the wall is
+     wide enough to need more than the 55 we have. */
+  const land=CLIPS.filter(c=>c.ar!=='9/16');
+  const port=CLIPS.filter(c=>c.ar==='9/16');
+  let li=0, pi=0;
+  const nextL=()=>land[li++%land.length];
+  const nextP=()=>port.length?port[pi++%port.length]:nextL();
   const set=document.createDocumentFragment();
   for(let i=0;i<cols;i++){
     const col=document.createElement('div');
     col.className='wcol';
     col.style.setProperty('--off', (-((i*53)%112))+'px');   /* the masonry stagger */
-    for(let k=0;k<3;k++) col.appendChild(tile(CLIPS[(i*3+k)%CLIPS.length],i));
+    const tall=i%3;                       /* rotate where the portrait sits */
+    for(let k=0;k<3;k++) col.appendChild(tile(k===tall?nextP():nextL(),i));
     set.appendChild(col);
   }
   const setNode=document.createElement('div');
