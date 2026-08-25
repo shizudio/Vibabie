@@ -8,11 +8,18 @@ html, body { background: #FFFFFF; }
 
 /* ── TOPBAR: evenly-spread nav, scrolls away ─────────────────── */
 .project-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-nav);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px clamp(24px, 3vw, 44px);
+  min-height: 58px;
+  padding: 0 clamp(24px, 3vw, 44px);
   background: #FFFFFF;
+  border-bottom: 1px solid var(--border);
 }
 .project-topbar a {
   font-family: var(--font-serif);
@@ -30,14 +37,15 @@ html, body { background: #FFFFFF; }
   display: grid;
   grid-template-columns: minmax(320px, 38%) 1fr;
   align-items: start;
+  padding-top: 58px; /* clear the fixed topbar */
 }
 
 /* ── LEFT: sticky nameplate rail ─────────────────────────────── */
 .project-rail {
   position: sticky;
-  top: 0;
+  top: 58px; /* pin below the fixed topbar */
   align-self: start;
-  padding: 48px clamp(24px, 3vw, 44px) 40px;
+  padding: 40px clamp(24px, 3vw, 44px) 40px;
   box-sizing: border-box;
 }
 

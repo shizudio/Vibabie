@@ -464,8 +464,10 @@ nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-lg) var(--page-gutter);
-  pointer-events: none;
+  min-height: 58px;
+  padding: 0 var(--page-gutter);
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--border);
 }
 
 .site-header {
@@ -797,7 +799,8 @@ nav:not([class]) a:hover,
 
   .site-header,
   nav {
-    padding: var(--space-md) var(--page-gutter);
+    min-height: 54px;
+    padding: 0 var(--page-gutter);
   }
 
   /* Ensure nav links are ≥44px tall for touch */
