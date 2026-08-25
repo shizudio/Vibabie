@@ -20,6 +20,18 @@ const cursor = document.getElementById('cursor')
 cursor.innerHTML = '<span class="cursor-inner">♥</span>'
 const cursorInner = cursor.querySelector('.cursor-inner')
 
+// An iframe is a separate pointer context, so the parent cursor stops receiving
+// movement while the pointer is over it. Hide the parent cursor at that boundary
+// and let the embedded room use the native cursor instead.
+function attachIframeCursorHandoff(frame) {
+  if (frame._cursorHandoffBound) return
+  frame._cursorHandoffBound = true
+  frame.addEventListener('mouseenter', () => { cursor.style.visibility = 'hidden' })
+  frame.addEventListener('mouseleave', () => { cursor.style.visibility = '' })
+}
+
+document.querySelectorAll('iframe').forEach(attachIframeCursorHandoff)
+
 /**
  * Smooth morph: heart grows into circle, text swaps mid-transition.
  * Single element — CSS transitions handle the size/background morph.
@@ -146,6 +158,8 @@ new MutationObserver(mutations => {
       if (node.nodeType !== 1) return
       if (node.tagName === 'IMG') attachAdaptiveCursor(node)
       node.querySelectorAll?.('img').forEach(attachAdaptiveCursor)
+      if (node.tagName === 'IFRAME') attachIframeCursorHandoff(node)
+      node.querySelectorAll?.('iframe').forEach(attachIframeCursorHandoff)
     })
   }
 }).observe(document.body, { childList: true, subtree: true })
@@ -259,4 +273,3 @@ if (portraitFrame && portraitVid) {
     if ((window.scrollY || 0) > THRESHOLD) hide()
   })
 })()
-

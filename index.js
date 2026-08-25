@@ -48,9 +48,9 @@ function dismissLoader() {
 // Skip-loader path: triggered by the nav logo and any link back to index.
 // The inline script in index.html has already hidden the loader and revealed
 // the stage; we just need to apply the overview transform and unlock visibility.
-const skipLoader = sessionStorage.getItem('skip-loader')
+const skipLoader = sessionStorage.getItem('skip-loader') || window.__ROOM_EMBEDDED__
 if (skipLoader) {
-  sessionStorage.removeItem('skip-loader')
+  if (!window.__ROOM_EMBEDDED__) sessionStorage.removeItem('skip-loader')
   if (loader) loader.classList.add('hidden')
   if (stage) stage.classList.add('visible')
   const header = document.getElementById('site-header')

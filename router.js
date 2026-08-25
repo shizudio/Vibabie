@@ -25,7 +25,13 @@ let currentPageScripts = []
 export function initRouter() {
   document.addEventListener('click', handleClick)
   window.addEventListener('popstate', handlePopState)
-  window.__softNavigate = (path) => navigate(path)
+  window.__softNavigate = (path) => {
+    if (window.self !== window.top) {
+      window.top.location.href = new URL(path, window.location.href).href
+      return
+    }
+    navigate(path)
+  }
 }
 
 function handleClick(e) {
@@ -39,6 +45,14 @@ function handleClick(e) {
   if (link.target === '_blank') return
   if (link.hasAttribute('download')) return
   if (e.ctrlKey || e.metaKey || e.shiftKey) return
+
+  // Embedded room hotspots always replace the parent page. Never navigate
+  // within the canvas iframe or leave a second site shell trapped inside it.
+  if (window.self !== window.top) {
+    e.preventDefault()
+    window.top.location.href = url.href
+    return
+  }
 
   // Index page: always skip the loader and let the browser do the navigation.
   // The skip-loader flag tells index.js to land directly in the overview state.

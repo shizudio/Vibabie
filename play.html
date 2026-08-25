@@ -14,15 +14,49 @@
        drop the page chrome — the parent page already has a topbar and the
        floating vinyl player, so hide this copy's to avoid doubling. -->
   <script>
-    if (window.self !== window.top) document.documentElement.classList.add('embedded')
+    if (window.self !== window.top) {
+      window.__ROOM_EMBEDDED__ = true
+      document.documentElement.classList.add('embedded')
+    }
   </script>
   <style>
+    .embedded,
+    .embedded body { cursor: auto !important; }
+
+    .embedded .loader,
     .embedded .site-header,
+    .embedded .site-footer,
+    .embedded .cursor,
+    .embedded .tooltip,
+    .embedded .room-statement,
+    .embedded .room-welcome,
+    .embedded .frame-placards,
+    .embedded .expand-hint,
+    .embedded .mobile-links,
     .embedded #vinyl-widget,
     .embedded #pe-toggle,
     .embedded #pe-toast,
     .embedded #pe-panel,
     .embedded #pe-toolbar { display: none !important; }
+
+    .embedded .stage {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .embedded .zone,
+    .embedded #vinyl-hotspot,
+    .embedded #bulb-hotspot,
+    .embedded #camera-hotspot,
+    .embedded #frenchpress-hotspot,
+    .embedded #bed-hotspot,
+    .embedded #laptop-hotspot,
+    .embedded #vinyl-overlay,
+    .embedded #bulb-overlay,
+    .embedded #camera-overlay,
+    .embedded #frenchpress-overlay,
+    .embedded #bed-overlay,
+    .embedded #laptop-overlay { cursor: pointer !important; }
   </style>
 </head>
 <body>
@@ -236,20 +270,6 @@
 
         </div>
       </div>
-    </div>
-
-    <!-- Under-frame museum placards (populated + unhidden by JS from now.json) -->
-    <div class="frame-placards" id="frame-placards" hidden>
-      <a class="placard placard-art" id="placard-painting" href="art.html">
-        <span class="placard-eyebrow"></span>
-        <span class="placard-title"></span>
-        <span class="placard-meta"></span>
-      </a>
-      <a class="placard placard-ship" id="placard-shipping" href="work.html">
-        <span class="placard-eyebrow"></span>
-        <span class="placard-title"></span>
-        <span class="placard-meta"></span>
-      </a>
     </div>
 
     <!-- Mobile expand hint — visible in overview state only -->
