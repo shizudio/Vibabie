@@ -1,0 +1,432 @@
+/* ============================================================
+   Shizudio — v2 "The Living Catalogue"
+   Standalone stylesheet. Does NOT depend on style.css / index.css.
+   Tokens per DESIGN.md.
+   ============================================================ */
+
+:root {
+  /* --- Light ("lamp on" — the gallery at daylight) --- */
+  --bone:     #F6F2EC; /* ground (gallery wall) */
+  --gesso:    #EDE6D8; /* raised panels, cards, frames */
+  --ink:      #211B12; /* all text; warm near-black */
+  --stone:    #6B5F52; /* metadata, secondary text */
+  --hairline: #D8CFC0; /* borders, dividers */
+  --oxblood:  #7F1F12; /* THE ART PIGMENT */
+  --ultra:    #2436C7; /* THE SHIPPING PIGMENT */
+  --frame:    #B89F7A; /* physical frame borders */
+
+  --serif: "EB Garamond", Georgia, "Times New Roman", serif;
+  --mono:  "Fragment Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* spacing (8px base) */
+  --xs: 4px;  --sm: 8px;  --md: 16px; --lg: 24px;
+  --xl: 32px; --2xl: 48px; --3xl: 72px;
+
+  --wrap: 1100px;
+  --section-gap: clamp(72px, 9vw, 96px);
+}
+
+/* --- Dark ("lamp off") --- warm the darks, lift the pigments --- */
+:root[data-theme="dark"] {
+  --bone:     #1C1712;
+  --gesso:    #262019;
+  --ink:      #EDE5D8;
+  --stone:    #A79A88;
+  --hairline: #3A322A;
+  --oxblood:  #C05038;
+  --ultra:    #7D8BF0;
+  --frame:    #8A7455;
+}
+
+/* ---------- reset-ish ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bone);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+img, picture { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+/* border radius: 0 everywhere (galleries don't round corners) */
+* { border-radius: 0; }
+
+/* focus-visible: consistent, visible ring for keyboard users */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+/* ---------- layout wrapper ---------- */
+.wrap {
+  width: 100%;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: clamp(24px, 5vw, 48px);
+}
+
+/* ============================================================
+   1. MASTHEAD
+   ============================================================ */
+.masthead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lg);
+  padding-block: var(--lg);
+  flex-wrap: wrap;
+}
+.brand {
+  font-family: var(--serif);
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+}
+.nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(var(--md), 2.4vw, 28px);
+  flex-wrap: wrap;
+}
+.nav a,
+.lamp-toggle {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--stone);
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+}
+.nav a:hover,
+.lamp-toggle:hover { color: var(--ink); }
+.lamp-toggle { letter-spacing: 0.18em; }
+
+/* ============================================================
+   2. HERO
+   ============================================================ */
+.hero {
+  margin-top: clamp(40px, 6vw, 72px);
+}
+.hero h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(1.9rem, 3.6vw, 2.8rem);
+  line-height: 1.15;
+  color: var(--ink);
+}
+.hero-sub {
+  margin: var(--md) 0 0;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+/* ============================================================
+   3. THE DIPTYCH
+   ============================================================ */
+.diptych {
+  margin-top: var(--section-gap);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px;
+}
+.panel { display: block; }
+.panel-label {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  margin-bottom: var(--sm);
+}
+.panel-label.art  { color: var(--oxblood); }
+.panel-label.ship { color: var(--ultra); }
+
+.panel-holder {
+  border: 1px solid var(--hairline);
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--gesso);
+}
+.panel-holder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.placard {
+  margin-top: var(--md);
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  line-height: 1.5;
+}
+.placard .enter-link {
+  display: inline-block;
+  margin-top: var(--xs);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.05rem;
+  letter-spacing: 0;
+}
+.placard .enter-link.art  { color: var(--oxblood); }
+.placard .enter-link.ship { color: var(--ultra); }
+
+/* ============================================================
+   4. EXHIBIT A — THE ROOM (framed, click to enter)
+   ============================================================ */
+.exhibit {
+  margin-top: var(--section-gap);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.frame-btn {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  text-align: center;
+  padding: 0;
+}
+.frame {
+  display: block;
+  border: 1px solid var(--frame);
+  padding: 10px;
+  background: var(--gesso);
+}
+.frame-inner {
+  display: block;
+  position: relative;
+  line-height: 0;
+}
+.frame-inner img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3000 / 1765;
+}
+.light-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: transparent;
+}
+/* time-of-day light shift, driven by body class */
+body.light-dawn  .light-overlay { background: rgba(255,180,120,0.08); }
+body.light-day   .light-overlay { background: transparent; }
+body.light-dusk  .light-overlay { background: rgba(255,140,80,0.12); }
+body.light-night .light-overlay { background: rgba(20,30,80,0.18); }
+
+.exhibit-placard {
+  display: block;
+  margin-top: var(--md);
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+/* ============================================================
+   5. ROOM OVERLAY (click to enter)
+   ============================================================ */
+.room-overlay[hidden] { display: none; }
+.room-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  background: color-mix(in srgb, var(--bone) 98%, transparent);
+}
+@supports not (background: color-mix(in srgb, white, black)) {
+  .room-overlay { background: var(--bone); opacity: 0.98; }
+}
+.room-close {
+  position: absolute;
+  top: var(--md);
+  right: var(--md);
+  z-index: 2;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 var(--md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gesso);
+  border: 1px solid var(--hairline);
+}
+.room-close:hover { color: var(--oxblood); }
+
+.room-scroll {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.room-scroll img {
+  height: 86vh;
+  width: auto;
+  max-width: none;
+}
+.room-legend {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sm) var(--md);
+  justify-content: center;
+  padding: var(--md) var(--lg) var(--lg);
+  border-top: 1px solid var(--hairline);
+  background: color-mix(in srgb, var(--bone) 92%, var(--gesso));
+}
+.room-legend a {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--stone);
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+}
+.room-legend a:hover { color: var(--oxblood); }
+
+/* ============================================================
+   6. CATALOGUE INDEX
+   ============================================================ */
+.catalogue { margin-top: var(--section-gap); }
+.cat-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin: 0 0 var(--sm);
+}
+.cat-title {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 2rem;
+  margin: 0 0 var(--xl);
+  color: var(--ink);
+}
+.cat-list { display: block; }
+.cat-row {
+  display: grid;
+  grid-template-columns: 52px 1fr auto auto;
+  align-items: baseline;
+  gap: var(--md);
+  padding: var(--md) 0 var(--md) 10px;
+  border-top: 1px solid var(--hairline);
+}
+.cat-row:last-child { border-bottom: 1px solid var(--hairline); }
+.cat-num, .cat-medium, .cat-year {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--stone);
+}
+.cat-medium, .cat-year { text-transform: uppercase; text-align: right; }
+.cat-row .cat-work {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+.cat-row:hover { background: var(--gesso); }
+.cat-row.art:hover  .cat-work { color: var(--oxblood); }
+.cat-row.ship:hover .cat-work { color: var(--ultra); }
+
+/* ============================================================
+   7. FOOTER
+   ============================================================ */
+.site-footer {
+  margin-top: var(--section-gap);
+  border-top: 1px solid var(--hairline);
+  padding-block: var(--xl);
+  padding-bottom: var(--3xl);
+}
+.site-footer p {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+/* ============================================================
+   MOTION — all transitions/transforms gated on reduced-motion
+   Easing: enter ease-out, exit ease-in, move ease-in-out.
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  body {
+    transition: background-color 300ms ease, color 300ms ease;
+  }
+  .nav a, .lamp-toggle,
+  .room-close, .room-legend a,
+  .placard .enter-link,
+  .cat-row .cat-work { transition: color 200ms ease-out; }
+
+  .light-overlay { transition: background 600ms ease; }
+
+  /* diptych hover: panel lifts, image scales */
+  .panel { transition: transform 200ms ease-out; }
+  .panel-holder img { transition: transform 0.4s ease; }
+  .panel:hover { transform: translateY(-2px); }
+  .panel:hover .panel-holder img { transform: scale(1.015); }
+
+  /* catalogue row hover: padding eases out */
+  .cat-row { transition: padding-left 250ms ease-in-out, background-color 250ms ease-out; }
+  .cat-row:hover { padding-left: 20px; }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 720px) {
+  body { font-size: 17px; }
+  .wrap { padding-inline: 24px; }
+
+  /* generous touch targets */
+  .nav { gap: var(--lg); }
+  .nav a, .lamp-toggle { min-height: 44px; }
+  .room-legend a { min-height: 44px; }
+
+  /* diptych stacks to a single column */
+  .diptych {
+    grid-template-columns: 1fr;
+    gap: var(--2xl);
+  }
+
+  .room-scroll img { height: 78vh; }
+}
+
+@media (max-width: 480px) {
+  /* index rows keep num/title/year; medium hides */
+  .cat-row {
+    grid-template-columns: 40px 1fr auto;
+    gap: var(--sm) var(--md);
+  }
+  .cat-medium { display: none; }
+}

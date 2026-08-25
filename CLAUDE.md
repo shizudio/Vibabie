@@ -44,6 +44,10 @@ Key routing rules:
 - Save progress → invoke /context-save
 - Resume context → invoke /context-restore
 
+## Agent Orchestration Policy
+
+Always read and follow [AGENT_POLICY.md](AGENT_POLICY.md) before dispatching subagents or delegating work. It governs when to delegate vs. do work directly, brief/report-back contracts, model routing, and verification requirements.
+
 ## Design System
 Always read DESIGN.md before making any visual or UI decisions.
 All font choices, colors, spacing, and aesthetic direction are defined there.

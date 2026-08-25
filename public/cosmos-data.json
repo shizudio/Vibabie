@@ -2,8 +2,50 @@
   "title": "Personal aesthetics",
   "username": "shizudio",
   "cosmosUrl": "https://www.cosmos.so/shizudio/personal-aesthetics",
-  "lastUpdated": "2026-03-15T07:32:38.050Z",
+  "lastUpdated": "2026-08-24T10:45:53.338Z",
   "elements": [
+    {
+      "url": "https://cdn.cosmos.so/19b4f3c9-9ed2-41f0-9144-721f2f71f021",
+      "width": 1080,
+      "height": 1351,
+      "aspectRatio": 0.7994078
+    },
+    {
+      "url": "https://cdn.cosmos.so/9779b44f-25f8-4c15-a942-b1e65d81f92e",
+      "width": 736,
+      "height": 1104,
+      "aspectRatio": 0.6666667
+    },
+    {
+      "url": "https://cdn.cosmos.so/f5cd9b77-5451-492f-a426-9f0901000f0f",
+      "width": 1080,
+      "height": 1350,
+      "aspectRatio": 0.8
+    },
+    {
+      "url": "https://cdn.cosmos.so/d8ccf99d-2766-41ee-8a98-2dd4d4691593",
+      "width": 1080,
+      "height": 1298,
+      "aspectRatio": 0.8320493
+    },
+    {
+      "url": "https://cdn.cosmos.so/a30dad00-08ee-4de3-881b-35b26ad622e4",
+      "width": 690,
+      "height": 995,
+      "aspectRatio": 0.6934673
+    },
+    {
+      "url": "https://cdn.cosmos.so/3897c5b0-fca8-4f24-92d9-42d426d5e2b1",
+      "width": 756,
+      "height": 983,
+      "aspectRatio": 0.7690743
+    },
+    {
+      "url": "https://cdn.cosmos.so/09edb064-591f-4166-a685-30d2c1bda9a2",
+      "width": 1080,
+      "height": 1350,
+      "aspectRatio": 0.8
+    },
     {
       "url": "https://cdn.cosmos.so/400bc1cf-6aa7-4407-bd06-8afbad4a91fb",
       "width": 420,
@@ -81,48 +123,6 @@
       "width": 2001,
       "height": 3000,
       "aspectRatio": 0.667
-    },
-    {
-      "url": "https://cdn.cosmos.so/c65f4121-45a0-42fd-95dc-8031d8b0e51e",
-      "width": 720,
-      "height": 1280,
-      "aspectRatio": 0.5625
-    },
-    {
-      "url": "https://cdn.cosmos.so/bdb5bf51-9646-4673-947c-af4013502db7",
-      "width": 510,
-      "height": 652,
-      "aspectRatio": 0.7822086
-    },
-    {
-      "url": "https://cdn.cosmos.so/a4bca7ea-898d-4b65-b709-2a97422f178a",
-      "width": 1080,
-      "height": 1349,
-      "aspectRatio": 0.800593
-    },
-    {
-      "url": "https://cdn.cosmos.so/69149fcd-3535-463a-99c5-fc9eb515a03e",
-      "width": 1502,
-      "height": 2000,
-      "aspectRatio": 0.751
-    },
-    {
-      "url": "https://cdn.cosmos.so/fce44b1c-baa8-4c0d-a0c5-8cce75e2750e",
-      "width": 735,
-      "height": 490,
-      "aspectRatio": 1.5
-    },
-    {
-      "url": "https://cdn.cosmos.so/fa2744f5-2d7f-43ca-a86a-eb822f5f3ef6",
-      "width": 457,
-      "height": 326,
-      "aspectRatio": 1.4018405
-    },
-    {
-      "url": "https://cdn.cosmos.so/c8196834-a050-411c-9365-118b885d3cce",
-      "width": 675,
-      "height": 1200,
-      "aspectRatio": 0.5625
     }
   ]
 }

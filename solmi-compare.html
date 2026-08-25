@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Solmi — Figma spec vs. proposal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400;1,9..40,500&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   A — FIGMA SPEC, un-scaled from node 2294:1273 (all values ÷ 0.8639)
+   B — PROPOSAL, same type + palette, tuned for the click
+   ========================================================================== */
+:root{
+  /* CTA gradient — exact stops off make-cta (2250:1982).
+     The Figma has 16.967% landing after 16.914%, which collapses into a hard
+     edge; ordered properly here so it ramps. Toggle below to see the original. */
+  --cta-figma: linear-gradient(-75.45deg,#FC7501 0%,#55960F 17%,#0AB073 84%,#00C4E7 107%);
+  --cta-figma-raw: linear-gradient(-75.45deg,#FC7501 16.967%,#55960F 16.914%,#0AB073 84.309%,#00C4E7 106.67%);
+
+  --dot-figma:#F04E23;   /* the dot as drawn in Figma */
+  --dot-board:#5AA632;   /* the dot on the brand board */
+
+  --bg:#1A1C1B;          /* neutral charcoal — deliberate deviation, see note */
+  --bg-raised:#201F1E;
+  --bg-ctrl:#2A2A29;
+  --fg:#FFFFFF;
+  --fg-sub:#EBEBEB;
+  --fg-pill:#E5E7EB;
+  --fg-mute:#6B7280;
+  --hair:rgba(255,255,255,.08);
+  --hair-ctrl:rgba(255,255,255,.10);
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#111212;color:var(--fg);font-family:"DM Sans",system-ui,sans-serif;
+  font-optical-sizing:auto;-webkit-font-smoothing:antialiased}
+
+/* ---- comparison chrome (not part of either design) ---- */
+.rail{max-width:1440px;margin:0 auto;padding:40px 32px 80px}
+.slab{margin-bottom:56px}
+.slab-head{display:flex;align-items:baseline;gap:14px;margin-bottom:14px;padding-left:2px}
+.tag{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  padding:5px 10px;border-radius:6px}
+.tag.a{background:#2A2A29;color:#EBEBEB}
+.tag.b{background:var(--cta-figma);color:#14150F;font-weight:500}
+.slab-head p{margin:0;font-size:14px;color:rgba(255,255,255,.5);letter-spacing:-.01em}
+.stage{border:1px solid rgba(255,255,255,.09);border-radius:16px;overflow:hidden;background:var(--bg)}
+
+/* ==========================================================================
+   SHARED — values below are the un-scaled Figma spec
+   ========================================================================== */
+.hero{position:relative;padding:0 0 64px;overflow:hidden}
+.hero-scrim{position:absolute;inset:0 0 auto;height:700px;pointer-events:none;
+  background:radial-gradient(90% 70% at 50% 0%,rgba(255,255,255,.05),transparent 70%)}
+
+/* header — px 60 / py 28 (51.833 / 24.189 ÷ .8639) */
+header{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;
+  padding:28px 60px}
+.mark{font-size:39px;font-weight:500;letter-spacing:-.04em;line-height:1;color:#fff;
+  text-decoration:none;font-variation-settings:"opsz" 14}
+.mark i{font-style:normal}
+.head-actions{display:flex;align-items:center;gap:24px}
+.login{font-size:14px;font-weight:500;color:#fff;text-decoration:none;letter-spacing:-.01em}
+/* join-button: bg #FFF, px20 py10, radius 999, 14px/600, #2E2E2E */
+.join{background:#fff;border:1px solid #fff;border-radius:999px;padding:10px 20px;
+  font-family:inherit;font-size:14px;font-weight:700;color:#2E2E2E;letter-spacing:-.012em;
+  cursor:pointer;transition:transform .18s var(--ease)}
+.join:hover{transform:translateY(-1px)}
+
+.hero-body{position:relative;z-index:2;text-align:center;padding:56px 0 0}
+/* h1: DM Sans Medium 500, 64/72 */
+.h1{font-size:64px;font-weight:500;line-height:72px;margin:0;color:#fff;
+  font-variation-settings:"opsz" 14}
+.caret{display:inline-block;width:4px;height:60px;background:#fff;vertical-align:-11px;
+  margin-left:4px;animation:blink 1.06s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+/* sub: DM Mono Regular 20/27, tracking -0.2px, #EBEBEB */
+.sub{font-family:"DM Mono",monospace;font-weight:400;font-size:20px;line-height:27px;
+  letter-spacing:-.2px;color:var(--fg-sub);margin:24px 0 0}
+
+/* console-card: radius 28, pad 24, gap 20, border 1px, shadow 0 10px 14px rgba(0,0,0,.5) */
+.console{background:var(--bg-raised);border:1px solid var(--hair);border-radius:28px;
+  padding:24px;display:flex;flex-direction:column;gap:20px;width:720px;margin:48px auto 0;
+  box-shadow:0 10px 14px rgba(0,0,0,.5)}
+.row{display:flex;align-items:center;gap:12px}
+.ctrl{background:var(--bg-ctrl);border:1px solid var(--hair-ctrl);border-radius:16px}
+.select-song{display:flex;align-items:center;gap:8px;padding:14px 20px;cursor:pointer;
+  font-family:inherit;font-size:14px;font-weight:600;color:#fff;white-space:nowrap}
+.select-song .bead{width:8px;height:8px;border-radius:50%;background:var(--cta-figma)}
+.or{font-size:12px;font-weight:700;color:var(--fg-mute)}
+.input-group{flex:1;display:flex;align-items:center;padding:4px;height:52px;min-width:0}
+.input-group .field{flex:1;display:flex;align-items:center;gap:8px;padding-left:16px;min-width:0}
+.input-group input{flex:1;min-width:0;background:none;border:0;outline:none;font-family:inherit;
+  font-size:14px;color:#fff}
+.input-group input::placeholder{color:var(--fg-mute)}
+/* make-cta: px20 py12, radius 12, 14px/700 white */
+.make{background:var(--cta-figma);border:0;border-radius:12px;padding:12px 20px;cursor:pointer;
+  font-family:inherit;font-size:14px;font-weight:700;color:#fff;white-space:nowrap;
+  transition:transform .18s var(--ease),filter .18s var(--ease)}
+.make:hover{transform:translateY(-1px);filter:brightness(1.06)}
+.plus{padding:16px;cursor:pointer;color:#fff;background:var(--bg-ctrl);
+  border:1px solid var(--hair-ctrl);border-radius:16px;line-height:0}
+/* tag-pill: px14 py8, radius 20, 13px/500 #E5E7EB */
+.pills{display:flex;flex-wrap:wrap;gap:9px}
+.pill{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:20px;
+  background:var(--bg-ctrl);border:1px solid var(--hair-ctrl);cursor:pointer;
+  font-family:inherit;font-size:13px;font-weight:500;color:var(--fg-pill);white-space:nowrap}
+.pill .bead{width:6px;height:6px;border-radius:50%;background:var(--cta-figma)}
+
+/* gallery */
+.gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding:56px 80px 0}
+.card{position:relative;aspect-ratio:264/207;border-radius:14px;overflow:hidden;cursor:pointer;
+  border:1px solid var(--hair)}
+.card::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 42%,rgba(10,11,10,.72) 100%)}
+.card .meta{position:absolute;left:14px;bottom:12px;z-index:2}
+.card .meta b{display:block;font-size:14px;font-weight:700;letter-spacing:-.014em}
+.card .meta span{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.66);
+  margin-top:4px}
+.card .meta span::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--cta-figma)}
+.card .dur{position:absolute;top:10px;right:10px;z-index:2;font-family:"DM Mono",monospace;
+  font-size:11px;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:5px;backdrop-filter:blur(6px)}
+.g1{background:radial-gradient(125% 90% at 50% 118%,#F7A35C,#E8672B 34%,#A83E18 100%)}
+.g2{background:radial-gradient(125% 90% at 50% 118%,#C6DE7A,#93B83C 32%,#2C7A44 100%)}
+.g3{background:radial-gradient(125% 90% at 50% 118%,#D8F0F8,#79CBE0 34%,#3E93AE 100%)}
+.g4{background:radial-gradient(125% 90% at 50% 118%,#BFEFE4,#33A891 34%,#1E7A72 100%)}
+.g5{background:radial-gradient(125% 90% at 50% 118%,#F2C778,#D98A2B 34%,#7C4E22 100%)}
+.g6{background:radial-gradient(125% 90% at 50% 118%,#E4E9EA,#A9B4B6 34%,#2C3132 100%)}
+
+/* ==========================================================================
+   B — PROPOSAL deltas
+   ========================================================================== */
+#b .hero-body{padding-top:40px}
+#b .eyebrow{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:22px;
+  font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(255,255,255,.42)}
+#b .eyebrow .rule{width:34px;height:1px;background:rgba(255,255,255,.18)}
+#b .sub{font-size:19px;line-height:26px;max-width:none}
+#b .presets{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;padding:0 80px;margin:40px 0 0}
+#b .preset{position:relative;border:0;padding:0;background:none;cursor:pointer;font-family:inherit}
+#b .preset .thumb{position:relative;aspect-ratio:3/4;border-radius:14px;overflow:hidden;
+  border:1px solid var(--hair);transition:transform .26s var(--ease),box-shadow .26s var(--ease)}
+#b .preset .thumb::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 46%,rgba(10,11,10,.6) 100%)}
+#b .preset:hover .thumb{transform:translateY(-5px);box-shadow:0 16px 40px rgba(0,0,0,.4)}
+#b .preset[aria-pressed=true] .thumb{outline:2px solid #fff;outline-offset:2px;transform:translateY(-5px)}
+#b .preset .nm{position:absolute;left:11px;bottom:10px;z-index:2;font-size:12.5px;font-weight:500;
+  letter-spacing:-.012em}
+#b .preset .ix{position:absolute;top:9px;left:11px;z-index:2;font-family:"DM Mono",monospace;
+  font-size:9.5px;letter-spacing:.12em;color:rgba(255,255,255,.75)}
+#b .console{margin-top:28px;padding:10px;gap:0;border-radius:24px}
+/* the one control that matters, at a size that says so */
+#b .make{font-size:17px;padding:0 32px;height:56px;border-radius:16px;color:#14150F}
+#b .input-group{border:0;background:none;height:56px}
+#b .input-group input{font-size:16px}
+#b .after{display:flex;align-items:center;justify-content:center;gap:10px;margin:18px 0 0;
+  font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.13em;text-transform:uppercase;
+  color:rgba(255,255,255,.42)}
+#b .after .bead{width:5px;height:5px;border-radius:50%;background:var(--dot-board)}
+#b .opts{display:flex;justify-content:center;margin-top:24px}
+#b .opts button{background:none;border:1px solid var(--hair-ctrl);border-radius:999px;
+  padding:8px 16px;cursor:pointer;color:rgba(255,255,255,.66);font-family:"DM Mono",monospace;
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+#b .card .make-like{position:absolute;z-index:3;right:12px;bottom:12px;background:rgba(255,255,255,.94);
+  color:#14150F;font-size:12.5px;font-weight:700;letter-spacing:-.012em;padding:9px 14px;
+  border-radius:999px;opacity:0;transform:translateY(6px);transition:all .24s var(--ease)}
+#b .card:hover .make-like{opacity:1;transform:translateY(0)}
+
+
+/* ===== B: paper surface (default) — the attached direction ===== */
+#b{--bg:#F6F8FB;--bg-raised:#FFFFFF;--bg-ctrl:#F1F3F6;--fg:#101110;
+   --fg-sub:rgba(16,17,16,.66);--fg-mute:rgba(16,17,16,.45);--fg-pill:#3A3D3B;
+   --hair:rgba(16,17,16,.08);--hair-ctrl:rgba(16,17,16,.12);
+   background:var(--bg);color:var(--fg)}
+#b[data-surface="charcoal"]{--bg:#1A1C1B;--bg-raised:#201F1E;--bg-ctrl:#2A2A29;--fg:#fff;
+   --fg-sub:#EBEBEB;--fg-mute:#6B7280;--fg-pill:#E5E7EB;
+   --hair:rgba(255,255,255,.08);--hair-ctrl:rgba(255,255,255,.10)}
+#b .mark,#b .h1,#b .login{color:var(--fg)}
+#b .sub{color:var(--fg-sub)}
+#b .join{background:#101110;border-color:#101110;color:#fff}
+#b[data-surface="charcoal"] .join{background:#fff;border-color:#fff;color:#2E2E2E}
+#b .console{background:var(--bg-raised);border-color:var(--hair);
+   box-shadow:0 22px 50px rgba(16,17,16,.10)}
+#b[data-surface="charcoal"] .console{box-shadow:0 10px 14px rgba(0,0,0,.5)}
+#b .input-group input{color:var(--fg)}
+#b .dice{background:var(--bg-ctrl);border-color:var(--hair-ctrl);color:var(--fg)}
+#b .dice:hover{background:#E7EAEE}
+#b[data-surface="charcoal"] .dice:hover{background:#333332}
+#b .make{color:#14150F}
+#b .hero-scrim{display:none}
+#b .beat{background:var(--bg-raised);border-color:var(--hair)}
+#b .beat p{color:var(--fg-sub)}
+#b .beat .n,#b .beat .det,#b .reel-head .eyeb,#b .after,#b .eyebrow{color:var(--fg-mute)}
+#b .eyebrow .rule{background:var(--hair-ctrl)}
+#b .reel-head .browse,#b .reel-head h3,#b .beat h4{color:var(--fg)}
+#b .reel-nav button{background:var(--bg-ctrl);border-color:var(--hair-ctrl);color:var(--fg)}
+#b .reel-tail{border-color:var(--hair-ctrl);color:var(--fg-sub)}
+#b .opts button{border-color:var(--hair-ctrl);color:var(--fg-sub)}
+#b .preset[aria-pressed=true] .thumb{outline-color:#5AA632}
+
+/* the dome — signature form, a horizon behind the picker */
+#b .dome{position:absolute;left:50%;transform:translateX(-50%);top:330px;
+  width:2000px;height:560px;pointer-events:none;z-index:0;
+  background:linear-gradient(180deg,#E8672B 0%,#D98A2B 12%,#93B83C 34%,#3FA55C 54%,
+    #33A891 72%,#79CBE0 88%,#A9DCEF 100%);
+  border-radius:50% 50% 0 0 / 100% 100% 0 0;filter:blur(80px);opacity:.58;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 26%,#000 74%,transparent 100%);
+          mask-image:linear-gradient(180deg,transparent 0%,#000 26%,#000 74%,transparent 100%)}
+#b[data-surface="charcoal"] .dome{opacity:.26;filter:blur(96px)}
+#b .hero::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(120% 60% at 50% 4%,var(--bg) 0%,transparent 62%)}
+#b .h1 .spectrum{background:linear-gradient(96deg,#E8672B,#D98A2B 16%,#93B83C 34%,
+  #3FA55C 52%,#33A891 70%,#79CBE0 87%,#A9DCEF 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* ===== B additions: dice, carousel, how-it-works ===== */
+#b .dice{width:56px;height:56px;flex:none;display:grid;place-items:center;cursor:pointer;
+  background:var(--bg-ctrl);border:1px solid var(--hair-ctrl);border-radius:16px;
+  color:var(--fg);transition:transform .3s var(--ease),background .2s var(--ease)}
+#b .dice.rolling{animation:roll .5s var(--ease)}
+@keyframes roll{50%{transform:rotate(180deg) scale(.86)}100%{transform:rotate(360deg)}}
+#b .dice-hint{font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:rgba(255,255,255,.34)}
+
+/* CTA carries the offer itself — no hover-dependent copy */
+#b .make{white-space:nowrap}
+#b .input-group{gap:14px}
+#b .input-group .field{overflow:hidden}
+#b .input-group input{text-overflow:ellipsis}
+
+/* carousel */
+.reel-head{display:flex;align-items:baseline;justify-content:space-between;padding:0 80px;
+  margin:0 0 20px}
+.reel-head .l{display:flex;align-items:baseline;gap:16px}
+.reel-head h3{margin:0;font-size:26px;font-weight:500;font-style:italic;letter-spacing:-.03em}
+.reel-head .eyeb{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--fg-mute)}
+.reel-head .browse{display:flex;align-items:center;gap:8px;background:none;border:0;cursor:pointer;
+  font-family:inherit;font-size:14px;font-weight:500;color:#fff;letter-spacing:-.012em}
+.reel-head .browse .n{font-family:"DM Mono",monospace;font-size:11px;color:var(--fg-mute)}
+.reel{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 80px 8px;
+  scrollbar-width:none}
+.reel::-webkit-scrollbar{display:none}
+.reel .card{flex:0 0 264px;scroll-snap-align:start}
+.reel-tail{flex:0 0 264px;scroll-snap-align:start;display:grid;place-items:center;
+  border:1px dashed var(--hair-ctrl);border-radius:14px;aspect-ratio:264/207;cursor:pointer;
+  color:rgba(255,255,255,.62);font-size:14px;font-weight:500;letter-spacing:-.012em;
+  transition:color .2s var(--ease),border-color .2s var(--ease)}
+.reel-tail:hover{color:#fff;border-color:rgba(255,255,255,.3)}
+.reel-nav{display:flex;gap:8px}
+.reel-nav button{width:34px;height:34px;border-radius:50%;background:var(--bg-ctrl);
+  border:1px solid var(--hair-ctrl);color:#fff;cursor:pointer;display:grid;place-items:center;
+  transition:background .18s var(--ease)}
+.reel-nav button:hover{background:#333332}
+
+/* how it works — three beats, scrollable */
+.hiw{padding:72px 0 0}
+.hiw-rail{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 80px 8px;
+  scrollbar-width:none}
+.hiw-rail::-webkit-scrollbar{display:none}
+.beat{flex:0 0 340px;scroll-snap-align:start;background:var(--bg-raised);border:1px solid var(--hair);
+  border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:14px;min-height:196px}
+.beat .n{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.14em;
+  color:var(--fg-mute)}
+.beat h4{margin:0;font-size:24px;font-weight:500;letter-spacing:-.028em}
+.beat p{margin:0;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,.62);letter-spacing:-.008em}
+.beat .det{margin-top:auto;font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(255,255,255,.36)}
+.beat .arc{height:3px;border-radius:2px;background:var(--cta-figma);width:44px}
+
+/* ---- delta notes ---- */
+.notes{max-width:1440px;margin:0 auto;padding:0 32px 90px}
+.notes h3{font-size:22px;font-weight:500;letter-spacing:-.025em;margin:0 0 18px}
+.notes table{width:100%;border-collapse:collapse;font-size:14px}
+.notes th{text-align:left;font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:rgba(255,255,255,.42);font-weight:400;
+  border-bottom:1px solid rgba(255,255,255,.12);padding:0 14px 10px 0}
+.notes td{padding:13px 14px 13px 0;border-bottom:1px solid rgba(255,255,255,.07);
+  color:rgba(255,255,255,.78);vertical-align:top;letter-spacing:-.008em}
+.notes td:first-child{color:#fff;font-weight:500;white-space:nowrap}
+.swatchrow{display:flex;gap:10px;margin:26px 0 0;flex-wrap:wrap}
+.sw{border-radius:9px;overflow:hidden;border:1px solid rgba(255,255,255,.1);min-width:132px}
+.sw .c{height:46px}
+.sw .l{padding:7px 9px;font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:.05em;
+  color:rgba(255,255,255,.5);background:#1D1E1D}
+
+@media (max-width:1200px){
+  .console{width:auto} .gallery,#b .presets{padding-left:40px;padding-right:40px}
+  header{padding:24px 40px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="rail">
+
+  <!-- ================= A ================= -->
+  <section class="slab">
+    <div class="slab-head">
+      <span class="tag a">A · Figma spec</span>
+      <p>Node 2294:1273, un-scaled ÷0.8639. DM Sans Medium 64/72 · DM Mono 20/27 · CTA 14px.</p>
+    </div>
+    <div class="stage" id="a">
+      <div class="hero">
+        <div class="hero-scrim"></div>
+        <header>
+          <a class="mark" href="#">solmi<i style="color:var(--dot-figma)">.</i></a>
+          <div class="head-actions">
+            <a class="login" href="#">Log in</a>
+            <button class="join">Join Solmi for free</button>
+          </div>
+        </header>
+        <div class="hero-body">
+          <h1 class="h1">Turn your track into a world.<span class="caret"></span></h1>
+          <p class="sub">Bring a song.<br>Generate music video with one click.<br>Your musical is just a step away.</p>
+
+          <div class="console">
+            <div class="row">
+              <button class="select-song ctrl"><span class="bead"></span>Select song</button>
+              <span class="or">OR</span>
+              <div class="input-group ctrl">
+                <label class="field">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>
+                  <input type="text" placeholder="Drop a Suno link">
+                </label>
+                <button class="make">Make Music Video</button>
+              </div>
+              <button class="plus"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+            </div>
+            <div class="pills">
+              <button class="pill">Music Video ⌄</button>
+              <button class="pill"><span class="bead"></span>Studio ⌄</button>
+              <button class="pill">Images</button>
+              <button class="pill">16:9 ⌄</button>
+              <button class="pill">480p ⌄</button>
+              <button class="pill">Captions</button>
+              <button class="pill">⊕</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery">
+          <div class="card g1"><span class="dur">1:24</span><div class="meta"><b>Lost in the Rhythm</b><span>Solmi Director AI</span></div></div>
+          <div class="card g2"><span class="dur">0:40</span><div class="meta"><b>Paper Boats &amp; City Lights</b><span>Solmi Director AI</span></div></div>
+          <div class="card g3"><span class="dur">2:10</span><div class="meta"><b>Midnight Echoes</b><span>Solmi Director AI</span></div></div>
+          <div class="card g4"><span class="dur">1:55</span><div class="meta"><b>Dreaming Awake</b><span>Solmi Director AI</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= B ================= -->
+  <section class="slab">
+    <div class="slab-head">
+      <span class="tag b">B · Proposal</span>
+      <p>Style-first. Toss or pick a look, then one control.</p>
+      <span style="margin-left:auto;display:flex;gap:6px;align-items:center">
+        <button class="surf tag a" data-s="paper" style="border:0;cursor:pointer;font-family:'DM Mono',monospace">Paper</button>
+        <button class="surf tag a" data-s="charcoal" style="border:0;cursor:pointer;opacity:.45;font-family:'DM Mono',monospace">Charcoal</button>
+      </span>
+    </div>
+    <div class="stage" id="b" data-surface="paper">
+      <div class="hero">
+        <div class="dome" aria-hidden="true"></div>
+        <header>
+          <a class="mark" href="#">solmi<i style="color:var(--dot-board)">.</i></a>
+          <div class="head-actions">
+            <a class="login" href="#">Log in</a>
+            <button class="join">Join Solmi for free</button>
+          </div>
+        </header>
+        <div class="hero-body">
+          <div class="eyebrow"><span class="rule"></span>The Studio · Directed, not generated<span class="rule"></span></div>
+          <h1 class="h1">Turn your track into<br><span class="spectrum">a world.</span></h1>
+          <p class="sub">Bring a song. Pick a look. We direct the rest.</p>
+
+          <div class="presets">
+            <button class="preset" aria-pressed="false"><div class="thumb g1"><span class="ix">01</span><span class="nm">Wong Kar-wai</span></div></button>
+            <button class="preset" aria-pressed="false"><div class="thumb g2"><span class="ix">02</span><span class="nm">90s MTV</span></div></button>
+            <button class="preset" aria-pressed="false"><div class="thumb g3"><span class="ix">03</span><span class="nm">Cloudlight</span></div></button>
+            <button class="preset" aria-pressed="false"><div class="thumb g4"><span class="ix">04</span><span class="nm">Y2K Glossy</span></div></button>
+            <button class="preset" aria-pressed="false"><div class="thumb g5"><span class="ix">05</span><span class="nm">Desert Mirage</span></div></button>
+            <button class="preset" aria-pressed="false"><div class="thumb g6"><span class="ix">06</span><span class="nm">Film Noir</span></div></button>
+          </div>
+
+          <div class="console" style="width:760px">
+            <div class="row">
+              <button class="dice" id="dice" aria-label="Toss me a song" title="Toss me a song">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="8.5" cy="8.5" r="1.35" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.35" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.35" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.35" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.35" fill="currentColor" stroke="none"/></svg>
+              </button>
+              <div class="input-group">
+                <label class="field">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="1.8" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                  <input type="text" id="songfield" placeholder="Upload a song, or paste a link">
+                </label>
+                <button class="make">Make a 5s video for free</button>
+              </div>
+            </div>
+          </div>
+          <p class="after"><span class="bead"></span><span id="hint">No song? Toss one · first video free · sign in to render · you keep the rights</span></p>
+          <div class="opts"><button>Options ⌄</button></div>
+        </div>
+
+        <div style="padding-top:56px">
+          <div class="reel-head">
+            <div class="l"><span class="eyeb">The Gallery</span><h3>Every frame is a starting point.</h3></div>
+            <div style="display:flex;align-items:center;gap:16px">
+              <div class="reel-nav">
+                <button data-d="-1" aria-label="Previous"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+                <button data-d="1" aria-label="Next"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></button>
+              </div>
+              <button class="browse">Browse all <span class="n">1,240</span> →</button>
+            </div>
+          </div>
+          <div class="reel" id="reel">
+          <div class="card g1"><span class="dur">1:24</span><div class="meta"><b>Lost in the Rhythm</b><span>Solmi Director AI</span></div><span class="make-like">Make one like this →</span></div>
+          <div class="card g2"><span class="dur">0:40</span><div class="meta"><b>Paper Boats &amp; City Lights</b><span>Solmi Director AI</span></div><span class="make-like">Make one like this →</span></div>
+          <div class="card g3"><span class="dur">2:10</span><div class="meta"><b>Midnight Echoes</b><span>Solmi Director AI</span></div><span class="make-like">Make one like this →</span></div>
+          <div class="card g4"><span class="dur">1:55</span><div class="meta"><b>Dreaming Awake</b><span>Solmi Director AI</span></div><span class="make-like">Make one like this →</span></div>
+          <div class="card g5"><span class="dur">4:09</span><div class="meta"><b>The Last Stop</b><span>Solmi Director AI</span></div><span class="make-like">Make one like this →</span></div>
+          <div class="card g6"><span class="dur">0:48</span><div class="meta"><b>The Last Confession</b><span>Solmi Director AI</span></div><span class="make-like">Make one like this →</span></div>
+          <div class="card g2"><span class="dur">1:01</span><div class="meta"><b>Static Bound</b><span>Solmi Director AI</span></div><span class="make-like">Make one like this →</span></div>
+          <div class="card g3"><span class="dur">0:39</span><div class="meta"><b>水墨月</b><span>Solmi Director AI</span></div><span class="make-like">Make one like this →</span></div>
+          <div class="reel-tail">Browse all 1,240 →</div>
+          </div>
+        </div>
+
+        <div class="hiw">
+          <div class="reel-head">
+            <div class="l"><span class="eyeb">How it works</span><h3>Three moves.</h3></div>
+            <span class="eyeb">You approve every one</span>
+          </div>
+          <div class="hiw-rail">
+            <div class="beat"><div class="arc"></div><span class="n">01</span><h4>Bring a song</h4>
+              <p>Upload, paste a link, or toss the dice and we'll pick one for you.</p>
+              <span class="det">Link · Upload · Library · Dice</span></div>
+            <div class="beat"><div class="arc"></div><span class="n">02</span><h4>Pick a look</h4>
+              <p>Choose a director's style. We read tempo, key and sections, then cast it.</p>
+              <span class="det">Style · Cast · References</span></div>
+            <div class="beat"><div class="arc"></div><span class="n">03</span><h4>We direct the rest</h4>
+              <p>Storyboard first, so you can change your mind before anything renders.</p>
+              <span class="det">Storyboard · Review · Render</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="notes">
+  <h3>Deltas — where B leaves the Figma, and why</h3>
+  <table>
+    <tr><th>Item</th><th>Figma (A)</th><th>Proposal (B)</th><th>Reason</th></tr>
+    <tr><td>Ground</td><td>#14111B / #1F1B2E</td><td>#1A1C1B / #2A2A29</td><td>Figma's blacks are purple-tinted — a holdover from the indigo brand. They bruise against the orange/green spectrum. Both stages here use the neutral charcoal.</td></tr>
+    <tr><td>UI type</td><td>Inter + Geist</td><td>DM Sans throughout</td><td>The Figma runs four families in one frame. The console and header were pasted from the live build and never restyled.</td></tr>
+    <tr><td>CTA gradient</td><td>stops at 16.967% / 16.914%</td><td>ordered ramp</td><td>The Figma's two stops are inverted, collapsing into a hard edge. Same colours, ordered so it ramps.</td></tr>
+    <tr><td>Dead layer</td><td>indigo→cyan underneath</td><td>removed</td><td>The old #8B5CF6→#3B82F6 gradient is still a second background on make-cta.</td></tr>
+    <tr><td>CTA</td><td>"Make Music Video" · 14px / 36px</td><td>"Make a 5s video for free" · 17px / 56px</td><td>Deliberate disagreement with the Figma. At 14px it loses to the 64px headline and the white header pill. The label now carries the offer, so the cheap ask reaches touch, keyboard and screen-reader users — not just desktop hover.</td></tr>
+    <tr><td>The dot</td><td>orange</td><td>green</td><td>Figma draws it orange, the brand board green, production blue-purple. Three sources, three answers — needs a ruling.</td></tr>
+    <tr><td>Sign-in</td><td>—</td><td>required, render free</td><td>Confirmed: the 5s render needs an account but costs nothing. Copy must say so — "no sign-up" removed from the reassurance line.</td></tr><tr><td>Above fold</td><td>13 controls</td><td>6 presets + 1 field + 1 button</td><td>Cold start: pick a look before you're asked for a file.</td></tr>
+    <tr><td>Naming</td><td>"suno-homepage", suno.com/login</td><td>—</td><td>The frame is an unrenamed Suno reskin. Log in still links to suno.com.</td></tr>
+  </table>
+
+  <div class="swatchrow">
+    <div class="sw"><div class="c" style="background:#FC7501"></div><div class="l">#FC7501 · cta stop 1</div></div>
+    <div class="sw"><div class="c" style="background:#55960F"></div><div class="l">#55960F · cta stop 2</div></div>
+    <div class="sw"><div class="c" style="background:#0AB073"></div><div class="l">#0AB073 · cta stop 3</div></div>
+    <div class="sw"><div class="c" style="background:#00C4E7"></div><div class="l">#00C4E7 · cta stop 4</div></div>
+    <div class="sw"><div class="c" style="background:#2E2E2E"></div><div class="l">#2E2E2E · join text</div></div>
+    <div class="sw"><div class="c" style="background:#EBEBEB"></div><div class="l">#EBEBEB · subhead</div></div>
+    <div class="sw"><div class="c" style="background:#6B7280"></div><div class="l">#6B7280 · muted</div></div>
+    <div class="sw"><div class="c" style="background:#E5E7EB"></div><div class="l">#E5E7EB · pill text</div></div>
+  </div>
+</div>
+
+<script>
+/* --- 1. dice: fill the field with a real track --- */
+const TOSS=[ "Neon Exit — 1:01", "水墨月 — 0:39", "Paper Boats & City Lights — 0:40",
+  "Static Bound — 1:01", "The Rain Remembers — 4:33", "Midnight Almost — 0:35",
+  "Verdigris Afterglow — 1:34", "Engine On — 0:51" ];
+let last=-1;
+const dice=document.getElementById('dice'), fld=document.getElementById('songfield'),
+      hint=document.getElementById('hint');
+dice.onclick=()=>{
+  let i; do{ i=Math.floor(Math.random()*TOSS.length) }while(i===last&&TOSS.length>1);
+  last=i;
+  dice.classList.remove('rolling'); void dice.offsetWidth; dice.classList.add('rolling');
+  fld.value=TOSS[i];
+  hint.textContent='Tossed · '+TOSS[i]+' · toss again or pick your own';
+};
+
+/* --- surface toggle (comparison control) --- */
+document.querySelectorAll('.surf').forEach(b=>{
+  b.onclick=()=>{
+    document.getElementById('b').dataset.surface=b.dataset.s;
+    document.querySelectorAll('.surf').forEach(x=>x.style.opacity=(x===b?'1':'.45'));
+  };
+});
+
+/* --- 3. carousel --- */
+const reel=document.getElementById('reel');
+document.querySelectorAll('.reel-nav button').forEach(b=>{
+  b.onclick=()=>reel.scrollBy({left:(264+20)*2*(+b.dataset.d),behavior:'smooth'});
+});
+
+document.querySelectorAll('#b .preset').forEach(p=>{
+  p.onclick=()=>{
+    const on=p.getAttribute('aria-pressed')==='true';
+    document.querySelectorAll('#b .preset').forEach(x=>x.setAttribute('aria-pressed','false'));
+    p.setAttribute('aria-pressed',String(!on));
+  };
+});
+</script>
+</body>
+</html>

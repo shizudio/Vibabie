@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=DM+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; background: #141614; }
+    a { color: #1ED760; } a:hover { color: #3BE87A; }
+    * { box-sizing: border-box; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; height: 900px; position: relative; overflow: hidden; background: #141614; font-family: 'DM Sans', system-ui, sans-serif; color: #F2F5F3;">
+
+  <!-- Projection beam — the same construction as the light page, so the two
+       themes share one hero idea. The record is saved for the closing section. -->
+  <div style="position: absolute; left: 50%; top: 73%; width: 2000px; height: 70%; margin-left: -1000px; background: conic-gradient(from 91deg at 50% 0%, rgba(0,196,231,0) 22deg, rgba(0,196,231,0.62) 44deg, rgba(10,176,115,0.74) 64deg, rgba(124,175,48,0.76) 84deg, rgba(218,180,67,0.74) 100deg, rgba(252,118,0,0.70) 116deg, rgba(255,138,77,0.38) 134deg, rgba(255,138,77,0) 156deg); filter: blur(30px); -webkit-mask-image: radial-gradient(76% 62% at 50% 0%, #000 18%, rgba(0,0,0,0.55) 58%, transparent 100%); mask-image: radial-gradient(76% 62% at 50% 0%, #000 18%, rgba(0,0,0,0.55) 58%, transparent 100%);"></div>
+  <div style="position: absolute; left: 50%; top: calc(73% - 30px); width: 420px; height: 64px; margin-left: -210px; border-radius: 999px; background: radial-gradient(60% 100% at 50% 50%, rgba(255,255,255,0.75), rgba(255,255,255,0)); filter: blur(16px);"></div>
+
+  <!-- header -->
+  <div style="position: relative; display: flex; align-items: center; justify-content: space-between; padding: 28px 64px;">
+    <div style="font-size: 39px; font-weight: 500; letter-spacing: -0.04em; line-height: 1; color: #F2F5F3;">solmi<span style="color: {{accent}};">.</span></div>
+    <div style="display: flex; align-items: center; gap: 24px;">
+      <div style="font-size: 14px; font-weight: 500; color: rgba(242,245,243,0.72); letter-spacing: -0.01em;">Log in</div>
+      <div style="border: 1px solid rgba(255,255,255,0.20); border-radius: 999px; padding: 10px 20px; font-size: 14px; font-weight: 700; letter-spacing: -0.012em; color: #F2F5F3;">Join Solmi for free</div>
+    </div>
+  </div>
+
+  <!-- hero -->
+  <div style="position: relative; text-align: center; padding-top: 34px;">
+    <div style="font-size: 64px; font-weight: 500; line-height: 72px; letter-spacing: 0; color: #FFFFFF;">Turn your track into a world.</div>
+    <div style="font-family: 'DM Mono', ui-monospace, monospace; font-size: 20px; line-height: 27px; letter-spacing: -0.2px; color: rgba(242,245,243,0.72); margin-top: 24px;">Pick a look. Bring a song. Direct your music&nbsp;video in one&nbsp;click.</div>
+  </div>
+
+  <!-- style picker -->
+  <div style="position: relative; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; padding: 0 64px; margin-top: 40px;">
+    <sc-for list="{{looks}}" as="look" hint-placeholder-count="6">
+      <div style="position: relative;">
+        <div style="position: relative; height: 268px; border-radius: 16px; overflow: hidden; border: 1px solid {{look.frame}}; box-shadow: {{look.glow}};">
+          <img src="{{look.img}}" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: {{look.filter}};">
+          <div style="position: absolute; inset: 0; background: #141614; opacity: {{look.veil}};"></div>
+          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,10,9,0) 42%, rgba(8,10,9,0.82) 100%);"></div>
+          <div style="position: absolute; top: 11px; left: 13px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: rgba(255,255,255,0.78);">{{look.no}}</div>
+          <div style="position: absolute; left: 13px; right: 13px; bottom: 12px; font-size: 13px; font-weight: 500; letter-spacing: -0.012em; line-height: 1.25; color: #FFFFFF;">{{look.name}}</div>
+          <sc-if value="{{look.on}}" hint-placeholder-val="{{true}}">
+            <div style="position: absolute; top: 10px; right: 10px; width: 20px; height: 20px; border-radius: 50%; background: {{accent}}; display: flex; align-items: center; justify-content: center;">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#0B0D0C" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <!-- composer: elevated graphite, never a white card -->
+  <div style="position: relative; width: 820px; margin: 30px auto 0; background: #1C1F1D; border: 1px solid rgba(255,255,255,0.09); border-radius: 28px; padding: 14px; box-shadow: 0 28px 60px rgba(0,0,0,0.55);">
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <div style="flex: 1; display: flex; align-items: center; gap: 10px; padding-left: 16px; min-width: 0;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(242,245,243,0.42)" stroke-width="1.8" stroke-linecap="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+        <div style="font-size: 16px; color: rgba(242,245,243,0.42); letter-spacing: -0.011em;">Upload a song, or paste a link</div>
+      </div>
+      <div style="height: 56px; padding: 0 32px; border-radius: 16px; background: #1ED760; color: #04140D; font-size: 17px; font-weight: 700; letter-spacing: -0.018em; display: flex; align-items: center;">Make a 5s video for free</div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px; margin-top: 12px; padding: 0 2px;">
+      <div style="display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: 12px; background: #262A28; border: 1px solid rgba(255,255,255,0.12); font-size: 13.5px; font-weight: 500; color: #F2F5F3;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M17 8l-5-5-5 5"></path><path d="M12 3v13"></path></svg>
+        Upload
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: 12px; background: #262A28; border: 1px solid rgba(255,255,255,0.12); font-size: 13.5px; font-weight: 500; color: #F2F5F3;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+        Select a song
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 12px; background: #262A28; border: 1px solid rgba(255,255,255,0.12); color: #F2F5F3;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="8.5" cy="8.5" r="1.35" fill="currentColor" stroke="none"></circle><circle cx="15.5" cy="8.5" r="1.35" fill="currentColor" stroke="none"></circle><circle cx="12" cy="12" r="1.35" fill="currentColor" stroke="none"></circle><circle cx="8.5" cy="15.5" r="1.35" fill="currentColor" stroke="none"></circle><circle cx="15.5" cy="15.5" r="1.35" fill="currentColor" stroke="none"></circle></svg>
+      </div>
+      <div style="flex: 1;"></div>
+      <div style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(242,245,243,0.46);">Options ⌄</div>
+    </div>
+  </div>
+
+  <div style="position: absolute; left: 64px; bottom: 22px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(242,245,243,0.40);">A · Dark hero — charcoal #141614, projection beam, no record</div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"look":{"editor":"enum","options":["Wong Kar-wai","90s MTV","Cloudlight Reverie","Film Noir","Desert Mirage","Y2K Glossy"],"default":"Wong Kar-wai","section":"Selection"}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const LOOKS = [
+      { name: 'Wong Kar-wai',       accent: '#D13B2E', img: 'wong-kar-wai.webp' },
+      { name: '90s MTV',            accent: '#C03F76', img: '90s-mtv.webp' },
+      { name: 'Cloudlight Reverie', accent: '#7B6FD6', img: 'cloudlight-reverie.webp' },
+      { name: 'Film Noir',          accent: '#8A8F8C', img: 'film-noir.webp' },
+      { name: 'Desert Mirage',      accent: '#E68A19', img: 'desert-mirage.webp' },
+      { name: 'Y2K Glossy',         accent: '#19ADE6', img: 'y2k-glossy.webp' }
+    ];
+    const picked = this.props.look ?? 'Wong Kar-wai';
+    const active = LOOKS.find(function (l) { return l.name === picked; }) || LOOKS[0];
+
+    const looks = LOOKS.map(function (l, i) {
+      const on = l.name === picked;
+      return {
+        name: l.name,
+        img: l.img,
+        no: '0' + (i + 1),
+        on: on,
+        // On dark, dropping opacity to .4 would erase a card into the ground.
+        // Unpicked reads as "further away" via desaturation and a slight dim.
+        // opaque veil, never element opacity — a see-through card stops being a card
+        veil: on ? '0' : '0.46',
+        filter: on ? 'none' : 'saturate(0.34) blur(2.5px)',
+        frame: on ? active.accent : 'rgba(255,255,255,0.08)',
+        glow: on ? '0 18px 44px rgba(0,0,0,0.55), 0 0 0 5px ' + active.accent + '26' : 'none'
+      };
+    });
+
+    return { looks: looks, accent: active.accent };
+  }
+}
+</script>
+</body>
+</html>

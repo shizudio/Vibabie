@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shina Foo — The Living Catalogue</title>
+<meta
+  name="description"
+  content="Half startups, half fine art. The catalogue of Shina Foo — creative direction, painting, photography."
+/>
+
+<!-- Apply saved theme before first paint to avoid a flash -->
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("v2-theme") === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    } catch (e) {}
+  })();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fragment+Mono:ital@0;1&display=swap"
+  rel="stylesheet"
+/>
+
+<link rel="stylesheet" href="v2.css" />
+</head>
+<body>
+
+<!-- ============================================================
+     1. MASTHEAD
+     ============================================================ -->
+<header class="masthead wrap">
+  <a class="brand" href="v2.html">Shina Foo</a>
+  <nav class="nav" aria-label="Primary">
+    <a href="/work.html">Work</a>
+    <a href="/art.html">Art</a>
+    <a href="/photography.html">Archive</a>
+    <a href="/contact.html">Contact</a>
+    <button
+      type="button"
+      class="lamp-toggle"
+      id="lampToggle"
+      aria-pressed="false"
+    >
+      Lamp off
+    </button>
+  </nav>
+</header>
+
+<main>
+  <!-- ============================================================
+       2. HERO
+       ============================================================ -->
+  <section class="hero wrap" aria-label="Introduction">
+    <h1>I paint slow and ship fast.</h1>
+    <p class="hero-sub">
+      Creative direction for startups · Fine art in progress
+    </p>
+  </section>
+
+  <!-- ============================================================
+       3. THE DIPTYCH
+       ============================================================ -->
+  <section class="diptych wrap" aria-label="Currently">
+    <!-- LEFT — now painting -->
+    <article class="panel">
+      <p class="panel-label art">Now painting</p>
+      <div class="panel-holder">
+        <img
+          src="/Art/web/Pink%20Flower.webp"
+          alt="Anemone, acrylic on canvas"
+          width="1440"
+          height="1918"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+      <p class="placard">
+        Anemone, 2025 · Acrylic on canvas<br />
+        <a class="enter-link art" href="/art.html">→ The Canvas</a>
+      </p>
+    </article>
+
+    <!-- RIGHT — now shipping -->
+    <article class="panel">
+      <p class="panel-label ship">Now shipping</p>
+      <div class="panel-holder">
+        <img
+          src="/work/new-earn-page-opt.jpg"
+          alt="Perena earn page"
+          width="1312"
+          height="890"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+      <p class="placard">
+        Perena, 2024– · Medium: DeFi, growth, design<br />
+        <a class="enter-link ship" href="/work.html">→ The Laptop</a>
+      </p>
+    </article>
+  </section>
+
+  <!-- ============================================================
+       4. EXHIBIT A — THE ROOM
+       ============================================================ -->
+  <section class="exhibit wrap" aria-label="Exhibit A">
+    <button
+      type="button"
+      class="frame-btn"
+      id="roomTrigger"
+      aria-haspopup="dialog"
+      aria-label="Self-portrait as a room — click to enter the immersive view"
+    >
+      <span class="frame">
+        <span class="frame-inner">
+          <picture>
+            <source srcset="Portfoliov2.webp" type="image/webp" />
+            <img
+              src="Portfoliov2.jpg"
+              alt="Self-portrait as a room"
+              width="3000"
+              height="1765"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+          <span class="light-overlay" aria-hidden="true"></span>
+        </span>
+      </span>
+      <span class="exhibit-placard">
+        Self-portrait as a room · Digital oil · 2025 — Click to enter
+      </span>
+    </button>
+  </section>
+
+  <!-- ============================================================
+       6. CATALOGUE INDEX
+       ============================================================ -->
+  <section class="catalogue wrap" aria-label="Catalogue">
+    <p class="cat-eyebrow">Catalogue</p>
+    <h2 class="cat-title">Everything, one ledger.</h2>
+    <div class="cat-list">
+      <a class="cat-row art" href="/art.html">
+        <span class="cat-num">001</span>
+        <span class="cat-work">Anemone</span>
+        <span class="cat-medium">Acrylic on canvas</span>
+        <span class="cat-year">2025</span>
+      </a>
+      <a class="cat-row ship" href="/work.html">
+        <span class="cat-num">002</span>
+        <span class="cat-work">Perena</span>
+        <span class="cat-medium">DeFi · Growth</span>
+        <span class="cat-year">2024–</span>
+      </a>
+      <a class="cat-row art" href="/art.html">
+        <span class="cat-num">003</span>
+        <span class="cat-work">Night Market</span>
+        <span class="cat-medium">Oil on canvas</span>
+        <span class="cat-year">2024</span>
+      </a>
+      <a class="cat-row ship" href="/work.html">
+        <span class="cat-num">004</span>
+        <span class="cat-work">Shizudio</span>
+        <span class="cat-medium">Design · Dev</span>
+        <span class="cat-year">2025</span>
+      </a>
+      <a class="cat-row art" href="/photography.html">
+        <span class="cat-num">005</span>
+        <span class="cat-work">Photography</span>
+        <span class="cat-medium">35mm film</span>
+        <span class="cat-year">Ongoing</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<!-- ============================================================
+     7. FOOTER
+     ============================================================ -->
+<footer class="site-footer wrap">
+  <p>Shizudio · A room I keep furnishing with evidence · Est. 2025</p>
+</footer>
+
+<!-- ============================================================
+     5. ROOM OVERLAY (click to enter) — hidden until opened
+     ============================================================ -->
+<div
+  class="room-overlay"
+  id="roomOverlay"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Self-portrait as a room"
+  hidden
+>
+  <button type="button" class="room-close" id="roomClose">Close ✕</button>
+  <div class="room-scroll" id="roomScroll">
+    <picture>
+      <source srcset="Portfoliov2.webp" type="image/webp" />
+      <img
+        src="Portfoliov2.jpg"
+        alt="Self-portrait as a room"
+        width="3000"
+        height="1765"
+        decoding="async"
+      />
+    </picture>
+  </div>
+  <nav class="room-legend" aria-label="Room legend">
+    <a href="/record.html">① The Record</a>
+    <a href="https://shinafoo.substack.com/" target="_blank" rel="noopener">② The Shelf</a>
+    <a href="/flowers.html">③ The Flower</a>
+    <a href="/art.html">④ The Canvas</a>
+    <a href="/about.html">⑤ The Bed</a>
+    <a href="/ai.html">⑥ The Lamp</a>
+    <a href="/contact.html">⑦ The Window</a>
+    <a href="/photography.html">⑧ The Camera</a>
+    <a href="https://x.com/shizudio" target="_blank" rel="noopener">⑨ The Phone</a>
+    <a href="/work.html">⑩ The Laptop</a>
+    <a href="/cosmos.html">⑪ The French Press</a>
+  </nav>
+</div>
+
+<script type="module" src="v2.js"></script>
+</body>
+</html>

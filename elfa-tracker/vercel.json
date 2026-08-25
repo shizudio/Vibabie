@@ -1,7 +1,0 @@
-{
-  "framework": null,
-  "outputDirectory": ".",
-  "env": {
-    "ELFA_API_KEY": "@elfa_api_key"
-  }
-}

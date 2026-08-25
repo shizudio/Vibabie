@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=DM+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; background: #141614; }
+    a { color: #1ED760; } a:hover { color: #3BE87A; }
+    * { box-sizing: border-box; }
+    /* Only the top of the record is ever visible, so rotation reads as light
+       moving across the grooves rather than as an object spinning. */
+    @keyframes turn { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    
+    @media (prefers-reduced-motion: reduce) { [style*="animation: turn"] { animation: none !important; } }
+  </style>
+</helmet>
+
+<div style="width: 1440px; height: 620px; position: relative; overflow: hidden; background: #141614; font-family: 'DM Sans', system-ui, sans-serif; color: #F2F5F3;">
+
+  <!-- Grooved horizon, used where it belongs: the last thing on the page.
+       The record rises from the bottom edge and the label breaks the fold, so
+       the dome and the wordmark land as the closing image. -->
+  <div style="position: absolute; left: 50%; top: 84%; width: 1500px; height: 1500px; margin: -750px 0 0 -750px; animation: turn 90s linear infinite; background-image: url('vinyl.webp'); background-size: contain; background-position: center; background-repeat: no-repeat; filter: drop-shadow(0 -20px 70px rgba(0,0,0,0.6));"></div>
+  <div style="position: absolute; inset: 0; background: linear-gradient(180deg, #141614 18%, rgba(20,22,20,0.55) 44%, rgba(20,22,20,0) 70%);"></div>
+
+  <div style="position: relative; text-align: center; padding: 92px 40px 0;">
+    <div style="font-size: 44px; font-weight: 500; line-height: 52px; color: #FFFFFF;">Your track already has a world.<br>Let's go find it.</div>
+    <div style="font-family: 'DM Mono', ui-monospace, monospace; font-size: 15px; line-height: 24px; letter-spacing: -0.15px; color: rgba(242,245,243,0.72); margin: 18px auto 34px; max-width: 46ch;">Pick a look, bring a song, and watch the first five seconds render.</div>
+    <div style="display: inline-flex; align-items: center; height: 56px; padding: 0 32px; border-radius: 16px; background: #1ED760; color: #04140D; font-size: 17px; font-weight: 700; letter-spacing: -0.018em;">Make a 5s video for free</div>
+  </div>
+
+  <div style="position: absolute; left: 64px; bottom: 22px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(242,245,243,0.40);">Closing section — grooved horizon, 90s turn, label breaks the fold</div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

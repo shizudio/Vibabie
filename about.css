@@ -27,6 +27,12 @@
      max-width: 640px;
    }
 
+   /* Airier hero: room between the heading and the bio, and between paragraphs */
+   .about-intro-text .page-h1 {
+     line-height: 1.18;
+     margin-bottom: 36px;
+   }
+
    .portrait-frame {
     width: 100%;
     aspect-ratio: 3/4;
@@ -63,18 +69,44 @@
    .bio {
      font-family: var(--font-description);
      font-size: clamp(0.98rem, 1.25vw, 1.08rem);
-     line-height: 1.75;
+     line-height: 1.95;
      color: #2E2421;
      font-weight: 300;
-     margin-bottom: 24px;
+     margin-bottom: 34px;
    }
    
+   /* Primary CTA — same pill language as the case-study pages */
+   .about-cta {
+     display: inline-flex;
+     align-items: center;
+     font-family: var(--font-sans);
+     font-size: var(--text-sm, 0.9rem);
+     font-weight: 500;
+     letter-spacing: 0.06em;
+     text-transform: uppercase;
+     color: #FFFFFF;
+     background: var(--ink);
+     padding: 16px 32px;
+     border-radius: 999px;
+     text-decoration: none;
+     transition: background 0.2s ease;
+     margin-bottom: 48px;
+   }
+   .about-cta:hover { background: var(--crimson); }
+
    .detail-row {
      display: flex;
      gap: clamp(20px, 4vw, 48px);
      margin-bottom: 48px;
      flex-wrap: wrap;
    }
+   .detail-link {
+     color: var(--crimson);
+     text-decoration: none;
+     border-bottom: 1px solid var(--border-crimson, rgba(127, 31, 18, 0.25));
+     transition: border-color 0.2s ease;
+   }
+   .detail-link:hover { border-color: var(--crimson); }
    .detail-label {
      /* base: .label-meta in style.css */
      display: block;
@@ -103,24 +135,10 @@
     margin-top: 96px;
   }
 
-  .about-room-label {
-    font-family: var(--font-description);
-    font-size: var(--text-sm);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--stone);
-    font-weight: 300;
-    display: block;
-    margin: 0 0 var(--space-ml, 24px);
-  }
-
   .about-room-frame {
     width: 100%;
     height: 100vh;
     overflow: hidden;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    background: var(--paper);
   }
 
   .about-room-frame iframe {

@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=DM+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; background: #0E1010; }
+    a { color: #1ED760; } a:hover { color: #3BE87A; }
+    * { box-sizing: border-box; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; height: 900px; position: relative; overflow: hidden; background: #0E1010; font-family: 'DM Sans', system-ui, sans-serif; color: #F2F5F3;">
+
+  <!-- the dome inverts into a projector beam: light thrown forward from behind the composer -->
+  <div style="position: absolute; left: 50%; top: 470px; width: 1500px; height: 620px; margin-left: -750px; background: conic-gradient(from 180deg at 50% 0%, rgba(0,196,231,0) 32deg, rgba(0,196,231,0.30) 52deg, rgba(10,176,115,0.40) 74deg, rgba(124,175,48,0.42) 90deg, rgba(252,118,0,0.40) 106deg, rgba(255,138,77,0.26) 128deg, rgba(255,138,77,0) 148deg); filter: blur(30px); opacity: 0.9;"></div>
+  <div style="position: absolute; left: 50%; top: 452px; width: 260px; height: 44px; margin-left: -130px; border-radius: 999px; background: radial-gradient(60% 100% at 50% 50%, rgba(255,255,255,0.55), rgba(255,255,255,0)); filter: blur(14px);"></div>
+  <div style="position: absolute; inset: 0; background: linear-gradient(180deg, #0E1010 26%, rgba(14,16,16,0.4) 48%, rgba(14,16,16,0.72) 100%);"></div>
+
+  <div style="position: relative; display: flex; align-items: center; justify-content: space-between; padding: 28px 64px;">
+    <div style="font-size: 39px; font-weight: 500; letter-spacing: -0.04em; line-height: 1;">solmi<span style="color: #1ED760;">.</span></div>
+    <div style="display: flex; align-items: center; gap: 24px;">
+      <div style="font-size: 14px; font-weight: 500; color: rgba(242,245,243,0.68); letter-spacing: -0.01em;">Log in</div>
+      <div style="border: 1px solid rgba(255,255,255,0.18); border-radius: 999px; padding: 10px 20px; font-size: 14px; font-weight: 700; letter-spacing: -0.012em;">Join Solmi for free</div>
+    </div>
+  </div>
+
+  <div style="position: relative; text-align: center; padding-top: 34px;">
+    <div style="font-size: 64px; font-weight: 500; line-height: 72px; color: #FFFFFF;">Turn your track into a world.</div>
+    <div style="font-family: 'DM Mono', ui-monospace, monospace; font-size: 20px; line-height: 27px; letter-spacing: -0.2px; color: rgba(242,245,243,0.70); margin-top: 24px;">Pick a look. Bring a song. Direct your music&nbsp;video in one&nbsp;click.</div>
+  </div>
+
+  <div style="position: relative; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; padding: 0 64px; margin-top: 38px;">
+    <div style="position: relative; height: 250px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.10);">
+      <img src="wong-kar-wai.webp" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
+      <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,10,9,0) 44%, rgba(8,10,9,0.84) 100%);"></div>
+      <div style="position: absolute; left: 13px; right: 13px; bottom: 12px; font-size: 13px; font-weight: 500; color: #FFFFFF;">Wong Kar-wai</div>
+    </div>
+    <div style="position: relative; height: 250px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.10);">
+      <img src="90s-mtv.webp" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
+      <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,10,9,0) 44%, rgba(8,10,9,0.84) 100%);"></div>
+      <div style="position: absolute; left: 13px; right: 13px; bottom: 12px; font-size: 13px; font-weight: 500; color: #FFFFFF;">90s MTV</div>
+    </div>
+    <div style="position: relative; height: 250px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.10);">
+      <img src="cloudlight-reverie.webp" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
+      <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,10,9,0) 44%, rgba(8,10,9,0.84) 100%);"></div>
+      <div style="position: absolute; left: 13px; right: 13px; bottom: 12px; font-size: 13px; font-weight: 500; color: #FFFFFF;">Cloudlight Reverie</div>
+    </div>
+    <div style="position: relative; height: 250px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.10);">
+      <img src="film-noir.webp" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
+      <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,10,9,0) 44%, rgba(8,10,9,0.84) 100%);"></div>
+      <div style="position: absolute; left: 13px; right: 13px; bottom: 12px; font-size: 13px; font-weight: 500; color: #FFFFFF;">Film Noir</div>
+    </div>
+    <div style="position: relative; height: 250px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.10);">
+      <img src="desert-mirage.webp" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
+      <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,10,9,0) 44%, rgba(8,10,9,0.84) 100%);"></div>
+      <div style="position: absolute; left: 13px; right: 13px; bottom: 12px; font-size: 13px; font-weight: 500; color: #FFFFFF;">Desert Mirage</div>
+    </div>
+    <div style="position: relative; height: 250px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.10);">
+      <img src="y2k-glossy.webp" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
+      <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,10,9,0) 44%, rgba(8,10,9,0.84) 100%);"></div>
+      <div style="position: absolute; left: 13px; right: 13px; bottom: 12px; font-size: 13px; font-weight: 500; color: #FFFFFF;">Y2K Glossy</div>
+    </div>
+  </div>
+
+  <div style="position: relative; width: 820px; margin: 34px auto 0; background: rgba(22,25,24,0.72); backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,0.12); border-radius: 28px; padding: 14px; box-shadow: 0 30px 70px rgba(0,0,0,0.6);">
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <div style="flex: 1; display: flex; align-items: center; gap: 10px; padding-left: 16px;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(242,245,243,0.42)" stroke-width="1.8" stroke-linecap="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+        <div style="font-size: 16px; color: rgba(242,245,243,0.44); letter-spacing: -0.011em;">Upload a song, or paste a link</div>
+      </div>
+      <div style="height: 56px; padding: 0 32px; border-radius: 16px; background: #1ED760; color: #04140D; font-size: 17px; font-weight: 700; letter-spacing: -0.018em; display: flex; align-items: center;">Make a 5s video for free</div>
+    </div>
+  </div>
+
+  <div style="position: absolute; left: 64px; bottom: 22px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(242,245,243,0.38);">C · Projection — the dome inverts into a beam thrown from behind the composer</div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

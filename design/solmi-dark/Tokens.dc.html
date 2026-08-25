@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=DM+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; background: #141614; }
+    a { color: #1ED760; } a:hover { color: #3BE87A; }
+    * { box-sizing: border-box; }
+  </style>
+</helmet>
+
+<div style="width: 1200px; min-height: 1180px; background: #141614; font-family: 'DM Sans', system-ui, sans-serif; color: #F2F5F3; padding: 52px 52px 60px;">
+
+  <div style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(242,245,243,0.46);">Dark tokens &amp; parts</div>
+  <div style="font-size: 36px; font-weight: 500; letter-spacing: -0.03em; line-height: 42px; margin-top: 12px;">Paired to the light system, not mirrored from it.</div>
+
+  <!-- token pairs -->
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 34px;">
+    <sc-for list="{{tokens}}" as="t" hint-placeholder-count="8">
+      <div style="display: flex; align-items: center; gap: 14px; background: #1C1F1D; border: 1px solid rgba(255,255,255,0.09); border-radius: 14px; padding: 12px 14px;">
+        <div style="flex: none; width: 34px; height: 34px; border-radius: 8px; background: {{t.light}}; border: 1px solid rgba(255,255,255,0.12);"></div>
+        <div style="flex: none; color: rgba(242,245,243,0.32); font-size: 13px;">→</div>
+        <div style="flex: none; width: 34px; height: 34px; border-radius: 8px; background: {{t.dark}}; border: 1px solid rgba(255,255,255,0.12);"></div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="font-size: 13.5px; font-weight: 500; letter-spacing: -0.01em;">{{t.name}}</div>
+          <div style="font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(242,245,243,0.46); margin-top: 3px;">{{t.pair}}</div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <!-- action states -->
+  <div style="margin-top: 44px;">
+    <div style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(242,245,243,0.46);">Action — unchanged across themes</div>
+    <div style="display: flex; align-items: center; gap: 16px; margin-top: 16px; flex-wrap: wrap;">
+      <div style="height: 56px; padding: 0 32px; border-radius: 16px; background: #1ED760; color: #04140D; font-size: 17px; font-weight: 700; letter-spacing: -0.018em; display: flex; align-items: center;">Make a 5s video for free</div>
+      <div style="height: 56px; padding: 0 32px; border-radius: 16px; background: linear-gradient(100deg, #2BC4C4 0%, #1ED760 28%, #9BCB3C 52%, #DA9A2C 78%, #E0791F 100%); color: #04140D; font-size: 17px; font-weight: 700; letter-spacing: -0.018em; display: flex; align-items: center;">Make a 5s video for free</div>
+      <div style="font-family: 'DM Mono', monospace; font-size: 12px; line-height: 19px; color: rgba(242,245,243,0.58); max-width: 30ch;">Rest 9.85:1. Hover stops pulled ~6% darker at the warm end so the sweep stays even on charcoal.</div>
+    </div>
+  </div>
+
+  <!-- sticky bar, dark -->
+  <div style="margin-top: 44px;">
+    <div style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(242,245,243,0.46);">Floating bar — smoked plate, still on screen blend</div>
+    <div style="position: relative; margin-top: 16px; height: 68px; border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.16); box-shadow: 0 18px 44px rgba(0,0,0,0.55);">
+      <div style="position: absolute; inset: -28%; background-image: url('wong-kar-wai.webp'); background-size: cover; background-position: center; filter: blur(24px) saturate(1.5); mix-blend-mode: screen; opacity: 0.35;"></div>
+      <div style="position: absolute; inset: 0; background: rgba(18,20,19,0.82);"></div>
+      <div style="position: relative; display: flex; align-items: center; gap: 12px; height: 100%; padding: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 0 12px; width: 210px;">
+          <div style="width: 26px; height: 34px; border-radius: 7px; background-image: url('wong-kar-wai.webp'); background-size: cover; background-position: center; border: 1px solid rgba(255,255,255,0.16);"></div>
+          <div>
+            <div style="font-family: 'DM Mono', monospace; font-size: 9.5px; letter-spacing: 0.13em; text-transform: uppercase; color: rgba(242,245,243,0.58);">Look</div>
+            <div style="font-size: 14px; font-weight: 500; letter-spacing: -0.012em; margin-top: 2px;">Wong Kar-wai</div>
+          </div>
+        </div>
+        <div style="width: 1px; height: 30px; background: rgba(255,255,255,0.16);"></div>
+        <div style="flex: 1; padding: 0 12px; min-width: 0;">
+          <div style="font-family: 'DM Mono', monospace; font-size: 9.5px; letter-spacing: 0.13em; text-transform: uppercase; color: rgba(242,245,243,0.58);">Song</div>
+          <div style="font-size: 14px; font-weight: 500; letter-spacing: -0.012em; margin-top: 2px;">Midnight Almost — 0:35</div>
+        </div>
+        <div style="height: 48px; padding: 0 24px; border-radius: 14px; background: #1ED760; color: #04140D; font-size: 15.5px; font-weight: 700; letter-spacing: -0.018em; display: flex; align-items: center;">Make a 5s video for free</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- deck falloff -->
+  <div style="margin-top: 44px;">
+    <div style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(242,245,243,0.46);">Deck falloff — light recipe vs dark recipe</div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; margin-top: 16px;">
+
+      <div style="background: #F6FAFF; border-radius: 16px; padding: 18px;">
+        <div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.13em; text-transform: uppercase; color: rgba(16,17,16,0.45);">Light — recedes by brightness</div>
+        <div style="display: flex; align-items: center; gap: 10px; margin-top: 12px;">
+          <div style="flex: 1; height: 92px; border-radius: 10px; background-image: url('desert-mirage.webp'); background-size: cover; background-position: center; opacity: 1;"></div>
+          <div style="flex: 1; height: 84px; border-radius: 10px; background-image: url('desert-mirage.webp'); background-size: cover; background-position: center; opacity: 0.87; filter: saturate(0.88) brightness(0.91);"></div>
+          <div style="flex: 1; height: 76px; border-radius: 10px; background-image: url('desert-mirage.webp'); background-size: cover; background-position: center; opacity: 0.74; filter: saturate(0.76) brightness(0.82);"></div>
+          <div style="flex: 1; height: 68px; border-radius: 10px; background-image: url('desert-mirage.webp'); background-size: cover; background-position: center; opacity: 0.32; filter: saturate(0.55) brightness(0.66);"></div>
+        </div>
+      </div>
+
+      <div style="background: #101211; border: 1px solid rgba(255,255,255,0.09); border-radius: 16px; padding: 18px;">
+        <div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.13em; text-transform: uppercase; color: rgba(242,245,243,0.46);">Dark — recedes by contrast</div>
+        <div style="display: flex; align-items: center; gap: 10px; margin-top: 12px;">
+          <div style="flex: 1; height: 92px; border-radius: 10px; background-image: url('desert-mirage.webp'); background-size: cover; background-position: center;"></div>
+          <div style="flex: 1; height: 84px; border-radius: 10px; background-image: url('desert-mirage.webp'); background-size: cover; background-position: center; opacity: 0.9; filter: saturate(0.82) brightness(0.96) contrast(0.9);"></div>
+          <div style="flex: 1; height: 76px; border-radius: 10px; background-image: url('desert-mirage.webp'); background-size: cover; background-position: center; opacity: 0.78; filter: saturate(0.66) brightness(0.92) contrast(0.8);"></div>
+          <div style="flex: 1; height: 68px; border-radius: 10px; background-image: url('desert-mirage.webp'); background-size: cover; background-position: center; opacity: 0.6; filter: saturate(0.5) brightness(0.86) contrast(0.7);"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- accents -->
+  <div style="margin-top: 44px;">
+    <div style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(242,245,243,0.46);">Borrowed accents — five carry, one needs a dark override</div>
+    <div style="display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;">
+      <sc-for list="{{accents}}" as="a" hint-placeholder-count="6">
+        <div style="flex: 1; min-width: 150px; background: #1C1F1D; border: 1px solid rgba(255,255,255,0.09); border-radius: 12px; padding: 12px;">
+          <div style="height: 30px; border-radius: 7px; background: {{a.hex}};"></div>
+          <div style="font-size: 12.5px; font-weight: 500; margin-top: 9px; letter-spacing: -0.01em;">{{a.name}}</div>
+          <div style="font-family: 'DM Mono', monospace; font-size: 10.5px; color: rgba(242,245,243,0.52); margin-top: 3px;">{{a.note}}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    const t = function (name, light, dark) {
+      return { name: name, light: light, dark: dark, pair: light + '  →  ' + dark };
+    };
+    return {
+      tokens: [
+        t('ground',        '#F6FAFF', '#141614'),
+        t('raised',        '#FFFFFF', '#1C1F1D'),
+        t('control',       '#F1F3F6', '#262A28'),
+        t('text',          '#101110', '#F2F5F3'),
+        t('text muted',    '#6A6C6B', '#A9AEAB'),
+        t('hairline',      '#E4E7EA', '#2B2F2D'),
+        t('action',        '#1ED760', '#1ED760'),
+        t('action label',  '#04140D', '#04140D')
+      ],
+      accents: [
+        { name: 'Wong Kar-wai',  hex: '#D13B2E', note: 'carries' },
+        { name: '90s MTV',       hex: '#C03F76', note: 'carries' },
+        { name: 'Cloudlight',    hex: '#7B6FD6', note: 'carries' },
+        { name: 'Film Noir',     hex: '#B9BEBB', note: 'lifted from #8A8F8C' },
+        { name: 'Desert Mirage', hex: '#E68A19', note: 'carries' },
+        { name: 'Y2K Glossy',    hex: '#19ADE6', note: 'carries' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

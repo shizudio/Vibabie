@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Budarina — Destinations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#e9ddc4;
+    --paper-2:#e3d5b8;
+    --ink:#3a2f21;
+    --ink-soft:#6d5f4b;
+    --ink-faint:#8d7f68;
+    --char:#4a3d2c;
+    --dark:#26221c;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Mono',monospace;
+    -webkit-font-smoothing:antialiased;
+    user-select:none;
+  }
+
+  /* ---- paper texture ---- */
+  #grain{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:40;opacity:.55;mix-blend-mode:multiply}
+  #linen{position:fixed;inset:0;pointer-events:none;z-index:1;
+    background:
+      repeating-linear-gradient(0deg, rgba(120,100,70,.035) 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(90deg, rgba(120,100,70,.03) 0 1px, transparent 1px 3px),
+      radial-gradient(120% 90% at 50% 40%, rgba(255,248,230,.35), rgba(120,95,60,.14) 100%);
+  }
+
+  /* ---- nav ---- */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:30;
+    display:flex;align-items:center;gap:34px;
+    padding:22px 46px;
+    font-size:11.5px;letter-spacing:.04em;
+  }
+  #logo{font-weight:600;font-size:13px;letter-spacing:.02em;margin-right:14px}
+  .navlink{color:var(--ink-faint);cursor:pointer;transition:color .25s;position:relative}
+  .navlink:hover{color:var(--ink)}
+  .navlink.on{color:var(--ink)}
+  .navlink+.navlink::before{content:"·";position:absolute;left:-20px;color:var(--ink-faint)}
+  #configure{
+    margin-left:auto;
+    background:var(--dark);color:#e9ddc4;
+    font-family:'Playfair Display',serif;font-size:13.5px;
+    padding:7px 18px 8px;cursor:pointer;border:none;
+    box-shadow:2px 3px 8px rgba(60,45,25,.35);
+    transition:transform .2s, box-shadow .2s;
+  }
+  #configure:hover{transform:translateY(-1px);box-shadow:3px 5px 12px rgba(60,45,25,.4)}
+
+  /* ---- stage / strip ---- */
+  #stage{position:fixed;inset:0;z-index:2;overflow:hidden}
+  #strip{position:absolute;top:0;left:0;height:100%;will-change:transform;transform-origin:0 50%}
+  .panel{position:absolute;top:0;height:100%;overflow:visible}
+  .panel .roofwrap{position:absolute;will-change:transform;filter:drop-shadow(14px 26px 22px rgba(70,50,25,.28))}
+  .panel svg.roof{display:block;width:100%;height:100%}
+  .panel canvas{position:absolute;inset:0;width:100%;height:100%}
+  .panel .lightshaft{
+    position:absolute;pointer-events:none;
+    background:linear-gradient(115deg, rgba(90,70,40,.10), rgba(90,70,40,.045) 45%, transparent 75%);
+    transform:skewX(-24deg);
+    filter:blur(6px);
+  }
+  #stage.overview .panel{cursor:pointer}
+
+  /* ---- copy ---- */
+  #copy{position:fixed;left:46px;bottom:9vh;z-index:20;max-width:340px;pointer-events:none}
+  #kicker{font-size:11px;letter-spacing:.03em;color:var(--ink-soft);margin-bottom:26px;line-height:1.7}
+  #kicker b{color:var(--ink);font-weight:600}
+  #title{
+    font-family:'Playfair Display',serif;font-weight:500;
+    font-size:clamp(34px,3.6vw,52px);
+    line-height:1.06;letter-spacing:-.01em;color:#241c10;
+  }
+  #title .w{display:inline-block;opacity:0;filter:blur(12px);transform:translateY(10px);
+    transition:opacity .7s ease, filter .7s ease, transform .7s ease}
+  #title .w.in{opacity:1;filter:blur(0);transform:none}
+  #kicker.w{display:block}
+  #kicker{opacity:0;filter:blur(8px);transition:opacity .6s ease, filter .6s ease}
+  #kicker.in{opacity:1;filter:blur(0)}
+  #desc{
+    position:fixed;right:120px;bottom:9vh;z-index:20;
+    width:250px;font-size:10.5px;line-height:1.75;color:var(--ink-soft);
+    pointer-events:none;
+    opacity:0;filter:blur(8px);transition:opacity .6s ease .25s, filter .6s ease .25s;
+  }
+  #desc.in{opacity:1;filter:blur(0)}
+  .fadeable{transition:opacity .4s ease}
+  .hidden-ui{opacity:0 !important;pointer-events:none !important}
+
+  /* ---- prev / next thumbnails ---- */
+  .thumb{
+    position:fixed;top:50%;transform:translateY(-92px);z-index:25;
+    width:56px;cursor:pointer;text-align:center;
+    transition:opacity .4s ease, transform .25s ease;
+  }
+  .thumb:hover{transform:translateY(-94px)}
+  #thumbPrev{left:80px} #thumbNext{right:80px}
+  .thumb .box{
+    width:56px;height:52px;border:1px solid rgba(58,47,33,.65);
+    background:rgba(255,250,238,.25);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:2px 3px 6px rgba(70,50,25,.18);
+  }
+  .thumb .box svg{width:44px;height:34px}
+  .thumb .cap{
+    font-family:'Playfair Display',serif;font-size:11px;color:var(--ink);
+    margin-top:-11px;background:transparent;letter-spacing:.02em;
+  }
+
+  /* ---- progress ---- */
+  #progress{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:20;display:flex;gap:7px}
+  #progress i{display:block;height:2px;width:14px;background:rgba(58,47,33,.25);transition:all .4s}
+  #progress i.on{width:44px;background:rgba(58,47,33,.75)}
+
+  /* ---- sound ---- */
+  #sound{
+    position:fixed;right:46px;bottom:52px;z-index:30;
+    width:74px;height:74px;border-radius:50%;border:none;cursor:pointer;
+    background:radial-gradient(circle at 34% 30%, #4c4238, #241f18 70%);
+    box-shadow:4px 8px 20px rgba(50,35,18,.45), inset 0 1px 2px rgba(255,240,210,.18);
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .2s;
+  }
+  #sound:hover{transform:scale(1.05)}
+  #sound svg{width:26px;height:26px;fill:#efe4cc}
+  #sound .waves{transition:opacity .3s}
+  #sound.muted .waves{opacity:.18}
+</style>
+</head>
+<body>
+
+<!-- grain -->
+<svg id="grain" xmlns="http://www.w3.org/2000/svg">
+  <filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/>
+  <feColorMatrix type="matrix" values="0 0 0 0 0.42 0 0 0 0 0.34 0 0 0 0 0.22 0 0 0 0.5 0"/></filter>
+  <rect width="100%" height="100%" filter="url(#n)"/>
+</svg>
+<div id="linen"></div>
+
+<!-- roof art -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="gJP" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d84b28"/><stop offset=".55" stop-color="#bf3418"/><stop offset="1" stop-color="#93230e"/>
+    </linearGradient>
+    <linearGradient id="gJPr" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3d434a"/><stop offset="1" stop-color="#1d2126"/>
+    </linearGradient>
+    <linearGradient id="gCN" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f0b93a"/><stop offset=".6" stop-color="#d99a1e"/><stop offset="1" stop-color="#a96f10"/>
+    </linearGradient>
+    <linearGradient id="gKZ" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6efdd"/><stop offset=".7" stop-color="#e8dcc2"/><stop offset="1" stop-color="#d4c3a2"/>
+    </linearGradient>
+    <linearGradient id="gVN" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5c4633"/><stop offset="1" stop-color="#332417"/>
+    </linearGradient>
+    <linearGradient id="gVN2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6b5138"/><stop offset="1" stop-color="#372516"/>
+    </linearGradient>
+    <linearGradient id="gRU" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a34b2c"/><stop offset="1" stop-color="#6e2c17"/>
+    </linearGradient>
+
+    <!-- JAPAN : irimoya red roof -->
+    <symbol id="roof-japan" viewBox="0 0 440 170">
+      <rect x="148" y="16" width="144" height="14" rx="7" fill="url(#gJPr)"/>
+      <circle cx="155" cy="23" r="3.8" fill="#c8a45c"/><circle cx="285" cy="23" r="3.8" fill="#c8a45c"/>
+      <path d="M158,30 C138,50 96,84 36,110 C29,113 27,117 34,117
+               L406,117 C413,117 411,113 404,110 C344,84 302,50 282,30 Z" fill="url(#gJP)"/>
+      <path d="M34,117 C22,112 11,103 4,92 L10,89 C18,99 28,106 42,111 Z" fill="#6b1608"/>
+      <path d="M406,117 C418,112 429,103 436,92 L430,89 C422,99 412,106 398,111 Z" fill="#6b1608"/>
+      <g stroke="rgba(60,10,0,.26)" stroke-width="1.3" fill="none">
+        <path d="M176,32 C160,56 122,90 80,112"/>
+        <path d="M198,32 C190,60 168,94 136,114"/>
+        <path d="M220,32 C220,60 220,92 220,115"/>
+        <path d="M242,32 C250,60 272,94 304,114"/>
+        <path d="M264,32 C280,56 318,90 360,112"/>
+      </g>
+      <g stroke="rgba(255,180,140,.22)" stroke-width="1" fill="none">
+        <path d="M152,46 C112,78 74,100 48,112"/>
+        <path d="M288,46 C328,78 366,100 392,112"/>
+      </g>
+      <path d="M34,117 L406,117 L400,125 L40,125 Z" fill="#511208"/>
+    </symbol>
+
+    <!-- KAZAKHSTAN : yurt crown -->
+    <symbol id="roof-kazakhstan" viewBox="0 0 440 210">
+      <ellipse cx="220" cy="168" rx="196" ry="26" fill="#c9b493"/>
+      <path d="M186,26 C120,44 48,110 26,160 C24,166 28,172 36,174
+               L404,174 C412,172 416,166 414,160 C392,110 320,44 254,26 Z" fill="url(#gKZ)"/>
+      <ellipse cx="220" cy="26" rx="36" ry="12" fill="#efe6d2" stroke="#9a4f36" stroke-width="3"/>
+      <ellipse cx="220" cy="26" rx="20" ry="6.4" fill="none" stroke="#9a4f36" stroke-width="2"/>
+      <path d="M202,22 L238,30 M238,22 L202,30 M220,19.5 L220,32.5" stroke="#9a4f36" stroke-width="1.6"/>
+      <g stroke="#8d7c5e" stroke-width="1.6" fill="none" opacity=".8">
+        <path d="M196,32 C150,58 84,120 52,166"/>
+        <path d="M206,35 C176,66 128,128 104,170"/>
+        <path d="M214,37 C202,74 172,134 156,172"/>
+        <path d="M220,38 L220,172"/>
+        <path d="M226,37 C238,74 268,134 284,172"/>
+        <path d="M234,35 C264,66 312,128 336,170"/>
+        <path d="M244,32 C290,58 356,120 388,166"/>
+      </g>
+      <path d="M28,158 C120,144 320,144 412,158 L414,176 C320,164 120,164 26,176 Z" fill="#8f4934"/>
+      <g fill="none" stroke="#e8d9bd" stroke-width="2.2">
+        <path d="M46,163 q7,-6 14,0 q7,6 14,0 q7,-6 14,0 q7,6 14,0 q7,-6 14,0 q7,6 14,0 q7,-6 14,0 q7,6 14,0 q7,-6 14,0 q7,6 14,0 q7,-6 14,0 q7,6 14,0 q7,-6 14,0 q7,6 14,0 q7,-6 14,0 q7,6 14,0 q7,-6 14,0 q7,6 14,0 q7,-6 14,0 q7,6 14,0 q7,-6 14,0 q7,6 14,0 q7,-6 14,0 q7,6 14,0"/>
+      </g>
+      <g stroke="#7c3d2a" stroke-width="2.4">
+        <line x1="40" y1="177" x2="40" y2="188"/><line x1="70" y1="179" x2="70" y2="191"/>
+        <line x1="100" y1="181" x2="100" y2="193"/><line x1="130" y1="182" x2="130" y2="195"/>
+        <line x1="160" y1="183" x2="160" y2="196"/><line x1="190" y1="184" x2="190" y2="197"/>
+        <line x1="220" y1="184" x2="220" y2="197"/><line x1="250" y1="184" x2="250" y2="197"/>
+        <line x1="280" y1="183" x2="280" y2="196"/><line x1="310" y1="182" x2="310" y2="195"/>
+        <line x1="340" y1="181" x2="340" y2="193"/><line x1="370" y1="179" x2="370" y2="191"/>
+        <line x1="400" y1="177" x2="400" y2="188"/>
+      </g>
+    </symbol>
+
+    <!-- CHINA : double-eave golden roof -->
+    <symbol id="roof-china" viewBox="0 0 440 230">
+      <path d="M158,20 L282,20 L282,30 L158,30 Z" fill="#5c1408"/>
+      <path d="M150,16 h140 v8 h-140 z" fill="#2e2620"/>
+      <path d="M160,30 C136,52 104,74 76,86 C64,90 60,82 68,76 C64,82 70,90 82,88
+               L358,88 C370,90 376,82 372,76 C380,82 376,90 364,86 C336,74 304,52 280,30 Z" fill="url(#gCN)"/>
+      <g stroke="rgba(90,40,0,.35)" stroke-width="1.3" fill="none">
+        <path d="M178,32 C160,52 130,72 102,84"/>
+        <path d="M200,32 C192,54 172,74 148,86"/>
+        <path d="M220,32 L220,86"/>
+        <path d="M240,32 C248,54 268,74 292,86"/>
+        <path d="M262,32 C280,52 310,72 338,84"/>
+      </g>
+      <path d="M82,88 L358,88 L354,97 L86,97 Z" fill="#7e1e10"/>
+      <rect x="120" y="97" width="200" height="14" fill="#5c1408"/>
+      <g fill="#274a38"><rect x="128" y="99" width="184" height="10" opacity=".85"/></g>
+      <path d="M116,111 C86,140 48,164 18,176 C8,180 6,172 12,166 C6,174 12,182 24,178
+               L416,178 C428,182 434,174 428,166 C434,172 432,180 422,176 C392,164 354,140 324,111 Z" fill="url(#gCN)"/>
+      <g stroke="rgba(90,40,0,.32)" stroke-width="1.4" fill="none">
+        <path d="M140,114 C118,140 82,164 46,176"/>
+        <path d="M172,114 C160,142 132,166 100,178"/>
+        <path d="M198,114 C192,144 176,168 152,178"/>
+        <path d="M220,114 L220,178"/>
+        <path d="M242,114 C248,144 264,168 288,178"/>
+        <path d="M268,114 C280,142 308,166 340,178"/>
+        <path d="M300,114 C322,140 358,164 394,176"/>
+      </g>
+      <g fill="#7a4a10">
+        <circle cx="60" cy="170" r="2.6"/><circle cx="76" cy="163" r="2.6"/><circle cx="92" cy="155" r="2.6"/>
+        <circle cx="380" cy="170" r="2.6"/><circle cx="364" cy="163" r="2.6"/><circle cx="348" cy="155" r="2.6"/>
+      </g>
+      <path d="M24,178 L416,178 L410,187 L30,187 Z" fill="#7e1e10"/>
+    </symbol>
+
+    <!-- VIETNAM : boat roof -->
+    <symbol id="roof-vietnam" viewBox="0 0 440 170">
+      <path d="M28,54 C20,38 18,26 22,14 C34,34 52,48 72,56
+               C160,36 280,36 368,56 C388,48 406,34 418,14 C422,26 420,38 412,54
+               C426,66 432,84 430,100 L10,100 C8,84 14,66 28,54 Z" fill="url(#gVN2)"/>
+      <path d="M10,100 C120,84 320,84 430,100 L426,112 C320,98 120,98 14,112 Z" fill="#241708"/>
+      <g stroke="rgba(20,10,2,.4)" stroke-width="1.3" fill="none">
+        <path d="M60,58 C56,72 52,86 50,98"/>
+        <path d="M120,48 C116,66 112,84 110,98"/>
+        <path d="M180,44 C178,64 176,84 175,98"/>
+        <path d="M220,43 L220,98"/>
+        <path d="M260,44 C262,64 264,84 265,98"/>
+        <path d="M320,48 C324,66 328,84 330,98"/>
+        <path d="M380,58 C384,72 388,86 390,98"/>
+      </g>
+      <g stroke="rgba(220,190,140,.28)" stroke-width="1" fill="none">
+        <path d="M40,66 C160,46 280,46 400,66"/>
+        <path d="M30,80 C160,62 280,62 410,80"/>
+      </g>
+      <path d="M200,20 q20,-12 40,0 q-20,-4 -40,0" fill="#241708"/>
+    </symbol>
+
+    <!-- RUSSIA : carved izba gable -->
+    <symbol id="roof-russia" viewBox="0 0 440 190">
+      <path d="M220,18 L36,128 L404,128 Z" fill="url(#gRU)"/>
+      <g stroke="rgba(60,20,8,.4)" stroke-width="1.3" fill="none">
+        <path d="M220,30 L80,118"/><path d="M220,30 L360,118"/>
+        <path d="M220,52 L118,118"/><path d="M220,52 L322,118"/>
+        <path d="M220,76 L156,118"/><path d="M220,76 L284,118"/>
+      </g>
+      <path d="M220,10 L28,126 L36,136 L220,26 L404,136 L412,126 Z" fill="#f0e6d2"/>
+      <g fill="#f0e6d2">
+        <path d="M60,120 l8,10 l8,-10 l8,10 l8,-10 l8,10 l8,-10 l8,10 l8,-10 l8,10 l8,-10 l8,10 l8,-10 l8,10 l8,-10 l8,10 l8,-10 l8,10 l8,-10 l8,10 l8,-10 l8,10 l8,-10 l8,10 l8,-10 l8,10 l8,-10 l8,10 l8,-10 l8,10 l8,-10 l8,10 l8,-10 l8,10 l8,-10 l8,10 l8,-10 l8,10 l8,-10 l4,5" transform="translate(0,8)"/>
+      </g>
+      <path d="M220,2 l-6,10 h12 Z" fill="#f0e6d2"/>
+      <circle cx="220" cy="14" r="3.4" fill="#f0e6d2"/>
+      <path d="M36,136 L404,136 L398,146 L42,146 Z" fill="#4a1c0d"/>
+    </symbol>
+  </defs>
+</svg>
+
+<nav>
+  <span id="logo">Budarina</span>
+  <span class="navlink on" data-nav="home">Home</span>
+  <span class="navlink" data-nav="destinations">Destinations</span>
+  <span class="navlink" data-nav="community">Community</span>
+  <button id="configure">Configure</button>
+</nav>
+
+<div id="stage"><div id="strip"></div></div>
+
+<div class="thumb fadeable" id="thumbPrev">
+  <div class="box"><svg><use id="thumbPrevUse" href="#roof-china"/></svg></div>
+  <div class="cap" id="thumbPrevCap">China</div>
+</div>
+<div class="thumb fadeable" id="thumbNext">
+  <div class="box"><svg><use id="thumbNextUse" href="#roof-kazakhstan"/></svg></div>
+  <div class="cap" id="thumbNextCap">Kazakhstan</div>
+</div>
+
+<div id="copy">
+  <div id="kicker"></div>
+  <h1 id="title"></h1>
+</div>
+<div id="desc"></div>
+
+<div id="progress"></div>
+
+<button id="sound" class="muted" aria-label="toggle sound">
+  <svg viewBox="0 0 24 24">
+    <path d="M4 9v6h4l5 4V5L8 9H4z"/>
+    <g class="waves">
+      <path d="M16.2 8.6a5 5 0 0 1 0 6.8l-1.2-1.2a3.3 3.3 0 0 0 0-4.4l1.2-1.2z"/>
+      <path d="M18.6 6.2a8.4 8.4 0 0 1 0 11.6l-1.2-1.2a6.7 6.7 0 0 0 0-9.2l1.2-1.2z"/>
+    </g>
+  </svg>
+</button>
+
+<script>
+/* ================= data ================= */
+const strip = (s)=>s.replace(/[\s。、，．]/g,'');
+const DESTS = [
+  {
+    id:'vietnam', name:'Vietnam', roof:'roof-vietnam',
+    kicker:['Duyên','(Duyen)','A bond written earlier'],
+    title:'Vietnam —— lantern rivers, boat roofs, and mornings that taste of rain',
+    desc:'Drift past limestone bays, low wooden eaves, and markets that open long before the light.',
+    layout:'rows', font:'"IBM Plex Mono",monospace', size:10, colGap:11, rowGap:15, curtainW:.84, curtainH:.50,
+    text:'Đi một ngày đàng, học một sàng khôn. Đường dài mới biết ngựa hay. Nước chảy đá mòn. Có công mài sắt, có ngày nên kim. Đi cho biết đó biết đây, ở nhà với mẹ biết ngày nào khôn. Sông có khúc, người có lúc. Thuyền theo lái, gái theo chồng. Trăm nghe không bằng một thấy. Muốn ăn thì lăn vào bếp. Lửa thử vàng, gian nan thử sức. '
+  },
+  {
+    id:'china', name:'China', roof:'roof-china',
+    kicker:['缘分','(Yuánfēn)','A destined meeting'],
+    title:'China —— golden courtyards, silk-road myths, roofs that refuse gravity',
+    desc:'Wander forbidden gardens, painted eaves, and stories older than the maps that tried to hold them.',
+    layout:'rows', font:'"Songti SC","Hiragino Mincho ProN",serif', size:13, colGap:16.5, rowGap:16.5, curtainW:.82, curtainH:.56,
+    text:strip('路漫漫其修远兮吾将上下而求索 读万卷书不如行万里路 山高水长 海到无边天作岸 山登绝顶我为峰 一花一世界一叶一菩提 千里之行始于足下 有朋自远方来不亦乐乎 会当凌绝顶一览众山小 长风破浪会有时直挂云帆济沧海 天行健君子以自强不息 海内存知己天涯若比邻 不到长城非好汉 桂林山水甲天下 上有天堂下有苏杭 读书行路皆修行 山重水复疑无路柳暗花明又一村')
+  },
+  {
+    id:'japan', name:'Japan', roof:'roof-japan',
+    kicker:['一期一会','(Ichigo ichie)','One time, one meeting'],
+    title:'Japan —— red eaves in the mist, stone paths, and patience as architecture',
+    desc:'Pass under vermilion gates, cedar shade, and rooms where silence is part of the design.',
+    layout:'columns', font:'"Hiragino Mincho ProN","Yu Mincho",serif', size:12.5, colGap:17, rowGap:14.5, curtainW:.78, curtainH:.58,
+    text:strip('旅をすることは生きることだ 人生は大胆な冒険でなければ何ものでもない 遠くへ行けば自分に出会う 世界は一冊の本だ旅をせぬ者はただ一頁を読むのみ 迷う者すべてが失われるわけではない 真の発見の旅とは新しい景色を求めることではなく新しい目を持つことだ 千里の道も一歩から 住めば都 一期一会 花鳥風月 雲の上はいつも晴れ 明日は明日の風が吹く 案ずるより産むが易し 旅は道連れ世は情け 石の上にも三年')
+  },
+  {
+    id:'kazakhstan', name:'Kazakhstan', roof:'roof-kazakhstan',
+    kicker:['Жол','(Jol)','The open road'],
+    title:'Kazakhstan —— steppe wind, shanyrak light, and a home that moves with you',
+    desc:'Cross grass without edge, warm interiors, and patterns that outlive every border.',
+    layout:'rows', font:'"IBM Plex Mono",monospace', size:10.5, colGap:11.5, rowGap:15.5, curtainW:.84, curtainH:.55,
+    text:'Ұзақ жол — ұлы тәжірибе Дала кең — ой да кең Жол жүрген жетер мұратқа Көп жасаған білмейді көп көрген біледі Туған жердің түтіні де тәтті Ат — ер қанаты Тау алыс көрінсе де жетерсің жүрек те Көк аспанның астында бәрі мүмкін Қадам сайын жаңа ән Көктемгі жел еркіндік әкеледі Жол алыс болса да жүрек жақын Шаңырақ астында жылу бар Жұлдыздар жол көрсетеді Қонақжайлық — ең үлкен байлық Әр таң жаңа бастама Аттың тұяғы жерді оңтайды '
+  },
+  {
+    id:'russia', name:'Russia', roof:'roof-russia',
+    kicker:['Простор','(Prostor)','The wide open'],
+    title:'Russia —— carved windows, birch smoke, and distances that slow the heart',
+    desc:'Follow rail lines through white forests, tea steam, and villages stitched in lace wood.',
+    layout:'rows', font:'"IBM Plex Mono",monospace', size:10.5, colGap:11.5, rowGap:15.5, curtainW:.82, curtainH:.52,
+    text:'Дорога возникает под шагами идущего Не место красит человека а человек место Тише едешь — дальше будешь Язык до Киева доведёт В гостях хорошо а дома лучше Умный в гору не пойдёт умный гору обойдёт Глаза боятся а руки делают Кто ищет тот всегда найдёт Терпение и труд всё перетрут Своя земля и в горсти мила '
+  }
+];
+
+/* ================= view / strip ================= */
+const stage = document.getElementById('stage');
+const stripEl = document.getElementById('strip');
+let VW = innerWidth, VH = innerHeight, DPR = Math.min(devicePixelRatio||1, 2);
+
+let active = 2;                       // start on Japan
+let overview = false;
+const view = { cx: 0, s: 1, tcx: 0, ts: 1 };  // center-point in strip coords + scale
+view.cx = view.tcx = active*VW + VW/2;
+
+const panels = [];
+
+function buildPanels(){
+  stripEl.innerHTML = '';
+  panels.length = 0;
+  DESTS.forEach((d, i)=>{
+    const p = document.createElement('section');
+    p.className = 'panel';
+    p.style.left = (i*VW)+'px';
+    p.style.width = VW+'px';
+
+    const roofW = Math.min(VW*0.44, 600) * (d.id==='china'||d.id==='kazakhstan' ? 1.05 : 1);
+    const ratio = {['roof-japan']:170/440, ['roof-kazakhstan']:210/440, ['roof-china']:230/440,
+                   ['roof-vietnam']:170/440, ['roof-russia']:190/440}[d.roof];
+    // fraction of the SVG viewBox where the eave line (curtain anchor) sits
+    const eaveFrac = {['roof-japan']:125/170, ['roof-kazakhstan']:186/210, ['roof-china']:187/230,
+                   ['roof-vietnam']:112/170, ['roof-russia']:146/190}[d.roof];
+    const roofH = roofW*ratio;
+    const roofX = (VW-roofW)/2, roofY = VH*0.14;
+
+    const shaft = document.createElement('div');
+    shaft.className = 'lightshaft';
+    shaft.style.cssText += `left:${roofX+roofW*0.55}px;top:${roofY+roofH*0.5}px;width:${roofW*0.9}px;height:${VH*0.62}px;`;
+    p.appendChild(shaft);
+
+    const cv = document.createElement('canvas');
+    p.appendChild(cv);
+
+    const rw = document.createElement('div');
+    rw.className = 'roofwrap';
+    rw.style.cssText = `left:${roofX}px;top:${roofY}px;width:${roofW}px;height:${roofH}px;`;
+    rw.innerHTML = `<svg class="roof"><use href="#${d.roof}"/></svg>`;
+    p.appendChild(rw);
+
+    p.addEventListener('click', ()=>{ if(overview) selectFromOverview(i); });
+    stripEl.appendChild(p);
+
+    const panel = { el:p, cv, ctx:cv.getContext('2d'), dest:d,
+      anchorX: VW/2, anchorY: roofY + roofH*eaveFrac + 2, roofW, particles:[] };
+    sizeCanvas(panel);
+    buildParticles(panel);
+    panels.push(panel);
+  });
+  window.__panels = panels;   // debug/QA handle
+}
+
+function sizeCanvas(p){
+  p.cv.width = VW*DPR; p.cv.height = VH*DPR;
+  p.ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+
+/* ================= particles ================= */
+function buildParticles(p){
+  const d = p.dest, chars = [...d.text];
+  const W = p.roofW * d.curtainW, H = VH * d.curtainH;
+  const parts = [], chains = []; let ci = 0;
+  const next = ()=>{ const c = chars[ci++ % chars.length]; return c; };
+  const addChain = (col)=>{ if(col.length){ col[0].pinned = true; chains.push(col); parts.push(...col); } };
+
+  if(d.layout === 'columns'){
+    const nCols = Math.floor(W / d.colGap);
+    for(let c=0;c<nCols;c++){
+      const fx = c/(nCols-1);
+      // ragged organic bottom edge
+      const len = H * (0.42 + 0.58*Math.abs(Math.sin(c*1.7+2)) * (0.6+0.4*Math.sin(c*0.53)));
+      const nRows = Math.max(6, Math.floor(len / d.rowGap));
+      const colPhase = Math.sin(c*12.9898)*43758.5453 % (Math.PI*2);
+      const col = [];
+      for(let r=0;r<nRows;r++){
+        const ch = next(); if(!ch || ch===' ') continue;
+        col.push(mkPart(p, ch, (fx-0.5)*W + (Math.sin(c*7+r*3)*1.6), 10 + r*d.rowGap, r*d.rowGap/H, colPhase));
+      }
+      addChain(col);
+    }
+  } else {
+    const nRows = Math.floor(H / d.rowGap);
+    const nColsMax = Math.floor(W / d.colGap);
+    const cols = Array.from({length:nColsMax}, ()=>[]);
+    for(let r=0;r<nRows;r++){
+      const rowPhase = Math.sin(r*78.233)*12345.678 % (Math.PI*2);
+      for(let c=0;c<nColsMax;c++){
+        const ch = next();
+        if(ch===' ' || ch==='\n') continue;
+        const fx = nColsMax>1 ? c/(nColsMax-1) : .5;
+        cols[c].push(mkPart(p, ch, (fx-0.5)*W, 12 + r*d.rowGap, r*d.rowGap/H, rowPhase + c*0.11));
+      }
+    }
+    cols.forEach(addChain);
+  }
+  p.particles = parts;
+  p.chains = chains;   // each chain = one drooping strand, head stitched to the eave
+}
+
+function mkPart(p, ch, hx, hy, depth, phase){
+  depth = Math.min(1, Math.max(0.04, depth));
+  const x = p.anchorX + hx, y = p.anchorY + hy;
+  return {
+    ch, hx, hy, depth, phase, pinned:false,
+    x, y, px:x, py:y,                // Verlet: velocity lives in (x - px)
+    k: 0.008 - 0.0055*depth,         // very soft spring: words drift home, loose at the bottom
+    alpha: 0.62 + Math.sin(phase*3+hx)*0.14 + 0.10*Math.random()
+  };
+}
+
+/* ================= physics + render ================= */
+const mouse = { x:-9999, y:-9999, sx:-9999, sy:-9999, px:-9999, py:-9999, vx:0, vy:0 };
+addEventListener('pointermove', e=>{
+  mouse.x = e.clientX; mouse.y = e.clientY;
+  if(mouse.sx < -8000){ mouse.sx = mouse.px = mouse.x; mouse.sy = mouse.py = mouse.y; }  // first move: no fly-in, no velocity kick
+});
+
+let lastCx = view.cx;
+let t = 0;
+
+function frame(){
+  t += 0.016;
+  // ease view
+  view.cx += (view.tcx - view.cx) * 0.075;
+  view.s  += (view.ts  - view.s ) * 0.075;
+  const wind = -(view.cx - lastCx); lastCx = view.cx;
+  stripEl.style.transform = `translateX(${VW/2 - view.cx*view.s}px) scale(${view.s})`;
+
+  // the field trails the cursor — latency is what reads as weight
+  mouse.sx += (mouse.x - mouse.sx) * 0.09;
+  mouse.sy += (mouse.y - mouse.sy) * 0.09;
+  mouse.vx = mouse.sx - mouse.px; mouse.vy = mouse.sy - mouse.py;
+  mouse.px = mouse.sx; mouse.py = mouse.sy;
+
+  for(const p of panels){
+    const rect = p.el.getBoundingClientRect();
+    if(rect.right < -60 || rect.left > VW+60){ continue; }   // offscreen: skip
+    stepPanel(p, rect, wind);
+  }
+  requestAnimationFrame(frame);
+}
+
+function stepPanel(p, rect, wind){
+  const ctx = p.ctx, d = p.dest;
+  ctx.clearRect(0,0,VW,VH);
+  // mouse in panel-local (unscaled) coords
+  const sc = rect.width / VW;
+  const mx = (mouse.sx - rect.left)/sc, my = (mouse.sy - rect.top)/sc;
+  const mvx = mouse.vx/sc, mvy = mouse.vy/sc;
+  const R = 165, R2 = R*R;
+
+  // --- physics: Verlet integration, strand heads hinged to the eave ---
+  for(const q of p.particles){
+    if(q.pinned){
+      // the head can shimmy a little, but never leaves the eave
+      const hx0 = p.anchorX + q.hx, hy0 = p.anchorY + q.hy;
+      let ax = (hx0 + Math.sin(t*1.15 + q.phase)*2.2 - q.x) * 0.20;
+      let ay = (hy0 - q.y) * 0.55;
+      const hdx = q.x - mx, hdy = q.y - my, hd2 = hdx*hdx + hdy*hdy;
+      if(hd2 < R2 && hd2 > 0.01){
+        const hdist = Math.sqrt(hd2), hf = 1 - hdist/R;
+        ax += (hdx/hdist) * hf*hf * 0.65;      // visible cursor nudge, still rooted
+      }
+      const hvx = (q.x - q.px) * 0.72 + ax;
+      const hvy = (q.y - q.py) * 0.72 + ay;
+      q.px = q.x; q.py = q.y;
+      q.x += hvx; q.y += hvy;
+      q.x = Math.max(hx0 - 7, Math.min(hx0 + 7, q.x));   // hard clamp: stitched on
+      q.y = Math.max(hy0 - 1.5, Math.min(hy0 + 1.5, q.y));
+      continue;
+    }
+    const sway =
+      Math.sin(t*1.15 + q.hy*0.011 + q.phase) * 9 * q.depth +
+      Math.sin(t*0.42 + q.phase*1.7) * 17 * q.depth*q.depth;
+    const tx = p.anchorX + q.hx + sway;
+    const ty = p.anchorY + q.hy + Math.sin(t*0.8 + q.phase)*2.2*q.depth;
+
+    const breeze = Math.max(-30, Math.min(30, wind));  // cap the slide's initial burst
+    let ax = breeze * 0.008 * (0.3 + q.depth), ay = 0; // mild drift on slide, not a yank
+    const dx = q.x - mx, dy = q.y - my, d2 = dx*dx + dy*dy;
+    if(d2 < R2 && d2 > 0.01){
+      const dist = Math.sqrt(d2), f = (1 - dist/R);
+      // looseness ramps toward the free end of the strand — gently, so tails don't whip
+      const loose = 0.12 + 0.42 * q.depth;
+      // combing: the cursor mostly DRAGS strands along its path; the radial push is secondary
+      // drag velocity is capped so fast swipes comb instead of slingshotting the tails
+      const cvx = Math.max(-16, Math.min(16, mvx)), cvy = Math.max(-16, Math.min(16, mvy));
+      const push = f*f * 0.9 * loose;
+      ax += (dx/dist)*push + cvx * f * 0.75 * loose;
+      ay += (dy/dist)*push*0.7 + cvy * f * 0.75 * loose;
+    }
+    // nonlinear spring: far-displaced words start home slowly (weight), full hold near rest (sway)
+    const ddx = tx - q.x, ddy = ty - q.y;
+    const soft = 1 / (1 + (Math.abs(ddx) + Math.abs(ddy)) * 0.032);   // combed shapes linger
+    ax += ddx * q.k * soft;
+    ay += ddy * q.k * soft;
+
+    const damp = 0.80;                      // uniform heavy damping: no rubbery tail momentum
+    const nvx = (q.x - q.px) * damp + ax;   // heavy damping: settle, never bounce
+    const nvy = (q.y - q.py) * damp + ay;
+    q.px = q.x; q.py = q.y;
+    q.x += nvx; q.y += nvy;
+  }
+
+  // --- bend smoothing first: kinks relax into the smooth combed curves of the reference ---
+  for(const chain of p.chains){
+    for(let i=1; i<chain.length-1; i++){
+      const q = chain[i];
+      if(q.pinned) continue;
+      const a = chain[i-1], b = chain[i+1];
+      q.x += ((a.x + b.x)/2 - q.x) * 0.10;
+      q.y += ((a.y + b.y)/2 - q.y) * 0.10;
+    }
+  }
+  // --- strand integrity LAST, so the limits hold exactly: bend and bunch, never break ---
+  for(let iter=0; iter<3; iter++){
+    for(const chain of p.chains){
+      for(let i=1; i<chain.length; i++){
+        const a = chain[i-1], b = chain[i];
+        const maxL = (b.hy - a.hy) * 1.26 + 3;  // firm slack, then inextensible
+        const lx = b.x - a.x, ly = b.y - a.y;
+        const dist = Math.hypot(lx, ly) || 1e-4;
+        if(dist > maxL){
+          const diff = (dist - maxL) / dist;
+          if(a.pinned){ b.x -= lx*diff; b.y -= ly*diff; }
+          else {
+            a.x += lx*diff*0.5; a.y += ly*diff*0.5;
+            b.x -= lx*diff*0.5; b.y -= ly*diff*0.5;
+          }
+        }
+      }
+    }
+  }
+
+  // --- draw: shadow pass, then ink pass ---
+  ctx.font = `${d.size}px ${d.font}`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(90,66,35,0.055)';
+  for(const q of p.particles){
+    ctx.fillText(q.ch, q.x + 9 + 14*q.depth, q.y + 5 + 6*q.depth);
+  }
+  for(const q of p.particles){
+    ctx.fillStyle = `rgba(64,50,32,${q.alpha})`;
+    ctx.fillText(q.ch, q.x, q.y);
+  }
+}
+
+/* ================= UI: copy / thumbs / progress ================= */
+const kickerEl = document.getElementById('kicker');
+const titleEl  = document.getElementById('title');
+const descEl   = document.getElementById('desc');
+const thumbPrev = document.getElementById('thumbPrev');
+const thumbNext = document.getElementById('thumbNext');
+const progress  = document.getElementById('progress');
+
+function renderCopy(i){
+  const d = DESTS[i];
+  kickerEl.classList.remove('in'); descEl.classList.remove('in');
+  kickerEl.innerHTML = `<b>${d.kicker[0]}</b> ${d.kicker[1]} ${d.kicker[2]}`;
+  titleEl.innerHTML = d.title.split(' ').map(w=>`<span class="w">${w}</span>`).join(' ');
+  descEl.textContent = d.desc;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    kickerEl.classList.add('in'); descEl.classList.add('in');
+    titleEl.querySelectorAll('.w').forEach((w,j)=>{
+      w.style.transitionDelay = (0.12 + j*0.05)+'s';
+      w.classList.add('in');
+    });
+  }));
+
+  const prev = i-1, next = i+1;
+  thumbPrev.classList.toggle('hidden-ui', prev<0 || overview);
+  thumbNext.classList.toggle('hidden-ui', next>=DESTS.length || overview);
+  if(prev>=0){ document.getElementById('thumbPrevUse').setAttribute('href','#'+DESTS[prev].roof);
+               document.getElementById('thumbPrevCap').textContent = DESTS[prev].name; }
+  if(next<DESTS.length){ document.getElementById('thumbNextUse').setAttribute('href','#'+DESTS[next].roof);
+               document.getElementById('thumbNextCap').textContent = DESTS[next].name; }
+
+  progress.innerHTML = DESTS.map((_,j)=>`<i class="${j===i?'on':''}"></i>`).join('');
+}
+
+function go(i){
+  if(i<0 || i>=DESTS.length) return;
+  active = i;
+  view.tcx = i*VW + VW/2;
+  renderCopy(i);
+}
+thumbPrev.addEventListener('click', ()=>go(active-1));
+thumbNext.addEventListener('click', ()=>go(active+1));
+addEventListener('keydown', e=>{
+  if(e.key==='ArrowLeft') go(active-1);
+  if(e.key==='ArrowRight') go(active+1);
+});
+
+/* ================= nav / overview ================= */
+const navlinks = document.querySelectorAll('.navlink');
+function setNav(id){ navlinks.forEach(n=>n.classList.toggle('on', n.dataset.nav===id)); }
+
+function enterOverview(){
+  overview = true;
+  stage.classList.add('overview');
+  view.ts = 0.42;
+  view.tcx = active*VW + VW/2;
+  document.getElementById('copy').classList.add('hidden-ui');
+  descEl.classList.add('hidden-ui');
+  thumbPrev.classList.add('hidden-ui');
+  thumbNext.classList.add('hidden-ui');
+  setNav('destinations');
+}
+function exitOverview(toIndex){
+  overview = false;
+  stage.classList.remove('overview');
+  view.ts = 1;
+  document.getElementById('copy').classList.remove('hidden-ui');
+  descEl.classList.remove('hidden-ui');
+  setNav('home');
+  go(toIndex ?? active);
+}
+function selectFromOverview(i){ exitOverview(i); }
+
+navlinks.forEach(n=>n.addEventListener('click', ()=>{
+  if(n.dataset.nav==='home') exitOverview();
+  if(n.dataset.nav==='destinations') enterOverview();
+}));
+
+/* ================= sound (soft steppe wind) ================= */
+const soundBtn = document.getElementById('sound');
+let audioCtx=null, windGain=null;
+soundBtn.addEventListener('click', ()=>{
+  const muted = soundBtn.classList.toggle('muted');
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const len = audioCtx.sampleRate*2;
+    const buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+    const ch = buf.getChannelData(0);
+    let last=0; for(let i=0;i<len;i++){ const w=Math.random()*2-1; last=(last+0.02*w)/1.02; ch[i]=last*3.2; }
+    const src = audioCtx.createBufferSource(); src.buffer=buf; src.loop=true;
+    const filt = audioCtx.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=420; filt.Q.value=0.6;
+    const lfo = audioCtx.createOscillator(); lfo.frequency.value=0.09;
+    const lfoG = audioCtx.createGain(); lfoG.gain.value=180;
+    lfo.connect(lfoG); lfoG.connect(filt.frequency); lfo.start();
+    windGain = audioCtx.createGain(); windGain.gain.value=0;
+    src.connect(filt); filt.connect(windGain); windGain.connect(audioCtx.destination);
+    src.start();
+  }
+  audioCtx.resume();
+  windGain.gain.linearRampToValueAtTime(muted?0:0.10, audioCtx.currentTime+0.8);
+});
+
+/* ================= boot / resize ================= */
+function boot(){
+  VW = innerWidth; VH = innerHeight;
+  buildPanels();
+  view.cx = view.tcx = active*VW + VW/2;
+  lastCx = view.cx;
+  renderCopy(active);
+}
+let rto=null;
+addEventListener('resize', ()=>{ clearTimeout(rto); rto=setTimeout(boot, 200); });
+boot();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

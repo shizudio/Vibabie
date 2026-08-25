@@ -492,10 +492,17 @@ nav.topbar-hidden,
 }
 
 /* ── Global topbar menu (spread serif, same as case-study pages) ──
-   Scoped to the classless primary <nav> so secondary navs
-   (e.g. .case-sidenav) keep their own styling. */
-nav:not([class]) a,
-.site-header a {
+   Excludes secondary navs (.case-sidenav, .nav-overlay-nav, .project-index)
+   so they keep their own styling. Covers :link/:visited explicitly so the
+   browser's default purple underline can never show through. */
+nav:not(.case-sidenav):not(.nav-overlay-nav) a,
+nav:not(.case-sidenav):not(.nav-overlay-nav) a:link,
+nav:not(.case-sidenav):not(.nav-overlay-nav) a:visited,
+.site-header a,
+.site-header a:link,
+.site-header a:visited,
+.project-topbar a:link,
+.project-topbar a:visited {
   font-family: var(--font-serif);
   font-size: 1rem;
   font-weight: 400;
@@ -508,7 +515,7 @@ nav:not([class]) a,
   display: inline-flex;
   align-items: center;
 }
-nav:not([class]) a:hover,
+nav:not(.case-sidenav):not(.nav-overlay-nav) a:hover,
 .site-header a:hover {
   color: var(--crimson);
 }
@@ -1001,10 +1008,15 @@ body.menu-open .vinyl-widget {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.nav-overlay-item {
+.nav-overlay-item,
+.nav-overlay-item:link,
+.nav-overlay-item:visited {
   display: block;
   text-align: center;
   text-decoration: none;
+  /* explicit colour: without it these anchors fall back to the browser's
+     default link blue/visited purple */
+  color: var(--ink);
   padding: var(--menu-item-padding) 0;
   opacity: 0;
   cursor: none;
@@ -1236,7 +1248,9 @@ body.menu-open .vinyl-widget {
   }
 }
 
-.vinyl-sleeve {
+.vinyl-sleeve,
+.vinyl-sleeve:link,
+.vinyl-sleeve:visited {
   width: 120px;
   height: 160px;
   background: var(--paper);
@@ -1244,6 +1258,9 @@ body.menu-open .vinyl-widget {
   border-radius: 4px 4px 0 0;
   box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
   cursor: pointer;
+  /* explicit colour + no underline: sleeves render as <a> in the widget */
+  color: var(--ink);
+  text-decoration: none;
   position: relative;
   overflow: hidden;
   display: flex;

@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en" data-surface="charcoal">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solmi — DM Sans / DM Mono restyle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   SOLMI — restyle probe
+   Fonts:  DM Sans (display + UI) / DM Mono (metadata, film labels)
+   Colour: sampled from the supplied brand board
+   ============================================================ */
+
+:root{
+  /* --- spectrum, sampled off the dome --- */
+  --flare-orange:#E8672B;
+  --flare-amber :#D98A2B;
+  --flare-lime  :#93B83C;
+  --flare-green :#3FA55C;
+  --flare-teal  :#33A891;
+  --flare-cyan  :#79CBE0;
+  --flare-sky   :#A9DCEF;
+
+  /* --- brand marks --- */
+  --dot-green   :#5AA632;   /* the dot in solmi. */
+  --charcoal    :#2C2E2D;   /* the badge circles */
+  --charcoal-lo :#1A1C1B;
+  --ink         :#101110;
+  --paper       :#F6F8FB;   /* the faintly blue white */
+  --paper-warm  :#EDEFF2;
+
+  --grad-spectrum: linear-gradient(96deg,
+      var(--flare-orange) 0%, var(--flare-amber) 16%, var(--flare-lime) 34%,
+      var(--flare-green) 52%, var(--flare-teal) 70%, var(--flare-cyan) 87%, var(--flare-sky) 100%);
+  --grad-dome: linear-gradient(180deg,
+      var(--flare-orange) 0%, var(--flare-amber) 12%, var(--flare-lime) 34%,
+      var(--flare-green) 54%, var(--flare-teal) 72%, var(--flare-cyan) 88%, var(--flare-sky) 100%);
+
+  --r-sm:10px; --r-md:16px; --r-lg:24px; --r-pill:999px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+
+/* surfaces ---------------------------------------------------- */
+[data-surface="charcoal"]{
+  --bg:var(--charcoal-lo); --bg-raised:#232525; --bg-sunk:#151716;
+  --fg:#F4F6F5; --fg-mid:rgba(244,246,245,.66); --fg-dim:rgba(244,246,245,.42);
+  --hair:rgba(255,255,255,.10); --hair-strong:rgba(255,255,255,.18);
+}
+[data-surface="paper"]{
+  --bg:var(--paper); --bg-raised:#FFFFFF; --bg-sunk:var(--paper-warm);
+  --fg:var(--ink); --fg-mid:rgba(16,17,16,.66); --fg-dim:rgba(16,17,16,.45);
+  --hair:rgba(16,17,16,.10); --hair-strong:rgba(16,17,16,.18);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--fg);
+  font-family:"DM Sans",system-ui,sans-serif;
+  font-optical-sizing:auto;
+  -webkit-font-smoothing:antialiased;
+  transition:background .4s var(--ease), color .4s var(--ease);
+}
+.wrap{max-width:1120px;margin:0 auto;padding:0 32px}
+
+/* mono label ------------------------------------------------- */
+.mono{
+  font-family:"DM Mono",ui-monospace,monospace;
+  font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--fg-dim);
+}
+
+/* ============ header ============ */
+header{
+  position:relative; z-index:5;
+  display:flex; align-items:center; gap:32px;
+  padding:22px 32px; max-width:1120px; margin:0 auto;
+}
+.mark{
+  font-size:26px; font-weight:700; letter-spacing:-.045em;
+  color:var(--fg); text-decoration:none; line-height:1;
+}
+.mark i{ color:var(--dot-green); font-style:normal; }
+nav{display:flex; gap:26px; margin-left:8px}
+nav a{
+  color:var(--fg-mid); text-decoration:none; font-size:14px; font-weight:500;
+  letter-spacing:-.01em; transition:color .18s var(--ease);
+}
+nav a:hover{color:var(--fg)}
+.head-right{margin-left:auto; display:flex; align-items:center; gap:18px}
+.ghost{
+  background:none; border:0; cursor:pointer; padding:0;
+  color:var(--fg-mid); font-family:inherit; font-size:14px; font-weight:500;
+  letter-spacing:-.01em; transition:color .18s var(--ease);
+}
+.ghost:hover{color:var(--fg)}
+.surface-toggle{
+  display:flex; gap:2px; padding:3px; border-radius:var(--r-pill);
+  background:var(--bg-sunk); border:1px solid var(--hair);
+}
+.surface-toggle button{
+  font-family:"DM Mono",monospace; font-size:10px; letter-spacing:.1em;
+  text-transform:uppercase; border:0; cursor:pointer; padding:6px 11px;
+  border-radius:var(--r-pill); background:none; color:var(--fg-dim);
+  transition:all .2s var(--ease);
+}
+.surface-toggle button[aria-pressed="true"]{ background:var(--bg-raised); color:var(--fg); }
+
+/* ============ hero ============ */
+.hero{position:relative; overflow:hidden; padding:56px 0 0}
+
+/* the dome — the signature form from the board */
+.dome{
+  position:absolute; left:50%; transform:translateX(-50%);
+  top:330px; width:2000px; height:560px;
+  background:var(--grad-dome);
+  border-radius:50% 50% 0 0 / 100% 100% 0 0;
+  filter:blur(96px); opacity:.26;
+  pointer-events:none;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 26%,#000 74%,transparent 100%);
+          mask-image:linear-gradient(180deg,transparent 0%,#000 26%,#000 74%,transparent 100%);
+}
+[data-surface="paper"] .dome{opacity:.58; filter:blur(80px)}
+/* keeps the headline off the wash so type stays crisp */
+.hero::before{
+  content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:radial-gradient(120% 62% at 50% 8%, var(--bg) 0%, transparent 62%);
+}
+.hero-inner{position:relative; z-index:2; text-align:center; padding-bottom:24px}
+
+.eyebrow{display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:26px}
+.eyebrow .rule{width:34px; height:1px; background:var(--hair-strong)}
+
+h1{
+  font-size:clamp(46px,6.6vw,88px);
+  font-weight:700; letter-spacing:-.045em; line-height:.98;
+  margin:0 0 22px; text-wrap:balance;
+}
+h1 .spectrum{
+  background:var(--grad-spectrum);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.sub{
+  font-size:19px; line-height:1.5; font-weight:400; color:var(--fg-mid);
+  max-width:34ch; margin:0 auto 40px; letter-spacing:-.011em;
+}
+
+/* ---- Item 1: style preset cards ---- */
+.presets{
+  display:grid; grid-template-columns:repeat(6,1fr); gap:12px;
+  margin:0 0 30px; text-align:left;
+}
+.preset{
+  position:relative; cursor:pointer; border:0; padding:0; background:none;
+  font-family:inherit; text-align:left;
+}
+.preset .thumb{
+  position:relative; aspect-ratio:3/4; border-radius:var(--r-md); overflow:hidden;
+  border:1px solid var(--hair);
+  transition:transform .28s var(--ease), box-shadow .28s var(--ease), border-color .28s var(--ease);
+}
+.preset .thumb::after{
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.55) 100%);
+}
+.preset:hover .thumb{transform:translateY(-5px); border-color:var(--hair-strong);
+  box-shadow:0 16px 40px rgba(0,0,0,.35)}
+.preset[aria-pressed="true"] .thumb{
+  outline:2px solid var(--dot-green); outline-offset:2px; transform:translateY(-5px);
+}
+.preset .name{
+  position:absolute; left:11px; right:11px; bottom:10px; z-index:2;
+  font-size:12.5px; font-weight:500; letter-spacing:-.012em; color:#fff;
+  line-height:1.25;
+}
+.preset .idx{
+  position:absolute; top:9px; left:11px; z-index:2;
+  font-family:"DM Mono",monospace; font-size:9.5px; letter-spacing:.12em;
+  color:rgba(255,255,255,.75);
+}
+/* Stand-in art direction.
+   Luminous, not specular: light rises from the lower edge like the dome, one hue
+   family per card, no dark end-stops and no diagonal sheen. A dark clamp at both
+   ends of a diagonal ramp is what reads as brushed metal — avoid it everywhere. */
+.t1{background:radial-gradient(125% 88% at 50% 118%, #F7A35C 0%, #E8672B 34%, #C4491C 62%, #8E3416 100%)}
+.t2{background:radial-gradient(125% 88% at 50% 118%, #C6DE7A 0%, #93B83C 32%, #4FA24E 64%, #2C7A44 100%)}
+.t3{background:radial-gradient(125% 88% at 50% 118%, #D8F0F8 0%, #A9DCEF 30%, #79CBE0 58%, #3E93AE 100%)}
+.t4{background:radial-gradient(125% 88% at 50% 118%, #E4E9EA 0%, #A9B4B6 34%, #5E6768 66%, #2C3132 100%)}
+.t5{background:radial-gradient(125% 88% at 50% 118%, #F2C778 0%, #D98A2B 34%, #B3702A 64%, #7C4E22 100%)}
+.t6{background:radial-gradient(125% 88% at 50% 118%, #BFEFE4 0%, #6ECBC0 30%, #33A891 60%, #1E7A72 100%)}
+
+/* ---- Item 3: the composer + CTA ---- */
+.composer{
+  display:flex; align-items:center; gap:10px;
+  background:var(--bg-raised); border:1px solid var(--hair);
+  border-radius:var(--r-lg); padding:10px; max-width:720px; margin:0 auto;
+  box-shadow:0 24px 60px rgba(0,0,0,.28);
+}
+[data-surface="paper"] .composer{box-shadow:0 20px 48px rgba(16,17,16,.10)}
+.field{
+  flex:1; display:flex; align-items:center; gap:11px; padding:0 16px;
+  min-width:0;
+}
+.field svg{flex:none; opacity:.5}
+.field input{
+  width:100%; background:none; border:0; outline:none; color:var(--fg);
+  font-family:inherit; font-size:15.5px; letter-spacing:-.011em; padding:14px 0;
+}
+.field input::placeholder{color:var(--fg-dim)}
+.cta{
+  flex:none; height:54px; padding:0 30px; border:0; cursor:pointer;
+  border-radius:14px; background:var(--grad-spectrum);
+  color:#14150F; font-family:inherit; font-size:16.5px; font-weight:700;
+  letter-spacing:-.018em; white-space:nowrap;
+  transition:transform .2s var(--ease), filter .2s var(--ease);
+}
+.cta:hover{transform:translateY(-2px); filter:saturate(1.12) brightness(1.04)}
+.cta:active{transform:translateY(0)}
+
+.reassure{
+  display:flex; align-items:center; justify-content:center; gap:9px;
+  margin:16px 0 0;
+}
+.reassure .dot{width:4px;height:4px;border-radius:50%;background:var(--dot-green)}
+.options{
+  margin:26px 0 0; display:flex; justify-content:center;
+}
+.options button{
+  background:none; border:1px solid var(--hair); border-radius:var(--r-pill);
+  padding:8px 16px; cursor:pointer; color:var(--fg-mid);
+  font-family:"DM Mono",monospace; font-size:11px; letter-spacing:.1em;
+  text-transform:uppercase; transition:all .2s var(--ease);
+}
+.options button:hover{color:var(--fg); border-color:var(--hair-strong)}
+
+/* ============ gallery strip (Item 2) ============ */
+.section{padding:96px 0 0}
+.sec-head{display:flex; align-items:baseline; gap:18px; margin-bottom:26px}
+.sec-head h2{
+  font-size:27px; font-weight:500; letter-spacing:-.03em; margin:0;
+  font-style:italic;
+}
+.strip{display:grid; grid-template-columns:repeat(4,1fr); gap:16px}
+.tile{position:relative; border-radius:var(--r-md); overflow:hidden; aspect-ratio:16/10;
+  border:1px solid var(--hair); cursor:pointer}
+.tile .meta{position:absolute; left:14px; bottom:12px; z-index:3}
+.tile .meta .t{font-size:14.5px; font-weight:500; letter-spacing:-.015em; color:#fff}
+.tile .meta .s{font-family:"DM Mono",monospace; font-size:10px; letter-spacing:.12em;
+  text-transform:uppercase; color:rgba(255,255,255,.62); margin-top:3px}
+.tile .dur{position:absolute; top:11px; right:12px; z-index:3;
+  font-family:"DM Mono",monospace; font-size:10px; color:rgba(255,255,255,.8);
+  background:rgba(0,0,0,.42); padding:3px 7px; border-radius:5px; backdrop-filter:blur(6px)}
+.tile::after{content:""; position:absolute; inset:0;
+  background:linear-gradient(180deg,transparent 38%,rgba(12,14,13,.68) 100%)}
+/* the "make one like this" affordance */
+.tile .make{
+  position:absolute; z-index:4; inset:auto 12px 12px auto;
+  display:flex; align-items:center; gap:7px;
+  background:rgba(255,255,255,.94); color:#101110;
+  font-size:12.5px; font-weight:700; letter-spacing:-.012em;
+  padding:9px 14px; border-radius:var(--r-pill);
+  opacity:0; transform:translateY(6px);
+  transition:all .24s var(--ease);
+}
+.tile:hover .make{opacity:1; transform:translateY(0)}
+.tile:hover{border-color:var(--hair-strong)}
+
+/* ============ spec sheet ============ */
+.spec{padding:100px 0 110px}
+.spec-grid{display:grid; grid-template-columns:1fr 1fr; gap:56px; margin-top:30px}
+.swatches{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
+.sw{border-radius:var(--r-sm); overflow:hidden; border:1px solid var(--hair)}
+.sw .chip{height:56px}
+.sw .lbl{padding:8px 9px; font-family:"DM Mono",monospace; font-size:9.5px;
+  letter-spacing:.06em; color:var(--fg-dim); background:var(--bg-raised)}
+.scale > div{border-bottom:1px solid var(--hair); padding:13px 0;
+  display:flex; align-items:baseline; gap:18px}
+.scale .k{font-family:"DM Mono",monospace; font-size:10px; letter-spacing:.1em;
+  color:var(--fg-dim); width:104px; flex:none; text-transform:uppercase}
+.bar{height:20px; border-radius:6px; background:var(--grad-spectrum); margin-top:14px}
+
+footer{border-top:1px solid var(--hair); padding:26px 0 40px; margin-top:20px}
+
+@media (max-width:900px){
+  .presets{grid-template-columns:repeat(3,1fr)}
+  .strip{grid-template-columns:repeat(2,1fr)}
+  .spec-grid{grid-template-columns:1fr; gap:40px}
+  nav{display:none}
+}
+@media (max-width:600px){
+  .wrap{padding:0 20px} header{padding:18px 20px}
+  .presets{grid-template-columns:repeat(3,1fr); gap:9px}
+  .composer{flex-direction:column; align-items:stretch; gap:8px; padding:8px}
+  .field{padding:0 12px}
+  .cta{width:100%}
+  .dome{width:900px; top:230px; height:400px}
+}
+@media (prefers-reduced-motion:reduce){ *{transition:none !important} }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="mark" href="#">solmi<i>.</i></a>
+  <nav>
+    <a href="#">Tools</a><a href="#">Library</a><a href="#">Pricing</a><a href="#">Blog</a>
+  </nav>
+  <div class="head-right">
+    <div class="surface-toggle" role="group" aria-label="Surface">
+      <button data-s="charcoal" aria-pressed="true">Charcoal</button>
+      <button data-s="paper" aria-pressed="false">Paper</button>
+    </div>
+    <button class="ghost">Sign in</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="dome" aria-hidden="true"></div>
+  <div class="wrap hero-inner">
+
+    <div class="eyebrow">
+      <span class="rule"></span>
+      <span class="mono">The Studio · Directed, not generated</span>
+      <span class="rule"></span>
+    </div>
+
+    <h1>Turn any song into a<br><span class="spectrum">music video.</span></h1>
+    <p class="sub">Bring a song. Our agent drafts, casts, and renders the final cut.</p>
+
+    <!-- ITEM 1 — pick a look before you bring a file -->
+    <div class="presets">
+      <button class="preset" aria-pressed="false"><div class="thumb t1"><span class="idx">01</span><span class="name">Wong Kar-wai</span></div></button>
+      <button class="preset" aria-pressed="false"><div class="thumb t2"><span class="idx">02</span><span class="name">90s MTV</span></div></button>
+      <button class="preset" aria-pressed="false"><div class="thumb t3"><span class="idx">03</span><span class="name">Cloudlight Reverie</span></div></button>
+      <button class="preset" aria-pressed="false"><div class="thumb t4"><span class="idx">04</span><span class="name">Film Noir</span></div></button>
+      <button class="preset" aria-pressed="false"><div class="thumb t5"><span class="idx">05</span><span class="name">Desert Mirage</span></div></button>
+      <button class="preset" aria-pressed="false"><div class="thumb t6"><span class="idx">06</span><span class="name">Y2K Glossy</span></div></button>
+    </div>
+
+    <!-- ITEM 3 — one input, one button, no cycling placeholder -->
+    <div class="composer">
+      <label class="field">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        <input type="text" placeholder="Upload a song, or paste a Suno / TikTok / YouTube link">
+      </label>
+      <button class="cta">Make music video</button>
+    </div>
+
+    <p class="reassure mono"><span class="dot"></span> First video free &nbsp;·&nbsp; ~3 min &nbsp;·&nbsp; no credit card &nbsp;·&nbsp; you keep the rights</p>
+
+    <div class="options"><button>Options ▾</button></div>
+  </div>
+</section>
+
+<section class="section wrap">
+  <div class="sec-head">
+    <span class="mono">The Gallery</span>
+    <h2>Every frame is a starting point.</h2>
+  </div>
+  <div class="strip">
+    <div class="tile t1"><span class="dur">0:51</span><div class="meta"><div class="t">Engine On</div><div class="s">HD Digital Film</div></div><span class="make">Make one like this →</span></div>
+    <div class="tile t3"><span class="dur">4:22</span><div class="meta"><div class="t">Heaven</div><div class="s">Cloudlight Reverie</div></div><span class="make">Make one like this →</span></div>
+    <div class="tile t6"><span class="dur">1:01</span><div class="meta"><div class="t">Neon Exit</div><div class="s">Y2K Glossy Futuristic</div></div><span class="make">Make one like this →</span></div>
+    <div class="tile t5"><span class="dur">4:09</span><div class="meta"><div class="t">The Last Stop</div><div class="s">Desert Mirage</div></div><span class="make">Make one like this →</span></div>
+  </div>
+</section>
+
+<section class="section wrap spec">
+  <div class="sec-head"><span class="mono">The System</span><h2>Fonts &amp; palette.</h2></div>
+  <div class="bar" aria-hidden="true"></div>
+  <div class="spec-grid">
+    <div>
+      <p class="mono" style="margin:0 0 14px">Palette — sampled from the board</p>
+      <div class="swatches">
+        <div class="sw"><div class="chip" style="background:#E8672B"></div><div class="lbl">#E8672B<br>flare-orange</div></div>
+        <div class="sw"><div class="chip" style="background:#D98A2B"></div><div class="lbl">#D98A2B<br>flare-amber</div></div>
+        <div class="sw"><div class="chip" style="background:#93B83C"></div><div class="lbl">#93B83C<br>flare-lime</div></div>
+        <div class="sw"><div class="chip" style="background:#3FA55C"></div><div class="lbl">#3FA55C<br>flare-green</div></div>
+        <div class="sw"><div class="chip" style="background:#33A891"></div><div class="lbl">#33A891<br>flare-teal</div></div>
+        <div class="sw"><div class="chip" style="background:#79CBE0"></div><div class="lbl">#79CBE0<br>flare-cyan</div></div>
+        <div class="sw"><div class="chip" style="background:#A9DCEF"></div><div class="lbl">#A9DCEF<br>flare-sky</div></div>
+        <div class="sw"><div class="chip" style="background:#5AA632"></div><div class="lbl">#5AA632<br>dot-green</div></div>
+        <div class="sw"><div class="chip" style="background:#2C2E2D"></div><div class="lbl">#2C2E2D<br>charcoal</div></div>
+        <div class="sw"><div class="chip" style="background:#1A1C1B"></div><div class="lbl">#1A1C1B<br>charcoal-lo</div></div>
+        <div class="sw"><div class="chip" style="background:#F6F8FB"></div><div class="lbl">#F6F8FB<br>paper</div></div>
+        <div class="sw"><div class="chip" style="background:#101110"></div><div class="lbl">#101110<br>ink</div></div>
+      </div>
+    </div>
+    <div>
+      <p class="mono" style="margin:0 0 14px">Type — DM Sans / DM Mono</p>
+      <div class="scale">
+        <div><span class="k">Display 88</span><span style="font-size:38px;font-weight:700;letter-spacing:-.045em">music video.</span></div>
+        <div><span class="k">Section 27</span><span style="font-size:23px;font-weight:500;font-style:italic;letter-spacing:-.03em">Directed, not generated.</span></div>
+        <div><span class="k">Body 19</span><span style="font-size:17px;color:var(--fg-mid)">Bring a song. Our agent drafts.</span></div>
+        <div><span class="k">CTA 16.5/700</span><span style="font-size:16px;font-weight:700;letter-spacing:-.018em">Make music video</span></div>
+        <div><span class="k">Mono 11</span><span class="mono">BPM · KEY · SECTIONS · 24FPS</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="wrap"><span class="mono">Solmi — restyle probe · DM Sans + DM Mono</span></footer>
+
+<script>
+  document.querySelectorAll('.surface-toggle button').forEach(b=>{
+    b.onclick=()=>{
+      document.documentElement.dataset.surface=b.dataset.s;
+      document.querySelectorAll('.surface-toggle button')
+        .forEach(x=>x.setAttribute('aria-pressed', String(x===b)));
+    };
+  });
+  document.querySelectorAll('.preset').forEach(p=>{
+    p.onclick=()=>{
+      const on = p.getAttribute('aria-pressed')==='true';
+      document.querySelectorAll('.preset').forEach(x=>x.setAttribute('aria-pressed','false'));
+      p.setAttribute('aria-pressed', String(!on));
+    };
+  });
+</script>
+</body>
+</html>

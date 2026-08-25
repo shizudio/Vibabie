@@ -1,0 +1,90 @@
+{
+  "pages": [
+    {
+      "id": "directions",
+      "name": "Dark mode"
+    },
+    {
+      "id": "audit",
+      "name": "Audit & tokens"
+    }
+  ],
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "page": "directions",
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900,
+      "title": "Dark hero \u2014 beam"
+    },
+    {
+      "file": "GroovedHorizon.dc.html",
+      "page": "directions",
+      "x": 1520,
+      "y": 0,
+      "w": 1440,
+      "h": 620,
+      "title": "Dark close \u2014 grooved horizon"
+    },
+    {
+      "file": "OptionB.dc.html",
+      "page": "directions",
+      "x": 0,
+      "y": 1020,
+      "w": 1440,
+      "h": 900,
+      "title": "B \u00b7 Black box (not taken)"
+    },
+    {
+      "file": "OptionC.dc.html",
+      "page": "directions",
+      "x": 1520,
+      "y": 1020,
+      "w": 1440,
+      "h": 900,
+      "title": "C \u00b7 Projection (adopted for light)"
+    },
+    {
+      "file": "Audit.dc.html",
+      "page": "audit",
+      "x": 0,
+      "y": 0,
+      "w": 1000,
+      "h": 1460,
+      "title": "Audit"
+    },
+    {
+      "file": "Tokens.dc.html",
+      "page": "audit",
+      "x": 1080,
+      "y": 0,
+      "w": 1200,
+      "h": 1180,
+      "title": "Dark tokens & parts"
+    }
+  ],
+  "annotations": [
+    {
+      "id": "pick-a-direction",
+      "page": "directions",
+      "x": 0,
+      "y": -200,
+      "w": 560,
+      "text": "Settled: the hero carries the projection beam in both themes, and the record is saved for the closing section.\n\nDark hero uses the same beam construction as the light page, so the two themes are one idea lit differently.\n\nDark close is the grooved horizon \u2014 the record rises from the bottom edge and the label breaks the fold, so the dome and the wordmark land as the last image on the page.\n\nB and C are kept for reference. C's beam is what the light page now uses."
+    },
+    {
+      "id": "audit-note",
+      "page": "audit",
+      "x": 0,
+      "y": -140,
+      "w": 520,
+      "text": "Twelve findings read from the built page.\n\nFour break outright on a 1:1 token port, five need care, three are plumbing that does not exist yet.\n\nThe action green is the one thing that needs no work at all."
+    }
+  ],
+  "launch": {
+    "view": "canvas",
+    "page": "directions"
+  }
+}

@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=DM+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; background: #F6FAFF; }
+    a { color: #0E9E4C; } a:hover { color: #0B7D3C; }
+    * { box-sizing: border-box; }
+  </style>
+</helmet>
+
+<div style="width: 1000px; min-height: 1460px; background: #F6FAFF; font-family: 'DM Sans', system-ui, sans-serif; color: #101110; padding: 56px 56px 64px;">
+
+  <div style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(16,17,16,0.45);">Audit · solmi-landing.html</div>
+  <div style="font-size: 40px; font-weight: 500; letter-spacing: -0.03em; line-height: 46px; margin-top: 12px;">What survives the switch to dark, and what breaks.</div>
+  <div style="font-family: 'DM Mono', monospace; font-size: 14px; line-height: 22px; letter-spacing: -0.15px; color: rgba(16,17,16,0.66); margin-top: 16px; max-width: 62ch;">Read from the built page, not from memory. Eight of these are places where a 1:1 token port produces a page that is technically dark and visually wrong.</div>
+
+  <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 40px;">
+
+    <sc-for list="{{findings}}" as="f" hint-placeholder-count="6">
+      <div style="display: flex; gap: 20px; background: #FFFFFF; border: 1px solid rgba(16,17,16,0.08); border-radius: 16px; padding: 20px 22px;">
+        <div style="flex: none; width: 76px;">
+          <div style="display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 6px; background: {{f.chipBg}}; color: {{f.chipFg}}; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;">{{f.level}}</div>
+        </div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="font-size: 17px; font-weight: 700; letter-spacing: -0.015em;">{{f.title}}</div>
+          <div style="font-size: 14.5px; line-height: 22px; color: rgba(16,17,16,0.66); margin-top: 6px;">{{f.body}}</div>
+          <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 10px;">
+            <div style="flex: none; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(16,17,16,0.42);">Fix</div>
+            <div style="font-family: 'DM Mono', monospace; font-size: 12.5px; line-height: 19px; color: #101110;">{{f.fix}}</div>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+
+  </div>
+
+  <div style="margin-top: 34px; border-top: 1px solid rgba(16,17,16,0.12); padding-top: 22px;">
+    <div style="font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(16,17,16,0.45);">The one that needs no work</div>
+    <div style="font-size: 17px; line-height: 26px; margin-top: 10px; max-width: 68ch;">The action green is surface-independent. <span style="font-family: 'DM Mono', monospace; font-size: 15px;">#1ED760</span> with a <span style="font-family: 'DM Mono', monospace; font-size: 15px;">#04140D</span> label measures 9.85:1 on paper and 9.85:1 on charcoal — the ratio is between the button and its own label, so the page behind it is irrelevant. Picking a light-on-dark-agnostic action colour turns out to have bought the whole dark mode its anchor for free.</div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    const RED   = { chipBg: '#FCE8E6', chipFg: '#A02A1D' };
+    const AMBER = { chipBg: '#FBF0DC', chipFg: '#8A5A08' };
+    const BLUE  = { chipBg: '#E6EFFC', chipFg: '#1D4FA0' };
+    const mk = function (lvl, tone, title, body, fix) {
+      return { level: lvl, chipBg: tone.chipBg, chipFg: tone.chipFg, title: title, body: body, fix: fix };
+    };
+    return {
+      findings: [
+        mk('Breaks', RED, 'The frosted bar is a light-only construct',
+          'The sticky bar is a blurred still under an 86% WHITE plate. Inverting the plate to black does not give you a dark equivalent — a dark overlay subtracts chroma, so the borrowed colour that makes the bar work disappears almost entirely.',
+          'Plate → rgba(18,20,19,.82); put the still on mix-blend-mode: screen at ~.35 so colour adds instead of subtracting.'),
+
+        mk('Breaks', RED, 'The dome SVG has a baked light field',
+          'hero-dome.svg paints its own #F6FAFF ground behind the ellipse gradients. Dropped on a dark page it brings a light rectangle with it.',
+          'Ship a second SVG with the field removed, and let the page ground show through the gradients.'),
+
+        mk('Breaks', RED, 'Unpicked style cards vanish at opacity .4',
+          'On paper, .4 opacity + saturate(.42) reads as "further away". On charcoal the same recipe drops the cards to within a few percent of the ground and they read as missing, not deselected.',
+          'Dark: opacity .62, saturate(.34), brightness(.72). Dim, never erase.'),
+
+        mk('Breaks', RED, 'The depth deck recedes by brightness',
+          'Cards fall to brightness(.66) at distance. On a dark ground that is motion toward the background — far cards stop being objects.',
+          'In dark, recede by contrast and saturation instead: clamp brightness at ~.86 and let saturate(.55) plus a veil carry the depth.'),
+
+        mk('Careful', AMBER, 'Hairlines do not port at the same alpha',
+          'rgba(16,17,16,.08) and .13 are the light borders. The same alphas in white on charcoal read roughly half as strong — the composer and chips lose their edges.',
+          'Dark hairlines: rgba(255,255,255,.09) and .16. Measure, do not mirror.'),
+
+        mk('Careful', AMBER, 'Mono metadata is already at its contrast floor',
+          '11px DM Mono at rgba(ink,.45) is ~4.6:1 on paper — legible but marginal. The dark inverse blooms optically and reads thinner still at the same alpha.',
+          'Dark: raise to .58, and consider DM Mono 500 for the 10–11px labels only.'),
+
+        mk('Careful', AMBER, 'Film Noir is the accent that fails',
+          'Five accents are chromatic and survive a dark ground. The sampled neutral #8A8F8C sits ~3.2:1 against #141614 — as a 2.5px selection ring that is not a reliable signal.',
+          'Dark-only override: lift the neutral accent to #B9BEBB. Leave the other five alone.'),
+
+        mk('Careful', AMBER, 'The white composer cannot simply darken',
+          'In light, the white card is the brightest object and correctly anchors the eye below the CTA. Any light-coloured card in dark becomes the brightest object on the page and outranks the button.',
+          'Composer → #1C1F1D raised graphite with a hairline. Elevation by contrast, not by luminance.'),
+
+        mk('Careful', AMBER, 'The stills were graded for a light page',
+          'The six frames sit against paper today. On a dark ground the same images gain apparent contrast and the brighter ones (90s MTV, Y2K) glare.',
+          'Dark: a shared filter: brightness(.94) saturate(.96) on the picker frames.'),
+
+        mk('Missing', BLUE, 'There is no colour-scheme plumbing at all',
+          'No prefers-color-scheme query and no color-scheme declaration, so native controls, scrollbars and form chrome stay light whatever the page does.',
+          'Add color-scheme: light dark, drive tokens from a [data-theme] attribute, default to the system preference with a manual override.'),
+
+        mk('Missing', BLUE, 'The hero scrim is tuned for paper only',
+          '.hero::before fades from --paper to transparent to keep the headline off the artwork. It is hard-coded to the light ground.',
+          'Bind the scrim to the ground token so it inverts with the theme rather than being re-authored.'),
+
+        mk('Missing', BLUE, 'The gradient hover has no dark variant',
+          'The turquoise→green→orange drift was chosen against white surroundings. On dark the same stops read hotter and the orange end starts to dominate.',
+          'Dark: pull the orange stop back toward amber and drop overall lightness ~6% so the sweep stays even.')
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
