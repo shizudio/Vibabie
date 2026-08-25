@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shina Foo — Creative</title>
+  <!-- Every navigation from this document targets the top-level window.
+       Framed (the room section at the end of About) that breaks links out of
+       the iframe; standalone, `_top` IS this window, so it behaves like _self. -->
+  <base target="_top">
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500&family=EB+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
@@ -14,12 +18,91 @@
        drop the page chrome — the parent page already has a topbar and the
        floating vinyl player, so hide this copy's to avoid doubling. -->
   <script>
-    if (window.self !== window.top) {
+    (function () {
+      // Standalone /play.html keeps every original behaviour — bail out early.
+      if (window.self === window.top) return
+
       window.__ROOM_EMBEDDED__ = true
       document.documentElement.classList.add('embedded')
-    }
+
+      /* ── 1. Skip the loader ───────────────────────────────────────────
+         index.js already has a "returning from a subpage" path keyed off
+         sessionStorage['skip-loader']: it hides the loader, adds `visible`
+         to #stage, and — on mobile — applies the overview transform and
+         adds `room-ready` (the class style.css's frame-border visibility
+         gate waits for). Setting the flag here, before the body parses,
+         reuses that path instead of racing it. index.js removes the flag
+         itself on read. */
+      try { sessionStorage.setItem('skip-loader', '1') } catch (e) {}
+
+      /* ── 2. Break navigation out of the frame ─────────────────────────
+         <base target="_top"> covers <a> clicks the browser handles, but the
+         room navigates from JS (window.location.href / window.open('_self')
+         / window.__softNavigate), which <base> does not affect. This
+         capture-phase listener on document runs before index.js's zone and
+         hotspot listeners (element-level, bubble) and before router.js's
+         document listener (bubble, registered later), so the in-frame
+         navigation never happens. */
+      var HOTSPOTS = {
+        'vinyl-hotspot':       'record.html',
+        'vinyl-overlay':       'record.html',
+        'bulb-hotspot':        'ai.html',
+        'bulb-overlay':        'ai.html',
+        'camera-hotspot':      'photography.html',
+        'camera-overlay':      'photography.html',
+        'frenchpress-hotspot': 'cosmos.html',
+        'frenchpress-overlay': 'cosmos.html',
+        'bed-hotspot':         'about.html',
+        'bed-overlay':         'about.html',
+        'laptop-hotspot':      'work.html',
+        'laptop-overlay':      'work.html'
+      }
+      var HOTSPOT_SEL = Object.keys(HOTSPOTS).map(function (id) { return '#' + id }).join(',')
+
+      function leaveFrame(href, newTab) {
+        var url
+        try { url = new URL(href, location.href).href } catch (e) { return }
+        if (newTab) { window.open(url, '_blank', 'noopener'); return }
+        try { window.top.location.href = url } catch (e) { window.open(url, '_top') }
+      }
+
+      document.addEventListener('click', function (e) {
+        var el = e.target
+        if (!el || !el.closest) return
+
+        var newTab = e.metaKey || e.ctrlKey || e.shiftKey
+        var href = null
+
+        var link = el.closest('a[href]')
+        var zone = el.closest('[data-href]')
+        var hot  = el.closest(HOTSPOT_SEL)
+
+        if (link) {
+          var raw = link.getAttribute('href') || ''
+          // in-page anchors and non-http schemes stay inside the frame
+          if (!raw || raw.charAt(0) === '#' || /^(javascript|mailto|tel):/i.test(raw)) return
+          href = link.href
+          newTab = newTab || link.target === '_blank'
+        } else if (zone) {
+          href = zone.dataset.href
+          newTab = newTab || zone.dataset.external === 'true'
+        } else if (hot) {
+          href = HOTSPOTS[hot.id]
+        } else {
+          // e.g. #overview-overlay — let index.js's tap-to-expand run
+          return
+        }
+
+        e.preventDefault()
+        e.stopPropagation()
+        e.stopImmediatePropagation()
+        leaveFrame(href, newTab)
+      }, true)
+    })()
   </script>
   <style>
+    /* Native pointer inside the frame: the parent page draws the custom
+       cursor, and this document's `cursor: none` made it feel stuck. */
     .embedded,
     .embedded body { cursor: auto !important; }
 
@@ -31,6 +114,7 @@
     .embedded .room-statement,
     .embedded .room-welcome,
     .embedded .frame-placards,
+    .embedded #frame-placards,
     .embedded .expand-hint,
     .embedded .mobile-links,
     .embedded #vinyl-widget,
@@ -56,7 +140,8 @@
     .embedded #camera-overlay,
     .embedded #frenchpress-overlay,
     .embedded #bed-overlay,
-    .embedded #laptop-overlay { cursor: pointer !important; }
+    .embedded #laptop-overlay,
+    .embedded #overview-overlay { cursor: pointer !important; }
   </style>
 </head>
 <body>
