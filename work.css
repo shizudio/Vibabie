@@ -183,7 +183,7 @@ html, body { height: 100%; }
 /* ── Coming-soon placeholder (no screenshot yet) ────────────── */
 .catalog-item-placeholder {
   width: 100%;
-  aspect-ratio: 4 / 2.2;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -237,16 +237,11 @@ html, body { height: 100%; }
 .catalog-gallery {
   margin-left: 280px;
   flex: 1;
-  padding: 100px 72px 120px 88px;
+  padding: 100px 56px 120px 72px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px 56px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 44px 32px;
   align-items: start;
-}
-
-/* Stagger right column for editorial feel */
-.catalog-item:nth-child(even) {
-  margin-top: 160px;
 }
 
 /* ── Gallery item ────────────────────────────────────────── */
@@ -258,7 +253,10 @@ html, body { height: 100%; }
   transition: opacity 0.35s ease;
 }
 
+/* Uniform portrait tiles so the grid rows line up cleanly */
 .catalog-item-img-wrap {
+  position: relative;
+  aspect-ratio: 4 / 5;
   overflow: hidden;
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
@@ -267,7 +265,8 @@ html, body { height: 100%; }
 
 .catalog-item img {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
   display: block;
   transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
@@ -629,11 +628,9 @@ a.ai-card:hover .ai-card-link {
   }
   .catalog-gallery {
     margin-left: 220px;
-    padding: 100px 48px 100px 48px;
-    gap: 64px 40px;
-  }
-  .catalog-item:nth-child(even) {
-    margin-top: 120px;
+    padding: 100px 40px 100px 40px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px 28px;
   }
   .ai-section {
     margin-left: 220px;
