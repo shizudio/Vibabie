@@ -253,10 +253,11 @@ html, body { height: 100%; }
   transition: opacity 0.35s ease;
 }
 
-/* Uniform portrait tiles so the grid rows line up cleanly */
+/* Uniform tiles so the grid rows line up cleanly.
+   16:9 is the standard aspect for project thumbnails going forward. */
 .catalog-item-img-wrap {
   position: relative;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);

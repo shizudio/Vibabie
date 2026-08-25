@@ -468,6 +468,14 @@ nav {
   padding: 0 var(--page-gutter);
   background: #FFFFFF;
   border-bottom: 1px solid var(--border);
+  transition: transform 0.28s ease;
+  will-change: transform;
+}
+
+/* Auto-hide: slide the primary topbar up out of view (see script.js) */
+nav.topbar-hidden,
+.site-header.topbar-hidden {
+  transform: translateY(-100%);
 }
 
 .site-header {

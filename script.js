@@ -186,3 +186,77 @@ if (portraitFrame && portraitVid) {
   });
 }
 
+// ── AUTO-HIDING TOPBAR (global, every page) ───────────────────────
+// Scrolling down past a threshold slides the primary topbar up out of
+// view; scrolling near the top always reveals it. When hidden, nudging
+// the mouse to the very top edge reveals it, and leaving the bar hides
+// it again. Disabled entirely under prefers-reduced-motion, and never
+// hides while the mobile menu overlay is open.
+;(function initAutoHideTopbar() {
+  // prefers-reduced-motion: keep the bar always visible (accessible choice)
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+  // Pick the primary topbar: case-study header → room header → the first
+  // classless-primary <nav> (skip secondary navs).
+  const bar =
+    document.querySelector('.project-topbar') ||
+    document.querySelector('header.site-header') ||
+    Array.from(document.querySelectorAll('nav')).find(
+      (n) => !n.classList.contains('case-sidenav') && !n.classList.contains('nav-overlay-nav')
+    )
+  if (!bar) return
+
+  const THRESHOLD = 80   // px scrolled before the bar may hide
+  const TOP_EDGE = 6     // px from the top edge that re-reveals a hidden bar
+
+  let lastY = window.scrollY || 0
+  let ticking = false
+
+  const menuOpen = () => document.body.classList.contains('menu-open')
+  const show = () => bar.classList.remove('topbar-hidden')
+  const hide = () => {
+    if (menuOpen()) return          // never hide while the menu overlay is open
+    bar.classList.add('topbar-hidden')
+  }
+
+  function update() {
+    ticking = false
+    const y = window.scrollY || 0
+
+    // Always visible near the top, or while the menu is open
+    if (y <= THRESHOLD || menuOpen()) {
+      show()
+    } else if (y > lastY) {
+      hide()                        // scrolling down → hide
+    } else if (y < lastY) {
+      show()                        // scrolling up → reveal
+    }
+    lastY = y
+  }
+
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (!ticking) {
+        ticking = true
+        requestAnimationFrame(update)
+      }
+    },
+    { passive: true }
+  )
+
+  // Nudge the mouse to the very top edge → reveal a hidden bar
+  document.addEventListener(
+    'mousemove',
+    (e) => {
+      if (e.clientY <= TOP_EDGE) show()
+    },
+    { passive: true }
+  )
+
+  // Leaving the bar with the page scrolled down → hide again
+  bar.addEventListener('mouseleave', () => {
+    if ((window.scrollY || 0) > THRESHOLD) hide()
+  })
+})()
+
