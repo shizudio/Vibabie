@@ -237,11 +237,12 @@ html, body { height: 100%; }
 .catalog-gallery {
   margin-left: 280px;
   flex: 1;
-  padding: 100px 56px 120px 72px;
+  padding: 90px 48px 120px 56px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 44px 32px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px 14px;
   align-items: start;
+  align-content: start; /* gallery is flex:1 in a 100vh page — stop rows stretching to fill */
 }
 
 /* ── Gallery item ────────────────────────────────────────── */
@@ -265,6 +266,10 @@ html, body { height: 100%; }
 }
 
 .catalog-item img {
+  /* absolute so the image's intrinsic height can't inflate the grid row
+     track beyond the 16:9 wrap (grid auto-row intrinsic sizing quirk) */
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -281,71 +286,16 @@ html, body { height: 100%; }
   transform: scale(1.03);
 }
 
-/* Label below image */
-.catalog-item-label {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: baseline;
-  gap: 10px;
-  margin-top: 14px;
-}
+/* Tiles carry no caption — the sidebar index is the label.
+   (Removed: .catalog-item-label / -num / -name / -year / -ext) */
 
-.catalog-item-num {
-  font-family: var(--font-sans);
-  font-size: var(--text-xs);
-  color: var(--stone);
-  font-weight: 300;
-  letter-spacing: 0.15em;
-  font-variant-numeric: tabular-nums;
-  transition: color 0.2s ease;
-}
-
-.catalog-item-name {
-  font-family: var(--font-serif);
-  font-size: clamp(0.82rem, 1vw, 0.95rem);
-  font-style: italic;
-  color: var(--ink);
-  transition: color 0.2s ease;
-}
-
-.catalog-item-year {
-  font-family: var(--font-sans);
-  font-size: var(--text-xs);
-  color: var(--stone);
-  font-weight: 300;
-}
-
-/* External link indicator */
-.catalog-item-ext {
-  display: block;
-  font-family: var(--font-sans);
-  font-size: var(--text-xs);
-  color: var(--stone);
-  font-weight: 300;
-  letter-spacing: 0.1em;
-  margin-top: 4px;
-  text-transform: uppercase;
-  transition: color 0.2s ease;
-  opacity: 0;
-  transform: translateX(-4px);
-  transition: opacity 0.25s ease, transform 0.25s ease, color 0.2s ease;
-}
-
-.catalog-item:hover .catalog-item-ext {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-/* Cross-link dimming */
+/* Cross-link dimming — hovering a tile dims its siblings and lights up the
+   matching sidebar entry, which is now the only place a project is named. */
 .catalog-gallery.has-hover .catalog-item {
   opacity: 0.2;
 }
 .catalog-gallery.has-hover .catalog-item.is-active {
   opacity: 1;
-}
-.catalog-gallery.has-hover .catalog-item.is-active .catalog-item-num,
-.catalog-gallery.has-hover .catalog-item.is-active .catalog-item-name {
-  color: var(--crimson);
 }
 
 /* ── Sidebar AI anchor ───────────────────────────────────── */
@@ -600,14 +550,12 @@ a.ai-card:hover .ai-card-link {
     margin-left: 0;
     padding: 40px var(--page-gutter) 80px;
     grid-template-columns: 1fr;
-    gap: 56px;
+    gap: 14px;
   }
 
   .catalog-item:nth-child(even) {
     margin-top: 0;
   }
-
-  .catalog-item-ext { opacity: 1; transform: none; }
 
   .catalog-ai-link { display: none; }
 
@@ -629,9 +577,9 @@ a.ai-card:hover .ai-card-link {
   }
   .catalog-gallery {
     margin-left: 220px;
-    padding: 100px 40px 100px 40px;
+    padding: 90px 40px 100px 40px;
     grid-template-columns: repeat(2, 1fr);
-    gap: 40px 28px;
+    gap: 14px 14px;
   }
   .ai-section {
     margin-left: 220px;

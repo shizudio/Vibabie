@@ -75,17 +75,13 @@ PROJECTS.forEach((project, i) => {
         loading="${i === 0 ? 'eager' : 'lazy'}"
       />`
 
+  // No caption under the tile — the left sidebar already names every project,
+  // and hovering a tile highlights its sidebar entry (see activate() below).
   div.innerHTML = `
     <div class="catalog-item-img-wrap">
       ${imgOrPlaceholder}
       ${currentBadge}
     </div>
-    <div class="catalog-item-label">
-      <span class="catalog-item-num">${num}</span>
-      <span class="catalog-item-name">${project.title}</span>
-      <span class="catalog-item-year">${project.year}</span>
-    </div>
-    ${isExternal ? `<span class="catalog-item-ext">${project.href.replace('https://', '')} ↗</span>` : ''}
   `
 
   galleryEl.appendChild(div)
