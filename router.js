@@ -127,6 +127,10 @@ async function navigate(path, pushState = true) {
       }
     }
 
+    // Rebuild the logo + menu toggle inside the newly swapped topbar. The
+    // overlay itself is retained, so this only upgrades the new page label.
+    window.__refreshMenu?.()
+
     document.body.className = doc.body.className
 
     // Swap page-specific stylesheets

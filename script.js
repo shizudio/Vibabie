@@ -152,7 +152,7 @@ function attachAdaptiveCursor(img) {
 document.querySelectorAll('img').forEach(attachAdaptiveCursor)
 
 // Watch for images added dynamically (e.g. cosmos.js rendering)
-new MutationObserver(mutations => {
+const dynamicImageObserver = new MutationObserver(mutations => {
   for (const m of mutations) {
     m.addedNodes.forEach(node => {
       if (node.nodeType !== 1) return
@@ -162,7 +162,11 @@ new MutationObserver(mutations => {
       node.querySelectorAll?.('iframe').forEach(attachIframeCursorHandoff)
     })
   }
-}).observe(document.body, { childList: true, subtree: true })
+})
+const dynamicContentRoot = document.body || document.documentElement
+if (dynamicContentRoot) {
+  dynamicImageObserver.observe(dynamicContentRoot, { childList: true, subtree: true })
+}
 
 document.addEventListener('mousemove', (e) => {
   cursor.style.left = e.clientX + 'px'

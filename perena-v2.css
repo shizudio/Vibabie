@@ -372,8 +372,8 @@
 
 @media (max-width: 900px) {
   /* collapse to one column — .editorial specificity beats project.css's mobile rule */
-  .project-page.editorial { grid-template-columns: 1fr; }
-  .editorial-col { max-width: 100%; }
+  .project-page.editorial { grid-template-columns: minmax(0, 1fr); }
+  .editorial-col { width: 100%; max-width: 100%; min-width: 0; }
   .ed-metrics { grid-template-columns: 1fr 1fr; }
   .ed-colour-box { grid-template-columns: 1fr; }
   .ed-grid { grid-template-columns: 1fr; }

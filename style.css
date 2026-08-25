@@ -909,8 +909,11 @@ nav:not(.case-sidenav):not(.nav-overlay-nav) a:hover,
 
 /* When menu is open: lift header above overlay, invert label colours */
 body.menu-open .site-header,
-body.menu-open nav {
+body.menu-open nav,
+body.menu-open .project-topbar {
   z-index: 510;
+  background: transparent;
+  border-bottom-color: transparent;
 }
 
 body.menu-open .nav-logo {
@@ -1404,7 +1407,7 @@ body.menu-open .vinyl-widget {
 @media (max-width: 767px) {
   .vinyl-widget {
     bottom: var(--space-lg);
-    right: 16px;
+    right: max(40px, env(safe-area-inset-right));
   }
 
   .vinyl-widget .vinyl-container {

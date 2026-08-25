@@ -16,6 +16,8 @@ const NAV_ITEMS = [
   { label: 'The Laptop',           desc: 'Work & Projects',     href: 'work.html' },
 ]
 
+let focusBeforeMenu = null
+
 function inject() {
   // Replace .nav-page-name span with a toggle button
   const span = document.querySelector('.nav-page-name')
@@ -43,6 +45,9 @@ function inject() {
     span.replaceWith(btn)
   }
 
+  // The overlay is global and survives soft page swaps.
+  if (document.getElementById('nav-overlay')) return
+
   // Inject overlay into body
   const overlay = document.createElement('div')
   overlay.id = 'nav-overlay'
@@ -51,6 +56,7 @@ function inject() {
   overlay.setAttribute('role', 'dialog')
   overlay.setAttribute('aria-label', 'Navigation')
   overlay.setAttribute('aria-modal', 'true')
+  overlay.setAttribute('inert', '')
 
   overlay.innerHTML = `
     <nav class="nav-overlay-nav">
@@ -68,14 +74,16 @@ function inject() {
   document.body.appendChild(overlay)
 }
 
-function openMenu() {
+function openMenu({ focusFirst = false } = {}) {
   const overlay = document.getElementById('nav-overlay')
   const toggle = document.getElementById('menu-toggle')
   if (!overlay) return
 
   overlay.classList.add('open')
   overlay.setAttribute('aria-hidden', 'false')
+  overlay.removeAttribute('inert')
   document.body.classList.add('menu-open')
+  focusBeforeMenu = document.activeElement
 
   if (toggle) {
     toggle.setAttribute('aria-expanded', 'true')
@@ -84,6 +92,9 @@ function openMenu() {
   }
 
   document.body.style.overflow = 'hidden'
+  if (focusFirst) {
+    requestAnimationFrame(() => overlay.querySelector('.nav-overlay-item')?.focus())
+  }
 }
 
 function closeMenu() {
@@ -93,6 +104,7 @@ function closeMenu() {
 
   overlay.classList.remove('open')
   overlay.setAttribute('aria-hidden', 'true')
+  overlay.setAttribute('inert', '')
   document.body.classList.remove('menu-open')
 
   if (toggle) {
@@ -102,6 +114,8 @@ function closeMenu() {
   }
 
   document.body.style.overflow = ''
+  if (focusBeforeMenu instanceof HTMLElement) focusBeforeMenu.focus()
+  focusBeforeMenu = null
 }
 
 function isOpen() {
@@ -111,10 +125,16 @@ function isOpen() {
 export function initMenu() {
   inject()
 
-  const toggle = document.getElementById('menu-toggle')
-  toggle?.addEventListener('click', () => {
+  // Router swaps replace the topbar but keep this module alive. Expose a
+  // refresh hook so the new page label is upgraded to a menu button too.
+  window.__refreshMenu = inject
+
+  // Delegate toggle clicks so a button created after soft navigation works
+  // without adding a second listener or reinjecting the overlay.
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#menu-toggle')) return
     if (isOpen()) closeMenu()
-    else openMenu()
+    else openMenu({ focusFirst: e.detail === 0 })
   })
 
   // Single delegated handler on overlay: nav items + background close
@@ -136,6 +156,27 @@ export function initMenu() {
 
   // Escape key
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && isOpen()) closeMenu()
+    if (e.key === 'Escape' && isOpen()) {
+      e.preventDefault()
+      closeMenu()
+      return
+    }
+
+    if (e.key !== 'Tab' || !isOpen()) return
+    const focusable = [
+      document.getElementById('menu-toggle'),
+      ...document.querySelectorAll('#nav-overlay .nav-overlay-item'),
+    ].filter(Boolean)
+    if (!focusable.length) return
+
+    const first = focusable[0]
+    const last = focusable[focusable.length - 1]
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault()
+      last.focus()
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault()
+      first.focus()
+    }
   })
 }

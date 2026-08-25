@@ -163,21 +163,25 @@ html, body { background: #FFFFFF; }
 /* ── MOBILE ──────────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .project-topbar {
-    padding: 18px 24px;
-    gap: 14px;
-    flex-wrap: wrap;
+    min-height: 54px;
+    padding: 0 var(--page-gutter);
+    gap: 12px;
+    flex-wrap: nowrap;
   }
   .project-page {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: 54px;
   }
   .project-rail {
     position: static;
     padding: 24px 24px 32px;
+    min-width: 0;
   }
   .project-desc { max-width: 44ch; }
   .project-stack {
     padding: 0 24px 24px;
     gap: 12px;
+    min-width: 0;
   }
   .project-foot { padding: 24px 24px 72px; }
 }

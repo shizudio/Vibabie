@@ -5,7 +5,7 @@
 /* ── Page shell ──────────────────────────────────────────────────────────── */
 .cosmos-page {
   padding-top: 82px; /* matches Cosmos --layout-header-height */
-  min-height: 100vh;
+  min-height: 100dvh;
   background: var(--paper-cool); /* matches Cosmos light bg: rgb(245 244 242) */
 }
 
