@@ -3,6 +3,7 @@
   "outputDirectory": "dist",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [{ "source": "/", "destination": "/about", "permanent": false }],
   "headers": [
     {
       "source": "/(.*)\\.json",

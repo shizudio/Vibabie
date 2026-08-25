@@ -9,16 +9,28 @@
    }
    
    main {
-     max-width: 640px;
+     max-width: 1040px;
      width: 100%;
      margin: 0 auto;
      padding: 140px var(--page-gutter, 40px) 100px;
    }
-   
+
+   /* ── INTRO: portrait left, text right ── */
+   .about-intro {
+     display: grid;
+     grid-template-columns: minmax(0, clamp(320px, 30vw, 380px)) minmax(0, 1fr);
+     gap: clamp(48px, 5vw, 64px);
+     align-items: start;
+   }
+
+   .about-intro-text {
+     max-width: 640px;
+   }
+
    .portrait-frame {
     width: 100%;
     aspect-ratio: 3/4;
-    margin-bottom: 56px;
+    margin-bottom: 0;
     position: relative;
     overflow: hidden;
     border-radius: var(--radius-md);
@@ -85,14 +97,61 @@
     border-radius: var(--radius-md);
   }
 
+  /* ── THE ROOM (last section, iframed /play) ── */
+  .about-room {
+    width: 100%;
+    margin-top: 96px;
+  }
+
+  .about-room-label {
+    font-family: var(--font-description);
+    font-size: var(--text-sm);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--stone);
+    font-weight: 300;
+    display: block;
+    margin: 0 0 var(--space-ml, 24px);
+  }
+
+  .about-room-frame {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--paper);
+  }
+
+  .about-room-frame iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+
   /* ── MOBILE RESPONSIVE ── */
   @media (max-width: 767px) {
     main {
       padding: 80px var(--page-gutter) 60px;
     }
 
+    .about-intro {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 32px;
+    }
+
     .portrait-frame {
-      margin-bottom: 32px;
+      max-width: 240px;
+      margin-bottom: 0;
+    }
+
+    .about-room {
+      margin-top: 64px;
+    }
+
+    .about-room-frame {
+      height: 80vh;
     }
 
     .bio {

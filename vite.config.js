@@ -8,6 +8,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
+        play: resolve(__dirname, 'play.html'),
         about: resolve(__dirname, 'about.html'),
         photography: resolve(__dirname, 'photography.html'),
         cosmos: resolve(__dirname, 'cosmos.html'),

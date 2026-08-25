@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shina Foo — Creative</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500&family=EB+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="vinyl.css">
+  <link rel="stylesheet" href="index.css">
+  <!-- Embed mode: when framed (e.g. the room section at the end of About),
+       drop the page chrome — the parent page already has a topbar and the
+       floating vinyl player, so hide this copy's to avoid doubling. -->
+  <script>
+    if (window.self !== window.top) document.documentElement.classList.add('embedded')
+  </script>
+  <style>
+    .embedded .site-header,
+    .embedded #vinyl-widget,
+    .embedded #pe-toggle,
+    .embedded #pe-toast,
+    .embedded #pe-panel,
+    .embedded #pe-toolbar { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <div class="cursor default-cursor" id="cursor"></div>
+
+  <div class="tooltip" id="tooltip">
+    <div class="tooltip-inner">
+      <span class="tooltip-label" id="tt-label"></span>
+      <span class="tooltip-desc" id="tt-desc"></span>
+      <a href="#" class="tooltip-link" id="tt-link"></a>
+    </div>
+  </div>
+
+  <script>
+    // Skip-loader path: hide the loader and reveal the stage instantly,
+    // before paint. The frame-border stays hidden via CSS until index.js
+    // applies the overview transform and adds `.room-ready` to the stage.
+    if (sessionStorage.getItem('skip-loader')) {
+      document.write('<style>.loader{display:none!important}.stage{opacity:1!important;visibility:visible!important}</style>')
+    }
+  </script>
+  <div class="loader" id="loader">
+    <p class="loader-statement">Shizudio is a room I'm slowly furnishing with the things I make, notice, and return to.</p>
+    <div class="loader-art">
+      <img class="loader-video" id="loader-video" src="Loading/loading.gif" alt="loading">
+    </div>
+    <div class="loader-counter">
+      <span class="loader-num" id="loader-num">0</span>
+      <span class="loader-label" id="loader-label">entering the room</span>
+      <span class="loader-hint" id="loader-hint">Tap to enter</span>
+    </div>
+    <p class="loader-statement loader-statement--bottom">It holds my work, images, experiments, tools, songs, and small evidence of how I see the world.</p>
+  </div>
+
+  <header class="site-header" id="site-header">
+    <a href="index.html" class="nav-logo">Shina Foo</a>
+    <span class="nav-page-name">Furnishing My Room</span>
+  </header>
+
+  <main class="stage" id="stage">
+    <div class="room-layout" id="room-layout">
+    <p class="room-statement">Shizudio is a room I'm slowly furnishing with the things I make, notice, and return to.<br>It holds my work, images, experiments, tools, songs, and small evidence of how I see the world.</p>
+    <div class="frame-mount">
+      <div class="frame-border">
+        <div class="room-image" id="room-image">
+          <img src="Portfoliov2.webp" alt="Shina's Room" id="room-img" fetchpriority="high" decoding="async" />
+
+          <!-- EASEL "NOW PAINTING" OVERLAY — latest painting composited onto the canvas (src set by JS from now.json) -->
+          <img id="easel-now-overlay" alt="" aria-hidden="true" decoding="async">
+
+          <!-- ⑨ RECORD PLAYER -->
+          <div class="zone"
+            data-emoji="🎶"
+            data-label="The Record"
+            data-desc="Emotional weather / what I return to"
+            data-href="record.html"
+            data-link-text="View Records"
+            data-external="false"
+            style="top:16.1%; left:30.3%; width:8.2%; height:6.9%;">
+          </div>
+
+          <!-- VINYL HOTSPOT -->
+          <div id="vinyl-hotspot" style="top:16.1%; left:30.3%; width:8.2%; height:6.9%;"></div>
+
+          <!-- VINYL OVERLAY -->
+          <video id="vinyl-overlay" loop muted playsinline aria-hidden="true"></video>
+
+          <!-- ① BOOKS -->
+          <div class="zone"
+            data-emoji="📖"
+            data-label="The Shelf"
+            data-desc="Essays & Writing"
+            data-href="https://shinafoo.substack.com/"
+            data-link-text="Substack"
+            data-external="true"
+            style="top:5%; left:35%; width:18%; height:18%;">
+          </div>
+
+          <!-- FLOWER PAINTING -->
+          <div id="flower-hotspot" class="zone"
+            data-emoji="✿"
+            data-label="The Flower"
+            data-desc="Motif, tenderness, ambiguity, decay"
+            data-href="flowers.html"
+            data-link-text="Enter Flower Room"
+            data-external="false"
+            style="top:1.7%; left:18.6%; width:11.2%; height:18.7%;">
+          </div>
+
+          <!-- ② CANVAS / EASEL -->
+          <div class="zone"
+            data-emoji="🎨"
+            data-label="The Canvas"
+            data-desc="How I make by hand"
+            data-href="art.html"
+            data-link-text="View Art"
+            data-external="false"
+            style="top:10%; left:60%; width:22%; height:55%;">
+          </div>
+
+          <!-- ③ BED -->
+          <div class="zone"
+            data-emoji="🛏"
+            data-label="The Bed"
+            data-desc="Who I am becoming"
+            data-href="about.html"
+            data-link-text="About"
+            data-external="false"
+            style="top:28%; left:18%; width:42%; height:38%;">
+          </div>
+
+          <!-- BED HOTSPOT -->
+          <div id="bed-hotspot" style="top:34.8%; left:18.0%; width:38.4%; height:31.2%;"></div>
+
+          <!-- BED OVERLAY -->
+          <video id="bed-overlay" loop muted playsinline aria-hidden="true"></video>
+
+          <!-- ④ LAMP → AI & Automation -->
+          <div class="zone"
+            data-emoji="✦"
+            data-label="The Lamp"
+            data-desc="AI, tools, automation, building as creative practice"
+            data-href="ai.html"
+            data-link-text="View Tools"
+            data-external="false"
+            style="top:60%; left:6%; width:14%; height:28%;">
+          </div>
+
+          <!-- ⑩ WINDOW → Get in Touch -->
+          <div class="zone"
+            data-emoji="🪟"
+            data-label="The Window"
+            data-desc="How to reach me"
+            data-href="contact.html"
+            data-link-text="Leave a Note"
+            data-external="false"
+            style="top:2%; left:83%; width:17%; height:52%;">
+          </div>
+
+          <!-- BULB HOTSPOT -->
+          <div id="bulb-hotspot" style="top:57.1%; left:8.7%; width:14.4%; height:37.7%;"></div>
+
+          <!-- BULB OVERLAY -->
+          <video id="bulb-overlay" loop muted playsinline aria-hidden="true"></video>
+
+          <!-- ⑤ FUJIFILM CAMERA -->
+          <div class="zone"
+            data-emoji="📷"
+            data-label="The Fujifilm Camera"
+            data-desc="How I notice"
+            data-href="photography.html"
+            data-link-text="View Work"
+            data-external="false"
+            style="top:62%; left:22%; width:16%; height:22%;">
+          </div>
+
+          <!-- CAMERA HOTSPOT -->
+          <div id="camera-hotspot" style="top:66.5%; left:24.0%; width:16%; height:22%;"></div>
+
+          <!-- CAMERA OVERLAY -->
+          <video id="camera-overlay" loop muted playsinline aria-hidden="true"></video>
+
+          <!-- ⑥ IPHONE -->
+          <div class="zone"
+            data-emoji="📱"
+            data-label="The Phone"
+            data-desc="Thoughts & Updates"
+            data-href="https://x.com/shizudio"
+            data-link-text="X / Twitter"
+            data-external="true"
+            style="top:68%; left:41%; width:13%; height:25%;">
+          </div>
+
+          <!-- ⑦ LAPTOP -->
+          <div class="zone"
+            data-emoji="💻"
+            data-label="The Laptop"
+            data-desc="What happened when my inner world touched real systems"
+            data-href="work.html"
+            data-link-text="View Work"
+            data-external="false"
+            style="top:72.4%; left:54.1%; width:23.1%; height:18.2%;">
+          </div>
+
+          <!-- LAPTOP HOTSPOT -->
+          <div id="laptop-hotspot" style="top:72.4%; left:54.1%; width:23.1%; height:18.2%;"></div>
+
+          <!-- LAPTOP OVERLAY -->
+          <video id="laptop-overlay" muted playsinline aria-hidden="true"></video>
+
+          <!-- ⑧ FRENCH PRESS -->
+          <div class="zone"
+            data-emoji="☕"
+            data-label="The French Press"
+            data-desc="My taste, references, visual world"
+            data-href="cosmos.html"
+            data-link-text="View Curation"
+            data-external="false"
+            style="top:50%; left:80%; width:9%; height:28%;">
+          </div>
+
+          <!-- FRENCH PRESS HOTSPOT -->
+          <div id="frenchpress-hotspot" style="top:52.7%; left:79.7%; width:11.3%; height:26.3%;"></div>
+
+          <!-- FRENCH PRESS OVERLAY -->
+          <video id="frenchpress-overlay" loop muted playsinline aria-hidden="true"></video>
+
+          <!-- Mobile overview overlay — sits above all zones; intercepts taps/pinches until expanded -->
+          <div class="overview-overlay" id="overview-overlay" aria-hidden="true"></div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Under-frame museum placards (populated + unhidden by JS from now.json) -->
+    <div class="frame-placards" id="frame-placards" hidden>
+      <a class="placard placard-art" id="placard-painting" href="art.html">
+        <span class="placard-eyebrow"></span>
+        <span class="placard-title"></span>
+        <span class="placard-meta"></span>
+      </a>
+      <a class="placard placard-ship" id="placard-shipping" href="work.html">
+        <span class="placard-eyebrow"></span>
+        <span class="placard-title"></span>
+        <span class="placard-meta"></span>
+      </a>
+    </div>
+
+    <!-- Mobile expand hint — visible in overview state only -->
+    <div class="expand-hint" id="expand-hint" aria-hidden="true">
+      <span class="expand-hint-icon">↕</span>
+      <span class="expand-hint-text">tap to explore</span>
+    </div>
+
+    <p class="room-welcome">
+      <span>Welcome to my room.</span>
+      <span>Click an object to explore a part of me.</span>
+    </p>
+    </div><!-- /.room-layout -->
+
+    <!-- Mobile: tappable link list for zones -->
+    <div class="mobile-links" id="mobile-links">
+      <a href="https://shinafoo.substack.com/" target="_blank" class="mobile-link">
+        <span class="mobile-link-emoji">📖</span>
+        <span class="mobile-link-text">
+          <span class="mobile-link-label">The Shelf</span>
+          <span class="mobile-link-desc">Essays & Writing</span>
+        </span>
+      </a>
+      <a href="art.html" class="mobile-link">
+        <span class="mobile-link-emoji">🎨</span>
+        <span class="mobile-link-text">
+          <span class="mobile-link-label">The Canvas</span>
+          <span class="mobile-link-desc">How I make by hand</span>
+        </span>
+      </a>
+      <a href="flowers.html" class="mobile-link">
+        <span class="mobile-link-emoji">✿</span>
+        <span class="mobile-link-text">
+          <span class="mobile-link-label">The Flower</span>
+          <span class="mobile-link-desc">Motif, tenderness, ambiguity, decay</span>
+        </span>
+      </a>
+      <a href="about.html" class="mobile-link">
+        <span class="mobile-link-emoji">🛏</span>
+        <span class="mobile-link-text">
+          <span class="mobile-link-label">The Bed</span>
+          <span class="mobile-link-desc">Who I am becoming</span>
+        </span>
+      </a>
+      <a href="ai.html" class="mobile-link">
+        <span class="mobile-link-emoji">✦</span>
+        <span class="mobile-link-text">
+          <span class="mobile-link-label">The Lamp</span>
+          <span class="mobile-link-desc">AI, tools, automation, building as creative practice</span>
+        </span>
+      </a>
+      <a href="contact.html" class="mobile-link">
+        <span class="mobile-link-emoji">🪟</span>
+        <span class="mobile-link-text">
+          <span class="mobile-link-label">The Window</span>
+          <span class="mobile-link-desc">How to reach me</span>
+        </span>
+      </a>
+      <a href="photography.html" class="mobile-link">
+        <span class="mobile-link-emoji">📷</span>
+        <span class="mobile-link-text">
+          <span class="mobile-link-label">The Fujifilm Camera</span>
+          <span class="mobile-link-desc">How I notice</span>
+        </span>
+      </a>
+      <a href="cosmos.html" class="mobile-link">
+        <span class="mobile-link-emoji">☕</span>
+        <span class="mobile-link-text">
+          <span class="mobile-link-label">The French Press</span>
+          <span class="mobile-link-desc">My taste, references, visual world</span>
+        </span>
+      </a>
+      <a href="https://x.com/shizudio" target="_blank" class="mobile-link">
+        <span class="mobile-link-emoji">📱</span>
+        <span class="mobile-link-text">
+          <span class="mobile-link-label">The Phone</span>
+          <span class="mobile-link-desc">Thoughts & Updates</span>
+        </span>
+      </a>
+      <a href="work.html" class="mobile-link">
+        <span class="mobile-link-emoji">💻</span>
+        <span class="mobile-link-text">
+          <span class="mobile-link-label">The Laptop</span>
+          <span class="mobile-link-desc">What happened when my inner world touched real systems</span>
+        </span>
+      </a>
+      <a href="record.html" class="mobile-link">
+        <span class="mobile-link-emoji">🎶</span>
+        <span class="mobile-link-text">
+          <span class="mobile-link-label">The Record</span>
+          <span class="mobile-link-desc">Emotional weather / what I return to</span>
+        </span>
+      </a>
+    </div>
+  </main>
+
+  <footer class="site-footer" id="site-footer">
+  </footer>
+
+  <script type="module" src="script.js"></script>
+  <script type="module" src="vinyl-widget.js"></script>
+  <script type="module" src="index.js"></script>
+</body>
+</html>
