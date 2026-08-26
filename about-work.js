@@ -38,6 +38,7 @@ function buildTile(project, i) {
   tile.style.setProperty('--i', STAGGER_START + i)
   tile.dataset.aboutWorkInjected = 'true'
   tile.href = project.href && project.href !== '#' ? project.href : 'work.html'
+  tile.setAttribute('aria-label', project.title || 'View project')
 
   if (project.external) {
     tile.target = '_blank'
@@ -56,18 +57,6 @@ function buildTile(project, i) {
 
   if (project.current) thumb.appendChild(buildBadge())
   tile.appendChild(thumb)
-
-  const title = document.createElement('span')
-  title.className = 'about-work-title'
-  title.textContent = project.title || ''
-  tile.appendChild(title)
-
-  if (project.tag) {
-    const tag = document.createElement('span')
-    tag.className = 'about-work-tag'
-    tag.textContent = project.tag
-    tile.appendChild(tag)
-  }
 
   return tile
 }
