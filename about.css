@@ -108,11 +108,15 @@
      display: block;
      margin-bottom: 8px;
    }
+   /* Upright on purpose: no italic anywhere on this site. The italic used to
+      be what set the value apart from its label — that job now falls to
+      weight and colour, which are the two signals DESIGN.md gives us here:
+      roman 400 ink against the stone uppercase label. */
    .detail-value {
      font-family: var(--font-display);
      font-size: var(--text-base);
-     font-weight: 300;
-     font-style: italic;
+     font-weight: 400;
+     font-style: normal;
      color: var(--ink);
    }
 
@@ -126,25 +130,19 @@
   }
 
   /* ── SELECTED WORK (tiles injected by about-work.js) ──
-     Three 16:9 thumbnails from the top of work-manifest-v2.json, sitting
-     between the hero and the room. Flat like the rest of the site: the
-     restraint is the hover, not a card treatment.
+     Four 16:9 thumbnails from the top of work-manifest-v2.json, laid out
+     two-up as a 2x2, sitting between the hero and the room. Flat like the
+     rest of the site: the restraint is the hover, not a card treatment.
 
-     The row also takes a controlled bleed past the 1040px prose column, so
-     three tiles read at ~400px instead of ~330 without dropping a project:
-     negative margins take the section full-bleed, then a padding that can
-     never fall below the page gutter pulls it back in — content lands at
-     min(1240px, viewport − 2 gutters), centred on the page. Below ~1040px the
-     padding is just the gutter, so the section quietly matches the prose
-     column again and nothing can overflow. */
+     The section sits in the normal 1040px main column — two-up already gives
+     the tiles the scale they need, so there is no bleed to compensate for. */
   .about-work {
-    width: auto;
+    width: 100%;
     margin-top: 96px;
-    margin-inline: calc(50% - 50vw);
-    padding-inline: max(var(--page-gutter), calc(50vw - 620px));
   }
 
-  /* Label left, "All work" hard right against the tile row's own edge. */
+  /* Heading left, "All work" hard right against the grid's own edge. Wraps to
+     two left-aligned lines when the pair no longer fits. */
   .about-work-head {
     display: flex;
     flex-wrap: wrap;
@@ -154,16 +152,27 @@
     margin-bottom: 32px;
   }
 
-  /* .page-label carries a bottom margin globally — nothing to space out now
-     that the head is a single row. */
+  /* Here the label is a true section heading, not the small stone eyebrow it
+     is elsewhere — so it is scoped up in size and dropped out of uppercase.
+     The global .page-label in style.css keeps its eyebrow role for every
+     other page. font-style is pinned upright on purpose: no italic anywhere
+     on this site — headings are EB Garamond roman. */
   .about-work-head .page-label {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2.2vw, 2rem);   /* 24 -> 32px */
+    font-weight: 300;
+    font-style: normal;
+    text-transform: none;
+    letter-spacing: -0.01em;
+    color: var(--ink);
     margin-bottom: 0;
   }
 
+  /* Two-up: at the 1040px column this lands each tile at ~468px wide. */
   .about-work-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px 24px;
   }
 
   .about-work-tile {
@@ -178,7 +187,7 @@
     aspect-ratio: 16 / 9;
     overflow: hidden;
     border-radius: var(--radius-sm);
-    margin-bottom: 14px;
+    margin-bottom: 18px;
   }
 
   /* Absolute so the image's intrinsic height can't inflate the grid row
@@ -200,8 +209,9 @@
   .about-work-title {
     display: block;
     font-family: var(--font-serif);
-    font-size: clamp(0.95rem, 1.1vw, 1.05rem);
-    font-style: italic;
+    font-size: clamp(1.05rem, 1.3vw, 1.2rem);
+    /* Upright on purpose: no italic anywhere on this site. */
+    font-style: normal;
     font-weight: 400;
     color: var(--ink);
     transition: color 0.2s ease;
@@ -215,7 +225,7 @@
     display: block;
     margin-top: 5px;
     font-family: var(--font-sans);
-    font-size: var(--text-xs);
+    font-size: var(--text-sm);
     font-weight: 300;
     text-transform: uppercase;
     letter-spacing: 0.12em;
@@ -262,17 +272,20 @@
     .about-work-badge-dot { animation: none; opacity: 1; }
   }
 
+  /* Peer to the section heading, not a caption under it: sentence case at
+     ~20px in ink, so the pair reads as one line of navigation. */
   .about-work-all {
     display: inline-flex;
     align-items: center;
     gap: 8px;
     margin: 0;
     font-family: var(--font-sans);
-    font-size: var(--text-xs);
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: var(--stone);
+    font-size: clamp(0.95rem, 1.3vw, 1.25rem);
+    font-weight: 500;
+    font-style: normal;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--ink);
     text-decoration: none;
     transition: color 0.2s ease;
   }
@@ -301,13 +314,8 @@
   }
 
   /* ── MOBILE RESPONSIVE ── */
-  /* Tablet: three across gets cramped (~220px) before the mobile stack kicks
-     in, so drop to two and let the tiles keep their size. */
-  @media (min-width: 768px) and (max-width: 1023px) {
-    .about-work-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
+  /* No tablet band: the grid is two-up from the base rule, and at 768px that
+     still leaves ~341px per tile. */
 
   @media (max-width: 767px) {
     main {
@@ -330,6 +338,16 @@
 
     .about-work-head {
       margin-bottom: 24px;
+    }
+
+    /* The desktop clamp floors at 24px, which is heavy on a phone once the
+       head has wrapped to two lines. */
+    .about-work-head .page-label {
+      font-size: clamp(1.35rem, 5.5vw, 1.6rem);
+    }
+
+    .about-work-all {
+      font-size: clamp(0.9rem, 3.8vw, 1rem);
     }
 
     .about-work-grid {

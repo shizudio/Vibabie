@@ -1,8 +1,8 @@
 /**
  * about-work.js — "Selected work" strip on the About page.
  *
- * Renders the first few manifest entries as 16:9 tiles between the hero and
- * the room. Driven entirely by public/work-manifest-v2.json, which is ordered
+ * Renders the first four manifest entries as a 2x2 of 16:9 tiles between the
+ * hero and the room. Driven entirely by public/work-manifest-v2.json, ordered
  * by standing — so "featured" is simply the top of the list, minus anything
  * unfinished. Nothing about the projects is hardcoded here.
  *
@@ -12,11 +12,12 @@
  * before awaiting, so a re-run against an already-populated grid is a no-op.
  */
 
-const MAX_TILES = 3
+// Four, so the two-up grid reads as a clean 2x2 with no hole in the second row.
+const MAX_TILES = 4
 
 // The hero's fade-up stagger uses --i 0–4. The section head is one row of two
 // peers — "Selected work" at 5, the "All work" link at 6 — so the tiles close
-// the same wave at 7–9.
+// the same wave at 7–10.
 const STAGGER_START = 7
 
 function buildBadge() {
