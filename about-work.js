@@ -14,8 +14,9 @@
 
 const MAX_TILES = 3
 
-// The hero's fade-up stagger uses --i 0–4; the section head takes 5–6, so the
-// tiles continue the same wave from 7 and the "All work" link closes it at 10.
+// The hero's fade-up stagger uses --i 0–4. The section head is one row of two
+// peers — "Selected work" at 5, the "All work" link at 6 — so the tiles close
+// the same wave at 7–9.
 const STAGGER_START = 7
 
 function buildBadge() {
