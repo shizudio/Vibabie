@@ -483,17 +483,12 @@ nav.topbar-hidden,
 }
 
 /* ── Unified topbar menu ──
-   Every page carries the same five items: the logo sits hard left, the four
-   section links cluster right. `margin-left: auto` (rather than relying on the
-   bar's space-between) keeps that cluster pinned right even on play.html, where
-   a third child — the room's hamburger — follows it. */
+   Every page carries the same five items, spread evenly across the full bar.
+   `display: contents` dissolves this wrapper so its links become direct flex
+   children of the bar — the bar's own `justify-content: space-between` then
+   distributes logo + links (+ play.html's hamburger) edge to edge. */
 .nav-links {
-  display: flex;
-  align-items: center;
-  gap: clamp(1.1rem, 4vw, 2.4rem);
-  margin-left: auto;
-  white-space: nowrap;
-  pointer-events: all;
+  display: contents;
 }
 
 /* ── Global topbar menu (spread serif, same as case-study pages) ──
@@ -889,16 +884,15 @@ nav:not(.case-sidenav):not(.nav-overlay-nav) a:hover,
 }
 
 /* The room hamburger exists only where a topbar opts in with [data-room-menu]
-   (play.html). It is the bar's last child, so it lands in the top-right corner
-   just past the link cluster — the five links keep their own spacing. */
-[data-room-menu] .menu-toggle {
-  margin-left: clamp(1.1rem, 4vw, 2.4rem);
-}
+   (play.html). As the bar's last flex child it lands in the top-right corner;
+   the bar's space-between distribution handles its spacing. */
 
 /* While the room overlay is open the bar goes transparent over a dark ground,
    so the ink-coloured section links would be unreadable — fade them out and
    leave just the logo and the ✕. */
-body.menu-open .nav-links {
+/* Targets the links themselves, not the wrapper: `.nav-links` is
+   `display: contents`, so it generates no box for opacity to apply to. */
+body.menu-open .nav-links a {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;
