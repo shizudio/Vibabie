@@ -397,9 +397,14 @@
   }
 
   .about-room-frame {
+    position: relative;
     width: 100%;
     height: 100dvh;
     overflow: hidden;
+  }
+
+  .about-room-rotate {
+    display: none;
   }
 
   .about-room-frame iframe {
@@ -470,7 +475,7 @@
     }
 
     .about-room-frame {
-      height: 80dvh;
+      height: min(62dvh, 440px);
     }
 
     .bio {
@@ -514,5 +519,66 @@
 
     .divider {
       margin: 28px 0;
+    }
+  }
+
+  /* Portrait phones get an intentional invitation instead of booting the
+     room into a narrow viewport that will be discarded on rotation. */
+  @media (max-width: 767px) and (orientation: portrait) {
+    .about-room-frame iframe {
+      display: none;
+    }
+
+    .about-room-rotate {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 32px;
+      text-align: center;
+      border: 1px solid var(--border);
+      color: var(--ink);
+      background: var(--paper);
+    }
+
+    .about-room-rotate strong {
+      font-family: var(--font-serif);
+      font-size: clamp(1.35rem, 6vw, 1.7rem);
+      font-weight: 400;
+    }
+
+    .about-room-rotate > span:last-child {
+      max-width: 28ch;
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      line-height: 1.55;
+      color: var(--stone);
+    }
+
+    .about-room-device {
+      width: 34px;
+      height: 54px;
+      margin-bottom: 8px;
+      border: 1.5px solid currentColor;
+      border-radius: 5px;
+      transform: rotate(90deg);
+    }
+  }
+
+  /* A landscape phone is deliberately treated like a small desktop. The
+     full viewport box gives the embedded room stable dimensions and keeps it
+     out of the narrow-screen layout used in portrait. */
+  @media (orientation: landscape) and (max-height: 600px) {
+    .about-room-frame {
+      width: 100vw;
+      height: 100dvh;
+      margin-inline: calc(50% - 50vw);
+    }
+
+    .about-room-frame iframe {
+      display: block;
     }
   }
