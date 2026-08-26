@@ -109,6 +109,12 @@
      z-index: 10;
      border-radius: 40%;
    }
+
+   .zone:focus-visible {
+     outline: 3px solid var(--crimson);
+     outline-offset: 3px;
+     background: rgba(255, 255, 255, 0.18);
+   }
    
    /* ── SHARED OVERLAY TRANSITION ── */
    #vinyl-overlay,
@@ -534,6 +540,9 @@
 
     .zone {
       cursor: pointer;
+      /* The room is scaled to roughly 30% on narrow phones; 80px renders as 24px. */
+      min-width: 80px;
+      min-height: 80px;
     }
 
     /* ── ZONE SHIMMER DOTS ── */

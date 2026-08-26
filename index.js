@@ -1048,6 +1048,28 @@ if (document.readyState === 'complete') {
 }
 
 document.querySelectorAll('.zone').forEach(zone => {
+  const label = zone.dataset.label || 'Open project'
+  const description = zone.dataset.desc ? ` — ${zone.dataset.desc}` : ''
+  zone.setAttribute('role', 'link')
+  zone.tabIndex = 0
+  zone.setAttribute('aria-label', `${label}${description}`)
+
+  const openZone = () => {
+    if (zone.dataset.external === 'true') {
+      window.open(zone.dataset.href, '_blank', 'noopener')
+    } else if (window.__softNavigate) {
+      window.__softNavigate(zone.dataset.href)
+    } else {
+      window.location.href = zone.dataset.href
+    }
+  }
+
+  zone.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return
+    event.preventDefault()
+    openZone()
+  })
+
   // Desktop: hover + click
   zone.addEventListener('mouseenter', () => {
     if (isMobile()) return
@@ -1086,11 +1108,7 @@ document.querySelectorAll('.zone').forEach(zone => {
       revealLink(zone.dataset.label)
     } else {
       // Desktop: click navigates immediately
-      if (zone.dataset.external === 'true') {
-        window.open(zone.dataset.href, '_blank')
-      } else {
-        if (window.__softNavigate) { window.__softNavigate(zone.dataset.href) } else { window.location.href = zone.dataset.href }
-      }
+      openZone()
     }
   })
 })

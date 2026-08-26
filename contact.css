@@ -58,7 +58,7 @@ main {
 .field input::placeholder,
 .field textarea::placeholder {
   color: var(--stone);
-  opacity: 0.5;
+  opacity: 1;
 }
 
 .field input:focus,

@@ -181,6 +181,13 @@
   to   { transform: translateX(-50%); }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .mj-track--fwd {
+    animation: none;
+    transform: none;
+  }
+}
+
 /* ── Carousel tile ───────────────────────────────────────────────────────── */
 .mj-tile {
   width: 240px;
@@ -587,7 +594,7 @@
   /* ── Sidebar → horizontal filter strip ── */
   .mj-body    { flex-direction: column; }
   .mj-filters { flex-direction: row; flex-wrap: wrap; gap: 12px 20px; padding: 0 var(--page-gutter) 16px; }
-  .mj-filter  { min-height: 36px; }
+  .mj-filter  { min-height: 44px; }
 
   /* ── Carousel ── */
   .mj-carousel-clip {

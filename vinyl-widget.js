@@ -293,12 +293,24 @@ function initWidget(IFrameAPI) {
   const defaultUri = defaultTrack?.spotifyId
     ? `spotify:track:${defaultTrack.spotifyId}`
     : 'spotify:playlist:7nJm9hIEEOYdvgNgNxmMVt'
+  const titleSpotifyFrame = () => {
+    const frame = widget.querySelector('iframe[src*="open.spotify.com/embed/"]')
+    if (!frame) return false
+    frame.title = 'Spotify audio player'
+    return true
+  }
+  const frameObserver = new MutationObserver(() => {
+    if (titleSpotifyFrame()) frameObserver.disconnect()
+  })
+  frameObserver.observe(widget, { childList: true, subtree: true })
   IFrameAPI.createController(el, {
     uri: defaultUri,
     width: 1,
     height: 1,
     theme: 0
   }, (controller) => {
+    titleSpotifyFrame()
+    frameObserver.disconnect()
     spotifyController = controller
     controller.addListener('playback_update', (e) => {
       setPlayState(!e.data.isPaused)

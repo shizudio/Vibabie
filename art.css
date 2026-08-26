@@ -59,7 +59,7 @@ html, body { height: 100%; }
 .track-viewport.dragging { cursor: grabbing; }
 /* Mobile: the deck is driven by a custom inertia loop, not native scroll, so
    we own the touch gesture (prevents compositor/main-thread desync trembling). */
-.track-viewport.deck-touch { overflow: hidden; touch-action: none; }
+.track-viewport.deck-touch { overflow: hidden; touch-action: pan-y pinch-zoom; }
 
 .track {
   position: relative;

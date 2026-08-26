@@ -933,6 +933,8 @@ body.menu-open .nav-links a {
 .nav-logo,
 .nav-links a {
   white-space: nowrap;
+  min-width: 24px;
+  justify-content: center;
 }
 
 /* Hairline hamburger icon — the affordance that says "this opens the menu" */

@@ -499,7 +499,7 @@
       margin-bottom: 6px;
       font-size: clamp(0.75rem, 3.2vw, 0.84rem);
       font-weight: 300;
-      color: rgb(28 23 20 / 0.56);
+      color: var(--stone);
     }
 
     .detail-value {

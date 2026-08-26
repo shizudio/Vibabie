@@ -121,6 +121,9 @@ html { overflow-x: clip; scroll-behavior: smooth; }
   font-size: var(--text-xs);
 }
 .case-meta-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-family: var(--font-sans);
   font-size: var(--text-xs);
   font-weight: 300;
@@ -918,7 +921,9 @@ html { overflow-x: clip; scroll-behavior: smooth; }
 
 /* ── CTA ────────────────────────────────── */
 .case-cta {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-family: var(--font-display);
   font-size: clamp(0.88rem, 1.4vw, 1rem);
   font-style: normal;

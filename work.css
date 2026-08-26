@@ -166,6 +166,14 @@ html, body { height: 100%; }
   animation: catalogBadgePulse 1.8s ease-in-out infinite;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .catalog-badge-dot {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* Gallery card: current badge floats as a pill over the image corner */
 .catalog-item-img-wrap { position: relative; }
 .catalog-item-img-wrap .catalog-badge--current {

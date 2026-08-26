@@ -297,6 +297,7 @@
   text-decoration: none;
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   gap: 5px;
   border-bottom: 1px solid var(--border-crimson, rgba(127,31,18,0.25));
   padding-bottom: 1px;
