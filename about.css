@@ -565,6 +565,23 @@
       object-fit: cover;
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
+      transform-origin: center;
+      will-change: transform;
+      animation: aboutRoomRotatePrompt 4.2s ease-in-out infinite;
+    }
+
+    @keyframes aboutRoomRotatePrompt {
+      0%, 18% { transform: rotate(0deg); }
+      42%, 68% { transform: rotate(90deg); }
+      92%, 100% { transform: rotate(0deg); }
+    }
+
+  }
+
+  @media (max-width: 767px) and (orientation: portrait) and (prefers-reduced-motion: reduce) {
+    .about-room-device {
+      animation: none;
+      transform: rotate(90deg);
     }
   }
 
