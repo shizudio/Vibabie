@@ -55,8 +55,11 @@ html, body { background: #FFFFFF; }
   box-sizing: border-box;
 }
 
+/* Rail rhythm: each block gets real breathing room so the logo, the scope
+   line, the description and the CTA read as four distinct beats. Shared by
+   every project page — current and future. */
 .project-title {
-  margin: 0 0 34px;
+  margin: 0 0 44px;
   line-height: 1;
 }
 /* Wordmark logo image (replaces live text when a brand mark exists) */
@@ -73,17 +76,17 @@ html, body { background: #FFFFFF; }
   font-weight: 400;
   letter-spacing: 0.01em;
   color: var(--stone);
-  margin: 0 0 24px;
+  margin: 0 0 30px;
 }
 
 .project-desc {
-  font-family: var(--font-serif);
-  font-size: clamp(0.98rem, 1.1vw, 1.1rem);
-  font-weight: 400;
-  line-height: 1.7;
+  font-family: var(--font-sans);
+  font-size: clamp(1.05rem, 1.2vw, 1.2rem);
+  font-weight: 300;
+  line-height: 1.8;
   color: var(--ink);
-  max-width: 30ch;
-  margin: 0 0 20px;
+  max-width: 34ch;
+  margin: 0 0 44px;
 }
 
 .project-credit {
@@ -144,6 +147,21 @@ html, body { background: #FFFFFF; }
   height: auto;
 }
 
+/* Two-up row inside the stack — for portrait/vertical media that would
+   look absurd at full stack width (e.g. vertical video). Reusable. */
+.project-stack-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  align-items: start;
+}
+.project-stack-pair > * {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-width: 0;
+}
+
 /* Foot back-link at the very bottom of the stack */
 .project-foot {
   padding: 36px 10px 80px 0;
@@ -182,6 +200,10 @@ html, body { background: #FFFFFF; }
     padding: 0 24px 24px;
     gap: 12px;
     min-width: 0;
+  }
+  .project-stack-pair {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
   }
   .project-foot { padding: 24px 24px 72px; }
 }

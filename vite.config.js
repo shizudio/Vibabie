@@ -21,6 +21,7 @@ export default defineConfig({
         ai: resolve(__dirname, 'ai.html'),
         perena: resolve(__dirname, 'perena.html'),
         stoneflower: resolve(__dirname, 'stoneflower.html'),
+        solmi: resolve(__dirname, 'solmi.html'),
         birthday: resolve(__dirname, 'birthday.html'),
         toolPortfolioEditor: resolve(__dirname, 'tool-portfolio-editor.html'),
         toolHotspotEditor: resolve(__dirname, 'tool-hotspot-editor.html'),

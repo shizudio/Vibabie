@@ -12,6 +12,7 @@ const SOFT_NAV_PAGES = [
   '/work.html',
   '/perena.html',
   '/stoneflower.html',
+  '/solmi.html',
   '/ai.html',
   '/tool-portfolio-editor.html',
   '/tool-hotspot-editor.html',
