@@ -105,6 +105,9 @@ html, body { background: #FFFFFF; }
   gap: 14px 20px;
 }
 .project-visit {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-family: var(--font-serif);
   font-style: normal;
   font-size: 0.95rem;
@@ -167,6 +170,9 @@ html, body { background: #FFFFFF; }
   padding: 36px 10px 80px 0;
 }
 .project-back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-family: var(--font-sans);
   font-size: var(--text-xs);
   font-weight: 300;

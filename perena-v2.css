@@ -158,6 +158,9 @@
   color: var(--ink);
 }
 .ed-body a, .ed-inline-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--crimson);
   text-decoration: none;
   border-bottom: 1px solid var(--border-crimson, rgba(127,31,18,0.25));
@@ -349,7 +352,7 @@
 .ed-credit { padding: 18px 0; border-top: 1px solid var(--border); }
 .ed-credit-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; margin-bottom: 6px; }
 .ed-credit-name { font-family: var(--font-serif); font-style: normal; font-size: 1.05rem; color: var(--ink); }
-.ed-credit-handle { font-family: var(--font-sans); font-size: 0.78rem; color: var(--crimson); text-decoration: none; }
+.ed-credit-handle { display: inline-flex; align-items: center; min-height: 44px; font-family: var(--font-sans); font-size: 0.78rem; color: var(--crimson); text-decoration: none; }
 .ed-credit-role { font-family: var(--font-sans); font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--stone); margin-left: auto; }
 .ed-credit-note { font-family: var(--font-sans); font-size: 0.85rem; font-weight: 300; line-height: 1.7; color: var(--stone); margin: 0; max-width: 620px; }
 

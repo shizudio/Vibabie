@@ -537,7 +537,9 @@ a.ai-card:hover .ai-card-link {
   /* On mobile: pull out of fixed position, flow inline after the number strip */
   .catalog-resume-fixed {
     position: static;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     margin-top: 20px;
     margin-left: 4px;
   }

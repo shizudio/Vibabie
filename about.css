@@ -97,6 +97,9 @@
      flex-wrap: wrap;
    }
    .detail-link {
+     display: inline-flex;
+     align-items: center;
+     min-height: 44px;
      color: var(--crimson);
      text-decoration: none;
      border-bottom: 1px solid var(--border-crimson, rgba(127, 31, 18, 0.25));
@@ -282,6 +285,7 @@
   .about-work-all {
     display: inline-flex;
     align-items: center;
+    min-height: 44px;
     gap: 8px;
     margin: 0;
     font-family: var(--font-sans);
