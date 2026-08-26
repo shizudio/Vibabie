@@ -327,6 +327,38 @@ function fitRoom() {
   const naturalH = img.naturalHeight || 856
   const ratio = naturalW / naturalH
 
+  // Embedded on About: fit against the iframe itself, not the standalone
+  // page's header, footer, statement, or placard reserves. This keeps a
+  // landscape phone large and stable instead of shrinking the painting into
+  // the small height left after subtracting chrome that is hidden in embeds.
+  if (window.__ROOM_EMBEDDED__) {
+    const viewportW = window.innerWidth
+    const viewportH = Math.round(window.visualViewport?.height || window.innerHeight)
+    const scale = Math.min(viewportW / naturalW, viewportH / naturalH)
+    const w = Math.round(naturalW * scale)
+    const h = Math.round(naturalH * scale)
+    const frameBorder = document.querySelector('.frame-border')
+    const frameMount = document.querySelector('.frame-mount')
+
+    img.style.width = w + 'px'
+    img.style.height = h + 'px'
+    roomImage.style.width = w + 'px'
+    roomImage.style.height = h + 'px'
+    if (roomLayout) roomLayout.style.width = w + 'px'
+    if (frameBorder) {
+      frameBorder.style.width = w + 'px'
+      frameBorder.style.height = h + 'px'
+      frameBorder.style.transform = 'none'
+    }
+    if (frameMount) {
+      frameMount.style.width = w + 'px'
+      frameMount.style.height = h + 'px'
+      frameMount.style.marginTop = '0'
+      frameMount.style.overflow = 'hidden'
+    }
+    return
+  }
+
   if (mobile) {
     if (mobileExpanded) {
       // Re-apply expanded dimensions on resize

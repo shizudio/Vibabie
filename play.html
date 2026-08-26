@@ -126,7 +126,13 @@
     .embedded .stage {
       opacity: 1;
       visibility: visible;
+      padding: 0;
+      transition: none;
     }
+
+    .embedded .frame-mount,
+    .embedded .frame-border,
+    .embedded .room-image { transition: none !important; }
 
     .embedded .zone,
     .embedded #vinyl-hotspot,

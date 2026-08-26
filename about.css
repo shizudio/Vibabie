@@ -559,12 +559,12 @@
     }
 
     .about-room-device {
-      width: 34px;
-      height: 54px;
+      width: 72px;
+      height: 88px;
       margin-bottom: 8px;
-      border: 1.5px solid currentColor;
-      border-radius: 5px;
-      transform: rotate(90deg);
+      object-fit: cover;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
     }
   }
 
