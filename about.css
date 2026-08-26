@@ -206,7 +206,10 @@
     transform: scale(1.03);
   }
 
-  .about-work-title {
+  /* Shared caption voice — the art rail below borrows it verbatim so both
+     strips read as one system rather than two lookalikes drifting apart. */
+  .about-work-title,
+  .about-art-title {
     display: block;
     font-family: var(--font-serif);
     font-size: clamp(1.05rem, 1.3vw, 1.2rem);
@@ -217,11 +220,13 @@
     transition: color 0.2s ease;
   }
 
-  .about-work-tile:hover .about-work-title {
+  .about-work-tile:hover .about-work-title,
+  .about-art-card:hover .about-art-title {
     color: var(--crimson);
   }
 
-  .about-work-tag {
+  .about-work-tag,
+  .about-art-meta {
     display: block;
     margin-top: 5px;
     font-family: var(--font-sans);
@@ -294,6 +299,99 @@
   .about-work-arrow { transition: transform 0.25s ease; }
   .about-work-all:hover .about-work-arrow { transform: translateX(4px); }
 
+  /* ── ARTWORKS (cards injected by about-art.js) ──
+     A full-bleed horizontal rail, deliberately a different register from the
+     tiles above: the work is a finite selection you read, the paintings are a
+     body you browse. Scrolling is native CSS scroll-snap — no JS. */
+  .about-art {
+    width: 100%;
+    margin-top: 96px;
+
+    /* ~300px lands 3 full cards plus a generous partial at 1440px, and about
+       1.2 cards on a 375px phone — the sliver IS the "scroll me" affordance. */
+    --about-art-card: clamp(260px, 76vw, 300px);
+    --about-art-gap: 20px;
+
+    /* The distance from the viewport edge to main's prose column. Below the
+       1040px column it is just the gutter; above it, the column's own centring
+       offset (50vw - 520px) plus that gutter. Continuous at the crossover. */
+    --about-art-inset: max(
+      var(--page-gutter),
+      calc(50vw - 520px + var(--page-gutter))
+    );
+  }
+
+  /* Full-bleed: margin-inline: calc(50% - 50vw) resolves 50% against main's
+     content box, which places the rail's left edge at viewport x=0 and its
+     width at exactly 100vw — no more, so it cannot widen the page. The one
+     residual is that vw units count a classic vertical scrollbar; style.css
+     already pins `html, body { overflow-x: clip }` site-wide, which absorbs
+     that. Do not remove that rule without revisiting this. */
+  .about-art-rail {
+    display: flex;
+    gap: var(--about-art-gap);
+    margin-inline: calc(50% - 50vw);
+    padding-inline: var(--about-art-inset);
+    /* Snapport matches the padding so a snapped card lands flush with the
+       prose column instead of tucking under the inset. */
+    scroll-padding-inline: var(--about-art-inset);
+    /* Breathing room so a focus ring is not clipped by the scroll container. */
+    padding-block: 2px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+
+    /* Genuinely scrollable, just not visibly so — the partial card carries
+       the affordance, and trackpad / touch / shift+wheel / keyboard all work. */
+    scrollbar-width: none;
+  }
+
+  .about-art-rail::-webkit-scrollbar { display: none; }
+
+  .about-art-card {
+    flex: 0 0 auto;
+    width: var(--about-art-card);
+    scroll-snap-align: start;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* 4:5 for every card. 16:9 is the house standard for *project thumbnails*;
+     paintings are mixed-ratio, and a ragged rail would leave the captions
+     dancing. One portrait-leaning crop here, true proportions on the Art
+     page — which is where the work is actually looked at. */
+  .about-art-thumb {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    margin-bottom: 18px;
+  }
+
+  .about-art-thumb img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .about-art-card:hover .about-art-thumb img {
+    transform: scale(1.03);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .about-art-rail { scroll-behavior: auto; }
+    .about-art-thumb img { transition: none; }
+    .about-art-card:hover .about-art-thumb img { transform: none; }
+  }
+
   /* ── THE ROOM (last section, iframed /play) ── */
   .about-room {
     width: 100%;
@@ -353,6 +451,11 @@
     .about-work-grid {
       grid-template-columns: minmax(0, 1fr);
       gap: 32px;
+    }
+
+    .about-art {
+      margin-top: 64px;
+      --about-art-gap: 16px;
     }
 
     .about-room {
