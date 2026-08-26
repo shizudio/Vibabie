@@ -482,12 +482,17 @@ nav.topbar-hidden,
   opacity: 0;
 }
 
-.nav-page-name {
-  font-size: var(--text-xs);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--stone);
-  font-weight: 200;
+/* ── Unified topbar menu ──
+   Every page carries the same five items: the logo sits hard left, the four
+   section links cluster right. `margin-left: auto` (rather than relying on the
+   bar's space-between) keeps that cluster pinned right even on play.html, where
+   a third child — the room's hamburger — follows it. */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.1rem, 4vw, 2.4rem);
+  margin-left: auto;
+  white-space: nowrap;
   pointer-events: all;
 }
 
@@ -880,6 +885,30 @@ nav:not(.case-sidenav):not(.nav-overlay-nav) a:hover,
   display: inline-flex;
   align-items: center;
   gap: 9px;
+  flex: none;
+}
+
+/* The room hamburger exists only where a topbar opts in with [data-room-menu]
+   (play.html). It is the bar's last child, so it lands in the top-right corner
+   just past the link cluster — the five links keep their own spacing. */
+[data-room-menu] .menu-toggle {
+  margin-left: clamp(1.1rem, 4vw, 2.4rem);
+}
+
+/* While the room overlay is open the bar goes transparent over a dark ground,
+   so the ink-coloured section links would be unreadable — fade them out and
+   leave just the logo and the ✕. */
+body.menu-open .nav-links {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+/* Two-word names must never break across lines in a 58px bar */
+.site-logo,
+.nav-logo,
+.nav-links a {
+  white-space: nowrap;
 }
 
 /* Hairline hamburger icon — the affordance that says "this opens the menu" */

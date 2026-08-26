@@ -127,8 +127,9 @@ async function navigate(path, pushState = true) {
       }
     }
 
-    // Rebuild the logo + menu toggle inside the newly swapped topbar. The
-    // overlay itself is retained, so this only upgrades the new page label.
+    // Re-evaluate the room-menu gate against the newly swapped topbar: it adds
+    // the hamburger + overlay on a [data-room-menu] page and tears them down
+    // everywhere else.
     window.__refreshMenu?.()
 
     document.body.className = doc.body.className

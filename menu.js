@@ -18,17 +18,40 @@ const NAV_ITEMS = [
 
 let focusBeforeMenu = null
 
+/**
+ * The room-themed overlay is a play.html-only affordance now — every other page
+ * uses the flat horizontal topbar. Pages opt in by putting `data-room-menu` on
+ * their topbar element, which is markup the router carries along when it swaps
+ * the header on a soft navigation (a body-level flag would not: router.js copies
+ * `body.className` only). Reading the marker fresh on every inject() therefore
+ * gives the right answer both on first load and after a soft swap.
+ */
+function roomBar() {
+  return document.querySelector('[data-room-menu]')
+}
+
 function inject() {
-  // Replace .nav-page-name span with a toggle button
-  const span = document.querySelector('.nav-page-name')
-  if (span) {
+  const bar = roomBar()
+
+  // Not a room page: make sure nothing is left over from a previous page.
+  if (!bar) {
+    document.getElementById('menu-toggle')?.remove()
+    document.getElementById('nav-overlay')?.remove()
+    document.body.classList.remove('menu-open')
+    document.body.style.overflow = ''
+    return
+  }
+
+  // Build the hamburger straight into the topbar. (There is no .nav-page-name
+  // span to upgrade any more — the topbar is real links on every page.)
+  if (!document.getElementById('menu-toggle')) {
     const btn = document.createElement('button')
+    btn.type = 'button'
     btn.className = 'menu-toggle'
     btn.id = 'menu-toggle'
-    btn.setAttribute('aria-label', 'Toggle navigation')
+    btn.setAttribute('aria-label', 'Open the room menu')
     btn.setAttribute('aria-expanded', 'false')
-
-    btn.dataset.label = span.textContent
+    btn.setAttribute('aria-controls', 'nav-overlay')
 
     // Hairline hamburger icon → signals "opens navigation"; morphs to ✕ when open
     const icon = document.createElement('span')
@@ -36,13 +59,8 @@ function inject() {
     icon.setAttribute('aria-hidden', 'true')
     icon.innerHTML = '<i></i><i></i><i></i>'
 
-    const labelEl = document.createElement('span')
-    labelEl.className = 'menu-toggle-label'
-    labelEl.textContent = span.textContent
-
     btn.appendChild(icon)
-    btn.appendChild(labelEl)
-    span.replaceWith(btn)
+    bar.appendChild(btn)
   }
 
   // The overlay is global and survives soft page swaps.
@@ -126,19 +144,22 @@ export function initMenu() {
   inject()
 
   // Router swaps replace the topbar but keep this module alive. Expose a
-  // refresh hook so the new page label is upgraded to a menu button too.
+  // refresh hook so the gate is re-evaluated against the newly swapped markup.
   window.__refreshMenu = inject
 
-  // Delegate toggle clicks so a button created after soft navigation works
-  // without adding a second listener or reinjecting the overlay.
+  // One delegated handler on the document covers the toggle, the overlay items
+  // and the overlay background, so a toggle or overlay built after a soft
+  // navigation keeps working without re-binding anything.
   document.addEventListener('click', e => {
-    if (!e.target.closest('#menu-toggle')) return
-    if (isOpen()) closeMenu()
-    else openMenu({ focusFirst: e.detail === 0 })
-  })
+    if (e.target.closest('#menu-toggle')) {
+      if (isOpen()) closeMenu()
+      else openMenu({ focusFirst: e.detail === 0 })
+      return
+    }
 
-  // Single delegated handler on overlay: nav items + background close
-  document.getElementById('nav-overlay')?.addEventListener('click', e => {
+    const overlay = document.getElementById('nav-overlay')
+    if (!overlay || !overlay.contains(e.target)) return
+
     const item = e.target.closest('.nav-overlay-item')
     if (item) {
       const href = item.getAttribute('href')
@@ -151,7 +172,7 @@ export function initMenu() {
       return
     }
     // Click on bare overlay background closes menu
-    if (e.target === e.currentTarget) closeMenu()
+    if (e.target === overlay) closeMenu()
   })
 
   // Escape key
