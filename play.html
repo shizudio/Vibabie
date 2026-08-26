@@ -157,12 +157,12 @@
   </div>
 
   <script>
-    // Skip-loader path: hide the loader and reveal the stage instantly,
-    // before paint. The frame-border stays hidden via CSS until index.js
-    // applies the overview transform and adds `.room-ready` to the stage.
-    if (sessionStorage.getItem('skip-loader')) {
-      document.write('<style>.loader{display:none!important}.stage{opacity:1!important;visibility:visible!important}</style>')
-    }
+    // The intro (count-up + loading video) is retired — the room reveals
+    // immediately, framed or standalone. index.js's skip-loader path does
+    // exactly that: hides the loader, reveals the stage, and applies the
+    // overview transform before paint.
+    try { sessionStorage.setItem('skip-loader', '1') } catch (e) {}
+    document.write('<style>.loader{display:none!important}.stage{opacity:1!important;visibility:visible!important}</style>')
   </script>
   <div class="loader" id="loader">
     <p class="loader-statement">Shizudio is a room I'm slowly furnishing with the things I make, notice, and return to.</p>
