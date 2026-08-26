@@ -427,11 +427,20 @@
     .about-intro {
       grid-template-columns: minmax(0, 1fr);
       gap: 32px;
+      text-align: center;
+    }
+
+    .about-intro-text {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      margin-inline: auto;
     }
 
     .portrait-frame {
       max-width: 240px;
-      margin-bottom: 0;
+      margin: 0 auto;
     }
 
     .about-work {
@@ -477,16 +486,25 @@
 
     .detail-row {
       flex-direction: column;
+      align-items: center;
+      width: 100%;
       gap: 20px;
       margin-bottom: 32px;
     }
 
+    .detail-item {
+      text-align: center;
+    }
+
     .detail-label {
-      font-size: var(--text-xs);
+      margin-bottom: 6px;
+      font-size: clamp(0.75rem, 3.2vw, 0.84rem);
+      font-weight: 500;
     }
 
     .detail-value {
-      font-size: clamp(0.88rem, 3.5vw, 0.95rem);
+      font-size: clamp(1.02rem, 4.4vw, 1.14rem);
+      font-weight: 500;
     }
 
     .page-h1-sub {
