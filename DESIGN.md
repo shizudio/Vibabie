@@ -14,10 +14,12 @@
 - **Core principle:** The professionalism comes from the institution around the painting, not from repainting it. Cozy illustration alone reads amateur; the same illustration framed and placarded reads intentional.
 
 ## Typography
-- **Display/Titles:** EB Garamond italic — the emotional register. Kept from the original site; it carries the fine-art voice.
+- **NO ITALIC — anywhere, in any scenario.** EB Garamond's italic is ruled out by the owner. Nothing on this site renders slanted: no headings, no metadata values, no captions, no pull quotes, no link treatments, no stray `<em>`/`<i>`/`<cite>`. `style.css` carries a backstop rule on the italic-defaulting elements; every per-rule declaration is written as an explicit `font-style: normal` (never deleted, so an italic ancestor can't leak through).
+- **Display/Titles:** EB Garamond **Roman 300** — upright. Still the emotional register and still the fine-art voice; the weight and the generous size carry it, not the slant.
 - **Prose/Body:** EB Garamond roman, minimum 17px — for long-form (about, essays, case notes).
+- **Emphasis:** carried by **weight and colour only** — step body 300 → 400 and lift to `--ink`, or switch to the crimson/oxblood pigment. Never slant, and never underline, uppercase, or letter-spacing as a substitute — those are the link, label, and placard signals respectively.
 - **Placards/Nav/Metadata:** Fragment Mono, letterspaced (0.1–0.22em), uppercase for labels — the museum-label voice. Replaces Instrument Sans entirely (retired: it was the one generic ingredient).
-- **Loading:** Google Fonts — `EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500` + `Fragment+Mono:ital@0;1`.
+- **Loading:** Google Fonts, roman axis only — `EB+Garamond:wght@400;500;600` + `Fragment+Mono` (no axis spec — Fragment Mono's only axis was `ital`). Never request an `ital` axis; the italic faces are dead weight on every page load.
 - **Scale:** Display clamp(2.4rem→3.6rem) · Section titles 2rem · Work titles 1.3rem · Prose 18px/1.65 · Placards 0.66–0.78rem · Nav/labels 0.62–0.68rem.
 
 ## Color
@@ -40,7 +42,7 @@
 
 ## Layout
 - **Approach:** Hybrid — grid-disciplined catalogue with exactly one creative-editorial moment (the framed room).
-- **Landing (desktop):** masthead (name + mono nav) → italic display one-liner + mono subline → the diptych (NOW PAINTING / NOW SHIPPING panels, equal size, matching placards) → the room, framed and placarded, click to enter immersive mode.
+- **Landing (desktop):** masthead (name + mono nav) → display one-liner (Roman 300) + mono subline → the diptych (NOW PAINTING / NOW SHIPPING panels, equal size, matching placards) → the room, framed and placarded, click to enter immersive mode.
 - **Landing (mobile):** same content, single scrollable column, zero custom scroll physics. The room is a framed tappable piece; panning happens on its own page.
 - **Prose column:** max 640px. Diptych/catalogue: max ~1100px.
 - **Border radius:** 0 everywhere except device mocks. Frames are rectangles; galleries don't round corners.
@@ -71,8 +73,10 @@
 | Laptop diegetic overlay | NOT built — laptop is painted closed (lid only); a screenshot would read as a decal. Shipping story lives in its placard + hover | Agent finding, honors the painting |
 | Ultramarine second pigment | Used only on the NOW SHIPPING placard eyebrow (one local CSS var) | Amendable, live taste test |
 | Fragment Mono / headline copy | Apply only to v2 reference page, not the live site | Amendable |
+| Italic as a decorative device | **KILLED site-wide.** No italic anywhere, in any scenario — headings become EB Garamond **Roman 300**; emphasis moves to weight + colour. Reverses the original "Display/Titles: EB Garamond italic" decision. `ital` axis dropped from every Google Fonts request | User-confirmed — NOT amendable, do not reintroduce |
 
 ## Decisions Log
 | Date | Decision | Rationale |
 |------|----------|-----------|
+| 2026-08-26 | Italic retired site-wide; headings → EB Garamond Roman 300 | Owner dislikes EB Garamond's italic. 73 `font-style: italic` declarations flipped to explicit `normal` across every stylesheet (declarations set explicitly, never deleted, so italic can't be inherited from an ancestor); backstop rule added to `style.css` for `em/i/cite/address/dfn/var/blockquote/q`; `ital` axis stripped from all 17 Google Fonts requests. Emphasis re-homed on weight (300→400, `--ink`) and the crimson pigment. |
 | 2026-07-10 | Initial design system created | /design-consultation: reference research (noahmiles/aurorix/artemis framer sites), live-site audit, blind subagent proposal, 9 user decisions. Preview: `~/.gstack/projects/shizudio-Vibabie/designs/design-system-20260710/preview.html` |

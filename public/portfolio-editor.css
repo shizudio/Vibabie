@@ -209,13 +209,13 @@
 .pe-style-preview--h2 {
   font-family: 'EB Garamond', serif;
   font-size: 1.05rem;
-  font-style: italic;
+  font-style: normal;
   font-weight: 300;
 }
 .pe-style-preview--h3 {
   font-family: 'EB Garamond', serif;
   font-size: 0.88rem;
-  font-style: italic;
+  font-style: normal;
   color: #9B2C1A;
 }
 .pe-style-preview--body {
@@ -228,13 +228,13 @@
   font-family: 'Instrument Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 300;
-  font-style: italic;
+  font-style: normal;
   color: #6b5f5c;
 }
 .pe-style-preview--quote {
   font-family: 'EB Garamond', serif;
   font-size: 0.88rem;
-  font-style: italic;
+  font-style: normal;
   border-left: 2px solid #9B2C1A;
   padding-left: 8px;
 }
@@ -249,7 +249,7 @@
 .pe-style-preview--thesis {
   font-family: 'EB Garamond', serif;
   font-size: 0.82rem;
-  font-style: italic;
+  font-style: normal;
   color: #6b5f5c;
   border-left: 2px solid var(--border, #E8E0DC);
   padding-left: 8px;

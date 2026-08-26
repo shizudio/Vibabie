@@ -107,7 +107,7 @@ html, body { height: 100%; }
 .catalog-title {
   font-family: var(--font-serif);
   font-size: clamp(0.78rem, 0.9vw, 0.88rem);
-  font-style: italic;
+  font-style: normal;
   font-weight: 400;
   color: var(--ink);
   white-space: nowrap;
@@ -302,7 +302,7 @@ html, body { height: 100%; }
 .catalog-item-name {
   font-family: var(--font-serif);
   font-size: clamp(0.82rem, 1vw, 0.95rem);
-  font-style: italic;
+  font-style: normal;
   color: var(--ink);
   transition: color 0.2s ease;
 }
@@ -395,7 +395,7 @@ html, body { height: 100%; }
 .ai-section-h2 {
   font-family: var(--font-serif);
   font-size: clamp(1.5rem, 2.5vw, 2rem);
-  font-style: italic;
+  font-style: normal;
   font-weight: 400;
   color: var(--ink);
   margin: 0 0 16px;
@@ -464,7 +464,7 @@ a.ai-card:hover,
 
 .ai-card-name {
   font-family: var(--font-serif);
-  font-style: italic;
+  font-style: normal;
   font-size: clamp(0.95rem, 1.1vw, 1.05rem);
   font-weight: 400;
   color: var(--ink);
@@ -506,7 +506,7 @@ a.ai-card:hover .ai-card-name { color: var(--crimson); }
 
 .ai-card-link {
   font-family: var(--font-serif);
-  font-style: italic;
+  font-style: normal;
   font-size: 0.82rem;
   color: var(--crimson);
   white-space: nowrap;
@@ -523,7 +523,7 @@ a.ai-card:hover .ai-card-link {
 .ai-section-footnote {
   font-family: var(--font-sans);
   font-weight: 200;
-  font-style: italic;
+  font-style: normal;
   font-size: var(--text-sm, 0.88rem);
   color: var(--stone);
   margin-top: 52px;

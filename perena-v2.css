@@ -70,7 +70,7 @@
 /* Lead thesis */
 .ed-lead {
   font-family: var(--font-serif);
-  font-style: italic;
+  font-style: normal;
   font-weight: 400;
   font-size: clamp(1.8rem, 3vw, 2.5rem);
   line-height: 1.36;
@@ -127,7 +127,7 @@
 }
 .ed-h2 {
   font-family: var(--font-serif);
-  font-style: italic;
+  font-style: normal;
   font-weight: 400;
   font-size: clamp(1.7rem, 2.6vw, 2.2rem);
   line-height: 1.22;
@@ -136,7 +136,7 @@
 }
 .ed-sub {
   font-family: var(--font-serif);
-  font-style: italic;
+  font-style: normal;
   font-size: 1.4rem;
   color: var(--ink);
   margin: 52px 0 20px;
@@ -152,7 +152,7 @@
 }
 .ed-body--em {
   font-family: var(--font-serif);
-  font-style: italic;
+  font-style: normal;
   font-size: 1.12rem;
   line-height: 1.6;
   color: var(--ink);
@@ -179,7 +179,7 @@
 
 .ed-pullquote {
   font-family: var(--font-serif);
-  font-style: italic;
+  font-style: normal;
   font-size: clamp(1.45rem, 2.1vw, 1.85rem);
   line-height: 1.42;
   color: var(--crimson);
@@ -340,7 +340,7 @@
 }
 .ed-article-row:last-child { border-bottom: 1px solid var(--border); }
 .ed-article-row:hover { padding-left: 12px; background: var(--paper-dim, #f6f2ec); }
-.ed-article-title { font-family: var(--font-serif); font-style: italic; font-size: 1.1rem; color: var(--ink); }
+.ed-article-title { font-family: var(--font-serif); font-style: normal; font-size: 1.1rem; color: var(--ink); }
 .ed-article-row:hover .ed-article-title { color: var(--crimson); }
 .ed-article-date { font-family: var(--font-sans); font-size: 0.72rem; color: var(--stone); white-space: nowrap; }
 
@@ -348,7 +348,7 @@
 .ed-credits { margin: 12px 0; }
 .ed-credit { padding: 18px 0; border-top: 1px solid var(--border); }
 .ed-credit-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; margin-bottom: 6px; }
-.ed-credit-name { font-family: var(--font-serif); font-style: italic; font-size: 1.05rem; color: var(--ink); }
+.ed-credit-name { font-family: var(--font-serif); font-style: normal; font-size: 1.05rem; color: var(--ink); }
 .ed-credit-handle { font-family: var(--font-sans); font-size: 0.78rem; color: var(--crimson); text-decoration: none; }
 .ed-credit-role { font-family: var(--font-sans); font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--stone); margin-left: auto; }
 .ed-credit-note { font-family: var(--font-sans); font-size: 0.85rem; font-weight: 300; line-height: 1.7; color: var(--stone); margin: 0; max-width: 620px; }
@@ -362,7 +362,7 @@
 .ed-close .ed-metric-num { font-size: clamp(2.4rem, 4vw, 3.4rem); }
 .ed-close-quote {
   font-family: var(--font-serif);
-  font-style: italic;
+  font-style: normal;
   font-size: clamp(1.3rem, 2vw, 1.7rem);
   line-height: 1.4;
   color: var(--ink);

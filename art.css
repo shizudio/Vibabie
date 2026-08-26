@@ -173,7 +173,7 @@ html, body { height: 100%; }
 }
 .art-card-title {
   font-family: var(--font-serif);
-  font-style: italic;
+  font-style: normal;
   font-size: clamp(0.82rem, 1vw, 0.95rem);
   color: var(--ink);
   white-space: nowrap;
@@ -291,7 +291,7 @@ html, body { height: 100%; }
 }
 .deck-caption-title {
   font-family: var(--font-serif);
-  font-style: italic;
+  font-style: normal;
   font-size: clamp(1.05rem, 1.6vw, 1.4rem);
   color: var(--crimson);
   white-space: nowrap;
@@ -437,7 +437,7 @@ html, body { height: 100%; }
   left: 10px;
   bottom: 8px;
   font-family: var(--font-serif);
-  font-style: italic;
+  font-style: normal;
   font-size: 0.8rem;
   color: #fff;
   text-shadow: 0 1px 4px rgba(0,0,0,0.5);
