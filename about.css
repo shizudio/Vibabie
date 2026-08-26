@@ -125,6 +125,155 @@
     border-radius: var(--radius-md);
   }
 
+  /* ── SELECTED WORK (tiles injected by about-work.js) ──
+     Three 16:9 thumbnails from the top of work-manifest-v2.json, sitting
+     between the hero and the room. Flat like the rest of the site: the
+     restraint is the hover, not a card treatment. */
+  .about-work {
+    width: 100%;
+    margin-top: 96px;
+  }
+
+  .about-work-head {
+    margin-bottom: 32px;
+  }
+
+  /* .page-label carries a 32px bottom margin globally — too much between a
+     label and the line it introduces. */
+  .about-work-head .page-label {
+    margin-bottom: 10px;
+  }
+
+  .about-work-lede {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--ink);
+  }
+
+  .about-work-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .about-work-tile {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* 16:9 is the house standard for project thumbnails. */
+  .about-work-thumb {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    margin-bottom: 14px;
+  }
+
+  /* Absolute so the image's intrinsic height can't inflate the grid row
+     past the 16:9 wrap (same fix as the work grid). */
+  .about-work-thumb img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .about-work-tile:hover .about-work-thumb img {
+    transform: scale(1.03);
+  }
+
+  .about-work-title {
+    display: block;
+    font-family: var(--font-serif);
+    font-size: clamp(0.95rem, 1.1vw, 1.05rem);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--ink);
+    transition: color 0.2s ease;
+  }
+
+  .about-work-tile:hover .about-work-title {
+    color: var(--crimson);
+  }
+
+  .about-work-tag {
+    display: block;
+    margin-top: 5px;
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--stone);
+  }
+
+  /* Mirrors .catalog-badge--current from the work grid, minus the shadow
+     (stripped site-wide anyway) — a hairline holds it off the image instead. */
+  .about-work-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--paper);
+    font-family: var(--font-sans);
+    font-size: 0.56rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--crimson);
+  }
+
+  @keyframes aboutWorkBadgePulse {
+    0%, 100% { opacity: 0.35; transform: scale(1); }
+    50%      { opacity: 1;    transform: scale(1.25); }
+  }
+
+  .about-work-badge-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--crimson);
+    flex-shrink: 0;
+    animation: aboutWorkBadgePulse 1.8s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .about-work-badge-dot { animation: none; opacity: 1; }
+  }
+
+  .about-work-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 32px;
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--stone);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .about-work-all:hover { color: var(--crimson); }
+
+  .about-work-arrow { transition: transform 0.25s ease; }
+  .about-work-all:hover .about-work-arrow { transform: translateX(4px); }
+
   /* ── THE ROOM (last section, iframed /play) ── */
   .about-room {
     width: 100%;
@@ -158,6 +307,23 @@
     .portrait-frame {
       max-width: 240px;
       margin-bottom: 0;
+    }
+
+    .about-work {
+      margin-top: 64px;
+    }
+
+    .about-work-head {
+      margin-bottom: 24px;
+    }
+
+    .about-work-grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 32px;
+    }
+
+    .about-work-all {
+      margin-top: 28px;
     }
 
     .about-room {
