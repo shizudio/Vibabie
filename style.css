@@ -602,11 +602,15 @@ nav:not(.case-sidenav):not(.nav-overlay-nav) a:hover,
   margin: var(--space-xl) 0;
 }
 
-/* ── ENTRANCE ANIMATION ── */
+/* ── ENTRANCE ANIMATION ──
+   A slow, editorial rise: content lifts and settles rather than popping.
+   Elements opt into a stagger by setting --i (0, 1, 2 …); each step waves
+   in 90ms after the last. The long decelerating curve is what makes it read
+   as "considered" instead of "animated". */
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(22px);
   }
 
   to {
@@ -617,7 +621,16 @@ nav:not(.case-sidenav):not(.nav-overlay-nav) a:hover,
 
 .fade-up {
   opacity: 0;
-  animation: fadeUp 0.7s ease-out forwards;
+  animation: fadeUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+
+/* Respect the user's motion preference: show everything, skip the movement. */
+@media (prefers-reduced-motion: reduce) {
+  .fade-up {
+    opacity: 1;
+    animation: none;
+  }
 }
 
 /* ── Shared lightbox close button ───────────────────────────────────────── */

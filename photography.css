@@ -4,10 +4,6 @@
 
    html, body { min-height: 100%; }
 
-   nav {
-     background: linear-gradient(to bottom, var(--paper), transparent);
-   }
-
    .photo-page {
      padding-top: 82px;
      min-height: 100dvh;

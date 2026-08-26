@@ -4,10 +4,6 @@
 
    html, body { min-height: 100%; }
 
-   nav {
-     background: linear-gradient(to bottom, var(--paper), transparent);
-   }
-   
    main {
      max-width: 1040px;
      width: 100%;

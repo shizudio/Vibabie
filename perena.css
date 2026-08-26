@@ -54,10 +54,6 @@ html { overflow-x: clip; scroll-behavior: smooth; }
   .case-sidenav { display: none; }
 }
 
-nav {
-  background: linear-gradient(to bottom, var(--paper), transparent);
-}
-
 /* ── PAGE SHELL ─────────────────────────── */
 .case-main {
   max-width: 680px;
