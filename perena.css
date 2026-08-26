@@ -94,7 +94,7 @@ html { overflow-x: clip; scroll-behavior: smooth; }
   font-family: var(--font-display);
   font-size: clamp(2.4rem, 6vw, 3.6rem);
   font-weight: 300;
-  font-style: italic;
+  font-style: normal;
   color: var(--ink);
   line-height: 1.1;
   margin: 0 0 20px;
@@ -138,7 +138,7 @@ html { overflow-x: clip; scroll-behavior: smooth; }
 .case-thesis {
   font-family: var(--font-display);
   font-size: clamp(1rem, 2vw, 1.2rem);
-  font-style: italic;
+  font-style: normal;
   font-weight: 300;
   color: var(--text-muted);
   line-height: 1.7;
@@ -177,15 +177,16 @@ html { overflow-x: clip; scroll-behavior: smooth; }
 }
 
 /* ── HEADING HIERARCHY ───────────────────
-   H1  .case-title        — EB Garamond italic, ~3rem,   ink,       page title
-   H2  .case-section-h2   — EB Garamond italic, ~1.8rem, ink,       section heading
-   H3  .case-sub-h3       — EB Garamond italic, ~1.15rem, ink,      sub-section
+   H1  .case-title        — EB Garamond Roman, ~3rem,    ink,       page title
+   H2  .case-section-h2   — EB Garamond Roman, ~1.8rem,  ink,       section heading
+   H3  .case-sub-h3       — EB Garamond Roman, ~1.15rem, ink,       sub-section
+   (Upright throughout — the site never renders italic. See style.css.)
    ─────────────────────────────────────── */
 .case-section-h2 {
   font-family: var(--font-display);
   font-size: clamp(1.3rem, 2.8vw, 1.8rem);
   font-weight: 300;
-  font-style: italic;
+  font-style: normal;
   color: var(--ink);
   line-height: 1.25;
   margin: 0 0 32px;
@@ -195,7 +196,7 @@ html { overflow-x: clip; scroll-behavior: smooth; }
   font-family: var(--font-display);
   font-size: clamp(0.95rem, 1.8vw, 1.15rem);
   font-weight: 400;
-  font-style: italic;
+  font-style: normal;
   color: var(--ink);          /* was crimson-text — headings should be ink, not accent */
   line-height: 1.4;
   margin: 40px 0 16px;
@@ -215,7 +216,7 @@ html { overflow-x: clip; scroll-behavior: smooth; }
   margin-top: -0.2em;
 }
 .case-body--em {
-  font-style: italic;
+  font-style: normal;
   color: var(--text-muted);
 }
 /* Bold within body — step up from weight 300 to 500, use ink for contrast */
@@ -224,11 +225,15 @@ html { overflow-x: clip; scroll-behavior: smooth; }
   font-weight: 500;
   color: var(--ink);
 }
-/* Italic within body — warm it slightly */
+/* Inline emphasis within body. No italic anywhere on this site (see the
+   NO ITALIC note in style.css), so emphasis steps up from body 300/--text-body
+   to 400/--ink — one notch below <strong> (500/--ink). Do NOT fall back to
+   --text-muted here: muted would read as de-emphasis, the opposite signal. */
 .case-body em,
 .case-body i {
-  font-style: italic;
-  color: var(--text-muted);
+  font-style: normal;
+  font-weight: 400;
+  color: var(--ink);
 }
 
 .case-list {
@@ -269,7 +274,7 @@ html { overflow-x: clip; scroll-behavior: smooth; }
 .case-pullquote {
   font-family: var(--font-display);
   font-size: clamp(1.05rem, 2.2vw, 1.35rem);
-  font-style: italic;
+  font-style: normal;
   font-weight: 300;
   color: var(--ink);
   line-height: 1.65;
@@ -312,7 +317,7 @@ html { overflow-x: clip; scroll-behavior: smooth; }
 .case-stat-num {
   font-family: var(--font-display);
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
-  font-style: italic;
+  font-style: normal;
   font-weight: 300;
   color: var(--crimson);
   line-height: 1;
@@ -835,7 +840,7 @@ html { overflow-x: clip; scroll-behavior: smooth; }
 .case-credit-name {
   font-family: var(--font-display);
   font-size: var(--text-base);
-  font-style: italic;
+  font-style: normal;
   font-weight: 400;
   color: var(--ink);
 }
@@ -843,7 +848,7 @@ html { overflow-x: clip; scroll-behavior: smooth; }
 .case-credit-handle {
   font-family: var(--font-display);
   font-size: var(--text-base);
-  font-style: italic;
+  font-style: normal;
   font-weight: 300;
   color: var(--crimson);
   text-decoration: none;
@@ -916,7 +921,7 @@ html { overflow-x: clip; scroll-behavior: smooth; }
   display: inline-block;
   font-family: var(--font-display);
   font-size: clamp(0.88rem, 1.4vw, 1rem);
-  font-style: italic;
+  font-style: normal;
   font-weight: 300;
   color: var(--crimson);
   text-decoration: none;
@@ -1170,7 +1175,7 @@ html { overflow-x: clip; scroll-behavior: smooth; }
 .article-row-title {
   font-family: var(--font-display);
   font-size: clamp(0.9rem, 1.6vw, 1.05rem);
-  font-style: italic;
+  font-style: normal;
   font-weight: 300;
   color: var(--text-body);
   flex: 1;
@@ -1269,7 +1274,7 @@ html { overflow-x: clip; scroll-behavior: smooth; }
 .article-title {
   font-family: var(--font-display);
   font-size: clamp(1rem, 1.8vw, 1.2rem);
-  font-style: italic;
+  font-style: normal;
   font-weight: 300;
   color: var(--text-body);
   line-height: 1.4;
@@ -1549,7 +1554,7 @@ html { overflow-x: clip; scroll-behavior: smooth; }
 .case-accordion-title {
   font-family: var(--font-display);
   font-size: clamp(1rem, 2vw, 1.25rem);
-  font-style: italic;
+  font-style: normal;
   font-weight: 400;
   color: var(--ink);
   line-height: 1.3;

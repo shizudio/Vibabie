@@ -26,11 +26,11 @@ const STYLES = [
   },
   {
     id: 'body-em',
-    name: 'Body Italic',
+    name: 'Body Emphasis',
     tag: 'p',
     cls: 'case-body case-body--em',
     previewCls: 'pe-style-preview--em',
-    preview: 'Emphasized italic body. Quieter tone.',
+    preview: 'Emphasized body. Quieter tone.',
   },
   {
     id: 'h2',
@@ -70,7 +70,7 @@ const STYLES = [
     tag: 'p',
     cls: 'case-thesis',
     previewCls: 'pe-style-preview--thesis',
-    preview: 'Opening thesis — italic, left border.',
+    preview: 'Opening thesis — left border.',
   },
   {
     id: 'bullet-list',
@@ -147,8 +147,8 @@ const BLOCKS = [
   },
   {
     icon: '❝',
-    label: 'Italic Body',
-    html: '<p class="case-body case-body--em">An emphasized, italic note.</p>',
+    label: 'Emphasis Body',
+    html: '<p class="case-body case-body--em">An emphasized note.</p>',
   },
 ]
 
@@ -1246,7 +1246,7 @@ function insertBlock(html) {
 
 const QUICK_STYLES = [
   { label: 'Body', style: STYLES.find(s => s.id === 'body') },
-  { label: 'Italic', style: STYLES.find(s => s.id === 'body-em') },
+  { label: 'Emphasis', style: STYLES.find(s => s.id === 'body-em') },
   { label: 'H2', style: STYLES.find(s => s.id === 'h2') },
   { label: 'H3', style: STYLES.find(s => s.id === 'h3') },
   { label: 'Quote', style: STYLES.find(s => s.id === 'quote') },

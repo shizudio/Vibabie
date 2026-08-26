@@ -91,7 +91,7 @@ if (skipLoader) {
             if (loaderHint) loaderHint.classList.add('visible')
 
             // ③ After the keyframes fully settle, remove old glyphs from paint
-            //    entirely so iOS cannot keep a faint italic stroke around.
+            //    entirely so iOS cannot keep a faint glyph stroke around.
             setTimeout(() => {
               if (loaderNum)   { loaderNum.style.visibility = 'hidden'; loaderNum.style.display = 'none' }
               if (loaderLabel) { loaderLabel.style.visibility = 'hidden'; loaderLabel.style.display = 'none' }

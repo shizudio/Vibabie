@@ -83,7 +83,7 @@
 
 .tool-section-h2 {
   font-family: var(--font-serif);
-  font-style: italic;
+  font-style: normal;
   font-size: clamp(1.15rem, 1.5vw, 1.3rem);
   font-weight: 400;
   color: var(--ink);
@@ -97,6 +97,15 @@
   color: var(--stone);
   line-height: 1.9;
   margin: 0 0 24px;
+}
+
+/* Inline emphasis in tool prose. The site never renders italic (see the
+   NO ITALIC note in style.css), so emphasis is carried by the crimson
+   pigment — same device as .flower-essay em. */
+.tool-body em,
+.tool-body i {
+  font-style: normal;
+  color: var(--crimson);
 }
 
 .tool-body code {
@@ -264,7 +273,7 @@
 
 .tool-github-name {
   font-family: var(--font-serif);
-  font-style: italic;
+  font-style: normal;
   font-size: 1rem;
   color: var(--ink);
   margin: 0;
@@ -282,7 +291,7 @@
 
 .tool-github-link {
   font-family: var(--font-serif);
-  font-style: italic;
+  font-style: normal;
   font-size: 0.88rem;
   color: var(--crimson);
   text-decoration: none;

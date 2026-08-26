@@ -62,6 +62,20 @@
   padding: 0;
 }
 
+/* ── NO ITALIC (standing decision) ────────────────────────────────────────────
+   This site never renders italic, in any scenario. EB Garamond's italic was
+   ruled out by the owner; display type is EB Garamond Roman 300. Emphasis is
+   carried by weight and colour instead — never by slant, and never by
+   underline / uppercase / letter-spacing (those are other signals here).
+
+   The rule below is a backstop for browser defaults on italic-defaulting
+   elements, so a stray <em>/<i>/<cite> can never reintroduce a slant. It is
+   deliberately NOT a blanket `* { font-style: normal !important }` — per-rule
+   declarations stay explicit and the cascade stays readable. */
+em, i, cite, address, dfn, var, blockquote, q {
+  font-style: normal;
+}
+
 :root {
   /* Colors */
   --crimson: #7F1F12;
@@ -267,7 +281,7 @@ body {
   font-size: clamp(2.4rem, 6.7vw, 4rem);
   color: var(--crimson);
   font-weight: 300;
-  font-style: italic;
+  font-style: normal;
   letter-spacing: -0.04em;
   line-height: 1;
 }
@@ -304,7 +318,7 @@ body {
 }
 
 /* Ready state: remove finished counter glyphs from paint entirely.
-   iOS Safari can keep a faint italic stroke around after opacity fades. */
+   iOS Safari can keep a faint glyph stroke around after opacity fades. */
 .loader.ready-to-enter .loader-num,
 .loader.ready-to-enter .loader-label {
   display: none !important;
@@ -337,7 +351,7 @@ body {
   .loader-statement {
     display: block;
     font-family: var(--font-display);
-    font-style: italic;
+    font-style: normal;
     font-weight: 300;
     font-size: clamp(0.9rem, 3.8vw, 1.05rem);
     color: var(--stone);
@@ -354,7 +368,7 @@ body {
   .loader-welcome {
     display: block;
     font-family: var(--font-display);
-    font-style: italic;
+    font-style: normal;
     font-weight: 300;
     font-size: clamp(0.78rem, 3.2vw, 0.88rem);
     color: var(--stone);
@@ -426,7 +440,7 @@ body {
     display: block;
     width: 100%;
     font-family: var(--font-display);
-    font-style: italic;
+    font-style: normal;
     font-weight: 300;
     font-size: clamp(1.03rem, 1.15vw, 1.13rem);
     color: var(--stone);
@@ -574,11 +588,14 @@ nav:not(.case-sidenav):not(.nav-overlay-nav) a:hover,
   margin-bottom: var(--space-lg);
 }
 
+/* EB Garamond Roman 300. Upright is a standing owner decision, not an
+   oversight — do not "restore" the italic. See the NO ITALIC note at the
+   top of this file. */
 .page-h1 {
   font-family: var(--font-display);
   font-size: var(--text-display);
   font-weight: 300;
-  font-style: italic;
+  font-style: normal;
   line-height: 1.1;
   color: var(--ink);
   letter-spacing: 0;
@@ -1074,7 +1091,7 @@ body.menu-open .vinyl-widget {
   font-family: var(--font-display);
   font-size: var(--menu-label-size);
   font-weight: 300;
-  font-style: italic;
+  font-style: normal;
   color: var(--paper);
   line-height: 1.1;
   letter-spacing: 0;

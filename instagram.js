@@ -26,7 +26,7 @@ if (updatedEl && data.lastUpdated) {
 if (!data.elements || data.elements.length === 0) {
   grid.innerHTML = `
     <div style="grid-column:1/-1; padding: 60px 32px; text-align:center; opacity:0.4;">
-      <p style="font-family:var(--font-display);font-style:italic;font-size:1.2rem;">
+      <p style="font-family:var(--font-display);font-style:normal;font-size:1.2rem;">
         Gallery coming soon.
       </p>
     </div>`

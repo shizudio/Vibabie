@@ -121,7 +121,7 @@ body {
 
 .flower-essay em {
   color: var(--crimson);
-  font-style: italic;
+  font-style: normal;
 }
 
 .flower-installation {
@@ -200,7 +200,7 @@ body {
   margin-top: 12px;
   font-size: clamp(1.25rem, 2.2vw, 2.2rem);
   font-weight: 300;
-  font-style: italic;
+  font-style: normal;
   color: var(--crimson);
 }
 

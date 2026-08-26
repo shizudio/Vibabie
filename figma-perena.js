@@ -22,8 +22,6 @@ const C = {
 async function loadFonts() {
   await Promise.all([
     figma.loadFontAsync({ family: "EB Garamond", style: "Regular" }),
-    figma.loadFontAsync({ family: "EB Garamond", style: "Italic" }),
-    figma.loadFontAsync({ family: "EB Garamond", style: "Medium Italic" }),
     figma.loadFontAsync({ family: "DM Sans", style: "Light" }),
     figma.loadFontAsync({ family: "DM Sans", style: "Regular" }),
   ])
@@ -162,7 +160,7 @@ page.appendChild(nav)
 nav.x = 0
 nav.y = 0
 
-const navLogo = txt("Shina Foo", { family: "EB Garamond", style: "Italic", size: 18, color: C.crimson, lineH: 24 })
+const navLogo = txt("Shina Foo", { family: "EB Garamond", style: "Regular", size: 18, color: C.crimson, lineH: 24 })
 navLogo.textAutoResize = 'WIDTH_AND_HEIGHT'
 nav.appendChild(navLogo)
 navLogo.x = COL_X
@@ -197,7 +195,7 @@ add(pageLabel, COL_X)
 cursorY += pageLabel.height + 14
 
 // H1
-const h1 = txt("Perena", { family: "EB Garamond", style: "Italic", size: 80, color: C.ink, lineH: 88, align: "LEFT" })
+const h1 = txt("Perena", { family: "EB Garamond", style: "Regular", size: 80, color: C.ink, lineH: 88, align: "LEFT" })
 h1.textAutoResize = 'WIDTH_AND_HEIGHT'
 add(h1, COL_X)
 cursorY += h1.height + 20
@@ -213,7 +211,7 @@ const thesisBorder = rect({ w: 2, h: 60, color: C.border })
 add(thesisBorder, COL_X)
 
 const thesis = txt("In a market where every protocol competes on yield,\nthe differentiator is experience.", {
-  family: "EB Garamond", style: "Italic", size: 20, color: C.label, lineH: 33, align: "LEFT"
+  family: "EB Garamond", style: "Regular", size: 20, color: C.label, lineH: 33, align: "LEFT"
 })
 thesis.textAutoResize = 'WIDTH_AND_HEIGHT'
 thesis.resize(COL_W - 24, thesis.height)
@@ -269,7 +267,7 @@ function addSectionHeader(labelStr, h2Str) {
   add(lbl, COL_X)
   cursorY += lbl.height + 12
 
-  const h2 = txt(h2Str, { family: "EB Garamond", style: "Italic", size: 40, color: C.ink, lineH: 50 })
+  const h2 = txt(h2Str, { family: "EB Garamond", style: "Regular", size: 40, color: C.ink, lineH: 50 })
   h2.textAutoResize = 'HEIGHT'
   h2.resize(COL_W, h2.height)
   add(h2, COL_X)
@@ -295,7 +293,7 @@ function addPullQuote(str) {
   const border = rect({ w: 3, h: 80, color: C.crimson })
   add(border, COL_X)
 
-  const q = txt(str, { family: "EB Garamond", style: "Italic", size: 22, color: C.ink, lineH: 36 })
+  const q = txt(str, { family: "EB Garamond", style: "Regular", size: 22, color: C.ink, lineH: 36 })
   q.textAutoResize = 'HEIGHT'
   q.resize(COL_W - 28, q.height)
   add(q, COL_X + 24)
@@ -320,7 +318,7 @@ function addStatRow(stats) {
   cursorY += 0
 
   stats.forEach((s, i) => {
-    const statNum = txt(s.num, { family: "EB Garamond", style: "Italic", size: 48, color: C.crimson, lineH: 52 })
+    const statNum = txt(s.num, { family: "EB Garamond", style: "Regular", size: 48, color: C.crimson, lineH: 52 })
     statNum.textAutoResize = 'WIDTH_AND_HEIGHT'
     page.appendChild(statNum)
     statNum.x = COL_X + (colW * i) + (i === 0 ? 0 : 16)
@@ -388,7 +386,7 @@ add(purpleImg, COL_X)
 cursorY += purpleImg.height + 40
 
 // Sub-heading: Beyond Purple
-const subH1 = txt("Beyond Purple", { family: "EB Garamond", style: "Italic", size: 22, color: C.crimsonT, lineH: 30 })
+const subH1 = txt("Beyond Purple", { family: "EB Garamond", style: "Regular", size: 22, color: C.crimsonT, lineH: 30 })
 subH1.textAutoResize = 'WIDTH_AND_HEIGHT'
 add(subH1, COL_X)
 cursorY += subH1.height + 20
@@ -470,7 +468,7 @@ partners.forEach(p => {
 cursorY = pillY + 36 + 32
 
 // Perenimals sub-heading
-const subH2 = txt("Perenimals", { family: "EB Garamond", style: "Italic", size: 22, color: C.crimsonT, lineH: 30 })
+const subH2 = txt("Perenimals", { family: "EB Garamond", style: "Regular", size: 22, color: C.crimsonT, lineH: 30 })
 subH2.textAutoResize = 'WIDTH_AND_HEIGHT'
 add(subH2, COL_X)
 cursorY += subH2.height + 20
@@ -489,7 +487,7 @@ add(perenimals, COL_X)
 cursorY += perenimals.height + 40
 
 // Breakpoint sub-heading
-const subH3 = txt("Breakpoint 2025", { family: "EB Garamond", style: "Italic", size: 22, color: C.crimsonT, lineH: 30 })
+const subH3 = txt("Breakpoint 2025", { family: "EB Garamond", style: "Regular", size: 22, color: C.crimsonT, lineH: 30 })
 subH3.textAutoResize = 'WIDTH_AND_HEIGHT'
 add(subH3, COL_X)
 cursorY += subH3.height + 20
@@ -513,7 +511,7 @@ addDivider()
 gap(32)
 
 // $30M hero stat
-const aum = txt("$30M", { family: "EB Garamond", style: "Italic", size: 96, color: C.crimson, lineH: 100, align: "CENTER" })
+const aum = txt("$30M", { family: "EB Garamond", style: "Regular", size: 96, color: C.crimson, lineH: 100, align: "CENTER" })
 aum.textAutoResize = 'WIDTH_AND_HEIGHT'
 add(aum, COL_X + (COL_W - aum.width) / 2)
 cursorY += aum.height + 8
@@ -528,7 +526,7 @@ const closingBorder = rect({ w: 3, h: 120, color: C.crimson })
 add(closingBorder, COL_X)
 
 const closing = txt("Perena taught me that the one powerful thing a creative can do for a product is to make design decisions that show up in the numbers — and build systems that make that standard outlast any single person.", {
-  family: "EB Garamond", style: "Italic", size: 20, color: C.label, lineH: 33
+  family: "EB Garamond", style: "Regular", size: 20, color: C.label, lineH: 33
 })
 closing.textAutoResize = 'HEIGHT'
 closing.resize(COL_W - 28, closing.height)
@@ -538,7 +536,7 @@ closingBorder.resize(3, closing.height + 8)
 cursorY = closing.y + closing.height + 48
 
 // CTA
-const cta = txt("Visit perena.org ↗", { family: "EB Garamond", style: "Italic", size: 18, color: C.crimson, lineH: 24, align: "CENTER" })
+const cta = txt("Visit perena.org ↗", { family: "EB Garamond", style: "Regular", size: 18, color: C.crimson, lineH: 24, align: "CENTER" })
 cta.textAutoResize = 'WIDTH_AND_HEIGHT'
 add(cta, COL_X + (COL_W - cta.width) / 2)
 cursorY += cta.height + 120

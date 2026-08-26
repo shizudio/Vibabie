@@ -106,7 +106,7 @@ html, body { background: #FFFFFF; }
 }
 .project-visit {
   font-family: var(--font-serif);
-  font-style: italic;
+  font-style: normal;
   font-size: 0.95rem;
   color: var(--crimson);
   text-decoration: none;
