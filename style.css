@@ -27,12 +27,18 @@
 
    FONT SCALE  (--text-* in :root, all use clamp())
    ─────────────────────────────────────────
-   --text-xs      : 0.62 → 0.70 rem  — labels, metadata, uppercase caps
-   --text-sm      : 0.70 → 0.80 rem  — secondary text, hints
-   --text-base    : 0.90 → 1.05 rem  — body copy
-   --text-lg      : 1.10 → 1.30 rem  — large body / sub-headings
-   --text-xl      : 1.50 → 2.00 rem  — section headings
-   --text-display : 2.40 → 3.80 rem  — hero headings (page-h1)
+   --text-xs      : 0.8125 → 0.875 rem (13 → 14px) — meta, tags
+   --text-sm      : 0.9375 → 1.00  rem (15 → 16px) — labels, buttons, nav
+   --text-base    : 1.0625 → 1.25  rem (17 → 20px) — body copy
+   --text-lg      : 1.25   → 1.50  rem (20 → 24px) — large body / sub-headings
+   --text-xl      : 1.75   → 2.50  rem (28 → 40px) — section headings
+   --text-display : 3.00   → 5.50  rem (48 → 88px) — hero headings (page-h1)
+
+   Weight floor: nothing lighter than 400 below 24px. Weight 300 survives
+   only at display sizes (--text-display / --text-xl and comparable).
+   Tracking runs negative: display -0.02em, headings -0.015em, body -0.01em.
+   Body line-height 1.55; display 1.0; --text-xl 1.15.
+   No uppercase micro-labels — sentence case at --text-sm / 500 instead.
    On mobile the clamp() fluid range kicks in automatically.
    Override with a tighter clamp() in the page's own @media block only
    when the default clamp still produces an oversized result.
@@ -128,13 +134,13 @@ em, i, cite, address, dfn, var, blockquote, q {
   --font-description: 'Instrument Sans', sans-serif;
   --color-description: var(--stone);
 
-  /* Font sizes */
-  --text-xs: clamp(0.62rem, 0.55vw, 0.70rem);
-  --text-sm: clamp(0.70rem, 0.70vw, 0.80rem);
-  --text-base: clamp(0.90rem, 1vw, 1.05rem);
-  --text-lg: clamp(1.1rem, 1.5vw, 1.3rem);
-  --text-xl: clamp(1.5rem, 2.5vw, 2rem);
-  --text-display: clamp(2.4rem, 5vw, 3.8rem);
+  /* Font sizes — v2 scale (see design-system-export.md §9) */
+  --text-xs: clamp(0.8125rem, 0.6vw, 0.875rem);  /* 13 → 14px  meta, tags */
+  --text-sm: clamp(0.9375rem, 0.8vw, 1rem);      /* 15 → 16px  labels, buttons */
+  --text-base: clamp(1.0625rem, 1.2vw, 1.25rem); /* 17 → 20px  body */
+  --text-lg: clamp(1.25rem, 1.6vw, 1.5rem);      /* 20 → 24px  large body */
+  --text-xl: clamp(1.75rem, 3vw, 2.5rem);        /* 28 → 40px  section headings */
+  --text-display: clamp(3rem, 7vw, 5.5rem);      /* 48 → 88px  hero */
 
   /* Spacing */
   --space-xs: 4px;
@@ -313,10 +319,9 @@ body {
 
 .loader-label {
   font-size: var(--text-sm);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: -0.01em;
   color: var(--stone);
-  font-weight: 200;
+  font-weight: 500;
   transition: opacity 0.5s ease;
 }
 
@@ -377,10 +382,11 @@ body {
     display: block;
     font-family: var(--font-display);
     font-style: normal;
-    font-weight: 300;
+    font-weight: 400;
     font-size: clamp(0.9rem, 3.8vw, 1.05rem);
+    letter-spacing: -0.01em;
     color: var(--stone);
-    line-height: 1.6;
+    line-height: 1.55;
     text-align: center;
     max-width: 320px;
     margin: 0 auto 36px;
@@ -394,8 +400,9 @@ body {
     display: block;
     font-family: var(--font-display);
     font-style: normal;
-    font-weight: 300;
+    font-weight: 400;
     font-size: clamp(0.78rem, 3.2vw, 0.88rem);
+    letter-spacing: -0.01em;
     color: var(--stone);
     line-height: 1.55;
     text-align: center;
@@ -420,9 +427,8 @@ body {
     text-align: center;
     font-family: inherit;
     font-size: var(--text-sm);
-    font-weight: 200;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: -0.01em;
     color: var(--crimson);
     opacity: 0;
     white-space: nowrap;
@@ -466,8 +472,9 @@ body {
     width: 100%;
     font-family: var(--font-display);
     font-style: normal;
-    font-weight: 300;
+    font-weight: 400;
     font-size: clamp(1.03rem, 1.15vw, 1.13rem);
+    letter-spacing: -0.01em;
     color: var(--stone);
     line-height: 1.45;
     text-align: center;
@@ -543,9 +550,9 @@ nav:not(.case-sidenav):not(.nav-overlay-nav) a:visited,
 .project-topbar a:link,
 .project-topbar a:visited {
   font-family: var(--font-serif);
-  font-size: 1rem;
-  font-weight: 400;
-  letter-spacing: 0.01em;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: -0.01em;
   color: var(--ink);
   text-decoration: none;
   pointer-events: all;
@@ -562,9 +569,9 @@ nav:not(.case-sidenav):not(.nav-overlay-nav) a:hover,
 .site-logo,
 .nav-logo {
   font-family: var(--font-serif);
-  font-size: 1rem;
-  font-weight: 400;
-  letter-spacing: 0.01em;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: -0.01em;
   color: var(--ink);
   text-decoration: none;
   pointer-events: all;
@@ -594,21 +601,19 @@ nav:not(.case-sidenav):not(.nav-overlay-nav) a:hover,
 
 .footer-hint {
   font-size: var(--text-xs);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  letter-spacing: -0.01em;
   color: var(--stone);
-  opacity: 0.5;
-  font-weight: 200;
+  opacity: 1;   /* was 0.5 — dimmed --stone fell under the 4.5:1 floor */
+  font-weight: 500;
 }
 
 
 /* ── SUBPAGE SHARED ── */
 .page-label {
   font-size: var(--text-sm);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: -0.01em;
   color: var(--stone);
-  font-weight: 200;
+  font-weight: 500;
   display: block;
   margin-bottom: var(--space-lg);
 }
@@ -621,19 +626,20 @@ nav:not(.case-sidenav):not(.nav-overlay-nav) a:hover,
   font-size: var(--text-display);
   font-weight: 300;
   font-style: normal;
-  line-height: 1.1;
+  line-height: 1;
   color: var(--ink);
-  letter-spacing: 0;
+  letter-spacing: -0.02em;
 }
 
 .page-h1-sub {
-  max-width: 42rem;
-  margin: 16px 0 0;
+  max-width: 64ch;
+  margin: 20px 0 0;
   font-family: var(--font-description);
   font-size: var(--text-base);
-  font-weight: 300;
+  font-weight: 400;
+  letter-spacing: -0.01em;
   color: var(--color-description);
-  line-height: 1.75;
+  line-height: 1.55;
 }
 
 .divider {
@@ -789,8 +795,9 @@ nav:not(.case-sidenav):not(.nav-overlay-nav) a:hover,
 .ig-lb-caption {
   font-family: var(--font-description);
   font-size: clamp(0.82rem, 1.4vw, 1rem);
-  font-weight: 300;
-  color: var(--paper-dim);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--paper-faint);
   text-align: center;
   max-width: 480px;
   margin: 0;
@@ -883,9 +890,9 @@ nav:not(.case-sidenav):not(.nav-overlay-nav) a:hover,
 
   .nav-page-name,
   .menu-toggle-label {
-    font-size: clamp(0.72rem, 3vw, 0.8rem);
-    letter-spacing: 0.14em;
-    font-weight: 300;
+    font-size: var(--text-sm);
+    letter-spacing: -0.01em;
+    font-weight: 500;
   }
 
   .site-footer {
@@ -894,19 +901,16 @@ nav:not(.case-sidenav):not(.nav-overlay-nav) a:hover,
   }
 
   .page-label {
-    font-size: clamp(0.72rem, 3vw, 0.8rem);
-    letter-spacing: 0.12em;
-    font-weight: 300;
     margin-bottom: var(--space-md);
   }
 
   .page-h1 {
-    font-size: clamp(1.9rem, 8vw, 2.8rem);
+    font-size: clamp(2.25rem, 9.5vw, 3.25rem);
   }
 
   .page-h1-sub {
-    font-size: clamp(0.98rem, 4vw, 1.08rem);
-    line-height: 1.68;
+    font-size: clamp(1.0625rem, 4vw, 1.15rem);
+    line-height: 1.55;
   }
 
 }
@@ -973,11 +977,10 @@ body.menu-open .nav-links a {
 .menu-toggle:hover .menu-toggle-icon i { background: var(--ink); }
 
 .menu-toggle-label {
-  font-size: var(--text-xs);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  font-size: var(--text-sm);
+  letter-spacing: -0.01em;
   color: var(--stone);
-  font-weight: 300;
+  font-weight: 500;
   border-bottom: 1px solid transparent;
   padding-bottom: 1px;
   transition: color 0.25s ease, border-color 0.25s ease;
@@ -1033,10 +1036,12 @@ body.menu-open .vinyl-widget {
 .nav-overlay {
   --menu-y-padding-top: clamp(56px, 9dvh, 88px);
   --menu-y-padding-bottom: clamp(18px, 4dvh, 36px);
-  --menu-item-gap: clamp(2px, 0.7dvh, 8px);
-  --menu-item-padding: clamp(3px, 0.7dvh, 6px);
+  --menu-item-gap: clamp(1px, 0.4dvh, 5px);
+  --menu-item-padding: clamp(2px, 0.4dvh, 4px);
   --menu-label-size: clamp(1.05rem, min(2.1vw, 3.9dvh), 1.72rem);
-  --menu-desc-size: clamp(0.42rem, min(0.45vw, 1.15dvh), 0.58rem);
+  /* v2: was 0.42–0.58rem (6.7–9.3px) — the smallest type on the site.
+     Floored at --text-xs; item gap/padding trimmed to absorb the extra height. */
+  --menu-desc-size: clamp(0.8125rem, min(0.9vw, 1.7dvh), 0.875rem);
   position: fixed;
   inset: 0;
   z-index: 500;
@@ -1118,11 +1123,11 @@ body.menu-open .vinyl-widget {
   display: block;
   font-family: var(--font-display);
   font-size: var(--menu-label-size);
-  font-weight: 300;
+  font-weight: 400;
   font-style: normal;
   color: var(--paper);
-  line-height: 1.1;
-  letter-spacing: 0;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
   transition: color 0.2s ease;
 }
 
@@ -1134,12 +1139,12 @@ body.menu-open .vinyl-widget {
 .nav-overlay-desc {
   display: block;
   font-size: var(--menu-desc-size);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(247, 246, 244, 0.58);
-  font-weight: 300;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: rgba(247, 246, 244, 0.72);
+  font-weight: 500;
   opacity: 1;
-  margin-top: 6px;
+  margin-top: 3px;
   transition: color 0.2s ease;
 }
 
@@ -1159,10 +1164,10 @@ body.menu-open .vinyl-widget {
   .nav-overlay {
     --menu-y-padding-top: clamp(64px, 10dvh, 88px);
     --menu-y-padding-bottom: clamp(20px, 5dvh, 40px);
-    --menu-item-gap: clamp(2px, 0.6dvh, 7px);
-    --menu-item-padding: clamp(4px, 0.7dvh, 8px);
+    --menu-item-gap: clamp(1px, 0.35dvh, 4px);
+    --menu-item-padding: clamp(2px, 0.4dvh, 5px);
     --menu-label-size: clamp(1.15rem, min(5.6vw, 3.8dvh), 1.8rem);
-    --menu-desc-size: clamp(0.44rem, min(1.8vw, 1.15dvh), 0.58rem);
+    --menu-desc-size: clamp(0.8125rem, min(3.4vw, 1.7dvh), 0.875rem);
   }
 
   .menu-toggle {
@@ -1232,8 +1237,10 @@ body.menu-open .vinyl-widget {
   display: block;
   font-family: var(--font-serif);
   font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: -0.01em;
   color: var(--ink);
-  max-width: 160px;
+  max-width: 200px;   /* widened for the larger v2 --text-sm */
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -1242,9 +1249,10 @@ body.menu-open .vinyl-widget {
   display: block;
   font-family: var(--font-description);
   font-size: var(--text-xs);
+  letter-spacing: -0.01em;
   color: var(--stone);
-  font-weight: 300;
-  max-width: 160px;
+  font-weight: 500;
+  max-width: 200px;   /* widened for the larger v2 --text-xs */
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -1399,7 +1407,9 @@ body.menu-open .vinyl-widget {
 .vinyl-sleeve-name {
   display: block;
   font-family: var(--font-serif);
-  font-size: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
   color: var(--ink);
   white-space: nowrap;
   overflow: hidden;
@@ -1410,9 +1420,10 @@ body.menu-open .vinyl-widget {
 .vinyl-sleeve-artist {
   display: block;
   font-family: var(--font-description);
-  font-size: 9px;
+  font-size: 11px;
+  letter-spacing: -0.01em;
   color: var(--stone);
-  font-weight: 300;
+  font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1431,9 +1442,9 @@ body.menu-open .vinyl-widget {
 
 .vinyl-sleeve-link-label {
   font-family: var(--font-body);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
   color: var(--paper);
   text-align: center;
   padding: 6px;

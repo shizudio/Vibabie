@@ -44,18 +44,16 @@
    .placeholder-num {
      font-family: var(--font-serif);
      font-size: 1.5rem;
-     font-weight: 300;
+     font-weight: 400;
      font-style: normal;
      color: var(--stone);
      opacity: 0.4;
    }
    .placeholder-hint {
-     font-size: 0.55rem;
-     letter-spacing: 0.2em;
-     text-transform: uppercase;
+     font-size: var(--text-xs);
+     letter-spacing: -0.01em;
      color: var(--stone);
-     opacity: 0.3;
-     font-weight: 200;
+     font-weight: 500;
    }
    
   /* ── LIGHTBOX ── */
@@ -65,9 +63,10 @@
   }
   /* photography caption uses paper-mid colour and slightly wider letter-spacing */
   .photo-lb-caption {
-    font-size: clamp(0.85rem, 1.5vw, 1.1rem);
-    color: var(--paper-mid);
-    letter-spacing: 0.02em;
+    font-size: var(--text-sm);
+    font-weight: 400;
+    color: var(--paper-faint);
+    letter-spacing: -0.01em;
   }
 
   /* ── MOBILE RESPONSIVE ── */
