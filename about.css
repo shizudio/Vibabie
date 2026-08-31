@@ -67,24 +67,17 @@
       height: 100%;
     }
 
-    /* The hero display is dialled back from the global --text-display (88px at
-       1440) and the stack below it tightened, so the text column measures
-       ~400px instead of 542. That is what lets the portrait come back to
-       roughly its original 3:4 — stretching to fill a 542px column had squeezed
-       it to 0.55 and cropped the photo hard.
-
-       Only this page steps down: it is the one hero with an image beside it
-       that has to agree. Contact keeps the full --text-display. */
+    /* Size now comes from the global --text-display (64px at 1440) — the whole
+       site stepped down to that, so this page no longer needs its own. What
+       stays local is the tighter leading and the shorter gap to the bio: with
+       the stack below they bring the text column to ~400px, which is the height
+       that keeps the portrait beside it at 3:4 rather than stretched. */
     .about-intro-text .page-h1 {
-      font-size: clamp(2.6rem, 4.6vw, 4rem);
       line-height: 1.14;
       margin-bottom: 28px;
     }
-
-    .bio { margin-bottom: 28px; }
-    .detail-row { margin-bottom: 32px; }
-    /* Last item in the column — the section gap below handles the separation. */
-    .about-cta { margin-bottom: 0; }
+    /* The rest of the hero stack is tightened further down the file — it has
+       to sit after .bio / .detail-row / .about-cta are defined to win. */
   }
 
   .portrait-frame img,
@@ -166,6 +159,17 @@
      font-weight: 400;
      font-style: normal;
      color: var(--ink);
+   }
+
+   /* Desktop hero stack, continued — this has to live after .bio, .about-cta
+      and .detail-row above, or the base margins win on equal specificity.
+      Together with the reduced .page-h1 these bring the text column to ~400px,
+      which is the height that returns the portrait beside it to 3:4. */
+   @media (min-width: 768px) {
+     .bio { margin-bottom: 24px; }
+     .detail-row { margin-bottom: 32px; }
+     /* Last item in the column — the section gap below handles separation. */
+     .about-cta { margin-bottom: 0; }
    }
 
    /* .page-h1-sub — now global in style.css */
@@ -305,14 +309,19 @@
     .about-work-badge-dot { animation: none; opacity: 1; }
   }
 
-  /* Peer to the section heading, not a caption under it: sentence case at
-     ~20px in ink, so the pair reads as one line of navigation. */
-  /* The section-head action, in the house button style — the same pill as
-     .about-cta above and .project-cta on the case-study pages.
+  /* Peer to the section heading, not a caption under it: sentence case in ink,
+     so the pair reads as one line of navigation.
 
-     NOTE: this is now the third copy of these declarations. It wants to be a
-     shared .btn-pill in style.css; left duplicated here deliberately so the
-     pending type-system work owns that file uncontested. Extract afterwards. */
+     SECONDARY, deliberately — no fill. There is one filled pill on this page,
+     .about-cta ("Have a chat"), and it should be the only one: three more
+     solid buttons repeated down the page made every section look like the
+     primary action. These are quiet text links that carry their own arrow and
+     resolve to crimson on hover, so the hierarchy is unmistakable.
+
+     Sentence case for the same reason — the uppercase + 0.06em tracking was
+     button styling, and without a fill behind it that treatment reads as a
+     label rather than something you click. min-height holds the 44px touch
+     target even though the padding is gone. */
   .about-work-all {
     display: inline-flex;
     align-items: center;
@@ -321,18 +330,18 @@
     min-height: 44px;
     font-family: var(--font-sans);
     font-size: var(--text-sm);
-    font-weight: 500;
+    font-weight: 400;
     font-style: normal;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #FFFFFF;
-    background: var(--ink);
-    padding: 16px 32px;
-    border-radius: 999px;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ink);
+    background: none;
+    padding: 0;
+    border-radius: 0;
     text-decoration: none;
-    transition: background 0.2s ease;
+    transition: color 0.2s ease;
   }
-  .about-work-all:hover { background: var(--crimson); color: #FFFFFF; }
+  .about-work-all:hover { color: var(--crimson); }
   .about-work-all:focus-visible {
     outline: 2px solid var(--crimson);
     outline-offset: 3px;
@@ -526,8 +535,9 @@
       font-size: clamp(1.35rem, 5.5vw, 1.6rem);
     }
 
+    /* No pill to shrink any more — the link just keeps its touch target. */
     .about-work-all {
-      padding: 14px 24px;
+      padding: 0;
     }
 
     .about-work-grid {

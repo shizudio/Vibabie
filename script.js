@@ -277,3 +277,125 @@ if (portraitFrame && portraitVid) {
     if ((window.scrollY || 0) > THRESHOLD) hide()
   })
 })()
+
+// ── SCROLL-TRIGGERED ENTRANCES (global, every page) ───────────────
+// .fade-up declares its animation in CSS, so with no JS it plays on load the
+// way it always did. Here we hold each element paused until it has actually
+// been scrolled into view — otherwise every entrance on the page finishes
+// during the first second, and everything below the fold has already animated
+// by the time the visitor reaches it.
+;(function initScrollReveal() {
+  if (!('IntersectionObserver' in window)) return   // keep the load-fire behaviour
+
+  const root = document.documentElement
+  const onScreen = (el) => {
+    const r = el.getBoundingClientRect()
+    return r.top < window.innerHeight && r.bottom > 0
+  }
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue
+        e.target.classList.add('is-visible')
+        io.unobserve(e.target)
+      }
+    },
+    // A little inset so an element commits once it is properly in view rather
+    // than the instant its first pixel clears the bottom edge.
+    { rootMargin: '0px 0px -12% 0px' }
+  )
+
+  function register(el) {
+    if (el._revealBound) return
+    el._revealBound = true
+    // Already on screen when we get here (or injected into view): let it run
+    // now. Pausing a part-played entrance would freeze it mid-rise.
+    if (onScreen(el)) el.classList.add('is-visible')
+    else io.observe(el)
+  }
+
+  // Flip the gate on, then immediately resolve everything already parsed —
+  // same tick, so nothing is caught mid-animation.
+  root.classList.add('js-reveal')
+  document.querySelectorAll('.fade-up').forEach(register)
+
+  // Late arrivals come in two shapes, and BOTH have to be caught or the
+  // element stays paused at opacity 0 forever:
+  //   1. new nodes — the work tiles and art cards injected by about-work.js
+  //      and about-art.js after this runs;
+  //   2. existing nodes that GAIN the class — index.js puts .fade-up on the
+  //      room page's header and footer when the loader dismisses. Watching
+  //      childList alone would leave that header and footer invisible.
+  new MutationObserver((mutations) => {
+    for (const m of mutations) {
+      if (m.type === 'attributes') {
+        if (m.target.classList?.contains('fade-up')) register(m.target)
+        continue
+      }
+      m.addedNodes.forEach((node) => {
+        if (node.nodeType !== 1) return
+        if (node.classList?.contains('fade-up')) register(node)
+        node.querySelectorAll?.('.fade-up').forEach(register)
+      })
+    }
+  }).observe(document.body || document.documentElement, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['class'],
+  })
+})()
+
+// ── AUTO-TUCKING VINYL WIDGET (global, every page) ────────────────
+// The widget is a fixed ~100px disc pinned to the bottom-right corner, so
+// without this it sits permanently on top of whatever the page puts there —
+// the art rail on About, the dot rail and placard on Art, the detail rows on
+// a phone. It follows the same rule as the topbar above: tuck while scrolling
+// down, come back on the way up or near the top of the page.
+//
+// Deliberately NOT gated on prefers-reduced-motion (unlike the topbar): the
+// CSS drops the travel for those users and fades instead, so the widget still
+// gets out of the way. It also never tucks mid-playback — a widget the
+// visitor is actively using should stay where they left it.
+;(function initAutoTuckVinyl() {
+  const THRESHOLD = 80   // px scrolled before the widget may tuck
+
+  let widget = null
+  let lastY = window.scrollY || 0
+  let ticking = false
+
+  // Injected asynchronously by vinyl-widget.js, and re-created on soft
+  // navigation — so resolve it lazily rather than once at startup.
+  const find = () =>
+    (widget && widget.isConnected) ? widget : (widget = document.getElementById('vinyl-widget'))
+
+  function update() {
+    ticking = false
+    const el = find()
+    if (!el) return
+
+    const y = window.scrollY || 0
+    const playing = el.classList.contains('playing-active')
+
+    if (y <= THRESHOLD || playing) {
+      el.classList.remove('vinyl-tucked')
+    } else if (y > lastY) {
+      el.classList.add('vinyl-tucked')      // scrolling down → tuck
+    } else if (y < lastY) {
+      el.classList.remove('vinyl-tucked')   // scrolling up → bring it back
+    }
+    lastY = y
+  }
+
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (!ticking) {
+        ticking = true
+        requestAnimationFrame(update)
+      }
+    },
+    { passive: true }
+  )
+})()
