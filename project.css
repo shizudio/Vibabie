@@ -29,9 +29,9 @@ html, body { background: #FFFFFF; }
 }
 .project-topbar a {
   font-family: var(--font-serif);
-  font-size: 1rem;
-  font-weight: 400;
-  letter-spacing: 0.01em;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: -0.01em;
   color: var(--ink);
   text-decoration: none;
   transition: color 0.2s ease;
@@ -41,7 +41,9 @@ html, body { background: #FFFFFF; }
 /* ── PAGE GRID ───────────────────────────────────────────────── */
 .project-page {
   display: grid;
-  grid-template-columns: minmax(320px, 38%) 1fr;
+  /* 40% (was 38%): buys the rail enough width for a ~50ch measure at the
+     larger v2 --text-base without eating into the image stack meaningfully. */
+  grid-template-columns: minmax(320px, 40%) 1fr;
   align-items: start;
   padding-top: 58px; /* clear the fixed topbar */
 }
@@ -74,25 +76,28 @@ html, body { background: #FFFFFF; }
   font-family: var(--font-sans);
   font-size: var(--text-base);
   font-weight: 400;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
   color: var(--stone);
   margin: 0 0 30px;
 }
 
 .project-desc {
   font-family: var(--font-sans);
-  font-size: clamp(1.05rem, 1.2vw, 1.2rem);
-  font-weight: 300;
-  line-height: 1.8;
+  font-size: var(--text-base);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.55;
   color: var(--ink);
-  max-width: 34ch;
+  max-width: 60ch;   /* was 34ch — the rail caps the rendered measure near 50ch */
   margin: 0 0 44px;
 }
 
 .project-credit {
   font-family: var(--font-sans);
   font-size: var(--text-base);
-  font-weight: 300;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.55;
   color: var(--stone);
   margin: 0 0 30px;
 }
@@ -110,7 +115,9 @@ html, body { background: #FFFFFF; }
   min-height: 44px;
   font-family: var(--font-serif);
   font-style: normal;
-  font-size: 0.95rem;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: -0.01em;
   color: var(--crimson);
   text-decoration: none;
   border-bottom: 1px solid var(--border-crimson, rgba(127,31,18,0.25));
@@ -123,10 +130,9 @@ html, body { background: #FFFFFF; }
   display: inline-flex;
   align-items: center;
   font-family: var(--font-sans);
-  font-size: var(--text-sm, 0.9rem);
+  font-size: var(--text-sm);
   font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: -0.01em;
   color: #FFFFFF;
   background: var(--ink);
   padding: 16px 32px;
@@ -174,9 +180,9 @@ html, body { background: #FFFFFF; }
   align-items: center;
   min-height: 44px;
   font-family: var(--font-sans);
-  font-size: var(--text-xs);
-  font-weight: 300;
-  letter-spacing: 0.02em;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: -0.01em;
   color: var(--stone);
   text-decoration: none;
   transition: color 0.2s ease;
@@ -201,7 +207,7 @@ html, body { background: #FFFFFF; }
     padding: 24px 24px 32px;
     min-width: 0;
   }
-  .project-desc { max-width: 44ch; }
+  .project-desc { max-width: 64ch; }
   .project-stack {
     padding: 0 24px 24px;
     gap: 12px;
