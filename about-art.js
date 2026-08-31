@@ -1,3 +1,21 @@
+import { initLightbox } from './lightbox.js'
+
+let lightboxOpen = null
+
+function getLightbox() {
+  const overlay = document.getElementById('art-lightbox')
+  if (!overlay) return null
+  if (overlay.dataset.lbReady) return lightboxOpen
+  overlay.dataset.lbReady = '1'
+  lightboxOpen = initLightbox(
+    overlay,
+    document.getElementById('art-lb-img'),
+    document.getElementById('art-lb-caption'),
+    document.getElementById('art-lb-close')
+  ).open
+  return lightboxOpen
+}
+
 /**
  * about-art.js — "Artworks" rail on the About page.
  *
@@ -32,12 +50,14 @@ const STAGGER_START = 13
 const STAGGER_MAX_STEPS = 3
 
 function buildCard(art, i) {
-  const card = document.createElement('a')
+  const card = document.createElement('button')
+  card.type = 'button'
   card.className = 'about-art-card fade-up'
   card.style.setProperty('--i', STAGGER_START + Math.min(i, STAGGER_MAX_STEPS))
   card.dataset.aboutArtInjected = 'true'
-  // Every card lands on the Art page — this rail is a doorway, not a gallery.
-  card.href = 'art.html'
+  // Image-only: the painting carries the card. Title and description live in
+  // the lightbox instead, which is what a click opens.
+  card.setAttribute('aria-label', `View ${art.title || 'artwork'}`)
 
   const thumb = document.createElement('div')
   thumb.className = 'about-art-thumb'
@@ -50,17 +70,10 @@ function buildCard(art, i) {
   thumb.appendChild(img)
   card.appendChild(thumb)
 
-  const title = document.createElement('span')
-  title.className = 'about-art-title'
-  title.textContent = art.title || ''
-  card.appendChild(title)
-
-  if (art.meta) {
-    const meta = document.createElement('span')
-    meta.className = 'about-art-meta'
-    meta.textContent = art.meta
-    card.appendChild(meta)
-  }
+  card.addEventListener('click', () => {
+    const open = getLightbox()
+    if (open) open(art.src, art.description || art.title || '')
+  })
 
   return card
 }

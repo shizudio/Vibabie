@@ -61,7 +61,7 @@
 
     <section class="about-work">
       <div class="about-work-head">
-        <span class="page-label fade-up" style="--i:5">Selected work</span>
+        <h2 class="page-label fade-up" style="--i:5">Selected work</h2>
         <a class="about-work-all fade-up" style="--i:6" href="work.html">All work <span class="about-work-arrow" aria-hidden="true">&rarr;</span></a>
       </div>
 
@@ -70,7 +70,7 @@
 
     <section class="about-art">
       <div class="about-work-head">
-        <span class="page-label fade-up" style="--i:11">Artworks</span>
+        <h2 class="page-label fade-up" style="--i:11">Artworks</h2>
         <a class="about-work-all fade-up" style="--i:12" href="art.html">All art <span class="about-work-arrow" aria-hidden="true">&rarr;</span></a>
       </div>
 
@@ -79,7 +79,7 @@
 
     <section class="about-room">
       <div class="about-work-head">
-        <span class="page-label fade-up" style="--i:17">Play with my Canvas</span>
+        <h2 class="page-label fade-up" style="--i:17">Play with my Canvas</h2>
         <a class="about-work-all fade-up" style="--i:18" href="play.html">Full screen <span class="about-work-arrow" aria-hidden="true">&rarr;</span></a>
       </div>
 
@@ -100,6 +100,14 @@
     <a href="https://www.instagram.com/shizudio" target="_blank" rel="noopener">Instagram</a>
     <a href="https://x.com/shizudio" target="_blank" rel="noopener">X</a>
   </footer>
+
+  <div class="art-lightbox" id="art-lightbox" aria-hidden="true">
+    <button class="art-lb-close" id="art-lb-close" aria-label="Close">&#x2715;</button>
+    <div class="art-lb-inner">
+      <img class="art-lb-img" id="art-lb-img" src="" alt="" />
+      <p class="art-lb-caption" id="art-lb-caption"></p>
+    </div>
+  </div>
 
   <script type="module" src="script.js"></script>
   <script type="module" src="about-work.js"></script>

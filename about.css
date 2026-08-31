@@ -49,6 +49,44 @@
     cursor: pointer;
   }
 
+  /* Desktop: the portrait takes the full height of the row, so its top AND
+     bottom edges line up with the text column beside it and the hero reads as
+     one rectangle. Previously both columns started at y=140 but the 3:4 frame
+     ended 142px above the copy, leaving a ragged open corner under the image.
+
+     Height now comes from the row (which the text column sets), so this stays
+     true if the headline or bio ever changes length — the fixed aspect-ratio
+     was tuned to today's copy and would drift the moment it changed. Scoped
+     to desktop: on mobile the grid is a single column, where a percentage
+     height has no row to resolve against. */
+  @media (min-width: 768px) {
+    .about-intro { align-items: stretch; }
+
+    .portrait-frame {
+      aspect-ratio: auto;
+      height: 100%;
+    }
+
+    /* The hero display is dialled back from the global --text-display (88px at
+       1440) and the stack below it tightened, so the text column measures
+       ~400px instead of 542. That is what lets the portrait come back to
+       roughly its original 3:4 — stretching to fill a 542px column had squeezed
+       it to 0.55 and cropped the photo hard.
+
+       Only this page steps down: it is the one hero with an image beside it
+       that has to agree. Contact keeps the full --text-display. */
+    .about-intro-text .page-h1 {
+      font-size: clamp(2.6rem, 4.6vw, 4rem);
+      line-height: 1.14;
+      margin-bottom: 28px;
+    }
+
+    .bio { margin-bottom: 28px; }
+    .detail-row { margin-bottom: 32px; }
+    /* Last item in the column — the section gap below handles the separation. */
+    .about-cta { margin-bottom: 0; }
+  }
+
   .portrait-frame img,
 .portrait-frame video {
   width: 100%;
@@ -166,16 +204,24 @@
      is elsewhere — so it is scoped up in size and dropped out of uppercase.
      The global .page-label in style.css keeps its eyebrow role for every
      other page. font-style is pinned upright on purpose: no italic anywhere
-     on this site — headings are EB Garamond roman. */
+     on this site — headings are EB Garamond roman.
+
+     These are <h2> elements, not spans: the page is a landing with four
+     sections and needs a real outline for screen readers and search. The
+     margin reset is what keeps the h2 looking identical to the old span. */
   .about-work-head .page-label {
     font-family: var(--font-display);
-    font-size: var(--text-xl);
+    /* Stepped down from --text-xl (40px at 1440), which sat too close to the
+       hero display and made every section shout at the same volume. ~30px
+       holds the same ratio to the reduced hero below (~0.47) that the old
+       pair did, so the hierarchy is unchanged — just quieter overall. */
+    font-size: clamp(1.5rem, 2.2vw, 1.9rem);
     font-weight: 300;
     font-style: normal;
     text-transform: none;
     letter-spacing: -0.01em;
     color: var(--ink);
-    margin-bottom: 0;
+    margin: 0;
   }
 
   /* Two-up: at the 1040px column this lands each tile at ~468px wide. */
@@ -218,31 +264,6 @@
 
   /* Shared caption voice — the art rail below borrows it verbatim so both
      strips read as one system rather than two lookalikes drifting apart. */
-  .about-art-title {
-    display: block;
-    font-family: var(--font-serif);
-    font-size: clamp(1.05rem, 1.3vw, 1.2rem);
-    /* Upright on purpose: no italic anywhere on this site. */
-    font-style: normal;
-    font-weight: 400;
-    color: var(--ink);
-    transition: color 0.2s ease;
-  }
-
-  .about-art-card:hover .about-art-title {
-    color: var(--crimson);
-  }
-
-  .about-art-meta {
-    display: block;
-    margin-top: 5px;
-    font-family: var(--font-sans);
-    font-size: var(--text-sm);
-    font-weight: 300;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--stone);
-  }
 
   /* Mirrors .catalog-badge--current from the work grid, minus the shadow
      (stripped site-wide anyway) — a hairline holds it off the image instead. */
@@ -328,9 +349,14 @@
     width: 100%;
     margin-top: var(--section-gap);
 
-    /* ~300px lands 3 full cards plus a generous partial at 1440px, and about
-       1.2 cards on a 375px phone — the sliver IS the "scroll me" affordance. */
-    --about-art-card: clamp(260px, 76vw, 300px);
+    /* Cards are sized by HEIGHT, not width — see .about-art-thumb. At 375px
+       a portrait painting lands ~300px wide, so the rail still shows ~3 full
+       cards plus a partial at 1440px; the sliver IS the "scroll me"
+       affordance. Landscape pieces simply take more room, as they should. */
+    --about-art-h: clamp(300px, 26vw, 375px);
+    /* Panoramas would otherwise run off the rail; past this they letterbox
+       inside the cap rather than crop. */
+    --about-art-max: min(86vw, 560px);
     --about-art-gap: 20px;
 
     /* The distance from the viewport edge to main's prose column. Below the
@@ -353,6 +379,11 @@
     gap: var(--about-art-gap);
     margin-inline: calc(50% - 50vw);
     padding-inline: var(--about-art-inset);
+    /* The rail is the one full-bleed block on the page, so it is what the
+       fixed vinyl widget (161px + 40px inset) would otherwise sit on top of.
+       Ending the scroll 201px short of the right edge means no card ever
+       comes to rest underneath it. */
+    padding-inline-end: max(var(--about-art-inset), 201px);
     /* Snapport matches the padding so a snapped card lands flush with the
        prose column instead of tucking under the inset. */
     scroll-padding-inline: var(--about-art-inset);
@@ -374,31 +405,47 @@
   .about-art-rail::-webkit-scrollbar { display: none; }
 
   .about-art-card {
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    text-align: inherit;
+    cursor: pointer;
     flex: 0 0 auto;
-    width: var(--about-art-card);
+    max-width: var(--about-art-max);
     scroll-snap-align: start;
     text-decoration: none;
     color: inherit;
   }
 
-  /* 4:5 for every card. 16:9 is the house standard for *project thumbnails*;
-     paintings are mixed-ratio, and a ragged rail would leave the captions
-     dancing. One portrait-leaning crop here, true proportions on the Art
-     page — which is where the work is actually looked at. */
+  /* Constant HEIGHT, natural width — the paintings are shown whole.
+     The previous rule cropped every piece into one 4:5 aperture, which cost
+     the landscape work up to 44% of its width; a painting is a composition,
+     so a crop that hard shows a different picture than the one that was made.
+     Fixing the height instead is what the 4:5 crop was really after: the
+     thumbnails still share a baseline, so the captions below them stay on one
+     line and the rail doesn't go ragged. Widths now vary, which is the point. */
   .about-art-thumb {
     position: relative;
-    aspect-ratio: 4 / 5;
-    overflow: hidden;
-    border-radius: var(--radius-sm);
+    height: var(--about-art-h);
+    /* Not hidden: the hover scale grows outward into the 20px gap rather than
+       being clipped, so the frame never crops the work either. The radius
+       moves onto the image, which is now the only box in here. */
+    overflow: visible;
     margin-bottom: 18px;
   }
 
+  /* height:100% + width:auto makes the replaced element resolve its own width
+     from the image's intrinsic ratio — no crop, no distortion. object-fit
+     only comes into play for a panorama clamped by --about-art-max, where it
+     letterboxes inside the cap instead of cropping. */
   .about-art-thumb img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
+    width: auto;
     height: 100%;
-    object-fit: cover;
+    max-width: var(--about-art-max);
+    object-fit: contain;
+    border-radius: var(--radius-sm);
     display: block;
     transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
@@ -414,9 +461,12 @@
   }
 
   /* ── THE ROOM (last section, iframed /play) ── */
+  /* One interval for every section break. This was 1.5x, which made the
+     rhythm read 130 / 130 / 194 — two matching gaps and then an improvised
+     one, which the eye reads as accident rather than intent. */
   .about-room {
     width: 100%;
-    margin-top: calc(var(--section-gap) * 1.5);
+    margin-top: var(--section-gap);
   }
 
   .about-room-frame {
@@ -485,7 +535,13 @@
       gap: 32px;
     }
 
+    /* Shorter cards and a wider cap on a phone: with one shared height and
+       ratios running 0.72–1.67, the extremes can't both be large. These values
+       keep the portrait pieces (most of the body of work) comfortably big and
+       letterbox only the two panoramas — still far better than cropping them. */
     .about-art {
+      --about-art-h: clamp(300px, 90vw, 340px);
+      --about-art-max: 88vw;
       --about-art-gap: 16px;
     }
 
@@ -616,14 +672,29 @@
     }
   }
 
-  /* Closing link row inspired by Jamey Gannon's compact, full-width footer. */
+  /* Closing link row inspired by Jamey Gannon's compact, full-width footer.
+
+     Sits in main's own 1040px column: the footer used to run edge-to-edge on
+     the page gutter, which put its email at x=40 while every section above
+     started at x=240 — the one block that didn't belong to the page's grid.
+
+     The right pad is the vinyl widget's clearance (161px wide, 40px inset)
+     minus whatever the centring margin already provides, so the last link
+     can never come to rest underneath it at any width. Above ~1240px the
+     centring alone clears it and this collapses back to the plain gutter. */
   .about-footer {
     width: 100%;
+    max-width: 1040px;
+    margin-inline: auto;
     display: grid;
     grid-template-columns: minmax(0, 1fr) repeat(3, auto);
     align-items: center;
     gap: clamp(24px, 8vw, 96px);
-    padding: 24px max(var(--page-gutter, 40px), 128px) 32px var(--page-gutter, 40px);
+    padding: 24px var(--page-gutter, 40px) 32px;
+    padding-right: max(
+      var(--page-gutter, 40px),
+      calc(201px - (100vw - 1040px) / 2)
+    );
     font-family: var(--font-sans);
     font-size: clamp(0.78rem, 1vw, 0.88rem);
     font-weight: 400;
