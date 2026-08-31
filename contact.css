@@ -27,11 +27,10 @@ main {
 }
 
 .field label {
-  font-size: var(--text-xs);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  font-size: var(--text-sm);
+  letter-spacing: -0.01em;
   color: var(--stone);
-  font-weight: 200;
+  font-weight: 500;
 }
 
 /* Shared input + textarea styles — paper feel, bottom-border only */
@@ -45,7 +44,8 @@ main {
   outline: none;
   font-family: var(--font-display);
   font-size: var(--text-lg);
-  font-weight: 300;
+  font-weight: 400;
+  letter-spacing: -0.015em;
   font-style: normal;
   color: var(--ink);
   /* min-height on text inputs ensures ≥44px tap target */
@@ -98,9 +98,9 @@ main {
   color: var(--crimson);
   font-family: var(--font-display);
   font-size: var(--text-lg);
-  font-weight: 300;
+  font-weight: 500;
   font-style: normal;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.015em;
   transition: opacity 0.2s ease, gap 0.3s ease;
 }
 
@@ -141,6 +141,8 @@ main {
   font-family: var(--font-display);
   font-size: var(--text-xl);
   font-weight: 300;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
   font-style: normal;
   color: var(--ink);
 }
@@ -148,13 +150,15 @@ main {
 .success-sub {
   font-size: var(--text-base);
   color: var(--stone);
-  font-weight: 200;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.55;
 }
 
 .success-back {
-  font-size: var(--text-xs);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: -0.01em;
   color: var(--crimson);
   text-decoration: none;
   border-bottom: 1px solid var(--border-crimson);
@@ -187,7 +191,8 @@ main {
 .channel-link {
   font-family: var(--font-display);
   font-size: var(--text-base);
-  font-weight: 300;
+  font-weight: 400;
+  letter-spacing: -0.01em;
   font-style: normal;
   color: var(--ink);
   text-decoration: none;
@@ -204,8 +209,8 @@ main {
 .form-error {
   font-size: var(--text-xs);
   color: var(--crimson);
-  letter-spacing: 0.05em;
-  opacity: 0.8;
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
 /* ── Mobile ──────────────────────────────────────────────────────────────── */
@@ -220,11 +225,11 @@ main {
 
   .field input,
   .field textarea {
-    font-size: clamp(1rem, 4vw, 1.15rem);
+    font-size: clamp(1.15rem, 4.4vw, 1.35rem);
   }
 
   .submit-btn {
-    font-size: clamp(1rem, 4vw, 1.15rem);
+    font-size: clamp(1.15rem, 4.4vw, 1.35rem);
     align-self: flex-start;
     /* maintain touch target on mobile */
     min-height: 44px;
