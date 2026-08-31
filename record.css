@@ -29,11 +29,10 @@
 .record-label {
   display: block;
   font-family: var(--font-body);
-  font-size: var(--text-xs);
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
+  font-size: var(--text-sm);
+  letter-spacing: -0.01em;
   color: var(--stone);
-  font-weight: 200;
+  font-weight: 500;
   margin-bottom: 8px;
 }
 
@@ -43,14 +42,16 @@
   font-weight: 300;
   font-style: normal;
   color: var(--ink);
-  letter-spacing: -0.01em;
-  line-height: 1.1;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
 }
 
 .record-subtitle {
   font-family: var(--font-description);
   font-size: var(--text-base);
-  font-weight: 300;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.55;
   color: var(--color-description);
   margin-top: var(--space-sm);
 }
@@ -215,7 +216,7 @@
   font-family: var(--font-mono);
   font-size: var(--text-sm);
   color: var(--stone);
-  width: 24px;
+  width: 28px;
   text-align: right;
   flex-shrink: 0;
 }
@@ -237,6 +238,8 @@
   display: block;
   font-family: var(--font-serif);
   font-size: var(--text-base);
+  font-weight: 500;
+  letter-spacing: -0.01em;
   color: var(--ink);
   white-space: nowrap;
   overflow: hidden;
@@ -248,7 +251,8 @@
   font-family: var(--font-description);
   font-size: var(--text-sm);
   color: var(--color-description);
-  font-weight: 300;
+  font-weight: 400;
+  letter-spacing: -0.01em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -274,9 +278,9 @@
   border-bottom: 1px solid var(--border-crimson);
   cursor: pointer;
   font-family: var(--font-body);
-  font-size: var(--text-xs);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: -0.01em;
   color: var(--crimson);
   padding-bottom: 2px;
   min-height: 44px;
@@ -299,14 +303,14 @@
 .record-updated {
   font-size: var(--text-xs);
   color: var(--stone);
-  letter-spacing: 0.08em;
-  font-weight: 200;
+  letter-spacing: -0.01em;
+  font-weight: 500;
 }
 
 .record-view-all {
-  font-size: var(--text-xs);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: -0.01em;
   color: var(--crimson);
   text-decoration: none;
   border-bottom: 1px solid var(--border-crimson);
