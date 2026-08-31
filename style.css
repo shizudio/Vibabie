@@ -694,23 +694,6 @@ nav:not(.case-sidenav):not(.nav-overlay-nav) a:hover,
   }
 }
 
-/* Scroll-triggered, not load-triggered.
-   The animation above is declared on the element, so with no JS at all it
-   simply plays on load exactly as it always did — nothing can end up stranded
-   invisible. When JS is present it adds .js-reveal to <html> and the animation
-   is held paused until the element has actually been scrolled into view, so a
-   section entrance is something the visitor sees happen rather than something
-   that finished three screens above them. initScrollReveal() in script.js
-   marks anything already on screen as visible in the same tick, so an
-   above-the-fold entrance is never frozen half-played. */
-html.js-reveal .fade-up {
-  animation-play-state: paused;
-}
-
-html.js-reveal .fade-up.is-visible {
-  animation-play-state: running;
-}
-
 /* ── Shared lightbox close button ───────────────────────────────────────── */
 .lb-close {
   position: absolute;
