@@ -135,10 +135,18 @@ em, i, cite, address, dfn, var, blockquote, q {
   --color-description: var(--stone);
 
   /* Font sizes — v2 scale (see design-system-export.md §9) */
-  --text-xs: clamp(0.8125rem, 0.6vw, 0.875rem);  /* 13 → 14px  meta, tags */
-  --text-sm: clamp(0.9375rem, 0.8vw, 1rem);      /* 15 → 16px  labels, buttons */
-  --text-base: clamp(1.0625rem, 1.2vw, 1.25rem); /* 17 → 20px  body */
-  --text-lg: clamp(1.25rem, 1.6vw, 1.5rem);      /* 20 → 24px  large body */
+
+  /* The vw coefficients are calibrated so each step reaches its maximum inside
+     the common desktop band (1260-1410px), not somewhere past it. The first
+     cut of this scale used coefficients that were too small: --text-base did
+     not reach 20px until a 1670px viewport and --text-xs not until 2330px, so
+     on an ordinary laptop every small step sat frozen at its floor and the
+     "20px body" the scale promises was actually rendering at 17px. If you
+     change a max here, re-check the width at which it is actually reached. */
+  --text-xs: clamp(0.8125rem, 1.1vw, 0.875rem);  /* 13 → 14px  meta, tags */
+  --text-sm: clamp(0.9375rem, 1.25vw, 1rem);      /* 15 → 16px  labels, buttons */
+  --text-base: clamp(1.0625rem, 1.45vw, 1.25rem); /* 17 → 20px  body */
+  --text-lg: clamp(1.25rem, 1.7vw, 1.5rem);      /* 20 → 24px  large body */
   --text-xl: clamp(1.75rem, 3vw, 2.5rem);        /* 28 → 40px  section headings */
   --text-display: clamp(3rem, 7vw, 5.5rem);      /* 48 → 88px  hero */
 

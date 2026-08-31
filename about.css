@@ -13,10 +13,19 @@
    }
 
    /* ── INTRO: portrait left, text right ── */
+   /* The text column has to clear the headline's first line at full display
+      size: "Hi, I'm Shina Foo." measures 587px at 88px, and the old 380px
+      portrait + 64px gap left only 516px — which is why it broke into three
+      lines instead of the two the <br> intends. Trimming the portrait to
+      300px and the gap to 48px yields 612px, with ~25px of slack.
+
+      Note this is tuned to the current headline. A longer one will wrap
+      again; the durable fix is to let the h1 span the full content width
+      above both columns. */
    .about-intro {
      display: grid;
-     grid-template-columns: minmax(0, clamp(320px, 30vw, 380px)) minmax(0, 1fr);
-     gap: clamp(48px, 5vw, 64px);
+     grid-template-columns: minmax(0, clamp(280px, 24vw, 300px)) minmax(0, 1fr);
+     gap: clamp(40px, 4vw, 48px);
      align-items: start;
    }
 
@@ -65,8 +74,8 @@
    
    .bio {
      font-family: var(--font-description);
-     font-size: clamp(0.98rem, 1.25vw, 1.08rem);
-     line-height: 1.95;
+     font-size: var(--text-base);
+     line-height: 1.55;
      color: #2E2421;
      font-weight: 300;
      margin-bottom: 34px;
@@ -160,7 +169,7 @@
      on this site — headings are EB Garamond roman. */
   .about-work-head .page-label {
     font-family: var(--font-display);
-    font-size: clamp(1.5rem, 2.2vw, 2rem);   /* 24 -> 32px */
+    font-size: var(--text-xl);
     font-weight: 300;
     font-style: normal;
     text-transform: none;

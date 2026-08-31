@@ -106,11 +106,20 @@
     .embedded,
     .embedded body { cursor: auto !important; }
 
+    /* The hover tooltip is deliberately NOT hidden below. It is the room's
+       only way of telling you what a hotspot is before you click it — hiding
+       it left the embedded room looking interactive but saying nothing.
+
+       It survives framing on its own: script.js positions it from a mousemove
+       event's clientX/clientY and it is position: fixed, so inside the iframe
+       both resolve to the iframe's viewport, not the parent page's. The
+       edge-flip logic reads window.innerWidth/innerHeight, which is likewise
+       the frame's own box, so it stays inside the frame. */
+
     .embedded .loader,
     .embedded .site-header,
     .embedded .site-footer,
     .embedded .cursor,
-    .embedded .tooltip,
     .embedded .room-statement,
     .embedded .room-welcome,
     .embedded .frame-placards,
