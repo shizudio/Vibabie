@@ -2,25 +2,6 @@
    about.css — About page styles
    ───────────────────────────────────────── */
 
-/* Vertical rhythm between the page's four sections.
-
-   The rule that matters: a section break must read as decisively larger than
-   any gap *inside* a section, or the page collapses into one continuous
-   column. Internal rhythm here is 32px (grid row gap, heading-to-content), so
-   the section gap is set at 4-4.5x that — not the old flat 96px, which at 3x
-   was too close to the internal rhythm to register as a boundary.
-
-   Fluid rather than fixed: at 375px it floors at 80px (more than 96 would
-   leave on a phone, proportionally), and it opens up to 144px on a wide
-   desktop where there is room to breathe.
-
-   Spacing around a heading stays deliberately asymmetric — large above, 32px
-   below — so each heading binds to the content it labels rather than floating
-   between two sections. That contrast is what does the work; do not "even it
-   out". */
-:root {
-  --section-gap: clamp(80px, 9vw, 144px);
-}
 
    html, body { min-height: 100%; }
 

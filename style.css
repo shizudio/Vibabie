@@ -148,6 +148,19 @@ em, i, cite, address, dfn, var, blockquote, q {
   --space-4xl: 100px;
   --gap-grid: 40px;
 
+  /* Vertical rhythm between stacked page sections.
+
+     A section break must read as decisively larger than any gap *inside* a
+     section, or a page collapses into one continuous column. Internal rhythm
+     across this site is 32px (grid row gaps, heading-to-content), so this sits
+     at roughly 4x that. Fluid rather than fixed: 80px on a phone, opening to
+     144px on a wide desktop.
+
+     Spacing around a section heading stays asymmetric — this token above, 32px
+     below — so a heading binds to the content it labels instead of floating
+     between two sections. That contrast is the mechanism; do not even it out. */
+  --section-gap: clamp(80px, 9vw, 144px);
+
   /* Fluid page-gutter: 20px on narrow mobile → 40px on wide desktop */
   --page-gutter: clamp(20px, 4vw, 40px);
 

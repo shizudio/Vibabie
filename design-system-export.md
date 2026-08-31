@@ -170,13 +170,27 @@ Roughly 50 rules combine `text-transform: uppercase` with positive
 --space-md:  16px;   --space-2xl: 64px;    --gap-grid:  40px;
 --space-ml:  24px;
 
---page-gutter: clamp(20px, 4vw, 40px);   /* 20px mobile → 40px desktop */
+--page-gutter:  clamp(20px, 4vw, 40px);   /* 20px mobile → 40px desktop */
+--section-gap:  clamp(80px, 9vw, 144px); /* vertical rhythm between sections */
 
 --radius-sm: 2px;    --radius-md: 4px;    --radius-lg: 6px;
 
 --layout-content-top:        140px;
 --layout-content-top-mobile: 80px;
 ```
+
+**Vertical rhythm between sections.** `--section-gap` is roughly 4x the site's
+internal rhythm (32px grid row gaps, heading-to-content). A section break must
+read as decisively larger than any gap *inside* a section, or the page collapses
+into one continuous column; 3x is not enough.
+
+Spacing around a section heading is deliberately **asymmetric** — `--section-gap`
+above, 32px below — so a heading binds to the content it labels rather than
+floating between two sections. That contrast is the mechanism. Do not even it out.
+
+Where a transition changes medium rather than just topic (a scrolling rail giving
+way to a full-bleed interactive canvas), multiply: the size of the pause should
+match the size of the shift.
 
 Radii are near-square by intent — 2–6px, never pill-rounded except on buttons,
 which are fully round (`999px`).
