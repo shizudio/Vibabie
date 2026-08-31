@@ -27,12 +27,18 @@
 
    FONT SCALE  (--text-* in :root, all use clamp())
    ─────────────────────────────────────────
-   --text-xs      : 0.62 → 0.70 rem  — labels, metadata, uppercase caps
-   --text-sm      : 0.70 → 0.80 rem  — secondary text, hints
-   --text-base    : 0.90 → 1.05 rem  — body copy
-   --text-lg      : 1.10 → 1.30 rem  — large body / sub-headings
-   --text-xl      : 1.50 → 2.00 rem  — section headings
-   --text-display : 2.40 → 3.80 rem  — hero headings (page-h1)
+   --text-xs      : 0.8125 → 0.875 rem (13 → 14px) — meta, tags
+   --text-sm      : 0.9375 → 1.00  rem (15 → 16px) — labels, buttons, nav
+   --text-base    : 1.0625 → 1.25  rem (17 → 20px) — body copy
+   --text-lg      : 1.25   → 1.50  rem (20 → 24px) — large body / sub-headings
+   --text-xl      : 1.75   → 2.50  rem (28 → 40px) — section headings
+   --text-display : 3.00   → 5.50  rem (48 → 88px) — hero headings (page-h1)
+
+   Weight floor: nothing lighter than 400 below 24px. Weight 300 survives
+   only at display sizes (--text-display / --text-xl and comparable).
+   Tracking runs negative: display -0.02em, headings -0.015em, body -0.01em.
+   Body line-height 1.55; display 1.0; --text-xl 1.15.
+   No uppercase micro-labels — sentence case at --text-sm / 500 instead.
    On mobile the clamp() fluid range kicks in automatically.
    Override with a tighter clamp() in the page's own @media block only
    when the default clamp still produces an oversized result.
@@ -128,13 +134,13 @@ em, i, cite, address, dfn, var, blockquote, q {
   --font-description: 'Instrument Sans', sans-serif;
   --color-description: var(--stone);
 
-  /* Font sizes */
-  --text-xs: clamp(0.62rem, 0.55vw, 0.70rem);
-  --text-sm: clamp(0.70rem, 0.70vw, 0.80rem);
-  --text-base: clamp(0.90rem, 1vw, 1.05rem);
-  --text-lg: clamp(1.1rem, 1.5vw, 1.3rem);
-  --text-xl: clamp(1.5rem, 2.5vw, 2rem);
-  --text-display: clamp(2.4rem, 5vw, 3.8rem);
+  /* Font sizes — v2 scale (see design-system-export.md §9) */
+  --text-xs: clamp(0.8125rem, 0.6vw, 0.875rem);  /* 13 → 14px  meta, tags */
+  --text-sm: clamp(0.9375rem, 0.8vw, 1rem);      /* 15 → 16px  labels, buttons */
+  --text-base: clamp(1.0625rem, 1.2vw, 1.25rem); /* 17 → 20px  body */
+  --text-lg: clamp(1.25rem, 1.6vw, 1.5rem);      /* 20 → 24px  large body */
+  --text-xl: clamp(1.75rem, 3vw, 2.5rem);        /* 28 → 40px  section headings */
+  --text-display: clamp(3rem, 7vw, 5.5rem);      /* 48 → 88px  hero */
 
   /* Spacing */
   --space-xs: 4px;
