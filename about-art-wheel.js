@@ -135,6 +135,18 @@ const big = dy => Math.abs(dy) >= DIR_NOISE
 // line height to become pixels. 16px is the site's base.
 const LINE_PX = 16
 
+// ── Hover-to-scroll ─────────────────────────────────────────────────────────
+// Resting the pointer in the right quarter of the port keeps the rail moving,
+// so browsing the paintings does not require continuous scrolling. Speed ramps
+// from nothing at the zone's inner boundary to HOVER_MAX_SPEED at the screen
+// edge, so it eases in as you approach rather than snapping to a fixed rate —
+// a constant speed makes the boundary feel like a switch.
+const HOVER_ZONE = 0.25
+
+// px per ms at the very edge. ~1.0 is a readable browse: a 273px card passes
+// in a little over a quarter of a second at full tilt, slower everywhere else.
+const HOVER_MAX_SPEED = 1.0
+
 // Sub-pixel slop when asking "is the rail at the end?".
 const EPS = 1
 
@@ -177,6 +189,9 @@ function createController() {
     parking: false,
     parkedOnce: false,
     parkRAF: 0,
+    hoverX: -1,
+    hoverRAF: 0,
+    hoverLast: 0,
     samples: [],
     // Cached scroll position and maximum, so the wheel handler does no layout
     // reads of its own. Re-measured on re-arm and on resize, and kept honest by
@@ -231,6 +246,74 @@ function createController() {
     if (s.samples.length < 2) return 0
     const total = s.samples.reduce((sum, x) => sum + x.d, 0)
     return total / Math.max(1, now - s.samples[0].t)
+  }
+
+  // ── Hover-to-scroll ───────────────────────────────────────────────────────
+  function hoverSpeed() {
+    if (s.hoverX < 0) return 0
+    const vw = window.innerWidth || 1
+    const start = vw * (1 - HOVER_ZONE)
+    if (s.hoverX < start) return 0
+    // 0 at the boundary, 1 at the right edge. Linear, not eased: it still
+    // starts from zero so crossing the boundary is continuous rather than a
+    // switch, but a squared ramp left the inner half of the zone effectively
+    // dead — 14px/s a quarter of the way in — when the whole quarter is meant
+    // to be live.
+    const t = Math.min(1, (s.hoverX - start) / Math.max(1, vw - start))
+    return t * HOVER_MAX_SPEED
+  }
+
+  function hoverStop() {
+    cancelAnimationFrame(s.hoverRAF)
+    s.hoverRAF = 0
+    s.hoverLast = 0
+    // Hand the rail's physics back only if no wheel gesture is mid-flight.
+    if (!s.driving) return
+    armIdle()
+  }
+
+  function hoverTick(now) {
+    const rail = s.rail
+    if (!rail || !rail.isConnected || !s.enabled || !s.inView || s.parking) {
+      hoverStop()
+      return
+    }
+    if (s.lightbox && s.lightbox.classList.contains('open')) { hoverStop(); return }
+
+    const speed = hoverSpeed()
+    if (speed <= 0) { hoverStop(); return }
+
+    const dt = s.hoverLast ? Math.min(64, now - s.hoverLast) : 16
+    s.hoverLast = now
+
+    const max = Math.max(0, rail.scrollWidth - rail.clientWidth)
+    if (rail.scrollLeft >= max - EPS) { hoverStop(); return }
+
+    // Same suppression the wheel path uses: mandatory snap would fight every
+    // frame of this and turn a glide into a stutter.
+    setDriving(true)
+    const next = Math.min(max, rail.scrollLeft + speed * dt)
+    rail.scrollLeft = next
+    s.pos = next
+
+    s.hoverRAF = requestAnimationFrame(hoverTick)
+  }
+
+  function hoverStart() {
+    if (s.hoverRAF) return
+    s.hoverLast = 0
+    s.hoverRAF = requestAnimationFrame(hoverTick)
+  }
+
+  function onPointerMove(e) {
+    if (!s.enabled) return
+    s.hoverX = e.clientX
+    if (s.inView && hoverSpeed() > 0) hoverStart()
+  }
+
+  function onPointerLeave() {
+    s.hoverX = -1
+    hoverStop()
   }
 
   // ── Parking the section ───────────────────────────────────────────────────
@@ -504,6 +587,7 @@ function createController() {
     if (nowIn === s.inView) return
     s.inView = nowIn
     if (!nowIn) {
+      hoverStop()
       setDriving(false)
       rearm()
       // Left the section — the next arrival gets a fresh capture. Guarded on
@@ -535,6 +619,12 @@ function createController() {
   refreshEnabled()
   window.addEventListener('wheel', onWheel, { passive: false })
   window.addEventListener('resize', onResize)
+  // Passive: hover-to-scroll never blocks the pointer, it only reads position.
+  window.addEventListener('pointermove', onPointerMove, { passive: true })
+  // Pointer out of the document entirely (into browser chrome, another window)
+  // must stop the glide — otherwise it runs on against a cursor that is gone.
+  document.addEventListener('pointerleave', onPointerLeave)
+  window.addEventListener('blur', onPointerLeave)
   ;[mqFine, mqWide, mqStill].forEach(mq => {
     if (mq.addEventListener) mq.addEventListener('change', refreshEnabled)
   })
