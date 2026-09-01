@@ -677,22 +677,32 @@ function createController() {
     const vh = window.innerHeight || 1
     const need = Math.min(entry.boundingClientRect.height, vh) * ENGAGE_FRACTION
     const nowIn = entry.isIntersecting && entry.intersectionRect.height >= need
+
+    // Clear the per-visit capture FIRST, and outside the change guard below.
+    // This used to live inside it, which meant it almost never ran: `nowIn`
+    // (90% of the section) goes false while the section is still partly on
+    // screen, so by the time it finally leaves the viewport `nowIn` has not
+    // changed and the callback returned early. parkedOnce stayed true for the
+    // rest of the session and the stop never applied again.
+    //
+    // Deliberately gated on fully out, not on a low ratio: while the visitor
+    // is part-way through leaving downwards, shouldCapture() would still be
+    // satisfied, so an earlier reset would drag them straight back in.
+    if (!entry.isIntersecting) s.parkedOnce = false
+
     if (nowIn === s.inView) return
     s.inView = nowIn
+
     if (nowIn) {
-      // Arrived (or come back). If the pointer is already sitting in the zone,
-      // the glide should resume without waiting for it to twitch.
+      // Arrived (or come back). If the pointer is already sitting in a live
+      // zone, the glide should resume without waiting for it to twitch.
       maybeHover()
+      return
     }
-    if (!nowIn) {
-      hoverStop()
-      setDriving(false)
-      rearm()
-      // Left the section — the next arrival gets a fresh capture. Guarded on
-      // isIntersecting so a partial exit does not re-arm a stop the visitor is
-      // still in the middle of leaving.
-      if (!entry.isIntersecting) s.parkedOnce = false
-    }
+
+    hoverStop()
+    setDriving(false)
+    rearm()
   }, { threshold: THRESHOLDS })
 
   let resizeTimer = 0
