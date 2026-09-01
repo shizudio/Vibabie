@@ -1,5 +1,5 @@
 /**
- * about-art-wheel.js — scroll-driven art rail for the About page.
+ * about-art-wheel.js — pinned art rail with hover-driven travel.
  *
  * TOTAL REWRITE, and the reason matters: the previous version intercepted
  * wheel events and animated window.scrollTo against native momentum. Those two
@@ -11,19 +11,15 @@
  * The rule now: NOTHING here ever calls preventDefault, and nothing ever
  * writes window.scrollTo. The page scrolls natively, always. Instead:
  *
- *   - The section is a sticky PIN (see about.css): it carries extra scroll
- *     height, its content stays fixed on screen while the visitor scrolls
- *     through it, and this module maps that scroll progress onto the rail's
- *     scrollLeft. The paintings sliding sideways IS the scroll — the page
- *     never stops, so there is nothing to feel janky.
+ *   - The section is a sticky PIN (see about.css): it carries a fixed amount
+ *     of extra scroll height and its content stays fixed on screen while the
+ *     visitor scrolls through it. That is the dwell — time in front of the
+ *     paintings — and it is ALL the pin does. Scroll progress does not drive
+ *     the rail; the owner ruled that auto-carousel out.
+ *   - The rail moves only when the visitor moves it: the hover glide in the
+ *     side zones (with a neutral strip at the centre), or a direct swipe.
  *   - The gentle per-section pauses are CSS scroll-snap (y proximity), which
- *     is native, momentum-friendly, and skippable. It only misbehaved before
- *     because our own scrollTo animations were fighting it.
- *
- * On top of the scroll-driven baseline sits a user OFFSET: hover-gliding in
- * the side zones or swiping the rail directly adjusts it, so a visitor can see
- * more (or less) than the pin's mapping shows without the two inputs fighting.
- * rail.scrollLeft is always clamp(base + offset, 0, max).
+ *     is native, momentum-friendly, and skippable.
  *
  * Desktop only (fine pointer, >=1024px). Under prefers-reduced-motion the pin
  * collapses (CSS) and this module leaves the rail fully native.
@@ -34,15 +30,12 @@
  * window.__shizArtRailWheel and later runs only re-attach the new rail.
  */
 
-// How much of the rail the pin maps, in viewport-widths. 1.5vw of travel shows
-// roughly four more paintings during the pass — the "budget" — while the rest
-// stays reachable through the hover glide or a direct swipe.
-const MAP_VIEWPORTS = 1.5
-
-// Extra section height per px of mapped rail travel. Below 1 the rail moves a
-// touch faster than the page, which keeps the pass feeling brisk; 1 would be
-// exactly 1:1.
-const PIN_RATIO = 0.8
+// The pin's extra scroll height, in viewports. The section stays pinned on
+// screen for this much scrolling — the dwell — but the scroll does NOT drive
+// the rail: the owner ruled out the auto-carousel. The paintings move only
+// when the visitor moves them, by hover velocity or a direct swipe. The pin
+// just buys the time to do it.
+const PIN_EXTRA_VH = 0.75
 
 // Hover glide: the strip either side of centre where the pointer rests without
 // the rail drifting, and the ramp to full speed at the screen edges.
@@ -58,16 +51,11 @@ function controller() {
     rail: null,
     section: null,
     enabled: false,
-    base: 0,      // scroll-driven px
-    offset: 0,    // user-added px (glide, swipe)
     max: 0,
-    mapDist: 0,
-    applying: false,
     inView: false,
     hoverX: -1,
     hoverRAF: 0,
     hoverLast: 0,
-    scrollRAF: 0,
     lightbox: null,
   }
 
@@ -88,54 +76,13 @@ function controller() {
     const rail = s.rail
     if (!rail || !rail.isConnected) return
     s.max = Math.max(0, rail.scrollWidth - rail.clientWidth)
-    s.mapDist = Math.min(s.max, (window.innerWidth || 0) * MAP_VIEWPORTS)
     if (s.enabled && s.section) {
-      // The pin's extra height lives on a CSS var so the stylesheet owns the
-      // layout and this module owns only the number.
+      // The CSS var so the stylesheet owns the layout, this module the number.
       s.section.style.setProperty(
         '--art-pin-extra',
-        Math.round(s.mapDist * PIN_RATIO) + 'px'
+        Math.round((window.innerHeight || 800) * PIN_EXTRA_VH) + 'px'
       )
     }
-  }
-
-  // ── Scroll → rail ─────────────────────────────────────────────────────────
-  function progress() {
-    const el = s.section
-    if (!el) return 0
-    const extra = el.offsetHeight - (window.innerHeight || 1)
-    if (extra <= 0) return 0
-    const top = el.getBoundingClientRect().top
-    return clamp(-top / extra, 0, 1)
-  }
-
-  function apply() {
-    const rail = s.rail
-    if (!rail || !rail.isConnected) return
-    const target = clamp(s.base + s.offset, 0, s.max)
-    if (Math.abs(target - rail.scrollLeft) < EPS) return
-    s.applying = true
-    rail.scrollLeft = target
-    s.applying = false
-  }
-
-  function onScroll() {
-    if (!s.enabled) return
-    if (s.scrollRAF) return
-    s.scrollRAF = requestAnimationFrame(() => {
-      s.scrollRAF = 0
-      if (!s.rail || !s.rail.isConnected) return
-      s.base = progress() * s.mapDist
-      apply()
-    })
-  }
-
-  // A swipe or keyboard scroll on the rail itself folds into the offset, so
-  // direct manipulation and the scroll mapping never fight: the visitor's own
-  // travel simply shifts the baseline.
-  function onRailScroll() {
-    if (s.applying || !s.rail) return
-    s.offset = s.rail.scrollLeft - s.base
   }
 
   // ── Hover glide ───────────────────────────────────────────────────────────
@@ -174,8 +121,7 @@ function controller() {
 
     const dt = s.hoverLast ? Math.min(64, now - s.hoverLast) : 16
     s.hoverLast = now
-    s.offset = clamp(s.offset + speed * dt, -s.base, s.max - s.base)
-    apply()
+    rail.scrollLeft = clamp(rail.scrollLeft + speed * dt, 0, s.max)
     s.hoverRAF = requestAnimationFrame(hoverTick)
   }
 
@@ -210,7 +156,6 @@ function controller() {
     resizeTimer = setTimeout(() => {
       refreshEnabled()
       measure()
-      onScroll()
     }, 120)
   }
 
@@ -221,7 +166,6 @@ function controller() {
   mqReduce.addEventListener ? mqReduce.addEventListener('change', onMq) : mqReduce.addListener(onMq)
 
   // All passive. Nothing in this module can block a scroll.
-  window.addEventListener('scroll', onScroll, { passive: true })
   window.addEventListener('resize', onResize)
   window.addEventListener('pointermove', onPointerMove, { passive: true })
   document.addEventListener('pointerleave', onPointerGone)
@@ -235,17 +179,13 @@ function controller() {
       }
       s.rail = rail
       s.section = rail.closest('.about-art')
-      s.base = 0
-      s.offset = 0
       s.lightbox = document.getElementById('art-lightbox')
       rail.dataset.artWheelBound = '1'
-      rail.addEventListener('scroll', onRailScroll, { passive: true })
       io.observe(rail)
       refreshEnabled()
       // Images may still be laying out; measure now and again shortly after.
       measure()
-      setTimeout(() => { measure(); onScroll() }, 400)
-      onScroll()
+      setTimeout(measure, 400)
     },
   }
 }
