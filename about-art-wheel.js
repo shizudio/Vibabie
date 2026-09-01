@@ -212,6 +212,7 @@ function createController() {
     hoverRAF: 0,
     hoverLast: 0,
     lastScrollY: 0,
+    arrivalGesture: false,
     samples: [],
     // Cached scroll position and maximum, so the wheel handler does no layout
     // reads of its own. Re-measured on re-arm and on resize, and kept honest by
@@ -399,6 +400,7 @@ function createController() {
     if (!shouldCapture(dir)) return
 
     s.lastDir = dir
+    s.arrivalGesture = true
     parkPage(dir, () => {
       const carried = s.spent
       rearm()
@@ -612,6 +614,12 @@ function createController() {
     if (!s.released && !s.parkedOnce && shouldCapture(dir)) {
       if (big(dy)) s.lastDir = dir
       s.lastTime = now
+      // The gesture that arrives can never be the gesture that leaves. A hard
+      // fling was capturing, blowing through the preview during the park, and
+      // releasing the moment the park ended — one continuous motion, a stop of
+      // a few hundred milliseconds that never read as a stop at all. This flag
+      // holds until the wheel goes quiet for IDLE_MS.
+      s.arrivalGesture = true
       e.preventDefault()
       parkPage(dir, () => {
         // Preserve what the gesture already moved during the park — rearm()
@@ -627,6 +635,7 @@ function createController() {
 
     if (!s.inView && !overRail) return
 
+    if (now - s.lastTime > IDLE_MS) s.arrivalGesture = false
     if (now - s.lastTime > IDLE_MS || (big(dy) && dir !== s.lastDir)) rearm()
     s.lastTime = now
     if (big(dy)) s.lastDir = dir
@@ -660,7 +669,10 @@ function createController() {
         // distance is required as an amount instead.
         const previewDone = dir > 0 ? next >= s.preview - EPS : s.spent >= s.preview
         const railEnd = dir > 0 ? next >= s.max - EPS : next <= EPS
-        if (railEnd || (previewDone && velocity(now) >= FAST_VELOCITY)) release(dir)
+        if (
+          railEnd ||
+          (previewDone && !s.arrivalGesture && velocity(now) >= FAST_VELOCITY)
+        ) release(dir)
         return
       }
       // The rail is already at the end in this direction on the very first
