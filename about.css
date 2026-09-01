@@ -413,6 +413,26 @@
 
   .about-art-rail::-webkit-scrollbar { display: none; }
 
+  /* Set by about-art-wheel.js only while a vertical wheel gesture is driving
+     the rail, and dropped again once that gesture stops.
+
+     Both of the rail's own scroll behaviours fight per-tick `scrollLeft`
+     writes, and they fight them differently. `scroll-snap-type: x mandatory`
+     re-snaps after every programmatic scroll, so a 40px tick either gets pulled
+     back to the card it started on or thrown a whole card forward — the gesture
+     comes out as a stutter instead of a 1:1 drag. `scroll-behavior: smooth`
+     then turns each of those writes into its own animation, so sixty of them a
+     second queue up and the rail visibly lags the hand.
+
+     Suspending both is what the wheel path needs; restoring them is what makes
+     the rail settle onto a card at the end of the gesture. A hand swipe never
+     sets this class (horizontal deltas are left entirely to the browser), so
+     touch, trackpad and shift+wheel still snap exactly as before. */
+  .about-art-rail.is-wheel-driven {
+    scroll-snap-type: none;
+    scroll-behavior: auto;
+  }
+
   .about-art-card {
     background: none;
     border: 0;
