@@ -51,19 +51,20 @@ const MIN_WIDTH = 1024
 // be satisfied.
 const ENGAGE_FRACTION = 0.6
 
-// ── Intent, measured as speed ────────────────────────────────────────────────
-// A fast flick and a slow deliberate scroll are the same event stream with
-// different timing, and they mean opposite things. Fast says "I am leaving";
-// slow says "I am looking". So the lock is conditional on speed, not absolute:
+// ── The compulsory preview, and the exit after it ───────────────────────────
+// Everyone stops here. Once the Artworks fill the screen the page locks and a
+// vertical wheel drives the rail sideways for one viewport of travel — enough
+// to see what the rail is and how it moves, roughly two and a half paintings.
+// That part is not negotiable and is not affected by how fast you arrived.
 //
-//   slow  -> no budget at all. The page stays locked until the rail runs out,
-//            which is the compulsory stop.
-//   fast  -> a budget applies. Once it is spent the page is released, so a
-//            visitor who is plainly trying to get past never has to traverse
-//            4435px of paintings to do it.
+// What happens AFTER the preview is spent depends on intent, read as speed:
 //
-// Slowing back down clears the fast budget, so changing your mind mid-section
-// re-commits to browsing rather than leaving you half-released.
+//   fast -> you are leaving. The page is released and carries on to the room.
+//   slow -> you are looking. The lock holds and the rail runs to its end.
+//
+// Speed is re-read every tick, so slowing down inside the section keeps the
+// rail, and speeding up after the preview lets you out — the decision is never
+// made once and frozen.
 const VELOCITY_WINDOW_MS = 220
 
 // px per ms, measured over the window above. A deliberate mouse scroll runs
@@ -71,8 +72,10 @@ const VELOCITY_WINDOW_MS = 220
 // between the two, so ordinary browsing never trips it by accident.
 const FAST_VELOCITY = 3.5
 
-// How much fast scrolling it takes to get out, as a fraction of the viewport.
-const FAST_BUDGET_FRACTION = 0.75
+// The compulsory preview, as a fraction of the viewport height. One screen of
+// horizontal travel: long enough to read as a deliberate moment, short enough
+// that a visitor heading elsewhere is not held for long.
+const PREVIEW_FRACTION = 1
 
 // A gap this long reads as "the visitor stopped", not as a lull inside one
 // gesture. Trackpad momentum ticks arrive every ~16ms and a fling can run well
@@ -126,8 +129,7 @@ function createController() {
     // `released` means this engagement is spent. It stays true until re-arm.
     released: true,
     spent: 0,
-    fastSpent: 0,
-    fastBudget: 0,
+    preview: 0,
     samples: [],
     // Cached scroll position and maximum, so the wheel handler does no layout
     // reads of its own. Re-measured on re-arm and on resize, and kept honest by
@@ -186,8 +188,7 @@ function createController() {
 
   function rearm() {
     s.spent = 0
-    s.fastSpent = 0
-    s.fastBudget = (window.innerHeight || 800) * FAST_BUDGET_FRACTION
+    s.preview = (window.innerHeight || 800) * PREVIEW_FRACTION
     // Geometry FIRST. The end-of-rail test below reads s.max, and on the very
     // first re-arm s.max is still 0 — which made `scrollLeft >= s.max - EPS`
     // read as 0 >= -1, i.e. "already at the end", and left `released` stuck
@@ -270,11 +271,6 @@ function createController() {
         s.spent += Math.abs(dy)
         s.pos = next
 
-        // Only fast scrolling spends the escape budget. Dropping back below
-        // the threshold clears it, so slowing down re-commits to the rail
-        // instead of leaving a half-spent budget waiting to release early.
-        if (velocity(now) >= FAST_VELOCITY) s.fastSpent += Math.abs(dy)
-        else s.fastSpent = 0
         setDriving(true)
         rail.scrollLeft = next
         armIdle()
@@ -282,10 +278,13 @@ function createController() {
         // Decide now whether the NEXT tick is still ours, so that when the
         // rail runs out the following event flows through untouched. There is
         // never a frame where the wheel does nothing.
-        if (
-          s.fastSpent >= s.fastBudget ||
-          (dir > 0 ? next >= s.max - EPS : next <= EPS)
-        ) release()
+        // The preview is spent by every tick regardless of speed, so the stop
+        // is genuinely compulsory. Only once it is used up does intent get a
+        // vote: still moving fast means "let me out", anything slower means
+        // "I am looking at these", and the lock holds to the end of the rail.
+        const previewDone = s.spent >= s.preview
+        const railEnd = dir > 0 ? next >= s.max - EPS : next <= EPS
+        if (railEnd || (previewDone && velocity(now) >= FAST_VELOCITY)) release()
         return
       }
       // The rail is already at the end in this direction on the very first
