@@ -210,7 +210,21 @@ function createController() {
     // chaining back out at the end, which is precisely the trap this feature
     // must never become. So forward the gesture to the page explicitly.
     e.preventDefault()
-    window.scrollBy({ top: dy, left: 0, behavior: 'instant' })
+    scrollPageBy(dy)
+  }
+
+  // `behavior: 'instant'` is an enum value, so an engine that predates it
+  // throws TypeError rather than ignoring it. Probe once, not per tick.
+  let instantOk = true
+  try {
+    window.scrollBy({ top: 0, left: 0, behavior: 'instant' })
+  } catch (err) {
+    instantOk = false
+  }
+
+  function scrollPageBy(dy) {
+    if (instantOk) window.scrollBy({ top: dy, left: 0, behavior: 'instant' })
+    else window.scrollBy(0, dy)
   }
 
   function onRailScroll() {
