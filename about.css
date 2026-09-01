@@ -850,3 +850,11 @@
     margin-top: calc(var(--section-gap) * 0.5);
   }
 }
+
+/* The room's head sits closer to its canvas than the other two sections'
+   heads sit to their content. The canvas is a single full-bleed object rather
+   than a grid or a rail, so the heading reads as a label ON it — 32px left it
+   floating between the section above and the frame below. */
+.about-room .about-work-head {
+  margin-bottom: 14px;
+}

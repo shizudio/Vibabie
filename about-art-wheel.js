@@ -66,17 +66,27 @@ const ENGAGE_FRACTION = 0.9
 // `mandatory` would fight the wheel interception for control of the same
 // scroll position — that fight was the jank on entry.
 //
-// So the capture is ours. It fires EARLY — as soon as the section's leading
-// edge is this far into the port — because the park must never reverse. A
-// single fast tick can carry 400px, so capturing late meant the page had
-// already overshot the target and the animation yanked it back. That backward
-// correction was the jerk on entry. Capturing at 0.9 leaves most of a screen
-// to decelerate into, so the page only ever glides forward into place.
-const CAPTURE_FRACTION = 0.9
+// So the capture is ours, and it fires the instant the section's leading edge
+// crosses into the port.
+//
+// This used to be 0.9, which sounds early but was not: the section enters at
+// top = vh and 0.9 fires at top = 0.9*vh, so the window to notice was only a
+// tenth of a screen — 72px on a 720px window. Any scroll step bigger than that
+// stepped straight over the trigger, which is exactly how the section could
+// still be passed. At 1 the window is the whole approach and nothing can jump
+// it.
+const CAPTURE_FRACTION = 1
 
-// Long enough to read as the page settling, short enough not to feel like a
-// hostage. Matched to the site's entrance easing.
-const PARK_MS = 420
+// How far the page may be pulled BACK to reach the port, as a fraction of the
+// viewport. Reversing is normally forbidden — it reads as a glitch — but a
+// compulsory stop that a fast burst can overshoot is not compulsory. Small
+// corrections settle; large ones would yank, so past this the section is let
+// go rather than dragged back.
+const MAX_PULLBACK_FRACTION = 0.5
+
+// Long enough to read as the page deliberately settling rather than snapping.
+// 420 was too brisk to register as an arrival — it looked like a correction.
+const PARK_MS = 760
 
 
 // ── The compulsory preview, and the exit after it ───────────────────────────
@@ -192,6 +202,7 @@ function createController() {
     hoverX: -1,
     hoverRAF: 0,
     hoverLast: 0,
+    lastScrollY: 0,
     samples: [],
     // Cached scroll position and maximum, so the wheel handler does no layout
     // reads of its own. Re-measured on re-arm and on resize, and kept honest by
@@ -316,6 +327,33 @@ function createController() {
     hoverStop()
   }
 
+  // ── The hard clip ─────────────────────────────────────────────────────────
+  // Capturing on `wheel` alone is not a clip, it is a wheel feature. Momentum
+  // after the fingers lift, keyboard paging, a scrollbar drag, Home/End, a
+  // touchpad's inertial tail — none of those are wheel events, and every one of
+  // them could carry the visitor straight past the section.
+  //
+  // This runs on `scroll` instead, which no scroll method can avoid producing,
+  // so the stop holds regardless of how the page is being moved.
+  function onScrollClip() {
+    if (!s.enabled || s.parking || s.parkedOnce || s.released) return
+    const rail = s.rail
+    if (!rail || !rail.isConnected) return
+    if (s.lightbox && s.lightbox.classList.contains('open')) return
+
+    const y = window.scrollY || 0
+    const dir = y >= s.lastScrollY ? 1 : -1
+    s.lastScrollY = y
+
+    if (!shouldCapture(dir)) return
+
+    s.lastDir = dir
+    parkPage(dir, () => {
+      rearm()
+      s.released = false
+    })
+  }
+
   // ── Parking the section ───────────────────────────────────────────────────
   // One easing curve, one owner of window.scrollTo. Any wheel that arrives
   // while this runs is swallowed, so nothing competes for the scroll position.
@@ -334,10 +372,14 @@ function createController() {
     if (to === null) { onDone(); return }
     const from = window.scrollY || 0
     const dist = to - from
-    // Never travel against the visitor. If a fast tick already carried the page
-    // past the target, take the position as given rather than yanking back —
-    // a reversal reads as a glitch, a slightly-off frame does not.
-    if (Math.abs(dist) < 2 || dist * dir < 0) {
+    // Travelling against the visitor is normally forbidden, but a burst that
+    // overshoots the target by a little must still be pulled into the port or
+    // the stop is not compulsory. Allow it only while the correction is small
+    // enough to read as settling.
+    const vh = window.innerHeight || 1
+    const reversing = dist * dir < 0
+    const pullbackTooFar = reversing && Math.abs(dist) > vh * MAX_PULLBACK_FRACTION
+    if (Math.abs(dist) < 2 || pullbackTooFar) {
       s.parking = false
       s.parkedOnce = true
       onDone()
@@ -621,6 +663,9 @@ function createController() {
   window.addEventListener('resize', onResize)
   // Passive: hover-to-scroll never blocks the pointer, it only reads position.
   window.addEventListener('pointermove', onPointerMove, { passive: true })
+  // Passive: this never blocks the scroll, it only notices one has happened
+  // and takes the page from there.
+  window.addEventListener('scroll', onScrollClip, { passive: true })
   // Pointer out of the document entirely (into browser chrome, another window)
   // must stop the glide — otherwise it runs on against a cursor that is gone.
   document.addEventListener('pointerleave', onPointerLeave)
