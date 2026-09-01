@@ -1,4 +1,5 @@
 import { initLightbox } from './lightbox.js'
+import { initArtRailWheel } from './about-art-wheel.js'
 
 let lightboxOpen = null
 
@@ -23,10 +24,16 @@ function getLightbox() {
  * scrolling strip between "Selected work" and the room. Deliberately a rail
  * and not a grid: the tiles above are a considered, finite selection, the
  * paintings are a body of work you browse — the different register is the
- * point. Scrolling is native (CSS scroll-snap in about.css); there is no
- * hijacking, no drag library and no animation loop here, so trackpad, touch,
- * shift+wheel and keyboard all work for free and it degrades to a plain
- * overflow strip if the CSS never lands.
+ * point. Scrolling is native (CSS scroll-snap in about.css); there is no drag
+ * library and no animation loop here, so trackpad, touch, shift+wheel and
+ * keyboard all work for free and it degrades to a plain overflow strip if the
+ * CSS never lands.
+ *
+ * The one addition is about-art-wheel.js, which on desktop lets a vertical
+ * wheel drive the rail sideways for a budgeted stretch before handing the
+ * gesture back to the page. It is additive and self-limiting: every native
+ * path above still works, and the feature is off for touch, narrow viewports
+ * and reduced motion.
  *
  * The manifest also carries `beforeSrc` on some entries (a before/after state
  * of the same painting). Ignored on purpose: the flip belongs to the Art page,
@@ -82,6 +89,12 @@ async function render() {
   const rail = document.getElementById('aboutArtRail')
   if (!rail) return
 
+  // Desktop wheel-to-horizontal. Idempotent per element and safe against a rail
+  // that is still empty — it re-measures at the start of every engagement — so
+  // it goes in ahead of the population guard below, which means a re-run
+  // against an already-populated rail still re-points the controller at it.
+  initArtRailWheel(rail)
+
   // Claim this container synchronously, before any await — a second execution
   // of the module (double script tag, or a fast back/forward) then bails out
   // instead of racing to append a duplicate set of cards.
@@ -125,6 +138,10 @@ async function render() {
   pieces.forEach((art, i) => frag.appendChild(buildCard(art, i)))
   rail.appendChild(frag)
   rail.dataset.aboutArtState = 'ready'
+
+  // Second, cheap call: the rail now has a real scrollWidth, so re-seed the
+  // controller's cached geometry rather than leaving it to the first wheel tick.
+  initArtRailWheel(rail)
 }
 
 render()
