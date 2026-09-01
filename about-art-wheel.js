@@ -146,7 +146,8 @@ const big = dy => Math.abs(dy) >= DIR_NOISE
 const LINE_PX = 16
 
 // ── Hover-to-scroll ─────────────────────────────────────────────────────────
-// Resting the pointer in the right half of the port keeps the rail moving,
+// Resting the pointer in either half of the port keeps the rail moving — right
+// to go forward, left to come back —
 // so browsing the paintings does not require continuous scrolling. Speed ramps
 // from nothing at the zone's inner boundary to HOVER_MAX_SPEED at the screen
 // edge, so it eases in as you approach rather than snapping to a fixed rate —
@@ -260,17 +261,27 @@ function createController() {
   }
 
   // ── Hover-to-scroll ───────────────────────────────────────────────────────
+  // Signed: positive drives the rail forward, negative back. The midline is
+  // the boundary for both, so the two halves meet with no dead strip between
+  // them and no overlap.
+  //
+  // The left half stays inert until there is actually rail behind the visitor
+  // to return to. Before that it would be a live zone that does nothing, which
+  // reads as broken rather than as unavailable.
   function hoverSpeed() {
     if (s.hoverX < 0) return 0
     const vw = window.innerWidth || 1
-    const start = vw * (1 - HOVER_ZONE)
-    if (s.hoverX < start) return 0
-    // 0 at the boundary, 1 at the right edge. Linear, not eased: it still
-    // starts from zero so crossing the midline is continuous rather than a
-    // switch, but a squared ramp left the inner part of the zone effectively
-    // dead when the whole half is meant to be live.
-    const t = Math.min(1, (s.hoverX - start) / Math.max(1, vw - start))
-    return t * HOVER_MAX_SPEED
+    const mid = vw * (1 - HOVER_ZONE)
+
+    if (s.hoverX >= mid) {
+      const t = Math.min(1, (s.hoverX - mid) / Math.max(1, vw - mid))
+      return t * HOVER_MAX_SPEED
+    }
+
+    const rail = s.rail
+    if (!rail || rail.scrollLeft <= EPS) return 0
+    const t = Math.min(1, (mid - s.hoverX) / Math.max(1, mid))
+    return -t * HOVER_MAX_SPEED
   }
 
   function hoverStop() {
@@ -291,18 +302,22 @@ function createController() {
     if (s.lightbox && s.lightbox.classList.contains('open')) { hoverStop(); return }
 
     const speed = hoverSpeed()
-    if (speed <= 0) { hoverStop(); return }
+    if (speed === 0) { hoverStop(); return }
 
     const dt = s.hoverLast ? Math.min(64, now - s.hoverLast) : 16
     s.hoverLast = now
 
     const max = Math.max(0, rail.scrollWidth - rail.clientWidth)
-    if (rail.scrollLeft >= max - EPS) { hoverStop(); return }
+    // Stop at whichever end this direction is heading for.
+    if (speed > 0 ? rail.scrollLeft >= max - EPS : rail.scrollLeft <= EPS) {
+      hoverStop()
+      return
+    }
 
     // Same suppression the wheel path uses: mandatory snap would fight every
     // frame of this and turn a glide into a stutter.
     setDriving(true)
-    const next = Math.min(max, rail.scrollLeft + speed * dt)
+    const next = Math.max(0, Math.min(max, rail.scrollLeft + speed * dt))
     rail.scrollLeft = next
     s.pos = next
 
@@ -327,7 +342,7 @@ function createController() {
   // that can change whether we are in the port calls this instead.
   function maybeHover() {
     if (!s.enabled || !s.inView) return
-    if (hoverSpeed() > 0) hoverStart()
+    if (hoverSpeed() !== 0) hoverStart()
   }
 
   function onPointerLeave() {
