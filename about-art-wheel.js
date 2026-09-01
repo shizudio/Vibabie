@@ -51,6 +51,29 @@ const MIN_WIDTH = 1024
 // be satisfied.
 const ENGAGE_FRACTION = 0.6
 
+// ── Intent, measured as speed ────────────────────────────────────────────────
+// A fast flick and a slow deliberate scroll are the same event stream with
+// different timing, and they mean opposite things. Fast says "I am leaving";
+// slow says "I am looking". So the lock is conditional on speed, not absolute:
+//
+//   slow  -> no budget at all. The page stays locked until the rail runs out,
+//            which is the compulsory stop.
+//   fast  -> a budget applies. Once it is spent the page is released, so a
+//            visitor who is plainly trying to get past never has to traverse
+//            4435px of paintings to do it.
+//
+// Slowing back down clears the fast budget, so changing your mind mid-section
+// re-commits to browsing rather than leaving you half-released.
+const VELOCITY_WINDOW_MS = 220
+
+// px per ms, measured over the window above. A deliberate mouse scroll runs
+// ~1-2; a trackpad fling peaks well past 6. 3.5 sits in the empty space
+// between the two, so ordinary browsing never trips it by accident.
+const FAST_VELOCITY = 3.5
+
+// How much fast scrolling it takes to get out, as a fraction of the viewport.
+const FAST_BUDGET_FRACTION = 0.75
+
 // A gap this long reads as "the visitor stopped", not as a lull inside one
 // gesture. Trackpad momentum ticks arrive every ~16ms and a fling can run well
 // past a second. Re-arming mid-fling would re-lock a page the visitor has
@@ -103,6 +126,9 @@ function createController() {
     // `released` means this engagement is spent. It stays true until re-arm.
     released: true,
     spent: 0,
+    fastSpent: 0,
+    fastBudget: 0,
+    samples: [],
     // Cached scroll position and maximum, so the wheel handler does no layout
     // reads of its own. Re-measured on re-arm and on resize, and kept honest by
     // the rail's own scroll event for native scrolls (hand swipe, tab focus).
@@ -131,26 +157,59 @@ function createController() {
   // gesture, which is exactly what a hand swipe does today.
   function armIdle() {
     clearTimeout(s.idleTimer)
-    s.idleTimer = setTimeout(() => setDriving(false), IDLE_MS)
+    s.idleTimer = setTimeout(() => {
+      // Only hand the rail's own physics back once we have actually let go of
+      // it. Restoring `scroll-snap: mandatory` + `scroll-behavior: smooth`
+      // while still driving is a real bug: deliberate browsing leaves gaps
+      // longer than IDLE_MS between ticks, so snap would re-engage mid-gesture
+      // and fling the rail to a distant snap point. Measured: 1440px of input
+      // moved the rail the full 4435px.
+      if (s.released) setDriving(false)
+    }, IDLE_MS)
   }
 
   // The only place that reads layout. Called on re-arm (idle, direction
   // reversal, leaving the section) and on resize — never per wheel tick.
+  // Raw input speed, independent of whether we consumed the delta. Sampled on
+  // every tick so the reading is current the moment engagement is decided.
+  function pushSample(now, dy) {
+    s.samples.push({ t: now, d: Math.abs(dy) })
+    const cutoff = now - VELOCITY_WINDOW_MS
+    while (s.samples.length && s.samples[0].t < cutoff) s.samples.shift()
+  }
+
+  function velocity(now) {
+    if (s.samples.length < 2) return 0
+    const total = s.samples.reduce((sum, x) => sum + x.d, 0)
+    return total / Math.max(1, now - s.samples[0].t)
+  }
+
   function rearm() {
     s.spent = 0
-    // Do NOT clear `released` while the rail is already parked at the end the
-    // visitor is travelling towards. Without this, pausing for IDLE_MS at the
-    // end of the rail would re-lock the page and the section could never be
-    // left — the difference between a compulsory stop and a dead end.
-    const atEnd =
-      s.rail && s.rail.isConnected
-        ? (s.lastDir > 0 ? s.rail.scrollLeft >= s.max - EPS : s.rail.scrollLeft <= EPS)
-        : false
-    if (!atEnd) s.released = false
+    s.fastSpent = 0
+    s.fastBudget = (window.innerHeight || 800) * FAST_BUDGET_FRACTION
+    // Geometry FIRST. The end-of-rail test below reads s.max, and on the very
+    // first re-arm s.max is still 0 — which made `scrollLeft >= s.max - EPS`
+    // read as 0 >= -1, i.e. "already at the end", and left `released` stuck
+    // true so the rail never engaged at all.
     if (s.rail && s.rail.isConnected) {
       s.max = Math.max(0, s.rail.scrollWidth - s.rail.clientWidth)
       s.pos = s.rail.scrollLeft
     }
+
+    // Do NOT clear `released` while the rail is already parked at the end the
+    // visitor is travelling towards: pausing there would otherwise re-lock the
+    // page and the section could never be left.
+    //
+    // lastDir === 0 means no direction has been established yet (a fresh
+    // arrival), and must NOT count as being at an end — the rail sits at 0 on
+    // arrival, and the old `else` branch read that as "at the end", which was
+    // the second half of the same bug.
+    const atEnd =
+      s.rail && s.rail.isConnected && s.lastDir !== 0
+        ? (s.lastDir > 0 ? s.pos >= s.max - EPS : s.pos <= EPS)
+        : false
+    if (!atEnd) s.released = false
     // The lightbox lives outside <main>, so it is not swapped by the router and
     // may legitimately be absent on a soft arrival from another page. Keep
     // looking until it turns up rather than caching a null forever.
@@ -159,6 +218,10 @@ function createController() {
 
   function release() {
     s.released = true
+    // Let the rail settle onto a card now that the gesture is over. Deferred by
+    // IDLE_MS so the settle reads as the end of the gesture rather than an
+    // animation competing with the page starting to move.
+    armIdle()
   }
 
   function onWheel(e) {
@@ -191,6 +254,7 @@ function createController() {
     if (now - s.lastTime > IDLE_MS || (big && dir !== s.lastDir)) rearm()
     s.lastTime = now
     if (big) s.lastDir = dir
+    pushSample(now, dy)
 
     // A compulsory stop must not be possible to miss. s.inView is already
     // "the section covers most of the screen", and the section is a full
@@ -205,6 +269,12 @@ function createController() {
         const next = clamp(s.pos + dy, 0, s.max)
         s.spent += Math.abs(dy)
         s.pos = next
+
+        // Only fast scrolling spends the escape budget. Dropping back below
+        // the threshold clears it, so slowing down re-commits to the rail
+        // instead of leaving a half-spent budget waiting to release early.
+        if (velocity(now) >= FAST_VELOCITY) s.fastSpent += Math.abs(dy)
+        else s.fastSpent = 0
         setDriving(true)
         rail.scrollLeft = next
         armIdle()
@@ -212,7 +282,10 @@ function createController() {
         // Decide now whether the NEXT tick is still ours, so that when the
         // rail runs out the following event flows through untouched. There is
         // never a frame where the wheel does nothing.
-        if (dir > 0 ? next >= s.max - EPS : next <= EPS) release()
+        if (
+          s.fastSpent >= s.fastBudget ||
+          (dir > 0 ? next >= s.max - EPS : next <= EPS)
+        ) release()
         return
       }
       // The rail is already at the end in this direction on the very first
