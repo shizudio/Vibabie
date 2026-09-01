@@ -1,17 +1,23 @@
 /**
- * about-art-wheel.js — budgeted wheel-to-horizontal for the About page art rail.
+ * about-art-wheel.js — wheel-to-horizontal lock for the About page art rail.
  *
- * On desktop, while the Artworks rail is substantially in view, a vertical
- * wheel gesture drives the rail sideways instead of moving the page — but only
- * for a fixed budget (one viewport height of delta). Past that the gesture goes
- * straight back to the page, so a visitor who simply keeps scrolling always
- * reaches the room below. Stop, reverse, or come back to the section and the
- * budget is refilled, which is the "if the user stops, horizontal scroll
- * activates" half of the behaviour.
+ * On desktop, once the Artworks section fills the screen, a vertical wheel
+ * gesture drives the rail sideways INSTEAD of moving the page, and the page
+ * stays locked until the rail reaches its end in the direction of travel.
+ * This is a compulsory stop, requested as such: the visitor traverses the
+ * paintings before the page continues to the room below.
  *
- * Deliberately NOT a pin: nothing here freezes the page, and there is no state
- * in which the wheel does nothing. Every release path stops calling
- * preventDefault() on the very same event that triggered it.
+ * The exits, which matter more here than in a budgeted version:
+ *   - Reaching either end of the rail releases the page in that direction.
+ *   - Scrolling back up rewinds the rail and releases at 0, so the section can
+ *     always be left the way it was entered.
+ *   - Keyboard scrolling is never intercepted — only `wheel` is.
+ *   - Off entirely under prefers-reduced-motion, so anyone who has asked not to
+ *     be moved around gets plain native scrolling.
+ *   - Inert while the lightbox is open.
+ *
+ * Every release path stops calling preventDefault() on the very same event
+ * that triggered it, so there is never a frame where the wheel does nothing.
  *
  * Off entirely for coarse pointers, viewports under 1024px, and
  * prefers-reduced-motion — DESIGN.md asks for "zero custom scroll physics" on
@@ -45,22 +51,10 @@ const MIN_WIDTH = 1024
 // be satisfied.
 const ENGAGE_FRACTION = 0.6
 
-// Engagement may only BEGIN while the rail is resting near the middle of the
-// viewport — within this fraction of the viewport height, measured centre to
-// centre. Previously any 60%-visible rail could grab the wheel, so the takeover
-// landed while the section was still travelling into frame and collided with
-// the motion of arriving. Gating on the resting state gives the section a beat
-// to settle first, so the handoff happens once, cleanly, at rest.
-//
-// 0.15 of a 900px window is +/-135px — tight enough to read as "centred",
-// loose enough that a normal scroll cannot step over the band between two
-// wheel ticks.
-const CENTRE_BAND = 0.15
-
 // A gap this long reads as "the visitor stopped", not as a lull inside one
 // gesture. Trackpad momentum ticks arrive every ~16ms and a fling can run well
-// past a second, so anything much shorter would refill the budget mid-fling and
-// turn the section into the trap this is designed not to be.
+// past a second. Re-arming mid-fling would re-lock a page the visitor has
+// already been released from, so the threshold has to clear a whole fling.
 const IDLE_MS = 400
 
 // Momentum tails jitter across zero. Only a delta this size counts as a
@@ -108,7 +102,6 @@ function createController() {
     driving: false,
     // `released` means this engagement is spent. It stays true until re-arm.
     released: true,
-    budget: 0,
     spent: 0,
     // Cached scroll position and maximum, so the wheel handler does no layout
     // reads of its own. Re-measured on re-arm and on resize, and kept honest by
@@ -143,20 +136,17 @@ function createController() {
 
   // The only place that reads layout. Called on re-arm (idle, direction
   // reversal, leaving the section) and on resize — never per wheel tick.
-  // One layout read, taken only while disengaged — once a gesture owns the
-  // rail this is never consulted again, so it costs nothing per tick.
-  function isCentred() {
-    const rail = s.rail
-    if (!rail || !rail.isConnected) return false
-    const r = rail.getBoundingClientRect()
-    const vh = window.innerHeight || 1
-    return Math.abs(r.top + r.height / 2 - vh / 2) <= vh * CENTRE_BAND
-  }
-
   function rearm() {
     s.spent = 0
-    s.released = false
-    s.budget = window.innerHeight || 800
+    // Do NOT clear `released` while the rail is already parked at the end the
+    // visitor is travelling towards. Without this, pausing for IDLE_MS at the
+    // end of the rail would re-lock the page and the section could never be
+    // left — the difference between a compulsory stop and a dead end.
+    const atEnd =
+      s.rail && s.rail.isConnected
+        ? (s.lastDir > 0 ? s.rail.scrollLeft >= s.max - EPS : s.rail.scrollLeft <= EPS)
+        : false
+    if (!atEnd) s.released = false
     if (s.rail && s.rail.isConnected) {
       s.max = Math.max(0, s.rail.scrollWidth - s.rail.clientWidth)
       s.pos = s.rail.scrollLeft
@@ -202,12 +192,15 @@ function createController() {
     s.lastTime = now
     if (big) s.lastDir = dir
 
-    // s.spent > 0 means this engagement is already under way — keep it, or the
-    // rail would be dropped the moment its own travel carried it out of the
-    // centring band.
-    if (!s.released && s.inView && (s.spent > 0 || isCentred())) {
+    // A compulsory stop must not be possible to miss. s.inView is already
+    // "the section covers most of the screen", and the section is a full
+    // viewport tall, so by the time this passes the visitor is looking at
+    // artworks and nothing else. The narrower centring test is gone with the
+    // centring test: it existed to pick one tidy moment out of a passing
+    // scroll, and there is no passing scroll any more.
+    if (!s.released && s.inView) {
       const room = dir > 0 ? s.max - s.pos : s.pos
-      if (room > EPS && s.spent < s.budget) {
+      if (room > EPS) {
         // 1:1 — the rail travels exactly as far as the page would have.
         const next = clamp(s.pos + dy, 0, s.max)
         s.spent += Math.abs(dy)
@@ -217,13 +210,13 @@ function createController() {
         armIdle()
         e.preventDefault()
         // Decide now whether the NEXT tick is still ours, so that when the
-        // budget or the rail runs out the following event flows through
-        // untouched. There is never a frame where the wheel does nothing.
-        if (s.spent >= s.budget || (dir > 0 ? next >= s.max - EPS : next <= EPS)) release()
+        // rail runs out the following event flows through untouched. There is
+        // never a frame where the wheel does nothing.
+        if (dir > 0 ? next >= s.max - EPS : next <= EPS) release()
         return
       }
-      // Out of budget or out of rail on the very first tick of this direction:
-      // fall through and let the page have it, this event included.
+      // The rail is already at the end in this direction on the very first
+      // tick: nothing to run, so let the page have it, this event included.
       release()
     }
 
