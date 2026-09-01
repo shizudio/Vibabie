@@ -7,6 +7,7 @@
  */
 
 import { initLightbox } from './lightbox.js'
+import { morphOpen } from './lightbox-morph.js'
 
 // ── Load manifest (tolerate both the new {artworks,sketches} shape and a
 //    legacy flat array, in case a stale copy is served from CDN cache) ──
@@ -80,7 +81,8 @@ function buildTrack() {
       </figcaption>
     `
     const img = card.querySelector('img')
-    img.addEventListener('click', () => openLightbox(img.src, art.description || art.title))
+    img.addEventListener('click', () =>
+      morphOpen(img, () => openLightbox(img.src, art.description || art.title)))
 
     // Opt-in before/after flip — only rendered when a manifest entry has beforeSrc.
     const flipBtn = card.querySelector('.art-card-flip')
@@ -374,7 +376,7 @@ function buildSketchGrid() {
   sketchGrid.querySelectorAll('.sketch-cell').forEach(cell => {
     cell.addEventListener('click', () => {
       const s = SKETCHES[+cell.dataset.index]
-      openLightbox(s.src, s.description || s.title || '')
+      morphOpen(cell.querySelector('img'), () => openLightbox(s.src, s.description || s.title || ''))
     })
   })
 }
