@@ -69,7 +69,9 @@ a.ai-card:hover {
 
 .ai-card-icon {
   font-size: 1rem;
-  color: var(--crimson);
+  /* Was crimson — but an icon is information, not interaction, and the accent
+     only stays loud if it is scarce. */
+  color: var(--stone);
   line-height: 1;
   margin-bottom: 14px;
 }

@@ -241,7 +241,7 @@ html, body { height: 100%; }
   font-family: var(--font-sans);
   font-size: var(--text-xs);
   letter-spacing: -0.01em;
-  color: var(--crimson);
+  color: var(--stone);
   font-weight: 500;
 }
 

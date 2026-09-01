@@ -103,7 +103,17 @@ em, i, cite, address, dfn, var, blockquote, q {
   --amber: #FCBC43;
   --teal: #94D3D3;
   --blush: #EFDBE4;
-  --stone: #756E68;   /* darkened from #9A928E for WCAG AA (2.85:1 -> 4.56:1 on paper) */
+  /* Secondary text is a STEP of the ink, not its own hue. The old #756E68 was
+     a warm brown-grey — secondary text was doing hue work when hierarchy
+     should live in lightness alone, quietly competing with crimson. Alpha over
+     the ink keeps every level in one family automatically (effective #726F6D
+     on paper, 4.8:1, AA). The rule that goes with it: greyscale carries
+     information levels; crimson means interaction or live status, never
+     decoration. */
+  --stone: rgba(28, 23, 20, 0.62);
+  /* Decorative-only faint step — big ghost numerals, dividers. Fails AA for
+     text on purpose; never set running copy in it. */
+  --ink-faint: rgba(28, 23, 20, 0.38);
   --ink: #1C1714;
   --paper: #FFFFFF;
   --border: rgba(26, 23, 20, 0.09);

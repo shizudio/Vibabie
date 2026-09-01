@@ -57,12 +57,17 @@ uninterrupted image stack on the right. Copy is deliberately short.
 |---|---|---|
 | `--paper` | `#FFFFFF` | Page ground, everywhere |
 | `--ink` | `#1C1714` | Primary text. Warm near-black, not pure `#000` |
-| `--stone` | `#756E68` | Secondary text, metadata, captions |
+| `--stone` | `rgba(28,23,20,0.62)` | Secondary text — a lightness step of the ink, effective `#726F6D`, 4.99:1 |
 | `--crimson` | `#7F1F12` | The single accent. Links, hover, the custom cursor |
 | `--border` | `rgba(26, 23, 20, 0.09)` | Hairline rules and dividers |
 
-`--stone` was darkened from `#9A928E` to `#756E68` to pass WCAG AA — it went from
-2.85:1 to 4.56:1 against paper. Any replacement must clear 4.5:1.
+**Hierarchy lives in greyscale; colour means interaction.** Text levels are
+steps of one ink (alpha over `--ink`), never a second hue — the old warm
+brown-grey stone made secondary text do hue work and quietly competed with the
+accent. Crimson appears only on things you can click or that are live (links,
+hovers, the building badge); never as decoration. `--ink-faint`
+(`rgba(28,23,20,0.38)`) exists for decorative-only ghost text and deliberately
+fails AA — never running copy. Any text colour must clear 4.5:1.
 
 There is exactly **one accent**. Crimson is the only saturated colour in the
 interface. Everything else is ink, stone, or paper.
