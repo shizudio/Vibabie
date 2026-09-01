@@ -820,3 +820,33 @@
     margin-top: 40px;
   }
 }
+
+/* ── DESKTOP: the artworks own a screen ───────────────────────────────────
+   The rail was packed tightly between Selected work and the room, so it had
+   nowhere to come to rest — the wheel takeover fired while the section was
+   still travelling into frame, and the grab collided with the motion of
+   arriving.
+
+   Giving the section its own full-viewport band, with the head and rail
+   centred inside it, creates a resting position: scroll down, the section
+   settles in the middle of the screen, and only then does the horizontal
+   takeover engage (see CENTRE_BAND in about-art-wheel.js, which gates on
+   exactly this state). One clean handoff instead of a scramble on approach.
+
+   min-height rather than height: if the rail ever grows taller than the
+   viewport the section simply grows with it instead of clipping. */
+@media (min-width: 1024px) {
+  .about-art {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* The band supplies the breathing room now, so the section gap on either
+     side of it would only add dead scroll. */
+  .about-art,
+  .about-room {
+    margin-top: calc(var(--section-gap) * 0.5);
+  }
+}

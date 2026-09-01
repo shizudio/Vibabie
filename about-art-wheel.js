@@ -45,6 +45,18 @@ const MIN_WIDTH = 1024
 // be satisfied.
 const ENGAGE_FRACTION = 0.6
 
+// Engagement may only BEGIN while the rail is resting near the middle of the
+// viewport — within this fraction of the viewport height, measured centre to
+// centre. Previously any 60%-visible rail could grab the wheel, so the takeover
+// landed while the section was still travelling into frame and collided with
+// the motion of arriving. Gating on the resting state gives the section a beat
+// to settle first, so the handoff happens once, cleanly, at rest.
+//
+// 0.15 of a 900px window is +/-135px — tight enough to read as "centred",
+// loose enough that a normal scroll cannot step over the band between two
+// wheel ticks.
+const CENTRE_BAND = 0.15
+
 // A gap this long reads as "the visitor stopped", not as a lull inside one
 // gesture. Trackpad momentum ticks arrive every ~16ms and a fling can run well
 // past a second, so anything much shorter would refill the budget mid-fling and
@@ -131,6 +143,16 @@ function createController() {
 
   // The only place that reads layout. Called on re-arm (idle, direction
   // reversal, leaving the section) and on resize — never per wheel tick.
+  // One layout read, taken only while disengaged — once a gesture owns the
+  // rail this is never consulted again, so it costs nothing per tick.
+  function isCentred() {
+    const rail = s.rail
+    if (!rail || !rail.isConnected) return false
+    const r = rail.getBoundingClientRect()
+    const vh = window.innerHeight || 1
+    return Math.abs(r.top + r.height / 2 - vh / 2) <= vh * CENTRE_BAND
+  }
+
   function rearm() {
     s.spent = 0
     s.released = false
@@ -180,7 +202,10 @@ function createController() {
     s.lastTime = now
     if (big) s.lastDir = dir
 
-    if (!s.released && s.inView) {
+    // s.spent > 0 means this engagement is already under way — keep it, or the
+    // rail would be dropped the moment its own travel carried it out of the
+    // centring band.
+    if (!s.released && s.inView && (s.spent > 0 || isCentred())) {
       const room = dir > 0 ? s.max - s.pos : s.pos
       if (room > EPS && s.spent < s.budget) {
         // 1:1 — the rail travels exactly as far as the page would have.
