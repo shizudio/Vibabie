@@ -59,6 +59,23 @@ const MIN_WIDTH = 1024
 // settles the artworks into the port first and the rail only then takes over.
 const ENGAGE_FRACTION = 0.9
 
+// ── The capture ─────────────────────────────────────────────────────────────
+// A hard stop has to take the page BEFORE the visitor is past the section,
+// otherwise it is not a stop, it is a suggestion. CSS scroll-snap could not do
+// this: `proximity` is lenient by design (you can always out-scroll it) and
+// `mandatory` would fight the wheel interception for control of the same
+// scroll position — that fight was the jank on entry.
+//
+// So the capture is ours. When the section has come this far into the viewport
+// in the direction of travel, the wheel is swallowed and the page is animated
+// to the parked position. Only when it is parked does the rail take over.
+const CAPTURE_FRACTION = 0.45
+
+// Long enough to read as the page settling, short enough not to feel like a
+// hostage. Matched to the site's entrance easing.
+const PARK_MS = 420
+
+
 // ── The compulsory preview, and the exit after it ───────────────────────────
 // Everyone stops here. Once the Artworks fill the screen the page locks and a
 // vertical wheel drives the rail sideways for one viewport of travel — enough
@@ -138,6 +155,9 @@ function createController() {
     released: true,
     spent: 0,
     preview: 0,
+    parking: false,
+    parkedOnce: false,
+    parkRAF: 0,
     samples: [],
     // Cached scroll position and maximum, so the wheel handler does no layout
     // reads of its own. Re-measured on re-arm and on resize, and kept honest by
@@ -192,6 +212,58 @@ function createController() {
     if (s.samples.length < 2) return 0
     const total = s.samples.reduce((sum, x) => sum + x.d, 0)
     return total / Math.max(1, now - s.samples[0].t)
+  }
+
+  // ── Parking the section ───────────────────────────────────────────────────
+  // One easing curve, one owner of window.scrollTo. Any wheel that arrives
+  // while this runs is swallowed, so nothing competes for the scroll position.
+  function parkTarget() {
+    const section = s.rail && s.rail.closest('.about-art')
+    if (!section) return null
+    const r = section.getBoundingClientRect()
+    const vh = window.innerHeight || 1
+    // Centre the section in the port. With a 100dvh section this resolves to
+    // its own top edge, but the arithmetic holds if it is ever taller.
+    return Math.round(r.top + window.scrollY + r.height / 2 - vh / 2)
+  }
+
+  function parkPage(onDone) {
+    const to = parkTarget()
+    if (to === null) { onDone(); return }
+    const from = window.scrollY || 0
+    const dist = to - from
+    if (Math.abs(dist) < 2) { window.scrollTo(0, to); onDone(); return }
+
+    s.parking = true
+    cancelAnimationFrame(s.parkRAF)
+    const t0 = performance.now()
+    // easeOutCubic — decelerating, so the arrival reads as settling.
+    const ease = t => 1 - Math.pow(1 - t, 3)
+    const step = now => {
+      const t = Math.min(1, (now - t0) / PARK_MS)
+      window.scrollTo(0, Math.round(from + dist * ease(t)))
+      if (t < 1) {
+        s.parkRAF = requestAnimationFrame(step)
+      } else {
+        s.parking = false
+        s.parkedOnce = true
+        onDone()
+      }
+    }
+    s.parkRAF = requestAnimationFrame(step)
+  }
+
+  // Has the section come far enough into the port, travelling `dir`, that we
+  // should take the page? Measured on the section, not the rail.
+  function shouldCapture(dir) {
+    const section = s.rail && s.rail.closest('.about-art')
+    if (!section) return false
+    const r = section.getBoundingClientRect()
+    const vh = window.innerHeight || 1
+    const edge = vh * CAPTURE_FRACTION
+    // Scrolling down: its top edge has risen past the trigger line.
+    // Scrolling up: its bottom edge has fallen past the mirror line.
+    return dir > 0 ? r.top <= edge && r.bottom > 0 : r.bottom >= vh - edge && r.top < vh
   }
 
   function rearm() {
@@ -264,6 +336,26 @@ function createController() {
     s.lastTime = now
     if (big) s.lastDir = dir
     pushSample(now, dy)
+
+    // ── Capture ──────────────────────────────────────────────────────────
+    // While the page is animating into the port, swallow everything. Two
+    // owners of window.scrollTo is the whole reason the entry felt janky.
+    if (s.parking) {
+      e.preventDefault()
+      return
+    }
+
+    // Take the page before the visitor is past the section. Without this the
+    // stop can be out-scrolled, which is not a stop.
+    if (!s.released && !s.parkedOnce && shouldCapture(dir)) {
+      e.preventDefault()
+      parkPage(() => {
+        // Parked. Re-measure and hand over to the rail with a full budget.
+        rearm()
+        s.released = false
+      })
+      return
+    }
 
     // A compulsory stop must not be possible to miss. s.inView is already
     // "the section covers most of the screen", and the section is a full
@@ -342,6 +434,10 @@ function createController() {
     if (!nowIn) {
       setDriving(false)
       rearm()
+      // Left the section — the next arrival gets a fresh capture. Guarded on
+      // isIntersecting so a partial exit does not re-arm a stop the visitor is
+      // still in the middle of leaving.
+      if (!entry.isIntersecting) s.parkedOnce = false
     }
   }, { threshold: THRESHOLDS })
 

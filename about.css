@@ -850,29 +850,3 @@
     margin-top: calc(var(--section-gap) * 0.5);
   }
 }
-
-/* ── DESKTOP: the artworks are a port the page comes to rest in ─────────────
-   A hard stop has to stop somewhere specific. Without this the wheel lock
-   engaged wherever the page happened to be, so the visitor was frozen looking
-   at a partly-scrolled section — the stop read as a glitch rather than as an
-   arrival.
-
-   `proximity` rather than `mandatory`: only this one section pulls the page
-   into alignment, and only when the page is already near it. The rest of the
-   document scrolls freely, and nothing else on the page declares a snap-align,
-   so nothing else is affected. */
-@media (min-width: 1024px) {
-  html {
-    scroll-snap-type: y proximity;
-  }
-
-  .about-art {
-    scroll-snap-align: center;
-  }
-
-  /* Someone who has asked not to be moved around should not have the page
-     pulled from under them. */
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-snap-type: none; }
-  }
-}
