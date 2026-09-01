@@ -150,7 +150,8 @@ html, body { background: #FFFFFF; }
   padding: 0 10px 10px 0;
 }
 .project-stack figure { margin: 0; }
-.project-stack img {
+.project-stack img,
+.project-stack video {
   display: block;
   width: 100%;
   height: auto;
