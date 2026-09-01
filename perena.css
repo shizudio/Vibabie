@@ -7,7 +7,7 @@
    --text-muted : secondary, labels, meta (warmer than --stone)
    ─────────────────────────────────────── */
 :root {
-  --text-body:  #2E2421;
+  --text-body:  var(--ink-soft);
   --text-muted: #7a706c;
 }
 

@@ -111,6 +111,10 @@ em, i, cite, address, dfn, var, blockquote, q {
      information levels; crimson means interaction or live status, never
      decoration. */
   --stone: rgba(28, 23, 20, 0.62);
+  /* Supporting voice — bios, ledes, rail descriptions: running copy that
+     murmurs while headings speak. One step below full ink, well above stone
+     (which is for metadata, not paragraphs). Effective #4B4744, 8.6:1. */
+  --ink-soft: rgba(28, 23, 20, 0.82);
   /* Decorative-only faint step — big ghost numerals, dividers. Fails AA for
      text on purpose; never set running copy in it. */
   --ink-faint: rgba(28, 23, 20, 0.38);

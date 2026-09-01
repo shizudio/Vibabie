@@ -61,6 +61,11 @@ uninterrupted image stack on the right. Copy is deliberately short.
 | `--crimson` | `#7F1F12` | The single accent. Links, hover, the custom cursor |
 | `--border` | `rgba(26, 23, 20, 0.09)` | Hairline rules and dividers |
 
+Four greyscale levels, all alpha steps of one ink:
+`--ink` (headings, case-study body) → `--ink-soft` 0.82 (supporting voice —
+bios, ledes, rail descriptions; #45413E, 10.1:1) → `--stone` 0.62 (metadata,
+captions; 4.99:1) → `--ink-faint` 0.38 (decorative ghosts only).
+
 **Hierarchy lives in greyscale; colour means interaction.** Text levels are
 steps of one ink (alpha over `--ink`), never a second hue — the old warm
 brown-grey stone made secondary text do hue work and quietly competed with the

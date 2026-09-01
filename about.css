@@ -143,7 +143,7 @@
      font-family: var(--font-description);
      font-size: var(--text-base);
      line-height: 1.55;
-     color: #2E2421;
+     color: var(--ink-soft);
      font-weight: 300;
      margin-bottom: 34px;
    }
