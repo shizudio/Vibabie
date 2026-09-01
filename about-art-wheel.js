@@ -49,7 +49,15 @@ const MIN_WIDTH = 1024
 // "midpoint in view" test while staying meaningful for a ~400px-tall rail in a
 // ~900px-tall window — where "60% of the viewport height" alone could never
 // be satisfied.
-const ENGAGE_FRACTION = 0.6
+// The lock engages on the SECTION, not the rail, and only once the section is
+// essentially filling the port. Gating on the rail (396px inside a 900px
+// section) meant 60% of the rail was visible while the section was still two
+// thirds off-screen — so the page froze on a half-shown section, which is what
+// made the stop feel cranky rather than deliberate.
+//
+// Paired with `scroll-snap-align: center` on the section (about.css), the page
+// settles the artworks into the port first and the rail only then takes over.
+const ENGAGE_FRACTION = 0.9
 
 // ── The compulsory preview, and the exit after it ───────────────────────────
 // Everyone stops here. Once the Artworks fill the screen the page locks and a
@@ -346,7 +354,8 @@ function createController() {
       // the rail's scrollWidth moves as lazy images land. One measurement, well
       // away from the wheel handler.
       if (s.rail && s.rail.isConnected) {
-        const r = s.rail.getBoundingClientRect()
+        const gauge = s.rail.closest('.about-art') || s.rail
+        const r = gauge.getBoundingClientRect()
         const vh = window.innerHeight || 1
         const visible = Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0))
         s.inView = visible >= Math.min(r.height, vh) * ENGAGE_FRACTION
@@ -381,7 +390,7 @@ function createController() {
         s.inView = false
         rail.dataset.artWheelBound = '1'
         rail.addEventListener('scroll', onRailScroll, { passive: true })
-        io.observe(rail)
+        io.observe(rail.closest('.about-art') || rail)
       }
       s.lightbox = document.getElementById('art-lightbox')
       rearm()
