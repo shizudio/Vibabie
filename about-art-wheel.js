@@ -400,7 +400,9 @@ function createController() {
 
     s.lastDir = dir
     parkPage(dir, () => {
+      const carried = s.spent
       rearm()
+      s.spent = carried
       s.released = false
     })
   }
@@ -576,10 +578,33 @@ function createController() {
     // over the content above. Behind that guard the capture was unreachable,
     // and the stop could simply be scrolled past.
 
-    // While the page is animating into or out of the port, swallow everything.
-    // Two owners of window.scrollTo is what made the transitions janky.
+    // While the page is animating into or out of the port, it stays the only
+    // owner of window.scrollTo — but the gesture is NOT swallowed. It drives
+    // the rail instead.
+    //
+    // Swallowing it was a real dead spot: the park runs 760ms and a flick is
+    // maybe 300ms of events, so the visitor's entire gesture was consumed by
+    // the animation and the rail never moved. The page clipped and then
+    // nothing happened, which is exactly the "it clips but does not scroll the
+    // artwork" report. Routing the delta into the rail keeps the motion
+    // continuous: the page glides into the port while the paintings start
+    // moving under the same gesture.
     if (s.parking) {
       e.preventDefault()
+
+      if (!s.max && rail.isConnected) {
+        s.max = Math.max(0, rail.scrollWidth - rail.clientWidth)
+        s.pos = rail.scrollLeft
+      }
+      const roomNow = dir > 0 ? s.max - s.pos : s.pos
+      if (roomNow > EPS) {
+        const next = clamp(s.pos + dy, 0, s.max)
+        s.spent += Math.abs(dy)
+        s.pos = next
+        setDriving(true)
+        rail.scrollLeft = next
+        armIdle()
+      }
       return
     }
 
@@ -589,7 +614,12 @@ function createController() {
       s.lastTime = now
       e.preventDefault()
       parkPage(dir, () => {
+        // Preserve what the gesture already moved during the park — rearm()
+        // zeroes `spent`, and the preview must count that travel or it would
+        // silently ask for it twice.
+        const carried = s.spent
         rearm()
+        s.spent = carried
         s.released = false
       })
       return
