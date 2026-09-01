@@ -146,12 +146,12 @@ const big = dy => Math.abs(dy) >= DIR_NOISE
 const LINE_PX = 16
 
 // ── Hover-to-scroll ─────────────────────────────────────────────────────────
-// Resting the pointer in the right quarter of the port keeps the rail moving,
+// Resting the pointer in the right half of the port keeps the rail moving,
 // so browsing the paintings does not require continuous scrolling. Speed ramps
 // from nothing at the zone's inner boundary to HOVER_MAX_SPEED at the screen
 // edge, so it eases in as you approach rather than snapping to a fixed rate —
 // a constant speed makes the boundary feel like a switch.
-const HOVER_ZONE = 0.25
+const HOVER_ZONE = 0.5
 
 // px per ms at the very edge. ~1.0 is a readable browse: a 273px card passes
 // in a little over a quarter of a second at full tilt, slower everywhere else.
@@ -266,10 +266,9 @@ function createController() {
     const start = vw * (1 - HOVER_ZONE)
     if (s.hoverX < start) return 0
     // 0 at the boundary, 1 at the right edge. Linear, not eased: it still
-    // starts from zero so crossing the boundary is continuous rather than a
-    // switch, but a squared ramp left the inner half of the zone effectively
-    // dead — 14px/s a quarter of the way in — when the whole quarter is meant
-    // to be live.
+    // starts from zero so crossing the midline is continuous rather than a
+    // switch, but a squared ramp left the inner part of the zone effectively
+    // dead when the whole half is meant to be live.
     const t = Math.min(1, (s.hoverX - start) / Math.max(1, vw - start))
     return t * HOVER_MAX_SPEED
   }
@@ -319,7 +318,16 @@ function createController() {
   function onPointerMove(e) {
     if (!s.enabled) return
     s.hoverX = e.clientX
-    if (s.inView && hoverSpeed() > 0) hoverStart()
+    maybeHover()
+  }
+
+  // Hover-to-scroll must not depend on the pointer having moved. Scrolling back
+  // into the section with the mouse held still left the glide dead, because
+  // pointermove was the only thing that could ever start the loop. Anything
+  // that can change whether we are in the port calls this instead.
+  function maybeHover() {
+    if (!s.enabled || !s.inView) return
+    if (hoverSpeed() > 0) hoverStart()
   }
 
   function onPointerLeave() {
@@ -335,6 +343,16 @@ function createController() {
   //
   // This runs on `scroll` instead, which no scroll method can avoid producing,
   // so the stop holds regardless of how the page is being moved.
+  // Single scroll entry point. Hover-to-scroll is evaluated on EVERY scroll,
+  // deliberately outside onScrollClip's guards: those bail on parkedOnce and
+  // released, which is precisely the state a visitor is in when they scroll
+  // back to the section — so gating hover behind them left the glide dead on
+  // every return visit.
+  function onScroll() {
+    maybeHover()
+    onScrollClip()
+  }
+
   function onScrollClip() {
     if (!s.enabled || s.parking || s.parkedOnce || s.released) return
     const rail = s.rail
@@ -628,6 +646,11 @@ function createController() {
     const nowIn = entry.isIntersecting && entry.intersectionRect.height >= need
     if (nowIn === s.inView) return
     s.inView = nowIn
+    if (nowIn) {
+      // Arrived (or come back). If the pointer is already sitting in the zone,
+      // the glide should resume without waiting for it to twitch.
+      maybeHover()
+    }
     if (!nowIn) {
       hoverStop()
       setDriving(false)
@@ -665,7 +688,7 @@ function createController() {
   window.addEventListener('pointermove', onPointerMove, { passive: true })
   // Passive: this never blocks the scroll, it only notices one has happened
   // and takes the page from there.
-  window.addEventListener('scroll', onScrollClip, { passive: true })
+  window.addEventListener('scroll', onScroll, { passive: true })
   // Pointer out of the document entirely (into browser chrome, another window)
   // must stop the glide — otherwise it runs on against a cursor that is gone.
   document.addEventListener('pointerleave', onPointerLeave)
