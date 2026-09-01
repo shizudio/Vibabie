@@ -166,19 +166,19 @@ const HOVER_DEAD_BAND = 0.12
 // in a little over a quarter of a second at full tilt, slower everywhere else.
 const HOVER_MAX_SPEED = 1.0
 
-// ── Selected work: dwell by damping ─────────────────────────────────────────
-// While the Selected work section is passing through the middle of the port,
-// vertical scroll is applied to the page at a fraction of its raw value. The
-// section physically travels more slowly, so it stays centred longer and costs
-// more scroll time to cross — without adding a single pixel of empty space
-// between it and the artworks, and without ever deadening the wheel: every
-// tick still moves the page, just less.
-const WORK_DRAG = 0.35
+// ── Selected work: its own clip ──────────────────────────────────────────────
+// Same grammar as the artworks, minus the rail: the page parks on the section,
+// scroll is consumed while it holds, then it releases. A pause, not a slowdown
+// — the damped version read as buggy because the page moved at an unfamiliar
+// rate; a full stop is a state the visitor recognises instantly.
+//
+// The hold budget, as a fraction of the viewport: how much scroll it costs to
+// leave once parked. Spent by every tick regardless of speed.
+const WORK_HOLD_FRACTION = 0.8
 
-// The damped band: the section's centre must be within this fraction of the
-// viewport height of the port's centre. Outside it scroll is untouched, so
-// the drag fades in and out at the edges of the pass rather than switching.
-const WORK_BAND = 0.35
+// Where the capture fires: the section's centre within this fraction of the
+// viewport height of the port's centre.
+const WORK_CAPTURE_BAND = 0.25
 
 // Sub-pixel slop when asking "is the rail at the end?".
 const EPS = 1
@@ -227,6 +227,10 @@ function createController() {
     hoverLast: 0,
     lastScrollY: 0,
     arrivalGesture: false,
+    workParked: false,
+    workHolding: false,
+    workSpent: 0,
+    parkFor: 'art',
     samples: [],
     // Cached scroll position and maximum, so the wheel handler does no layout
     // reads of its own. Re-measured on re-arm and on resize, and kept honest by
@@ -383,19 +387,18 @@ function createController() {
     hoverStop()
   }
 
-  // How deep into the Selected work dwell band we are: 0 outside, 1 dead
-  // centre. One rect read per wheel event — unavoidable for a moving target,
-  // and the same cost shouldCapture() already pays.
-  function workDwell() {
-    const el = document.querySelector('.about-work')
-    if (!el) return 0
+  function workEl() {
+    return document.querySelector('.about-work')
+  }
+
+  function shouldCaptureWork() {
+    if (s.workParked || s.workHolding) return false
+    const el = workEl()
+    if (!el) return false
     const vh = window.innerHeight || 1
     const r = el.getBoundingClientRect()
-    if (r.bottom <= 0 || r.top >= vh) return 0
-    const off = Math.abs(r.top + r.height / 2 - vh / 2)
-    const band = vh * WORK_BAND
-    if (off >= band) return 0
-    return 1 - off / band
+    if (r.bottom <= 0 || r.top >= vh) return false
+    return Math.abs(r.top + r.height / 2 - vh / 2) <= vh * WORK_CAPTURE_BAND
   }
 
   // ── The hard clip ─────────────────────────────────────────────────────────
@@ -413,6 +416,15 @@ function createController() {
   // every return visit.
   function onScroll() {
     maybeHover()
+    // Per-visit reset for the work clip, mirroring parkedOnce: only once the
+    // section is FULLY out does the next arrival get a fresh stop.
+    if (s.workParked && !s.workHolding) {
+      const el = workEl()
+      if (el) {
+        const r = el.getBoundingClientRect()
+        if (r.bottom <= 0 || r.top >= (window.innerHeight || 1)) s.workParked = false
+      }
+    }
     onScrollClip()
   }
 
@@ -430,6 +442,7 @@ function createController() {
 
     s.lastDir = dir
     s.arrivalGesture = true
+    s.parkFor = 'art'
     parkPage(dir, () => {
       const carried = s.spent
       rearm()
@@ -441,8 +454,8 @@ function createController() {
   // ── Parking the section ───────────────────────────────────────────────────
   // One easing curve, one owner of window.scrollTo. Any wheel that arrives
   // while this runs is swallowed, so nothing competes for the scroll position.
-  function parkTarget() {
-    const section = s.rail && s.rail.closest('.about-art')
+  function parkTarget(el) {
+    const section = el || (s.rail && s.rail.closest('.about-art'))
     if (!section) return null
     const r = section.getBoundingClientRect()
     const vh = window.innerHeight || 1
@@ -451,8 +464,8 @@ function createController() {
     return Math.round(r.top + window.scrollY + r.height / 2 - vh / 2)
   }
 
-  function parkPage(dir, onDone) {
-    const to = parkTarget()
+  function parkPage(dir, onDone, el) {
+    const to = parkTarget(el)
     if (to === null) { onDone(); return }
     const from = window.scrollY || 0
     const dist = to - from
@@ -622,6 +635,12 @@ function createController() {
     // moving under the same gesture.
     if (s.parking) {
       e.preventDefault()
+      // Parking onto Selected work: the swallowed travel counts toward the
+      // hold, so the glide is not a free extension of the pause.
+      if (s.parkFor === 'work') {
+        s.workSpent += Math.abs(dy)
+        return
+      }
 
       if (!s.max && rail.isConnected) {
         s.max = Math.max(0, rail.scrollWidth - rail.clientWidth)
@@ -639,19 +658,30 @@ function createController() {
       return
     }
 
-    // ── Selected work dwell ──────────────────────────────────────────────
-    // Damp the page while the work section is passing the centre of the port.
-    // The artworks' capture below outranks it: once that fires, the dwell has
-    // had its turn.
-    if (!s.parking && !(!s.released && !s.parkedOnce && shouldCapture(dir))) {
-      const dwell = workDwell()
-      if (dwell > 0) {
-        e.preventDefault()
-        // Lerp between full speed at the band's edge and WORK_DRAG at centre,
-        // so entering and leaving the dwell is continuous.
-        scrollPageBy(dy * (1 - dwell * (1 - WORK_DRAG)))
-        return
+    // ── Selected work clip ───────────────────────────────────────────────
+    // Runs before the artworks' capture: the page meets this section first.
+    if (!s.parking && shouldCaptureWork()) {
+      s.parkFor = 'work'
+      s.workSpent = 0
+      e.preventDefault()
+      parkPage(dir, () => {
+        s.workHolding = true
+      }, workEl())
+      return
+    }
+
+    // The hold: consume scroll until the budget is spent, then release. The
+    // budget counts every tick regardless of speed — same rule as the
+    // artworks' preview, for the same reason: a stop that speed can skip is
+    // not a stop.
+    if (s.workHolding) {
+      e.preventDefault()
+      s.workSpent += Math.abs(dy)
+      if (s.workSpent >= (window.innerHeight || 800) * WORK_HOLD_FRACTION) {
+        s.workHolding = false
+        s.workParked = true
       }
+      return
     }
 
     // Take the page before the visitor is past the section.
@@ -664,6 +694,7 @@ function createController() {
       // a few hundred milliseconds that never read as a stop at all. This flag
       // holds until the wheel goes quiet for IDLE_MS.
       s.arrivalGesture = true
+      s.parkFor = 'art'
       e.preventDefault()
       parkPage(dir, () => {
         // Preserve what the gesture already moved during the park — rearm()
