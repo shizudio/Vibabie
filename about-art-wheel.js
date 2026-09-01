@@ -69,13 +69,13 @@ const ENGAGE_FRACTION = 0.9
 // So the capture is ours, and it fires the instant the section's leading edge
 // crosses into the port.
 //
-// This used to be 0.9, which sounds early but was not: the section enters at
-// top = vh and 0.9 fires at top = 0.9*vh, so the window to notice was only a
-// tenth of a screen — 72px on a 720px window. Any scroll step bigger than that
-// stepped straight over the trigger, which is exactly how the section could
-// still be passed. At 1 the window is the whole approach and nothing can jump
-// it.
-const CAPTURE_FRACTION = 1
+// At 1 this fired the instant the artworks' top edge peeked over the bottom of
+// the viewport — which is while Selected work is still dead centre, so the
+// capture stole that section's dwell before it ever got a turn. 0.6 waits for
+// the artworks to be 40% of a screen in. The notice window is ~40% of the
+// viewport, far larger than any single scroll step, and onScrollClip() plus
+// the half-viewport pullback in parkPage() catch anything that overshoots.
+const CAPTURE_FRACTION = 0.6
 
 // How far the page may be pulled BACK to reach the port, as a fraction of the
 // viewport. Reversing is normally forbidden — it reads as a glitch — but a
@@ -165,6 +165,20 @@ const HOVER_DEAD_BAND = 0.12
 // px per ms at the very edge. ~1.0 is a readable browse: a 273px card passes
 // in a little over a quarter of a second at full tilt, slower everywhere else.
 const HOVER_MAX_SPEED = 1.0
+
+// ── Selected work: dwell by damping ─────────────────────────────────────────
+// While the Selected work section is passing through the middle of the port,
+// vertical scroll is applied to the page at a fraction of its raw value. The
+// section physically travels more slowly, so it stays centred longer and costs
+// more scroll time to cross — without adding a single pixel of empty space
+// between it and the artworks, and without ever deadening the wheel: every
+// tick still moves the page, just less.
+const WORK_DRAG = 0.35
+
+// The damped band: the section's centre must be within this fraction of the
+// viewport height of the port's centre. Outside it scroll is untouched, so
+// the drag fades in and out at the edges of the pass rather than switching.
+const WORK_BAND = 0.35
 
 // Sub-pixel slop when asking "is the rail at the end?".
 const EPS = 1
@@ -367,6 +381,21 @@ function createController() {
   function onPointerLeave() {
     s.hoverX = -1
     hoverStop()
+  }
+
+  // How deep into the Selected work dwell band we are: 0 outside, 1 dead
+  // centre. One rect read per wheel event — unavoidable for a moving target,
+  // and the same cost shouldCapture() already pays.
+  function workDwell() {
+    const el = document.querySelector('.about-work')
+    if (!el) return 0
+    const vh = window.innerHeight || 1
+    const r = el.getBoundingClientRect()
+    if (r.bottom <= 0 || r.top >= vh) return 0
+    const off = Math.abs(r.top + r.height / 2 - vh / 2)
+    const band = vh * WORK_BAND
+    if (off >= band) return 0
+    return 1 - off / band
   }
 
   // ── The hard clip ─────────────────────────────────────────────────────────
@@ -608,6 +637,21 @@ function createController() {
         armIdle()
       }
       return
+    }
+
+    // ── Selected work dwell ──────────────────────────────────────────────
+    // Damp the page while the work section is passing the centre of the port.
+    // The artworks' capture below outranks it: once that fires, the dwell has
+    // had its turn.
+    if (!s.parking && !(!s.released && !s.parkedOnce && shouldCapture(dir))) {
+      const dwell = workDwell()
+      if (dwell > 0) {
+        e.preventDefault()
+        // Lerp between full speed at the band's edge and WORK_DRAG at centre,
+        // so entering and leaving the dwell is continuous.
+        scrollPageBy(dy * (1 - dwell * (1 - WORK_DRAG)))
+        return
+      }
     }
 
     // Take the page before the visitor is past the section.

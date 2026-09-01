@@ -858,20 +858,3 @@
 .about-room .about-work-head {
   margin-bottom: 14px;
 }
-
-/* ── DESKTOP: Selected work gets room to be read ────────────────────────────
-   The artworks capture the page the moment they enter the port, so whatever
-   scroll distance sits between the last row of tiles and the artworks IS the
-   whole of Selected work's uninterrupted reading time. At a bare section gap
-   that was a few hundred pixels — the tiles arrived and the next section took
-   over almost immediately, which is why it felt like the page jumped straight
-   past them.
-
-   Half a viewport of trailing space gives the section a beat of its own before
-   the clip takes hold. It is padding rather than margin so it belongs to the
-   section and cannot collapse into the gap that follows. */
-@media (min-width: 1024px) {
-  .about-work {
-    padding-bottom: 45dvh;
-  }
-}
