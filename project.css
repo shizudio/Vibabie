@@ -157,6 +157,15 @@ html, body { background: #FFFFFF; }
   height: auto;
 }
 
+/* Inset media — shown deliberately smaller than the stack and centred.
+   A screen recording encoded at 1280px looks soft stretched to the full
+   column; displayed under its encoded size it supersamples and reads crisp.
+   Reusable for any stack media that benefits from stepping in. */
+.project-stack .stack-inset {
+  max-width: min(100%, 620px);
+  margin-inline: auto;
+}
+
 /* Two-up row inside the stack — for portrait/vertical media that would
    look absurd at full stack width (e.g. vertical video). Reusable. */
 .project-stack-pair {
