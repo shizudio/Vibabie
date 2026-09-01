@@ -24,10 +24,10 @@ const items   = []
 PROJECTS.forEach((project, i) => {
   const num = pad(i + 1)
   const currentBadge = project.current
-    ? '<span class="catalog-badge catalog-badge--current"><span class="catalog-badge-dot"></span>Currently building</span>'
+    ? ''
     : ''
   const soonBadge = project.comingSoon
-    ? '<span class="catalog-badge catalog-badge--soon">Coming soon</span>'
+    ? ''
     : ''
 
   // ── Left sidebar entry ──────────────────────────────────
@@ -68,7 +68,7 @@ PROJECTS.forEach((project, i) => {
   // "Coming soon" projects have no screenshot yet — a placeholder card
   // instead of a broken/missing <img>.
   const imgOrPlaceholder = project.comingSoon
-    ? `<div class="catalog-item-placeholder"><span>Coming soon</span></div>`
+    ? `<div class="catalog-item-placeholder"><span>${project.title}</span></div>`
     : `<img
         src="${project.src}"
         alt="${project.title}"

@@ -20,18 +20,6 @@ const MAX_TILES = 4
 // the same wave at 7–10.
 const STAGGER_START = 7
 
-function buildBadge() {
-  const badge = document.createElement('span')
-  badge.className = 'about-work-badge'
-
-  const dot = document.createElement('span')
-  dot.className = 'about-work-badge-dot'
-  badge.appendChild(dot)
-  badge.appendChild(document.createTextNode('Currently building'))
-
-  return badge
-}
-
 function buildTile(project, i) {
   const tile = document.createElement('a')
   tile.className = 'about-work-tile fade-up'
@@ -55,7 +43,6 @@ function buildTile(project, i) {
   img.decoding = 'async'
   thumb.appendChild(img)
 
-  if (project.current) thumb.appendChild(buildBadge())
   tile.appendChild(thumb)
 
   return tile
