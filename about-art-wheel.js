@@ -66,10 +66,13 @@ const ENGAGE_FRACTION = 0.9
 // `mandatory` would fight the wheel interception for control of the same
 // scroll position — that fight was the jank on entry.
 //
-// So the capture is ours. When the section has come this far into the viewport
-// in the direction of travel, the wheel is swallowed and the page is animated
-// to the parked position. Only when it is parked does the rail take over.
-const CAPTURE_FRACTION = 0.45
+// So the capture is ours. It fires EARLY — as soon as the section's leading
+// edge is this far into the port — because the park must never reverse. A
+// single fast tick can carry 400px, so capturing late meant the page had
+// already overshot the target and the animation yanked it back. That backward
+// correction was the jerk on entry. Capturing at 0.9 leaves most of a screen
+// to decelerate into, so the page only ever glides forward into place.
+const CAPTURE_FRACTION = 0.9
 
 // Long enough to read as the page settling, short enough not to feel like a
 // hostage. Matched to the site's entrance easing.
@@ -227,12 +230,20 @@ function createController() {
     return Math.round(r.top + window.scrollY + r.height / 2 - vh / 2)
   }
 
-  function parkPage(onDone) {
+  function parkPage(dir, onDone) {
     const to = parkTarget()
     if (to === null) { onDone(); return }
     const from = window.scrollY || 0
     const dist = to - from
-    if (Math.abs(dist) < 2) { window.scrollTo(0, to); onDone(); return }
+    // Never travel against the visitor. If a fast tick already carried the page
+    // past the target, take the position as given rather than yanking back —
+    // a reversal reads as a glitch, a slightly-off frame does not.
+    if (Math.abs(dist) < 2 || dist * dir < 0) {
+      s.parking = false
+      s.parkedOnce = true
+      onDone()
+      return
+    }
 
     s.parking = true
     cancelAnimationFrame(s.parkRAF)
@@ -249,6 +260,35 @@ function createController() {
         s.parkedOnce = true
         onDone()
       }
+    }
+    s.parkRAF = requestAnimationFrame(step)
+  }
+
+  // The exit, mirroring the entry. On release the remaining deltas of a fling
+  // would otherwise be applied to the page one per event with no easing, which
+  // lands as a lurch. Instead the page is carried out of the section on the
+  // same curve it came in on, and wheel events are swallowed until it is clear.
+  function unparkPage(dir) {
+    const section = s.rail && s.rail.closest('.about-art')
+    if (!section) return
+    const vh = window.innerHeight || 1
+    const from = window.scrollY || 0
+    const top = Math.round(section.getBoundingClientRect().top + from)
+    // One screen beyond the section in the direction of travel: far enough that
+    // the section is clear of the port and native scrolling can take over.
+    const to = dir > 0 ? top + vh : top - vh
+    const dist = to - from
+    if (dist * dir <= 0) return
+
+    s.parking = true
+    cancelAnimationFrame(s.parkRAF)
+    const t0 = performance.now()
+    const ease = t => 1 - Math.pow(1 - t, 3)
+    const step = now => {
+      const t = Math.min(1, (now - t0) / PARK_MS)
+      window.scrollTo(0, Math.round(from + dist * ease(t)))
+      if (t < 1) s.parkRAF = requestAnimationFrame(step)
+      else s.parking = false
     }
     s.parkRAF = requestAnimationFrame(step)
   }
@@ -297,12 +337,16 @@ function createController() {
     if (!s.lightbox) s.lightbox = document.getElementById('art-lightbox')
   }
 
-  function release() {
+  function release(dir) {
     s.released = true
     // Let the rail settle onto a card now that the gesture is over. Deferred by
     // IDLE_MS so the settle reads as the end of the gesture rather than an
     // animation competing with the page starting to move.
     armIdle()
+    // Carry the page out of the section on the entry curve. Without this the
+    // fling's remaining deltas land on the page one per event, unimpeded and
+    // uneased, which is the lurch at the exit.
+    if (dir) unparkPage(dir)
   }
 
   function onWheel(e) {
@@ -349,7 +393,7 @@ function createController() {
     // stop can be out-scrolled, which is not a stop.
     if (!s.released && !s.parkedOnce && shouldCapture(dir)) {
       e.preventDefault()
-      parkPage(() => {
+      parkPage(dir, () => {
         // Parked. Re-measure and hand over to the rail with a full budget.
         rearm()
         s.released = false
@@ -384,12 +428,14 @@ function createController() {
         // "I am looking at these", and the lock holds to the end of the rail.
         const previewDone = s.spent >= s.preview
         const railEnd = dir > 0 ? next >= s.max - EPS : next <= EPS
-        if (railEnd || (previewDone && velocity(now) >= FAST_VELOCITY)) release()
+        if (railEnd || (previewDone && velocity(now) >= FAST_VELOCITY)) release(dir)
         return
       }
       // The rail is already at the end in this direction on the very first
       // tick: nothing to run, so let the page have it, this event included.
-      release()
+      // No unpark — there was no gesture to carry out of, and animating here
+      // would fight a page that is already moving normally.
+      release(0)
     }
 
     if (!overRail) return
