@@ -154,6 +154,14 @@ const LINE_PX = 16
 // a constant speed makes the boundary feel like a switch.
 const HOVER_ZONE = 0.5
 
+// A neutral strip either side of the midline where the rail does not move, as
+// a fraction of the viewport width (total, so half of it sits on each side).
+// Without it the only place the pointer can rest without the rail drifting is
+// the midline itself, which makes it impossible to simply stop and look at a
+// painting. The ramps still start from zero at the band's edges, so crossing
+// out of it stays continuous rather than snapping to a speed.
+const HOVER_DEAD_BAND = 0.12
+
 // px per ms at the very edge. ~1.0 is a readable browse: a 273px card passes
 // in a little over a quarter of a second at full tilt, slower everywhere else.
 const HOVER_MAX_SPEED = 1.0
@@ -272,16 +280,26 @@ function createController() {
     if (s.hoverX < 0) return 0
     const vw = window.innerWidth || 1
     const mid = vw * (1 - HOVER_ZONE)
+    const half = (vw * HOVER_DEAD_BAND) / 2
+    const goStart = mid + half
+    const backStart = mid - half
 
-    if (s.hoverX >= mid) {
-      const t = Math.min(1, (s.hoverX - mid) / Math.max(1, vw - mid))
+    if (s.hoverX >= goStart) {
+      const t = Math.min(1, (s.hoverX - goStart) / Math.max(1, vw - goStart))
       return t * HOVER_MAX_SPEED
     }
 
-    const rail = s.rail
-    if (!rail || rail.scrollLeft <= EPS) return 0
-    const t = Math.min(1, (mid - s.hoverX) / Math.max(1, mid))
-    return -t * HOVER_MAX_SPEED
+    if (s.hoverX <= backStart) {
+      // Inert until there is rail behind the visitor to return to — a live
+      // zone that does nothing reads as broken rather than as unavailable.
+      const rail = s.rail
+      if (!rail || rail.scrollLeft <= EPS) return 0
+      const t = Math.min(1, (backStart - s.hoverX) / Math.max(1, backStart))
+      return -t * HOVER_MAX_SPEED
+    }
+
+    // The dead band: somewhere to put the cursor and just look.
+    return 0
   }
 
   function hoverStop() {
