@@ -114,6 +114,7 @@ const IDLE_MS = 400
 // Momentum tails jitter across zero. Only a delta this size counts as a
 // deliberate change of direction.
 const DIR_NOISE = 4
+const big = dy => Math.abs(dy) >= DIR_NOISE
 
 // deltaMode 1 (DOM_DELTA_LINE, still used by Firefox on some platforms) needs a
 // line height to become pixels. 16px is the site's base.
@@ -371,35 +372,41 @@ function createController() {
     if (Math.abs(dx) > Math.abs(dy)) return
 
     const overRail = rail.contains(e.target)
-    if (!s.inView && !overRail) return
-
     const now = e.timeStamp || performance.now()
     const dir = dy > 0 ? 1 : -1
-    const big = Math.abs(dy) >= DIR_NOISE
-    if (now - s.lastTime > IDLE_MS || (big && dir !== s.lastDir)) rearm()
-    s.lastTime = now
-    if (big) s.lastDir = dir
-    pushSample(now, dy)
 
     // ── Capture ──────────────────────────────────────────────────────────
-    // While the page is animating into the port, swallow everything. Two
-    // owners of window.scrollTo is the whole reason the entry felt janky.
+    // This block MUST run before the in-view guard below. The capture fires
+    // while the section is only just entering the port — which is precisely
+    // when `s.inView` (90% of the section) is false and the pointer is still
+    // over the content above. Behind that guard the capture was unreachable,
+    // and the stop could simply be scrolled past.
+
+    // While the page is animating into or out of the port, swallow everything.
+    // Two owners of window.scrollTo is what made the transitions janky.
     if (s.parking) {
       e.preventDefault()
       return
     }
 
-    // Take the page before the visitor is past the section. Without this the
-    // stop can be out-scrolled, which is not a stop.
+    // Take the page before the visitor is past the section.
     if (!s.released && !s.parkedOnce && shouldCapture(dir)) {
+      if (big(dy)) s.lastDir = dir
+      s.lastTime = now
       e.preventDefault()
       parkPage(dir, () => {
-        // Parked. Re-measure and hand over to the rail with a full budget.
         rearm()
         s.released = false
       })
       return
     }
+
+    if (!s.inView && !overRail) return
+
+    if (now - s.lastTime > IDLE_MS || (big(dy) && dir !== s.lastDir)) rearm()
+    s.lastTime = now
+    if (big(dy)) s.lastDir = dir
+    pushSample(now, dy)
 
     // A compulsory stop must not be possible to miss. s.inView is already
     // "the section covers most of the screen", and the section is a full
