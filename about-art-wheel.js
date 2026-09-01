@@ -1,0 +1,298 @@
+/**
+ * about-art-wheel.js — budgeted wheel-to-horizontal for the About page art rail.
+ *
+ * On desktop, while the Artworks rail is substantially in view, a vertical
+ * wheel gesture drives the rail sideways instead of moving the page — but only
+ * for a fixed budget (one viewport height of delta). Past that the gesture goes
+ * straight back to the page, so a visitor who simply keeps scrolling always
+ * reaches the room below. Stop, reverse, or come back to the section and the
+ * budget is refilled, which is the "if the user stops, horizontal scroll
+ * activates" half of the behaviour.
+ *
+ * Deliberately NOT a pin: nothing here freezes the page, and there is no state
+ * in which the wheel does nothing. Every release path stops calling
+ * preventDefault() on the very same event that triggered it.
+ *
+ * Off entirely for coarse pointers, viewports under 1024px, and
+ * prefers-reduced-motion — DESIGN.md asks for "zero custom scroll physics" on
+ * the mobile layout, and native scrolling is the whole story there.
+ *
+ * ── Soft-nav ──────────────────────────────────────────────────────────────
+ * about.html is in router.js's SOFT_NAV_PAGES: <main> is replaced and every
+ * page module is re-imported with a `?_t=` cache-buster on each arrival. A
+ * cache-busted import is a NEW module instance, so a plain module-level `let
+ * wired = false` resets and would let a window-level listener stack once per
+ * visit — and worse, each stale listener would keep a closure over the rail
+ * that has since been thrown away. So the entire controller (state AND handler
+ * identities) lives on `window` under one key and is created exactly once per
+ * document; later module instances only hand it the new rail element. The
+ * per-element `dataset.artWheelBound` marker makes a repeat attach to the same
+ * rail a no-op, mirroring how about-art.js guards its own lightbox init.
+ */
+
+const STATE_KEY = '__shizArtRailWheel'
+
+// ── Tunables ───────────────────────────────────────────────────────────────
+
+// Below this the About page is the single-column mobile layout.
+const MIN_WIDTH = 1024
+
+// Engage when 60% of the rail is inside the viewport (or, if the rail is ever
+// taller than the viewport, when it covers 60% of the viewport). A contiguous
+// 60% band always contains the element's midpoint, so this subsumes the
+// "midpoint in view" test while staying meaningful for a ~400px-tall rail in a
+// ~900px-tall window — where "60% of the viewport height" alone could never
+// be satisfied.
+const ENGAGE_FRACTION = 0.6
+
+// A gap this long reads as "the visitor stopped", not as a lull inside one
+// gesture. Trackpad momentum ticks arrive every ~16ms and a fling can run well
+// past a second, so anything much shorter would refill the budget mid-fling and
+// turn the section into the trap this is designed not to be.
+const IDLE_MS = 400
+
+// Momentum tails jitter across zero. Only a delta this size counts as a
+// deliberate change of direction.
+const DIR_NOISE = 4
+
+// deltaMode 1 (DOM_DELTA_LINE, still used by Firefox on some platforms) needs a
+// line height to become pixels. 16px is the site's base.
+const LINE_PX = 16
+
+// Sub-pixel slop when asking "is the rail at the end?".
+const EPS = 1
+
+// IntersectionObserver needs enough thresholds that the 60% crossing is
+// reported promptly as the page scrolls.
+const THRESHOLDS = Array.from({ length: 21 }, (_, i) => i / 20)
+
+function clamp(v, lo, hi) {
+  return v < lo ? lo : v > hi ? hi : v
+}
+
+function toPixels(delta, mode) {
+  if (mode === 1) return delta * LINE_PX
+  if (mode === 2) return delta * (window.innerHeight || 800)
+  return delta
+}
+
+/**
+ * Builds the one controller this document will ever have. Everything closes
+ * over `s`, so the handlers registered on the first run stay correct after a
+ * soft navigation swaps the rail underneath them.
+ */
+function createController() {
+  const mqFine = window.matchMedia('(hover: hover) and (pointer: fine)')
+  const mqWide = window.matchMedia(`(min-width: ${MIN_WIDTH}px)`)
+  const mqStill = window.matchMedia('(prefers-reduced-motion: reduce)')
+
+  const s = {
+    rail: null,
+    lightbox: null,
+    enabled: false,
+    inView: false,
+    // `driving` mirrors the .is-wheel-driven class: scroll-snap and smooth
+    // scroll-behaviour are suspended on the rail while it is true.
+    driving: false,
+    // `released` means this engagement is spent. It stays true until re-arm.
+    released: true,
+    budget: 0,
+    spent: 0,
+    // Cached scroll position and maximum, so the wheel handler does no layout
+    // reads of its own. Re-measured on re-arm and on resize, and kept honest by
+    // the rail's own scroll event for native scrolls (hand swipe, tab focus).
+    pos: 0,
+    max: 0,
+    lastDir: 0,
+    lastTime: 0,
+    idleTimer: 0,
+  }
+
+  function refreshEnabled() {
+    s.enabled = mqFine.matches && mqWide.matches && !mqStill.matches
+    if (!s.enabled) setDriving(false)
+  }
+
+  function setDriving(on) {
+    if (s.driving === on) return
+    s.driving = on
+    if (s.rail) s.rail.classList.toggle('is-wheel-driven', on)
+  }
+
+  // Restore the rail's own physics once the gesture has genuinely stopped —
+  // not the instant we release. Releasing mid-fling and re-snapping at the same
+  // moment would put a card-settling animation on screen while the page is
+  // already moving; waiting for the lull lets the settle read as the end of the
+  // gesture, which is exactly what a hand swipe does today.
+  function armIdle() {
+    clearTimeout(s.idleTimer)
+    s.idleTimer = setTimeout(() => setDriving(false), IDLE_MS)
+  }
+
+  // The only place that reads layout. Called on re-arm (idle, direction
+  // reversal, leaving the section) and on resize — never per wheel tick.
+  function rearm() {
+    s.spent = 0
+    s.released = false
+    s.budget = window.innerHeight || 800
+    if (s.rail && s.rail.isConnected) {
+      s.max = Math.max(0, s.rail.scrollWidth - s.rail.clientWidth)
+      s.pos = s.rail.scrollLeft
+    }
+    // The lightbox lives outside <main>, so it is not swapped by the router and
+    // may legitimately be absent on a soft arrival from another page. Keep
+    // looking until it turns up rather than caching a null forever.
+    if (!s.lightbox) s.lightbox = document.getElementById('art-lightbox')
+  }
+
+  function release() {
+    s.released = true
+  }
+
+  function onWheel(e) {
+    const rail = s.rail
+    if (!s.enabled || !rail || !rail.isConnected) return
+
+    // lightbox.js pins the body while the overlay is open. Stay out of it.
+    if (s.lightbox && s.lightbox.classList.contains('open')) {
+      setDriving(false)
+      return
+    }
+
+    // ctrl+wheel is pinch-zoom on a trackpad; never ours.
+    if (e.ctrlKey) return
+
+    const dy = toPixels(e.deltaY, e.deltaMode)
+    const dx = toPixels(e.deltaX, e.deltaMode)
+    if (!dy) return
+
+    // Horizontal intent — a two-finger sideways swipe, or shift+wheel — belongs
+    // to the rail natively, snap and all. Never touched.
+    if (Math.abs(dx) > Math.abs(dy)) return
+
+    const overRail = rail.contains(e.target)
+    if (!s.inView && !overRail) return
+
+    const now = e.timeStamp || performance.now()
+    const dir = dy > 0 ? 1 : -1
+    const big = Math.abs(dy) >= DIR_NOISE
+    if (now - s.lastTime > IDLE_MS || (big && dir !== s.lastDir)) rearm()
+    s.lastTime = now
+    if (big) s.lastDir = dir
+
+    if (!s.released && s.inView) {
+      const room = dir > 0 ? s.max - s.pos : s.pos
+      if (room > EPS && s.spent < s.budget) {
+        // 1:1 — the rail travels exactly as far as the page would have.
+        const next = clamp(s.pos + dy, 0, s.max)
+        s.spent += Math.abs(dy)
+        s.pos = next
+        setDriving(true)
+        rail.scrollLeft = next
+        armIdle()
+        e.preventDefault()
+        // Decide now whether the NEXT tick is still ours, so that when the
+        // budget or the rail runs out the following event flows through
+        // untouched. There is never a frame where the wheel does nothing.
+        if (s.spent >= s.budget || (dir > 0 ? next >= s.max - EPS : next <= EPS)) release()
+        return
+      }
+      // Out of budget or out of rail on the very first tick of this direction:
+      // fall through and let the page have it, this event included.
+      release()
+    }
+
+    if (!overRail) return
+
+    // The pointer is over the rail and we are done with it. Chrome and Firefox
+    // would now redirect this vertical wheel into the rail's horizontal axis on
+    // their own — and `overscroll-behavior-x: contain` (about.css) would stop it
+    // chaining back out at the end, which is precisely the trap this feature
+    // must never become. So forward the gesture to the page explicitly.
+    e.preventDefault()
+    window.scrollBy({ top: dy, left: 0, behavior: 'instant' })
+  }
+
+  function onRailScroll() {
+    // Native scrolls we did not cause: a hand swipe, or the browser scrolling a
+    // focused off-screen card into view when the visitor tabs to it. Adopt the
+    // result instead of overwriting it on the next tick.
+    if (!s.driving && s.rail) s.pos = s.rail.scrollLeft
+  }
+
+  const io = new IntersectionObserver(entries => {
+    const entry = entries[entries.length - 1]
+    const vh = window.innerHeight || 1
+    const need = Math.min(entry.boundingClientRect.height, vh) * ENGAGE_FRACTION
+    const nowIn = entry.isIntersecting && entry.intersectionRect.height >= need
+    if (nowIn === s.inView) return
+    s.inView = nowIn
+    if (!nowIn) {
+      setDriving(false)
+      rearm()
+    }
+  }, { threshold: THRESHOLDS })
+
+  let resizeTimer = 0
+  function onResize() {
+    clearTimeout(resizeTimer)
+    resizeTimer = setTimeout(() => {
+      refreshEnabled()
+      // IntersectionObserver does not always re-report on a resize alone, and
+      // the rail's scrollWidth moves as lazy images land. One measurement, well
+      // away from the wheel handler.
+      if (s.rail && s.rail.isConnected) {
+        const r = s.rail.getBoundingClientRect()
+        const vh = window.innerHeight || 1
+        const visible = Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0))
+        s.inView = visible >= Math.min(r.height, vh) * ENGAGE_FRACTION
+      }
+      rearm()
+    }, 120)
+  }
+
+  refreshEnabled()
+  window.addEventListener('wheel', onWheel, { passive: false })
+  window.addEventListener('resize', onResize)
+  ;[mqFine, mqWide, mqStill].forEach(mq => {
+    if (mq.addEventListener) mq.addEventListener('change', refreshEnabled)
+  })
+
+  function detach(rail) {
+    if (!rail) return
+    io.unobserve(rail)
+    rail.removeEventListener('scroll', onRailScroll)
+    rail.classList.remove('is-wheel-driven')
+    delete rail.dataset.artWheelBound
+  }
+
+  return {
+    attach(rail) {
+      if (!rail) return
+      if (s.rail !== rail) {
+        detach(s.rail)
+        clearTimeout(s.idleTimer)
+        s.rail = rail
+        s.driving = false
+        s.inView = false
+        rail.dataset.artWheelBound = '1'
+        rail.addEventListener('scroll', onRailScroll, { passive: true })
+        io.observe(rail)
+      }
+      s.lightbox = document.getElementById('art-lightbox')
+      rearm()
+    },
+  }
+}
+
+// Module-level fast path. It is NOT the real guard — see the soft-nav note at
+// the top; the window key is what actually survives a cache-busted re-import.
+let controller = null
+
+export function initArtRailWheel(rail) {
+  if (!rail) return
+  if (!controller) {
+    controller = window[STATE_KEY] || (window[STATE_KEY] = createController())
+  }
+  controller.attach(rail)
+}
