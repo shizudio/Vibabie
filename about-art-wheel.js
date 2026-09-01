@@ -100,10 +100,25 @@ const VELOCITY_WINDOW_MS = 220
 // between the two, so ordinary browsing never trips it by accident.
 const FAST_VELOCITY = 3.5
 
-// The compulsory preview, as a fraction of the viewport height. One screen of
-// horizontal travel: long enough to read as a deliberate moment, short enough
-// that a visitor heading elsewhere is not held for long.
-const PREVIEW_FRACTION = 1
+// The compulsory preview is measured from the RAIL, not the viewport: it lasts
+// until the first painting has travelled fully off the left edge of the screen.
+// That is a real landmark the visitor can see arriving, so the stop ends on
+// something legible rather than on an arbitrary number of pixels. A viewport
+// fraction happened to be close on one window size and wrong on every other.
+//
+// Falls back to one viewport if the rail has no cards to measure.
+const PREVIEW_FALLBACK_FRACTION = 1
+
+// How far the rail must travel for the first card's trailing edge to clear the
+// left edge of the port: its own offset (the rail's leading inset), its width,
+// and the gap that follows it — so the second card lands flush at the edge.
+function previewDistance(rail) {
+  const first = rail && rail.children[0]
+  if (!first) return (window.innerHeight || 800) * PREVIEW_FALLBACK_FRACTION
+  const cs = getComputedStyle(rail)
+  const gap = parseFloat(cs.columnGap || cs.gap) || 0
+  return first.offsetLeft + first.offsetWidth + gap
+}
 
 // A gap this long reads as "the visitor stopped", not as a lull inside one
 // gesture. Trackpad momentum ticks arrive every ~16ms and a fling can run well
@@ -309,7 +324,6 @@ function createController() {
 
   function rearm() {
     s.spent = 0
-    s.preview = (window.innerHeight || 800) * PREVIEW_FRACTION
     // Geometry FIRST. The end-of-rail test below reads s.max, and on the very
     // first re-arm s.max is still 0 — which made `scrollLeft >= s.max - EPS`
     // read as 0 >= -1, i.e. "already at the end", and left `released` stuck
@@ -318,6 +332,10 @@ function createController() {
       s.max = Math.max(0, s.rail.scrollWidth - s.rail.clientWidth)
       s.pos = s.rail.scrollLeft
     }
+
+    // After the geometry, for the same reason: this clamps to s.max, which is
+    // 0 until the line above has run.
+    s.preview = Math.min(previewDistance(s.rail), s.max)
 
     // Do NOT clear `released` while the rail is already parked at the end the
     // visitor is travelling towards: pausing there would otherwise re-lock the
@@ -429,11 +447,12 @@ function createController() {
         // Decide now whether the NEXT tick is still ours, so that when the
         // rail runs out the following event flows through untouched. There is
         // never a frame where the wheel does nothing.
-        // The preview is spent by every tick regardless of speed, so the stop
-        // is genuinely compulsory. Only once it is used up does intent get a
-        // vote: still moving fast means "let me out", anything slower means
-        // "I am looking at these", and the lock holds to the end of the rail.
-        const previewDone = s.spent >= s.preview
+        // The preview is compulsory regardless of speed. Travelling right it
+        // is a POSITION — the rail must have carried the first painting off
+        // the left edge — because that is the landmark the visitor actually
+        // sees. Travelling left there is no such landmark, so the same
+        // distance is required as an amount instead.
+        const previewDone = dir > 0 ? next >= s.preview - EPS : s.spent >= s.preview
         const railEnd = dir > 0 ? next >= s.max - EPS : next <= EPS
         if (railEnd || (previewDone && velocity(now) >= FAST_VELOCITY)) release(dir)
         return
