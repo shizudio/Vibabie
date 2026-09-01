@@ -29,6 +29,42 @@
      align-items: start;
    }
 
+
+  /* ── DESKTOP HERO: one full viewport, with the next section's head
+     breaking the fold ──────────────────────────────────────────────────────
+
+     The hero stops being content-height and becomes viewport-height: it fills
+     the band between the fixed topbar and a reserved strip at the bottom, with
+     its content optically centred in that band. Exactly one thing crosses the
+     fold — the "Selected work / All work" head row — sitting low like a
+     standing footer. It is a scroll affordance: a visible promise of a second
+     act, without leaking any actual work above the fold.
+
+     --hero-peek is that reserved strip: the gap above the head (40px), the
+     head itself (~44px at --text-xl), and the air below it (24px). Because the
+     hero's height is measured back from the viewport, the head lands the same
+     distance above the fold at every window height — 24px — and the first row
+     of tiles always starts just below it.
+
+     The hero→work gap is deliberately NOT --section-gap here. This break is
+     pinned to the fold, not to the page's vertical rhythm. The visual air is
+     already there: with the content centred in a 738px band, ~170px of slack
+     sits below the CTA before the box even ends. */
+  @media (min-width: 1024px) {
+    .about-intro {
+      --hero-peek: 108px;
+      /* 58px = the fixed topbar's min-height (see nav in style.css). */
+      min-height: calc(100dvh - 58px - var(--hero-peek));
+      align-content: center;
+    }
+
+    /* Clear the fixed topbar and nothing more — the hero owns its own height
+       now, so the old 140px top padding would just push it past the fold. */
+    main {
+      padding-top: 58px;
+    }
+  }
+
    .about-intro-text {
      max-width: 640px;
    }
@@ -770,3 +806,17 @@
       justify-content: flex-start;
     }
   }
+
+/* Continuation of the desktop hero composition above — this has to sit after
+   `.about-work { margin-top: var(--section-gap) }` or it loses on equal
+   specificity, which is exactly what happened the first time.
+
+   The hero→work break is pinned to the fold, not to the page's vertical
+   rhythm, so it deliberately does not use --section-gap. The air is already
+   there: the hero box runs to the bottom of its viewport-height band with
+   ~170px of slack below the CTA. */
+@media (min-width: 1024px) {
+  .about-work {
+    margin-top: 40px;
+  }
+}
