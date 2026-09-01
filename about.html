@@ -69,12 +69,17 @@
     </section>
 
     <section class="about-art">
-      <div class="about-work-head">
-        <h2 class="page-label fade-up" style="--i:11">Artworks</h2>
-        <a class="about-work-all fade-up" style="--i:12" href="art.html">All art <span class="about-work-arrow" aria-hidden="true">&rarr;</span></a>
-      </div>
+      <!-- The pin: on desktop the section carries extra scroll height and this
+           wrapper stays stuck on screen while scroll progress drives the rail
+           sideways (about-art-wheel.js). On mobile it is a plain block. -->
+      <div class="about-art-pin">
+        <div class="about-work-head">
+          <h2 class="page-label fade-up" style="--i:11">Artworks</h2>
+          <a class="about-work-all fade-up" style="--i:12" href="art.html">All art <span class="about-work-arrow" aria-hidden="true">&rarr;</span></a>
+        </div>
 
-      <div class="about-art-rail" id="aboutArtRail"></div>
+        <div class="about-art-rail" id="aboutArtRail"></div>
+      </div>
     </section>
 
     <section class="about-room">

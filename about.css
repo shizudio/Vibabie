@@ -858,3 +858,54 @@
 .about-room .about-work-head {
   margin-bottom: 14px;
 }
+
+/* ── DESKTOP: the artworks are a scroll-driven pin ──────────────────────────
+   Replaces every wheel-interception scheme that came before it. The section
+   carries extra scroll height (--art-pin-extra, set by about-art-wheel.js from
+   the rail's real width); the inner .about-art-pin stays stuck on screen for
+   that distance while scroll progress drives the rail sideways. The page never
+   stops scrolling — the paintings sliding IS the scroll — so there is no
+   capture, no park, and nothing that can jank.
+
+   The gentle per-section pauses are proximity snap: native, momentum-friendly,
+   and skippable — a suggestion, not a wall. It is safe now precisely because
+   no JS writes to window.scroll* any more; the fights it lost before were
+   against our own animations. */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-snap-type: y proximity;
+  }
+
+  .about-intro,
+  .about-room {
+    scroll-snap-align: start;
+  }
+
+  .about-work {
+    scroll-snap-align: center;
+  }
+
+  .about-art {
+    /* Un-does the earlier centring block: the pin owns the layout now. */
+    display: block;
+    min-height: 0;
+    height: calc(100dvh + var(--art-pin-extra, 120vh));
+    scroll-snap-align: start;
+  }
+
+  .about-art-pin {
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* scrollLeft is written every scroll frame; snap or smooth-behavior on the
+     rail would re-animate each write into a stutter. */
+  .about-art-rail {
+    scroll-snap-type: none;
+    scroll-behavior: auto;
+  }
+}
