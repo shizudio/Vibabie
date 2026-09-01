@@ -166,6 +166,23 @@ html, body { background: #FFFFFF; }
   margin-inline: auto;
 }
 
+/* Hero media — the stack's opening beat owns the first screen: a band the
+   height of the viewport (minus the fixed topbar) with the media centred in
+   both axes. The inset size cap still applies to the media itself, so a
+   1280-encoded recording stays under its encoded size and reads crisp. */
+.project-stack .stack-hero {
+  min-height: calc(100dvh - 58px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.project-stack .stack-hero video,
+.project-stack .stack-hero img {
+  /* Larger than the inline inset (620) since this media owns a whole screen,
+     still under the 1280 encode so it stays supersampled. */
+  max-width: min(100%, 760px);
+}
+
 /* Two-up row inside the stack — for portrait/vertical media that would
    look absurd at full stack width (e.g. vertical video). Reusable. */
 .project-stack-pair {
