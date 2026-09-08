@@ -35,6 +35,10 @@ function buildTile(project, i) {
 
   const thumb = document.createElement('div')
   thumb.className = 'about-work-thumb'
+  // Manifest `fit: "contain-bottom"`: media letterboxes inside the 16:9 frame
+  // (no crop) and sits on its bottom edge — for artwork whose aspect must
+  // survive, e.g. the 4:3 Sanctum teaser frame.
+  if (project.fit === 'contain-bottom') thumb.classList.add('about-work-thumb--contain')
 
   const img = document.createElement('img')
   img.src = project.src

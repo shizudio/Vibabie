@@ -320,6 +320,15 @@
     opacity: 1;
   }
 
+  /* contain-bottom variant: the media keeps its own aspect inside the 16:9
+     frame — nothing cropped — resting on the frame's bottom edge on paper. */
+  .about-work-thumb--contain img,
+  .about-work-thumb--contain .about-work-teaser {
+    object-fit: contain;
+    object-position: center bottom;
+    background: var(--paper);
+  }
+
   /* Shared caption voice — the art rail below borrows it verbatim so both
      strips read as one system rather than two lookalikes drifting apart. */
 

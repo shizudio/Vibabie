@@ -28,14 +28,15 @@
     "external": false
   },
   {
-    "src": "work/sanctum/thumb.webp",
+    "src": "work/sanctum/tile.webp",
     "title": "Sanctum Furni Pack",
     "tag": "Game · Cards",
     "role": "Card Design & Interaction",
     "year": "2026",
     "href": "sanctum.html",
     "external": false,
-    "hoverVideo": "work/sanctum/teaser.mp4"
+    "hoverVideo": "work/sanctum/teaser.mp4",
+    "fit": "contain-bottom"
   },
   {
     "src": "work/birthday.png",
