@@ -911,6 +911,20 @@
     scroll-snap-align: start;
   }
 
+  /* The end of the document has to be a snap target, or it is unreachable.
+     The room's snap point sits ~258px above the maximum scroll, so the footer
+     lives entirely PAST the last snap position: scrolling to the bottom put
+     the visitor closer to no snap point than to the room's, and proximity snap
+     pulled them back up — the footer bounced away and hid every time.
+
+     Aligning the footer to `end` makes "page bottom, footer fully visible" its
+     own candidate. Near the bottom it is the closest one and the page settles
+     there; higher up the room is closer and still wins, so the room keeps its
+     pause. */
+  .about-footer {
+    scroll-snap-align: end;
+  }
+
   .about-art-pin {
     position: sticky;
     top: 0;
