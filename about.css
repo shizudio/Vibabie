@@ -302,6 +302,24 @@
     transform: scale(1.03);
   }
 
+  /* Hover teaser video — sits over the still, revealed on hover. Same layer
+     recipe as the thumb img so the 16:9 cover crop is identical. */
+  .about-work-thumb .about-work-teaser {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+  }
+
+  .about-work-tile:hover .about-work-thumb .about-work-teaser {
+    opacity: 1;
+  }
+
   /* Shared caption voice — the art rail below borrows it verbatim so both
      strips read as one system rather than two lookalikes drifting apart. */
 

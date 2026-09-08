@@ -34,7 +34,8 @@
     "role": "Card Design & Interaction",
     "year": "2026",
     "href": "sanctum.html",
-    "external": false
+    "external": false,
+    "hoverVideo": "work/sanctum/teaser.mp4"
   },
   {
     "src": "work/birthday.png",

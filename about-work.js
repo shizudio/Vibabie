@@ -43,6 +43,27 @@ function buildTile(project, i) {
   img.decoding = 'async'
   thumb.appendChild(img)
 
+  // Optional hover teaser (manifest `hoverVideo`): the still stays put and a
+  // muted looping clip fades in over it on hover — the same pattern as the
+  // hero portrait. Playback only ever starts from a hover, and not at all
+  // under prefers-reduced-motion; the still is always the fallback.
+  if (project.hoverVideo && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const vid = document.createElement('video')
+    vid.className = 'about-work-teaser'
+    vid.src = project.hoverVideo
+    vid.muted = true
+    vid.loop = true
+    vid.playsInline = true
+    vid.preload = 'metadata'
+    thumb.appendChild(vid)
+
+    tile.addEventListener('mouseenter', () => {
+      vid.currentTime = 0
+      vid.play().catch(() => {})
+    })
+    tile.addEventListener('mouseleave', () => vid.pause())
+  }
+
   tile.appendChild(thumb)
 
   return tile
