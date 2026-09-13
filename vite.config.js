@@ -28,6 +28,7 @@ export default defineConfig({
         toolHotspotEditor: resolve(__dirname, 'tool-hotspot-editor.html'),
         brandedInSec: resolve(__dirname, 'branded-in-sec.html'),
         solmiLanding: resolve(__dirname, 'solmi-landing.html'),
+        solmiStudio: resolve(__dirname, 'solmi-studio.html'),
       },
     },
   },
