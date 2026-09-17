@@ -1,0 +1,471 @@
+<!doctype html>
+<!--
+  Solmi — Design System
+  Shizudio · snapshot 2026-09-17
+
+  Self-contained: double-click to open, no server or build step.
+  Every swatch, button and panel below is the live CSS, not a picture of it —
+  inspect any element to read the real values, or copy the token block at the
+  end of the page.
+
+  Source of truth: the shipped solmi.ai. Values here were read off the live
+  site and the dark-token board, not invented.
+-->
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solmi — Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
+<style>
+/* ===========================================================================
+   THE TOKENS.
+   Paired light → dark. The action green is the one value that does not change
+   between themes: it is the brand, not a surface.
+   =========================================================================== */
+:root{
+  color-scheme:dark;
+  --paper:#141614;      /* ground */
+  --raised:#1C1F1D;     /* panels, cards */
+  --ctrl:#262A28;       /* controls */
+  --ctrl-hi:#313634;    /* control hover */
+  --sunk:#0F1110;       /* a step below the ground */
+  --ink:#F2F5F3;        /* primary text */
+  --ink-2:#A9AEAB;      /* secondary text */
+  --ink-3:#6F7573;      /* metadata, disabled */
+  --hair:#2B2F2D;       /* hairlines */
+  --hair-2:#3A3F3C;     /* stronger hairlines */
+  --action:#1ED760;     /* THE action. Unchanged across themes. */
+  --action-ink:#04140D; /* label on the action */
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --lift:0 1px 2px rgba(0,0,0,.30), 0 8px 18px rgba(0,0,0,.26),
+         0 22px 46px rgba(0,0,0,.30);
+}
+:root[data-theme=light]{
+  color-scheme:light;
+  --paper:#F6FAFF; --raised:#FFFFFF; --ctrl:#F1F3F6; --ctrl-hi:#E7EAEE;
+  --sunk:#E9EEF4;
+  --ink:#101110; --ink-2:#6A6C6B; --ink-3:#8E918F;
+  --hair:#E4E7EA; --hair-2:#D3D8DC;
+  --lift:0 1px 2px rgba(16,17,16,.05), 0 4px 8px rgba(16,17,16,.045),
+         0 10px 20px rgba(16,17,16,.055);
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"DM Sans",system-ui,sans-serif;font-size:15px;line-height:1.5;
+  -webkit-font-smoothing:antialiased}
+.mono{font-family:"DM Mono",ui-monospace,monospace}
+.wrap{max-width:1000px;margin:0 auto;padding:0 40px}
+a{color:var(--action)}
+
+/* --- page chrome --- */
+header.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;
+  gap:14px;padding:16px 40px;background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(14px);border-bottom:1px solid var(--hair)}
+.mark{font-size:22px;font-weight:500;letter-spacing:-.04em}
+.mark i{font-style:normal;color:var(--action)}
+.top .sp{flex:1}
+.tog{height:34px;padding:0 14px;border:1px solid var(--hair-2);border-radius:999px;
+  background:none;color:var(--ink-2);cursor:pointer;font-family:"DM Mono",monospace;
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.tog:hover{background:var(--ctrl);color:var(--ink)}
+
+.lede{padding:56px 0 8px}
+.lede h1{margin:0;font-size:34px;font-weight:500;letter-spacing:-.028em;line-height:1.1}
+.lede p{max-width:64ch;margin:14px 0 0;color:var(--ink-2);font-size:16px}
+.kicker{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-3)}
+
+section{padding:52px 0 0}
+h2{margin:0 0 6px;font-size:21px;font-weight:500;letter-spacing:-.02em}
+.sub{margin:0 0 22px;color:var(--ink-2);font-size:14.5px;max-width:70ch}
+h3{margin:26px 0 10px;font-size:13px;font-weight:700;letter-spacing:-.01em}
+
+/* --- swatches --- */
+.sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:12px}
+.chip{display:flex;align-items:center;gap:12px;padding:11px 12px;
+  background:var(--raised);border:1px solid var(--hair);border-radius:12px}
+.dot{flex:none;width:36px;height:36px;border-radius:9px;border:1px solid var(--hair-2)}
+.chip .n{font-size:13.5px;font-weight:500;letter-spacing:-.01em}
+.chip .v{font-family:"DM Mono",monospace;font-size:11px;color:var(--ink-3);margin-top:2px}
+
+/* --- accents --- */
+.acc{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px}
+.acc div{border:1px solid var(--hair);border-radius:10px;padding:10px 12px;
+  background:var(--raised)}
+.acc b{display:block;font-size:12.5px;font-weight:500}
+.acc span{font-family:"DM Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+.acc i{display:block;height:4px;border-radius:2px;margin-bottom:9px}
+
+/* --- type scale --- */
+.scale div{display:flex;align-items:baseline;gap:18px;padding:11px 0;
+  border-bottom:1px solid var(--hair)}
+.scale .m{flex:none;width:200px;font-family:"DM Mono",monospace;font-size:11px;
+  color:var(--ink-3)}
+
+/* --- components --- */
+.demo{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:24px;
+  background:var(--raised);border:1px solid var(--hair);border-radius:16px}
+.act{display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  height:56px;padding:0 32px;border:0;border-radius:16px;cursor:pointer;
+  background:var(--action);color:var(--action-ink);
+  font-family:inherit;font-size:17px;font-weight:700;letter-spacing:-.018em;
+  white-space:nowrap;position:relative;overflow:hidden;isolation:isolate;
+  transition:transform .2s var(--ease)}
+.act::before{content:"";position:absolute;inset:0;z-index:-1;opacity:0;
+  background:linear-gradient(100deg,#2BC4C4 0%,#1ED760 28%,#9BCB3C 52%,
+    #E9A02C 78%,#F0821F 100%);
+  background-size:240% 100%;background-position:0% 50%;
+  transition:opacity .3s var(--ease)}
+.act:hover,.act:focus-visible{transform:translateY(-2px)}
+.act:hover::before,.act:focus-visible::before{opacity:1;
+  animation:flow 2.2s linear infinite alternate}
+@keyframes flow{from{background-position:0% 50%}to{background-position:100% 50%}}
+.act.sm{height:44px;padding:0 22px;font-size:15px;letter-spacing:-.014em;gap:9px}
+
+.ghost{height:44px;padding:0 18px;border:1px solid var(--hair-2);border-radius:12px;
+  background:none;color:var(--ink);font-family:inherit;font-size:14px;font-weight:500;
+  cursor:pointer;transition:background .16s var(--ease)}
+.ghost:hover{background:var(--ctrl)}
+.pill{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;
+  border:1px solid var(--hair);border-radius:999px;background:var(--ctrl);
+  color:var(--ink-2);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;
+  transition:background .16s var(--ease),color .16s var(--ease)}
+.pill:hover{background:var(--ctrl-hi);color:var(--ink)}
+.pill.on{background:color-mix(in srgb,var(--action) 14%,var(--ctrl));
+  border-color:color-mix(in srgb,var(--action) 34%,transparent);color:var(--ink)}
+
+.panel{background:var(--raised);border:1px solid var(--hair);border-radius:16px;
+  padding:18px;box-shadow:var(--lift);max-width:420px}
+.panel .ttl{font-size:14px;font-weight:700;letter-spacing:-.012em}
+.panel .meta{font-family:"DM Mono",monospace;font-size:11px;color:var(--ink-3);
+  margin-top:4px}
+
+/* --- radius + elevation --- */
+.rad{display:flex;gap:14px;flex-wrap:wrap}
+.rad div{width:92px;height:70px;background:var(--ctrl);border:1px solid var(--hair-2);
+  display:grid;place-items:end center;padding-bottom:7px;
+  font-family:"DM Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+
+/* --- dialect table --- */
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--hair);
+  vertical-align:top}
+th{font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:400}
+td:first-child{font-weight:500;width:158px}
+td b{font-weight:500}
+
+/* --- rules --- */
+.rule{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--hair)}
+.rule .no{flex:none;width:26px;font-family:"DM Mono",monospace;font-size:11px;
+  color:var(--action);padding-top:2px}
+.rule p{margin:0;color:var(--ink-2);font-size:14px}
+.rule p b{color:var(--ink);font-weight:500}
+
+pre{margin:0;padding:20px;background:var(--sunk);border:1px solid var(--hair);
+  border-radius:14px;overflow-x:auto;font-family:"DM Mono",monospace;
+  font-size:12px;line-height:1.75;color:var(--ink-2)}
+pre b{color:var(--ink);font-weight:400}
+footer{margin-top:64px;padding:26px 0 60px;border-top:1px solid var(--hair);
+  display:flex;gap:16px;color:var(--ink-3);font-size:13px}
+footer .sp{flex:1}
+@media (max-width:760px){
+  .wrap,header.top{padding-left:20px;padding-right:20px}
+  .scale .m{width:120px}
+  td:first-child{width:auto}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <span class="mark">solmi<i>.</i></span>
+  <span class="sp"></span>
+  <button class="tog" id="tog" type="button">Light</button>
+</header>
+
+<div class="wrap">
+
+  <div class="lede">
+    <p class="kicker">Design system · snapshot 17 Sep 2026</p>
+    <h1>One system, two dialects.</h1>
+    <p>Everything below is the live CSS from the shipped solmi.ai, read off the
+      site rather than redrawn. Copy any value, or take the whole token block at
+      the foot of the page. The colour swatches, the buttons and the panels on
+      this page <em>are</em> the components — inspect them.</p>
+  </div>
+
+  <!-- ============ COLOUR ============ -->
+  <section>
+    <h2>Colour</h2>
+    <p class="sub">Eight surface and text tokens, paired light → dark. Toggle the
+      theme in the header and every swatch below repaints, because they are
+      reading the variables rather than hard-coded values.</p>
+    <div class="sw" id="sw"></div>
+
+    <h3>The action</h3>
+    <p class="sub">One saturated colour in the entire interface. It is the same
+      value in both themes because it is the brand, not a surface. Reserve it for
+      the single action that costs the user time or credits — if two things on a
+      screen are green, neither one is the action.</p>
+    <div class="sw">
+      <div class="chip"><span class="dot" style="background:#1ED760"></span>
+        <div><div class="n">action</div><div class="v">#1ED760 · both themes</div></div></div>
+      <div class="chip"><span class="dot" style="background:#04140D"></span>
+        <div><div class="n">action label</div><div class="v">#04140D · 9.85:1 on green</div></div></div>
+    </div>
+
+    <h3>Style accents</h3>
+    <p class="sub">Six director looks. They tint state — which look is picked —
+      never chrome. Film Noir is the one that needs a dark override: #8A8F8C
+      goes muddy on charcoal, so it lifts to #B9BEBB.</p>
+    <div class="acc">
+      <div><i style="background:#D13B2E"></i><b>Wong Kar-wai</b><span>#D13B2E</span></div>
+      <div><i style="background:#C03F76"></i><b>90s MTV</b><span>#C03F76</span></div>
+      <div><i style="background:#7B6FD6"></i><b>Cloudlight</b><span>#7B6FD6</span></div>
+      <div><i style="background:#B9BEBB"></i><b>Film Noir</b><span>#B9BEBB · lifted</span></div>
+      <div><i style="background:#E68A19"></i><b>Desert Mirage</b><span>#E68A19</span></div>
+      <div><i style="background:#19ADE6"></i><b>Y2K Glossy</b><span>#19ADE6</span></div>
+    </div>
+
+    <h3>Contrast, measured</h3>
+    <table>
+      <tr><th>Pair</th><th>Ratio</th><th></th></tr>
+      <tr><td>ink on ground</td><td class="mono">16.57:1</td><td>AA</td></tr>
+      <tr><td>muted on ground</td><td class="mono">8.08:1</td><td>AA</td></tr>
+      <tr><td>muted on raised</td><td class="mono">7.39:1</td><td>AA</td></tr>
+      <tr><td>action label on action</td><td class="mono">9.85:1</td><td>AA</td></tr>
+      <tr><td>action on ground</td><td class="mono">9.48:1</td><td>AA</td></tr>
+    </table>
+  </section>
+
+  <!-- ============ TYPE ============ -->
+  <section>
+    <h2>Typography</h2>
+    <p class="sub"><b>DM Sans</b> carries everything you read. <b>DM Mono</b>
+      carries everything you scan — labels, metadata, durations, specs, anything
+      numeric. That split is the fastest way to tell a Solmi surface from a
+      generic dark SaaS one, so keep it: never set metadata in the sans.</p>
+    <div class="scale">
+      <div><span class="m">Display · 500 · −.03em</span>
+        <span style="font-size:38px;font-weight:500;letter-spacing:-.03em">Turn any song</span></div>
+      <div><span class="m">Section · 21px · 500</span>
+        <span style="font-size:21px;font-weight:500;letter-spacing:-.02em">Start from a setup</span></div>
+      <div><span class="m">Body · 15px · 400</span>
+        <span>Bring a song and the agent drafts the treatment.</span></div>
+      <div><span class="m">Strong · 14px · 700</span>
+        <span style="font-size:14px;font-weight:700;letter-spacing:-.012em">Renders</span></div>
+      <div><span class="m">Label · mono 11px · .13em</span>
+        <span class="mono" style="font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)">Music video</span></div>
+      <div><span class="m">Meta · mono 11px</span>
+        <span class="mono" style="font-size:11px;color:var(--ink-3)">16:9 · 1080p · 1:01</span></div>
+    </div>
+    <h3>Tracking</h3>
+    <p class="sub">Negative and proportional to size: the bigger the type, the
+      tighter it sets. Display −.03em, headings −.02em, body −.011em, buttons
+      −.018em. Mono labels go the other way — positive .10–.14em with uppercase,
+      which is what makes them read as labels rather than as small text.</p>
+  </section>
+
+  <!-- ============ COMPONENTS ============ -->
+  <section>
+    <h2>Components</h2>
+    <p class="sub">Live. Hover the action button to see the sweep.</p>
+
+    <h3>Action button</h3>
+    <div class="demo">
+      <button class="act" type="button">Make a 5s video for free</button>
+      <button class="act sm" type="button">Make the video</button>
+      <p class="mono" style="font-size:11.5px;color:var(--ink-3);max-width:24ch;margin:0">
+        56 / 0 32 / r16 · 17px 700 at −.018em. Hover is the sweep, never a
+        lighter green.</p>
+    </div>
+    <p class="sub" style="margin-top:14px">The hover state is a turquoise → green
+      → ember gradient at 100°, 240% wide, drifting for 2.2s on a loop. The warm
+      stops sit about 6% darker than their light-theme values so the ramp stays
+      even on charcoal. It needs <b>isolation:isolate</b> on the button with the
+      sweep at <b>z-index:−1</b> — a plain absolute pseudo-element paints above
+      the label and hides it.</p>
+
+    <h3>Secondary &amp; controls</h3>
+    <div class="demo">
+      <button class="ghost" type="button">Learn more</button>
+      <button class="pill on" type="button">16:9</button>
+      <button class="pill" type="button">1080p</button>
+      <button class="pill" type="button">Captions</button>
+      <p class="mono" style="font-size:11.5px;color:var(--ink-3);max-width:22ch;margin:0">
+        A selected control tints with the action at 14%, never fills with it.</p>
+    </div>
+
+    <h3>Panel</h3>
+    <div class="demo" style="background:none;border:0;padding:0">
+      <div class="panel">
+        <div class="ttl">Neon Exit</div>
+        <div class="meta">16:9 · 1080p · Y2K Glossy Futuristic · 1:01</div>
+      </div>
+    </div>
+
+    <h3>Radius</h3>
+    <p class="sub">Four steps. Pick by size, not by taste: the bigger the
+      surface, the larger the radius. 999px is for pills only.</p>
+    <div class="rad">
+      <div style="border-radius:8px">8 · chips</div>
+      <div style="border-radius:12px">12 · controls</div>
+      <div style="border-radius:16px">16 · panels, action</div>
+      <div style="border-radius:20px">20 · composer</div>
+      <div style="border-radius:999px">999 · pills</div>
+    </div>
+
+    <h3>Elevation</h3>
+    <p class="sub">One token, three stacked passes rather than a single large
+      blur — that is what keeps it from looking like a drop shadow from 2012.
+      Used on the composer and on floating surfaces only; panels in a stack use
+      a hairline instead.</p>
+    <div class="demo" style="background:none;border:0;padding:0">
+      <div class="panel" style="max-width:260px"><div class="ttl">--lift</div>
+        <div class="meta">3 passes · .26–.30 alpha</div></div>
+    </div>
+  </section>
+
+  <!-- ============ DIALECTS ============ -->
+  <section>
+    <h2>Two dialects</h2>
+    <p class="sub">The same tokens build both the marketing site and the product
+      pages. What separates them is not colour or type — it is <b>ratio</b>.
+      Getting this wrong is what makes a tool page read as a second landing page.</p>
+    <table>
+      <tr><th>&nbsp;</th><th>Marketing (solmi.ai)</th><th>Product (studio, tools)</th></tr>
+      <tr><td>Job</td><td>Convince someone who does not know Solmi</td><td>Get someone who already knows into producing</td></tr>
+      <tr><td>The fold</td><td>Headline, promise, proof</td><td>The tool. One mono context line above it, nothing else</td></tr>
+      <tr><td>Display type</td><td>Up to 64px, editorial</td><td>Capped near 32px; mono carries labels</td></tr>
+      <tr><td>Density</td><td>Generous whitespace</td><td>Tight 8px rhythm, more rows per screen</td></tr>
+      <tr><td>Motion</td><td>Ambient drift, reveals, the record</td><td>Still. Motion only as feedback — progress, state</td></tr>
+      <tr><td>The green</td><td>A brand flourish on one hero CTA</td><td>Strictly the action that spends credits</td></tr>
+      <tr><td>Accents</td><td>Tint the look you picked</td><td>Encode state — active format, job status</td></tr>
+      <tr><td>Gallery</td><td>Showreel. Big, cinematic, autoplay</td><td>Recipes. Dense, settings on the face, “use this setup”</td></tr>
+      <tr><td>Length</td><td>Several screens, meant to be scrolled</td><td>Short. Depth behind panels, not below the fold</td></tr>
+    </table>
+    <p class="sub" style="margin-top:18px">The record and the drifting gallery are
+      signature <em>marketing</em> devices. They should never appear on a product
+      page — on their own they separate the two at a glance.</p>
+  </section>
+
+  <!-- ============ RULES ============ -->
+  <section>
+    <h2>Standing rules</h2>
+    <p class="sub">Settled decisions. They override anything that contradicts them.</p>
+    <div class="rule"><span class="no">01</span><p><b>One accent.</b> The green is
+      the only saturated colour in the chrome. Style accents tint state; they are
+      not a second palette.</p></div>
+    <div class="rule"><span class="no">02</span><p><b>Hover on the action is the
+      sweep.</b> Not a lighter green, not an opacity change. It is the one piece
+      of brand motion in the interface.</p></div>
+    <div class="rule"><span class="no">03</span><p><b>Mono for anything you scan.</b>
+      Durations, ratios, resolutions, credits, specs, labels. Sans for anything
+      you read.</p></div>
+    <div class="rule"><span class="no">04</span><p><b>Every control states its
+      cost.</b> If a setting changes render time or credits, the surface says so
+      next to the button — not in a tooltip, not on a pricing page.</p></div>
+    <div class="rule"><span class="no">05</span><p><b>Text clears 4.5:1.</b> The
+      muted token is a solid value, not an alpha, so it does not drift when the
+      surface underneath changes.</p></div>
+    <div class="rule"><span class="no">06</span><p><b>Video tiles take one of two
+      shapes</b> — 16:9 for landscape, 3:4 for portrait. Never a raw 9:16: it
+      becomes a skyscraper in any grid and gets sliced by its own frame.</p></div>
+    <div class="rule"><span class="no">07</span><p><b>One easing curve.</b>
+      cubic-bezier(.22,.61,.36,1) for everything. Micro 160ms, standard 200ms,
+      entrances 300–450ms.</p></div>
+  </section>
+
+  <!-- ============ TOKENS ============ -->
+  <section>
+    <h2>Copy this</h2>
+    <p class="sub">The whole system. Paste into your global stylesheet and build
+      against the variables, never against the hex.</p>
+<pre><b>:root</b>{
+  <b>--paper</b>:#141614;      <span style="opacity:.6">/* ground */</span>
+  <b>--raised</b>:#1C1F1D;     <span style="opacity:.6">/* panels, cards */</span>
+  <b>--ctrl</b>:#262A28;       <span style="opacity:.6">/* controls */</span>
+  <b>--ctrl-hi</b>:#313634;    <span style="opacity:.6">/* control hover */</span>
+  <b>--sunk</b>:#0F1110;       <span style="opacity:.6">/* below the ground */</span>
+  <b>--ink</b>:#F2F5F3;        <span style="opacity:.6">/* primary text   16.57:1 */</span>
+  <b>--ink-2</b>:#A9AEAB;      <span style="opacity:.6">/* secondary text  8.08:1 */</span>
+  <b>--ink-3</b>:#6F7573;      <span style="opacity:.6">/* metadata */</span>
+  <b>--hair</b>:#2B2F2D;
+  <b>--hair-2</b>:#3A3F3C;
+  <b>--action</b>:#1ED760;     <span style="opacity:.6">/* unchanged across themes */</span>
+  <b>--action-ink</b>:#04140D; <span style="opacity:.6">/* 9.85:1 on the green */</span>
+  <b>--ease</b>:cubic-bezier(.22,.61,.36,1);
+  <b>--lift</b>:0 1px 2px rgba(0,0,0,.30), 0 8px 18px rgba(0,0,0,.26),
+         0 22px 46px rgba(0,0,0,.30);
+}
+<b>:root[data-theme=light]</b>{
+  <b>--paper</b>:#F6FAFF; <b>--raised</b>:#FFFFFF; <b>--ctrl</b>:#F1F3F6;
+  <b>--ctrl-hi</b>:#E7EAEE; <b>--sunk</b>:#E9EEF4;
+  <b>--ink</b>:#101110; <b>--ink-2</b>:#6A6C6B; <b>--ink-3</b>:#8E918F;
+  <b>--hair</b>:#E4E7EA; <b>--hair-2</b>:#D3D8DC;
+  <b>--lift</b>:0 1px 2px rgba(16,17,16,.05), 0 4px 8px rgba(16,17,16,.045),
+         0 10px 20px rgba(16,17,16,.055);
+}
+
+<span style="opacity:.6">/* the action button, including the sweep */</span>
+<b>.action</b>{height:56px;padding:0 32px;border:0;border-radius:16px;
+  background:var(--action);color:var(--action-ink);
+  font:700 17px/1 "DM Sans",sans-serif;letter-spacing:-.018em;
+  position:relative;overflow:hidden;isolation:isolate;cursor:pointer;
+  transition:transform .2s var(--ease)}
+<b>.action::before</b>{content:"";position:absolute;inset:0;z-index:-1;opacity:0;
+  background:linear-gradient(100deg,#2BC4C4 0%,#1ED760 28%,#9BCB3C 52%,
+    #E9A02C 78%,#F0821F 100%);
+  background-size:240% 100%;transition:opacity .3s var(--ease)}
+<b>.action:hover</b>{transform:translateY(-2px)}
+<b>.action:hover::before</b>{opacity:1;animation:flow 2.2s linear infinite alternate}
+<b>@keyframes flow</b>{from{background-position:0% 50%}to{background-position:100% 50%}}
+<b>@media</b> (prefers-reduced-motion:reduce){
+  .action:hover::before{animation:none;background-position:50% 50%}
+}
+
+<span style="opacity:.6">/* fonts */</span>
+<b>@import</b> url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&amp;family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&amp;display=swap');
+</pre>
+  </section>
+
+  <footer>
+    <span>Solmi design system</span>
+    <span class="sp"></span>
+    <span class="mono">Shizudio · 17 Sep 2026</span>
+  </footer>
+</div>
+
+<script>
+/* Swatches read the live variables, so the theme toggle repaints them for free. */
+const TOKENS=[
+  ['paper','ground'],['raised','panels, cards'],['ctrl','controls'],
+  ['ctrl-hi','control hover'],['sunk','below the ground'],
+  ['ink','primary text'],['ink-2','secondary text'],['ink-3','metadata'],
+  ['hair','hairlines'],['hair-2','stronger hairlines']
+];
+const root=document.documentElement, sw=document.getElementById('sw');
+function paint(){
+  const cs=getComputedStyle(root);
+  sw.innerHTML=TOKENS.map(([t,role])=>{
+    const v=cs.getPropertyValue('--'+t).trim();
+    return '<div class="chip"><span class="dot" style="background:var(--'+t+')"></span>'+
+      '<div><div class="n">'+t+'</div><div class="v">'+v+' · '+role+'</div></div></div>';
+  }).join('');
+}
+paint();
+const tog=document.getElementById('tog');
+tog.addEventListener('click',()=>{
+  const light=root.getAttribute('data-theme')==='light';
+  root.setAttribute('data-theme', light?'dark':'light');
+  tog.textContent = light?'Light':'Dark';
+  paint();
+});
+</script>
+</body>
+</html>

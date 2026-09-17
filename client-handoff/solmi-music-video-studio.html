@@ -1,0 +1,811 @@
+<!doctype html>
+<!--
+  Solmi — AI Music Video Generator (product page)
+  Prototype by Shizudio · packaged 2026-09-17
+
+  HOW TO OPEN
+  Double-click this file. It needs no server, no build step and no install.
+
+  WHAT IS LIVE
+  · Every control cycles real values; the line under the button restates the
+    render time and credit cost for the settings you pick.
+  · Hovering a recipe tile plays its clip; clicking opens the player.
+  · "Use this setup" loads that recipe's ratio and style into the composer.
+
+  WHAT IS MOCKED
+  · The Renders panel is three fixed rows — it shows the shape of live job
+    state, it is not wired to a backend.
+  · Sign in, Discord, language and the left rail links are inert.
+  · Clips and thumbnails stream from media.solmi.ai, so the page needs an
+    internet connection to show them.
+
+  DESIGN SYSTEM
+  See solmi-design-system.html in this folder for the tokens, components and
+  the rules that separate this page from the marketing site.
+-->
+
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Music Video Generator — Solmi</title>
+<meta name="description" content="Bring a song. Our agent drafts the treatment, casts the cast, and renders the final cut.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
+<style>
+/* ==========================================================================
+   SOLMI — MUSIC VIDEO STUDIO
+   The product surface, rebuilt in the language the landing page ships with:
+   DM Sans + DM Mono, #1ED760 as the only action colour, charcoal surfaces and
+   hairlines, 14px card corners. The page it replaces had drifted onto its own
+   system — Instrument Serif, violet, and full pills — which meant crossing
+   from solmi.ai into the product felt like crossing between two products.
+   ========================================================================== */
+
+:root{
+  color-scheme:dark;
+
+  /* surfaces, taken from the shipped solmi.ai, not re-invented here */
+  /* The shipped solmi.ai ground is #141614 — the same value the landing page's
+     dark theme uses. #0A0A0A was the OLD product page's ground; carrying it
+     over kept a token from the page this replaces. */
+  --paper:#141614;
+  --raised:#1C1F1D;
+  --ctrl:#262A28;
+  --ctrl-hi:#313634;
+  --sunk:#0F1110;
+
+  --ink:#F2F5F3;
+  --ink-2:#A9AEAB;
+  --ink-3:rgba(242,245,243,.52);
+
+  --action:#1ED760;
+  --action-hi:#3BE87A;
+  --accent:#1ED760;
+
+  --hair:#2B2F2D;
+  --hair-2:#3A3F3C;
+
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --rail:248px;
+  --gut:40px;
+
+  --lift:0 1px 2px rgba(0,0,0,.30), 0 8px 18px rgba(0,0,0,.26),
+         0 22px 46px rgba(0,0,0,.30);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{overflow-x:clip}
+body{background:var(--paper);color:var(--ink);
+  font-family:"DM Sans",system-ui,sans-serif;font-size:16px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+.mono{font-family:"DM Mono",ui-monospace,monospace;font-size:11px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+
+/* ============ the rail ============
+   A product surface earns a persistent nav; the landing page does not. This is
+   the one structural thing kept from the old page, because it is right. */
+.rail{position:fixed;inset:0 auto 0 0;width:var(--rail);z-index:40;
+  display:flex;flex-direction:column;gap:6px;
+  padding:22px 14px;background:var(--sunk);border-right:1px solid var(--hair);
+  overflow-y:auto;overscroll-behavior:contain}
+.brand{display:flex;align-items:center;gap:9px;padding:4px 10px 18px;
+  font-size:21px;font-weight:500;letter-spacing:-.035em;line-height:1}
+.brand i{font-style:normal;color:var(--action)}
+.rail .grp{padding:14px 10px 6px}
+.nav-item{display:flex;align-items:center;gap:11px;height:40px;padding:0 10px;
+  border-radius:12px;font-size:14px;font-weight:500;letter-spacing:-.011em;
+  color:var(--ink-2);transition:background .16s var(--ease),color .16s var(--ease)}
+.nav-item svg{width:17px;height:17px;flex:none;opacity:.82}
+.nav-item .short{display:none}
+.nav-item:hover{background:var(--ctrl);color:var(--ink)}
+.nav-item[aria-current=page]{background:var(--ctrl);color:var(--ink)}
+/* the active row is marked by the brand colour, never by a second hue */
+.nav-item[aria-current=page] svg{color:var(--action);opacity:1}
+.rail .foot{margin-top:auto;padding-top:16px}
+
+/* ============ top bar ============ */
+.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;
+  height:60px;padding:0 var(--gut);
+  background:color-mix(in srgb, var(--paper) 78%, transparent);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--hair)}
+.top .where{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:500}
+.top .where svg{width:16px;height:16px;color:var(--ink-3)}
+.top .sp{flex:1}
+.tbtn{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 13px;
+  border:1px solid var(--hair-2);border-radius:999px;background:none;cursor:pointer;
+  font-size:13px;font-weight:500;letter-spacing:-.008em;color:var(--ink-2);
+  transition:background .16s var(--ease),color .16s var(--ease)}
+.tbtn:hover{background:var(--ctrl);color:var(--ink)}
+.tbtn svg{width:14px;height:14px}
+.tbtn.solid{background:var(--ink);color:#0F1110;border-color:transparent;font-weight:700}
+.tbtn.solid:hover{background:#fff;color:#0F1110}
+
+/* ============ shell ============ */
+main{margin-left:var(--rail)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 var(--gut)}
+
+/* ============ hero ============ */
+/* ============ the tool owns the fold ============
+   No marketing headline here. Someone on this page either searched for the
+   generator or came through the pitch already — what they need is the machine,
+   so the composer starts 28px from the top bar and everything else is below
+   the fold. Type is capped and DM Mono carries the labels: the landing page
+   is editorial, this is an instrument panel. */
+.stage{padding:28px 0 0}
+.ctx{display:flex;align-items:center;gap:10px;margin:0 0 14px;
+  font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3)}
+.ctx .dot{width:5px;height:5px;border-radius:50%;background:var(--action)}
+.ctx b{font-weight:400;color:var(--ink-2);letter-spacing:.13em}
+.ctx .sp{flex:1}
+
+/* the settings summary: every control here costs time or credits, so say so */
+.summary{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  margin:12px 2px 0;font-family:"DM Mono",monospace;font-size:11.5px;
+  letter-spacing:.02em;color:var(--ink-3)}
+.summary b{color:var(--ink-2);font-weight:400}
+.summary .cost{margin-left:auto;color:var(--ink-2)}
+
+/* presets sit with the tool, left-aligned, not centred like a marketing row */
+.presets{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0 0}
+.presets .lbl{font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);margin-right:2px}
+
+/* ============ renders — the thing a landing page cannot have ============
+   State. What is running, what is queued, what is finished. */
+.jobs{margin:34px 0 0;border:1px solid var(--hair);border-radius:16px;
+  background:var(--raised);overflow:hidden}
+.jobs-head{display:flex;align-items:center;gap:12px;padding:13px 16px;
+  border-bottom:1px solid var(--hair)}
+.jobs-head h2{margin:0;font-size:14px;font-weight:700;letter-spacing:-.012em}
+.jobs-head .mono{margin-left:auto;font-family:"DM Mono",monospace;font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.job{display:grid;grid-template-columns:1fr auto;gap:4px 16px;
+  padding:14px 16px;border-bottom:1px solid var(--hair)}
+.job:last-child{border-bottom:0}
+.job .t{font-size:14px;font-weight:500;letter-spacing:-.012em}
+.job .meta{grid-column:1;font-family:"DM Mono",monospace;font-size:11px;
+  letter-spacing:.02em;color:var(--ink-3)}
+.job .state{grid-column:2;grid-row:1;align-self:center;
+  font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3)}
+.job.run .state{color:var(--action)}
+.job .act{grid-column:2;grid-row:2;align-self:center;justify-self:end;
+  background:none;border:1px solid var(--hair-2);border-radius:8px;
+  height:28px;padding:0 11px;font-size:12px;color:var(--ink-2);cursor:pointer;
+  transition:background .16s var(--ease),color .16s var(--ease)}
+.job .act:hover{background:var(--ctrl);color:var(--ink)}
+
+/* stages belong to a job, not to a marketing explainer — they show position */
+.stages{grid-column:1 / -1;display:flex;align-items:center;gap:6px;
+  flex-wrap:wrap;margin-top:10px}
+.stg{display:flex;align-items:center;gap:6px;height:24px;padding:0 9px;
+  border-radius:7px;background:var(--ctrl);
+  font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink-3);white-space:nowrap}
+.stg.done{color:var(--ink-2)}
+.stg.done::before{content:"";width:5px;height:5px;border-radius:50%;
+  background:var(--ink-3)}
+.stg.now{background:color-mix(in srgb,var(--action) 16%,var(--ctrl));
+  color:var(--action)}
+.stg.now::before{content:"";width:5px;height:5px;border-radius:50%;
+  background:var(--action)}
+.bar{grid-column:1 / -1;height:3px;border-radius:2px;background:var(--ctrl);
+  overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;background:var(--action);border-radius:2px}
+h1{margin:0;font-size:clamp(38px,4.6vw,60px);font-weight:500;line-height:1.04;
+  letter-spacing:-.03em}
+/* the emphasis is carried by the brand green, not by a serif italic in a
+   colour that appears nowhere else in the system */
+h1 em{font-style:normal;color:var(--action)}
+.hero .sub{max-width:56ch;margin:20px auto 0;font-family:"DM Mono",monospace;
+  font-size:15px;line-height:1.6;letter-spacing:-.2px;color:var(--ink-2)}
+
+/* ============ composer ============
+   The one object on the page that should feel like a tool: raised, hairlined,
+   with the field as the largest target and everything else stepping back. */
+.composer{position:relative;margin:36px 0 0;text-align:left;background:var(--raised);
+  border:1px solid var(--hair-2);border-radius:20px;padding:14px;
+  box-shadow:var(--lift)}
+.attach{display:inline-flex;align-items:center;gap:9px;height:36px;padding:0 12px;
+  border:1px dashed var(--hair-2);border-radius:12px;background:var(--ctrl);
+  cursor:pointer;font-size:13.5px;font-weight:500;letter-spacing:-.01em;
+  transition:border-color .18s var(--ease),background .18s var(--ease)}
+.attach:hover{background:var(--ctrl-hi);border-color:var(--action)}
+.attach svg{width:15px;height:15px;color:var(--ink-3)}
+.attach .req{font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--action)}
+/* once a track is on, the slot is no longer a demand — it is a value */
+.attach.has{border-style:solid;border-color:var(--action)}
+.attach.has .req{display:none}
+.attach.has svg{color:var(--action)}
+.prompt{display:block;width:100%;min-height:132px;margin:12px 0 0;padding:2px 4px;
+  border:0;background:none;resize:vertical;color:var(--ink);
+  font-family:inherit;font-size:16.5px;line-height:1.55;letter-spacing:-.011em}
+.prompt::placeholder{color:var(--ink-3)}
+.prompt:focus{outline:none}
+.c-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:12px}
+/* the CTA holds the right edge even when the chips wrap onto a second line */
+.c-bar .go{margin-left:auto}
+.opt{display:inline-flex;align-items:center;gap:6px;height:33px;padding:0 9px;
+  border:1px solid var(--hair);border-radius:11px;background:var(--ctrl);
+  cursor:pointer;font-size:12.5px;font-weight:500;letter-spacing:-.008em;
+  color:var(--ink-2);transition:background .16s var(--ease),color .16s var(--ease),
+  border-color .16s var(--ease)}
+.opt:hover{background:var(--ctrl-hi);color:var(--ink)}
+.opt svg{width:14px;height:14px;flex:none}
+.opt .cv{width:11px;height:11px;opacity:.6;margin-left:1px}
+.opt.is-on{color:var(--ink);border-color:var(--hair-2)}
+.opt.is-on>svg:first-child{color:var(--action)}
+.c-bar .sp{flex:1}
+/* The action button, to the token board's spec: 56/32/16, 17px 700 at -.018em,
+   #1ED760 on #04140D. Hover is not a lighter green — it is the brand's sweep,
+   turquoise through green to ember, drifting while the cursor is on it. The
+   warm stops sit ~6% darker than their light-theme values so the ramp reads
+   evenly on charcoal. isolation + z-index:-1 keeps the sweep above the button's
+   own fill but behind the label. */
+.go{display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  height:56px;padding:0 32px;border:0;border-radius:16px;cursor:pointer;
+  background:var(--action);color:#04140D;
+  font-size:17px;font-weight:700;letter-spacing:-.018em;white-space:nowrap;
+  position:relative;overflow:hidden;isolation:isolate;
+  transition:transform .2s var(--ease)}
+.go::before{content:"";position:absolute;inset:0;z-index:-1;opacity:0;
+  background:linear-gradient(100deg,#2BC4C4 0%,#1ED760 28%,#9BCB3C 52%,
+    #E9A02C 78%,#F0821F 100%);
+  background-size:240% 100%;background-position:0% 50%;
+  transition:opacity .3s var(--ease)}
+.go:hover,.go:focus-visible{transform:translateY(-2px)}
+.go:hover::before,.go:focus-visible::before{opacity:1;
+  animation:flow 2.2s linear infinite alternate}
+@keyframes flow{from{background-position:0% 50%}to{background-position:100% 50%}}
+@media (prefers-reduced-motion:reduce){
+  .go:hover::before,.go:focus-visible::before{animation:none;background-position:50% 50%}
+}
+/* secondary placements keep the same skin at a smaller size */
+.go.sm{height:44px;padding:0 22px;font-size:15px;letter-spacing:-.014em;gap:9px}
+
+.go svg{width:15px;height:15px}
+.note{display:flex;align-items:center;gap:8px;margin:12px 2px 0;font-size:12.5px;
+  color:var(--ink-3)}
+/* format limits sit beside the control they govern, not in a footer strip */
+.hint{margin-left:10px;font-family:"DM Mono",monospace;font-size:10.5px;
+  letter-spacing:.06em;color:var(--ink-3)}
+.note svg{width:13px;height:13px;flex:none;color:var(--action)}
+
+/* format tabs + the spec line */
+.tabs{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:22px 0 0}
+.tab{height:34px;padding:0 15px;border:1px solid var(--hair);border-radius:999px;
+  background:none;cursor:pointer;font-size:13px;font-weight:500;
+  letter-spacing:-.008em;color:var(--ink-2);
+  transition:background .16s var(--ease),color .16s var(--ease)}
+.tab:hover{background:var(--ctrl);color:var(--ink)}
+.tab.is-on{background:var(--ctrl);color:var(--ink);border-color:var(--hair-2)}
+.spec{margin:18px 0 0;text-align:center;font-family:"DM Mono",monospace;
+  font-size:11px;line-height:1.7;letter-spacing:.02em;color:var(--ink-3)}
+
+/* ============ section heads ============ */
+.sec{padding:54px 0 0}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:24px;
+  margin-bottom:26px}
+.sec-head h2{margin:6px 0 0;font-size:27px;font-weight:500;letter-spacing:-.03em}
+.sec-head .r{display:flex;align-items:center;gap:14px}
+.link{display:inline-flex;align-items:center;gap:7px;background:none;border:0;
+  cursor:pointer;font-size:13.5px;font-weight:500;letter-spacing:-.01em;
+  color:var(--ink-2);transition:color .16s var(--ease)}
+.link:hover{color:var(--ink)}
+
+/* ============ gallery ============
+   Uniform width, two tidy heights. Same construction as the landing page's
+   wall so the two surfaces read as one family. */
+/* A tile here is a recipe you can load, not a showreel frame: the settings that
+   produced it are on the face, and the action is "use", not "watch". */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));
+  gap:14px}
+.tile .set{position:absolute;left:8px;right:8px;bottom:8px;z-index:3;
+  display:flex;align-items:center;gap:6px;opacity:0;transform:translateY(4px);
+  transition:opacity .2s var(--ease),transform .2s var(--ease)}
+.tile:hover .set,.tile:focus-visible .set{opacity:1;transform:none}
+.tile .use{flex:1;height:30px;border:0;border-radius:8px;cursor:pointer;
+  background:var(--ink);color:var(--paper);font-size:12px;font-weight:700;
+  letter-spacing:-.008em}
+.tile .use:hover{background:#fff}
+.tile .rcp{position:absolute;left:8px;top:8px;z-index:3;
+  font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:.08em;
+  text-transform:uppercase;color:rgba(255,255,255,.82);
+  background:rgba(0,0,0,.5);padding:3px 6px;border-radius:5px}
+.tile{position:relative;padding-top:calc(100% * var(--r,.5625));border:0;padding-left:0;
+  padding-right:0;padding-bottom:0;width:100%;border-radius:14px;overflow:hidden;
+  cursor:pointer;background:linear-gradient(150deg,var(--ctrl),var(--raised));
+  box-shadow:0 10px 26px rgba(0,0,0,.28);
+  transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.tile:hover,.tile:focus-visible{transform:translateY(-3px);
+  box-shadow:0 20px 46px rgba(0,0,0,.5)}
+.tile img,.tile video{position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;display:block;border-radius:inherit}
+.tile video{opacity:0;z-index:1;transition:opacity .4s var(--ease)}
+.tile video.on{opacity:1}
+.tile::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(180deg,transparent 46%,rgba(8,10,9,.84) 100%);
+  opacity:0;transition:opacity .26s var(--ease)}
+.tile:hover::after,.tile:focus-visible::after{opacity:1}
+.tile .m{position:absolute;left:11px;right:11px;bottom:10px;z-index:3;color:#fff;
+  text-align:left;opacity:0;transform:translateY(6px);pointer-events:none;
+  transition:opacity .24s var(--ease),transform .24s var(--ease)}
+.tile:hover .m,.tile:focus-visible .m{opacity:1;transform:none}
+.tile .m b{display:block;font-size:12.5px;font-weight:700;letter-spacing:-.012em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .m i{display:block;font-style:normal;font-size:10px;margin-top:2px;
+  color:rgba(255,255,255,.66);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .d{position:absolute;top:9px;left:9px;z-index:3;font-family:"DM Mono",monospace;
+  font-size:9.5px;color:#fff;background:rgba(0,0,0,.48);padding:2px 6px;
+  border-radius:6px;opacity:0;transition:opacity .24s var(--ease)}
+.tile:hover .d,.tile:focus-visible .d{opacity:1}
+.more{display:block;margin:26px auto 0}
+
+/* ============ faq ============ */
+.faq{max-width:760px}
+.q{border-bottom:1px solid var(--hair)}
+.q summary{display:flex;align-items:center;gap:16px;padding:20px 2px;cursor:pointer;
+  list-style:none;font-size:17px;font-weight:500;letter-spacing:-.016em}
+.q summary::-webkit-details-marker{display:none}
+.q .sign{position:relative;flex:none;width:16px;height:16px;margin-left:auto}
+.q .sign::before,.q .sign::after{content:"";position:absolute;background:var(--ink-3);
+  transition:transform .26s var(--ease),background .26s var(--ease)}
+.q .sign::before{left:0;top:7px;width:16px;height:2px}
+.q .sign::after{left:7px;top:0;width:2px;height:16px}
+.q[open] .sign::after{transform:rotate(90deg)}
+.q[open] .sign::before,.q[open] .sign::after{background:var(--action)}
+.q .a{padding:0 40px 22px 2px}
+.q .a p{margin:0;font-size:15.5px;line-height:1.62;color:var(--ink-2)}
+
+/* ============ affiliate strip ============ */
+.strip{margin:104px 0 0;display:flex;align-items:center;gap:28px;flex-wrap:wrap;
+  padding:30px 32px;border:1px solid var(--hair);border-radius:20px;
+  background:linear-gradient(120deg,var(--raised),var(--sunk))}
+.strip h3{margin:0 0 6px;font-size:20px;font-weight:500;letter-spacing:-.022em}
+.strip p{margin:0;font-size:14.5px;line-height:1.55;color:var(--ink-2);max-width:62ch}
+.strip .go{margin-left:auto}
+
+/* ============ footer ============ */
+footer{margin-top:104px;padding:30px 0 44px;border-top:1px solid var(--hair);
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  font-size:13px;color:var(--ink-3)}
+footer .sp{flex:1}
+footer a:hover{color:var(--ink)}
+
+/* ============ lightbox ============ */
+.lb{position:fixed;inset:0;z-index:200;display:none;place-items:center;
+  padding:clamp(16px,4vw,56px)}
+.lb[data-open=true]{display:grid}
+.lb-scrim{position:absolute;inset:0;background:rgba(6,8,7,.84);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.lb-box{position:relative;z-index:1;display:flex;flex-direction:column;gap:14px;
+  max-width:min(1120px,100%);animation:rise .34s var(--ease)}
+@keyframes rise{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+.lb-frame{position:relative;border-radius:16px;overflow:hidden;background:#0A0C0B;
+  box-shadow:0 40px 90px rgba(0,0,0,.62);line-height:0}
+.lb-frame video{display:block;max-width:100%;max-height:min(76vh,880px);
+  width:auto;height:auto;border-radius:inherit;background:#0A0C0B}
+.lb-meta{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;color:#fff}
+.lb-meta b{font-size:17px;font-weight:700;letter-spacing:-.014em}
+.lb-meta i{font-style:normal;font-size:13px;color:rgba(255,255,255,.62)}
+.lb-meta .d{font-family:"DM Mono",monospace;font-size:11px;
+  color:rgba(255,255,255,.5);margin-left:auto}
+.lb-close{position:absolute;top:-8px;right:-8px;z-index:2;width:40px;height:40px;
+  border:0;border-radius:50%;cursor:pointer;display:grid;place-items:center;
+  background:var(--raised);color:var(--ink);box-shadow:0 8px 22px rgba(0,0,0,.45);
+  transition:transform .18s var(--ease),background .18s var(--ease)}
+.lb-close:hover{transform:scale(1.07);background:var(--ctrl-hi)}
+
+/* ============ responsive ============
+   The rail becomes a bottom bar rather than a drawer: on a phone the create
+   actions are the whole product, and burying them behind a hamburger would
+   cost the page its purpose. */
+@media (max-width:1080px){ :root{--rail:212px;--gut:28px} }
+@media (max-width:820px){
+  :root{--gut:18px}
+  main{margin-left:0;padding-bottom:76px}
+  .rail{inset:auto 0 0 0;width:auto;flex-direction:row;gap:2px;height:68px;
+    padding:8px 10px;border-right:0;border-top:1px solid var(--hair);
+    overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+  .rail::-webkit-scrollbar{display:none}
+  .rail .brand,.rail .grp,.rail .foot{display:none}
+  .nav-item{flex-direction:column;gap:4px;height:52px;min-width:66px;padding:0 8px;
+    font-size:10px;letter-spacing:-.004em;text-align:center;white-space:nowrap}
+  /* "Create Music Video" truncates to "Create Music…" in a 66px cell; the verb
+     is redundant once the bar IS the create surface. */
+  .nav-item .full{display:none}
+  .nav-item .short{display:inline}
+  .nav-item svg{width:18px;height:18px}
+  .top{height:54px}
+  .top .where span{display:none}
+  .hero{padding:40px 0 0}
+  .composer{border-radius:16px;padding:12px}
+  .prompt{min-height:104px;font-size:16px}
+  .go{width:100%;justify-content:center;order:9}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .sec{padding:72px 0 0}
+  .strip{padding:22px;gap:16px}
+  .strip .go{margin-left:0}
+  .lb-close{top:6px;right:6px;background:rgba(0,0,0,.55);color:#fff}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<nav class="rail" aria-label="Create">
+  <a class="brand" href="/"><span>solmi<i>.</i></span></a>
+  <div class="grp mono">Create</div>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6L21 9.4l-4.5 4.3 1.1 6.1L12 17l-5.6 2.8 1.1-6.1L3 9.4l6.4-.8z"/></svg><span class="full">Featured</span><span class="short">Featured</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/></svg><span class="full">Create Song</span><span class="short">Song</span></a>
+      <a class="nav-item" href="#" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l5-3v10l-5-3z"/><path d="M3 7h12v10H3z"/></svg><span class="full">Create Music Video</span><span class="short">Music</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"/><path d="M5 11a7 7 0 0 0 14 0"/></svg><span class="full">Create Singing Video</span><span class="short">Singing</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a1.6 1.6 0 1 0 0-.01"/><path d="M10 21l2-6 3 3 2 4"/><path d="M7 10l5-2 4 3"/></svg><span class="full">Create Dance Video</span><span class="short">Dance</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h11M4 17h7"/></svg><span class="full">Create Lyrics Video</span><span class="short">Lyrics</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 9h8v6H8z"/></svg><span class="full">Create Cover</span><span class="short">Cover</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h4l3-7 3 14 3-7h4"/></svg><span class="full">Stem Splitter</span><span class="short">Stems</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/><path d="M8 8v8M16 8v8M4 11v2M20 11v2"/></svg><span class="full">Vocal Remover</span><span class="short">Vocals</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h3v16H5zM10 4h3v16h-3zM16 5l3 15"/></svg><span class="full">Library</span><span class="short">Library</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h6l2 2h8v10H4z"/></svg><span class="full">Projects</span><span class="short">Projects</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M4 12h10M4 17h6"/><path d="M18 9v8a2 2 0 1 1-2-2h2"/></svg><span class="full">Playlists</span><span class="short">Lists</span></a>
+  <div class="foot">
+    <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3 2.4V14"/><path d="M12 17.5v.01"/></svg><span>Help</span></a>
+  </div>
+</nav>
+
+<main>
+  <header class="top">
+    <div class="where">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l5-3v10l-5-3z"/><rect x="3" y="7" width="12" height="10" rx="2"/></svg>
+      <span>Music Video</span>
+    </div>
+    <div class="sp"></div>
+    <button class="tbtn" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12a4 4 0 0 1 8 0"/><path d="M5 17c-1.5-3-1.5-7 0-10l3-1 1 2h6l1-2 3 1c1.5 3 1.5 7 0 10l-3 1-1-2H9l-1 2z"/></svg>
+      Discord
+    </button>
+    <button class="tbtn" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 3 2.6 15 0 18M12 3c-2.6 3-2.6 15 0 18"/></svg>
+      English
+    </button>
+    <button class="tbtn solid" type="button">Sign in</button>
+  </header>
+
+  <div class="wrap">
+    <section class="stage">
+      <p class="ctx"><span class="dot"></span>Music video<span class="sp"></span>
+        <b>100 credits</b></p>
+
+      <div class="composer">
+        <button class="attach" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          Attach a song <span class="req">Required</span>
+        </button>
+        <span class="hint mono">MP3 · WAV · M4A · up to 200MB</span>
+        <textarea class="prompt" rows="4" placeholder="Describe the music video you want, once you have a track attached."></textarea>
+        <div class="c-bar">
+        <button class="opt is-on" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>Studio<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 11l3 3 3-4 4 5"/></svg>Images<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18v12H3z"/></svg>16:9<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M8 12h8"/></svg>480p<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M8 11h3M13 11h3M8 14h8"/></svg>Captions<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12a7 7 0 1 1 7 7"/><path d="M12 8v4l3 2"/></svg>Auto style<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"/><path d="M3 12h18M12 3c3 3 3 15 0 18"/></svg>Public<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+          <span class="sp"></span>
+          <button class="go" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+            Attach a Song to Start
+          </button>
+        </div>
+        <p class="summary" id="sum">
+          <b id="sumSet">16:9 · 480p · captions</b>
+          <span>·</span><span id="sumTime">~4 min</span>
+          <span class="cost" id="sumCost">1 credit · public</span>
+        </p>
+      </div>
+
+      <div class="presets">
+        <span class="lbl">Preset</span>
+        <button class="tab is-on" type="button">Singing MV</button>
+        <button class="tab" type="button">Story MV</button>
+        <button class="tab" type="button">Abstract MV</button>
+        <button class="tab" type="button">Viral Shorts</button>
+      </div>
+
+      <!-- Renders: the one surface a landing page cannot have — live state. -->
+      <section class="jobs" aria-label="Renders">
+        <div class="jobs-head">
+          <h2>Renders</h2>
+          <span class="mono">1 running · 1 queued</span>
+        </div>
+
+        <div class="job run">
+          <span class="t">Neon Exit</span>
+          <span class="state">Storyboard</span>
+          <span class="meta">16:9 · 1080p · Y2K Glossy Futuristic · 1:01</span>
+          <button class="act" type="button">Cancel</button>
+          <div class="stages">
+            <span class="stg done">Analyze</span>
+            <span class="stg done">Style</span>
+            <span class="stg done">References</span>
+            <span class="stg now">Storyboard</span>
+            <span class="stg">Render</span>
+          </div>
+          <div class="bar"><i style="width:62%"></i></div>
+        </div>
+
+        <div class="job">
+          <span class="t">Midnight Almost</span>
+          <span class="state">Queued</span>
+          <span class="meta">9:16 · 720p · Wong Kar-wai Inspired · 0:35</span>
+          <button class="act" type="button">Remove</button>
+        </div>
+
+        <div class="job">
+          <span class="t">Static Bound</span>
+          <span class="state">Done</span>
+          <span class="meta">16:9 · 1080p · 90s MTV Aesthetic · 1:01 · rendered 6 min ago</span>
+          <button class="act" type="button">Download MP4</button>
+        </div>
+      </section>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head">
+        <div>
+          <span class="mono">Recipes</span>
+          <h2>Start from a setup</h2>
+        </div>
+        <div class="r">
+          <button class="link" type="button">Browse all <span class="mono" style="font-size:11px">1,240</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="grid" id="grid"></div>
+      <button class="link more" id="more" type="button">Show more
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head">
+        <div>
+          <span class="mono">Quick answers</span>
+          <h2>Frequently asked questions</h2>
+        </div>
+      </div>
+      <div class="faq">
+      <details class="q" open>
+        <summary>How long does it take to make an AI music video?<span class="sign" aria-hidden="true"></span></summary>
+        <div class="a"><p>Most tracks render in 3–10 minutes end to end. Complex Studio projects with full storyboard review can take longer.</p></div>
+      </details>
+      <details class="q">
+        <summary>What audio can I bring?<span class="sign" aria-hidden="true"></span></summary>
+        <div class="a"><p>Upload MP3, WAV, or M4A files up to 200MB (tracks up to 10 minutes). Video files work too — drop in an MP4 or MOV and Solmi pulls the audio out. You can also paste a Suno, YouTube, or TikTok link.</p></div>
+      </details>
+      <details class="q">
+        <summary>Do I need the rights to the song?<span class="sign" aria-hidden="true"></span></summary>
+        <div class="a"><p>Yes. Only use music you own or have permission to use — your original songs and tracks you made with Suno or Udio are fine. You confirm ownership before every render.</p></div>
+      </details>
+      <details class="q">
+        <summary>What formats and resolutions can I export?<span class="sign" aria-hidden="true"></span></summary>
+        <div class="a"><p>Finished videos export as MP4 in 16:9, 9:16, or 1:1. Free previews render at 480p; 720p and 1080p exports are included with paid plans and credit packs. Projects stay saved as editable timelines.</p></div>
+      </details>
+      <details class="q">
+        <summary>Is there a free plan?<span class="sign" aria-hidden="true"></span></summary>
+        <div class="a"><p>Yes — you get 100 music video credits when you sign up, no credit card required. Paid plans and one-time credit packs unlock watermark-free exports and longer videos.</p></div>
+      </details>
+      <details class="q">
+        <summary>Does Solmi handle lyrics and other languages?<span class="sign" aria-hidden="true"></span></summary>
+        <div class="a"><p>Lyrics are auto-detected and lip-synced with word-level timing, and you can burn styled captions into the export. Lyric detection works natively in 14 languages.</p></div>
+      </details>
+      </div>
+    </section>
+
+    
+
+    <footer>
+      <span>© 2026 Solmi</span>
+      <a href="#">Terms</a>
+      <a href="#">Privacy</a>
+      <span class="sp"></span>
+      <span class="mono">Made with Solmi</span>
+    </footer>
+  </div>
+</main>
+
+<div class="lb" id="lb" data-open="false" role="dialog" aria-modal="true" aria-label="Video player" hidden>
+  <div class="lb-scrim" id="lbScrim"></div>
+  <div class="lb-box">
+    <div class="lb-frame">
+      <video id="lbVideo" playsinline controls loop></video>
+      <button class="lb-close" id="lbClose" aria-label="Close video">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="lb-meta"><b id="lbTitle"></b><i id="lbSub"></i><span class="d" id="lbDur"></span></div>
+  </div>
+</div>
+
+<script type="application/json" id="clips">[{"u": "1e2a0e8a-153e-4f5b-ad33-294da962b943", "dur": "4:22", "title": "Heaven", "sub": "Cloudlight Reverie", "ar": "16/9"}, {"u": "fba31b5e-0a28-418d-833a-f7c3393552d0", "dur": "0:51", "title": "Engine On", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "b5769b43-eaeb-443f-9db9-80a36750661a", "dur": "0:39", "title": "Rhythmic Liberation", "sub": "K-Pop Performance Editorial", "ar": "16/9"}, {"u": "eafb79a1-1e60-4461-a68d-a13e440d1365", "dur": "0:50", "title": "Color Field: Dissolve", "sub": "Grainy Gradient", "ar": "9/16"}, {"u": "8ed8c341-2582-466b-a1fb-8a0a1b823765", "dur": "5:10", "title": "Down The Road", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "3840eb9f-9f41-44f7-bb00-ccf1e9bbeb0a", "dur": "0:40", "title": "Paper Boats & City Lights", "sub": "Love Actually Inspired", "ar": "16/9"}, {"u": "60aa6c89-4a74-4de7-aabe-8c5810c64fc7", "dur": "1:12", "title": "Skyline Chase: A Chromatic Ascent", "sub": "Euphoria Inspired", "ar": "16/9"}, {"u": "0223f398-94cb-4bba-b03f-30dc78528ffd", "dur": "4:09", "title": "The Path of Life", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "9a1fb7a0-b13a-414c-8839-acd2651344f0", "dur": "0:35", "title": "Bunny's Pastel Day", "sub": "Soft Toybox 3D", "ar": "16/9"}, {"u": "30418047-390e-4366-b627-2764004e36bf", "dur": "0:35", "title": "Midnight Almost", "sub": "Wong Kar-wai Inspired", "ar": "16/9"}, {"u": "ebe5a4bc-c755-4143-aa5b-27c4467963a8", "dur": "4:03", "title": "Love Street", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "fc64d50f-1875-4f9f-8327-2aac78e9ec2b", "dur": "0:59", "title": "The Letter Never Sent", "sub": "Shunji Iwai Inspired", "ar": "9/16"}, {"u": "319a3dca-2402-49e5-a3b3-133b17af1bd5", "dur": "0:48", "title": "The Last Confession", "sub": "Classic Film Noir", "ar": "16/9"}, {"u": "05a399b9-83da-448c-b15c-da952b31f2b1", "dur": "0:39", "title": "水墨月", "sub": "Ink Wash Memory", "ar": "16/9"}, {"u": "4b679f57-0dfa-4ffb-a540-96324a487849", "dur": "4:06", "title": "Crooked Roads/Highway", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "e128a574-f2b0-4b1f-a991-f93a03049278", "dur": "0:55", "title": "The Ultimate Guide: Curtis Home Inspections", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "8b62d143-84cc-4325-a5b1-bf7866a17252", "dur": "3:35", "title": "Already Gone", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "743e313f-642f-473d-8ece-3ac7c9f19f27", "dur": "3:29", "title": "Strumming On", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "9f2516c9-9508-4e81-bccb-485a9abd8948", "dur": "4:24", "title": "Spirits Call Me Home", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "a9b21c5d-0b8c-481f-a602-cfd99b0227ba", "dur": "1:01", "title": "Static Bound", "sub": "90s MTV Aesthetic", "ar": "9/16"}, {"u": "5e53bfb8-edf7-4be4-a8a2-3849b6f4352b", "dur": "4:14", "title": "Love Finds You Where You Are", "sub": "Classic Film Noir", "ar": "16/9"}, {"u": "49294bc9-d2cb-4ee1-bff8-545ddfb0d93e", "dur": "4:09", "title": "The Last Stop", "sub": "Desert Mirage", "ar": "16/9"}, {"u": "367e68cd-01a9-4de0-a350-260181b4e240", "dur": "4:41", "title": "We Outside: Neon Friday", "sub": "Euphoria Style Inspired", "ar": "16/9"}, {"u": "0d3befdc-7037-4230-9ec0-1a1d41aa789a", "dur": "3:57", "title": "Unity_retake", "sub": "Grainy Gradient", "ar": "16/9"}, {"u": "72da0757-e66e-4afe-bb88-af333c2fb427", "dur": "4:38", "title": "Once in a Lifetime: An Urban Love Story", "sub": "Love Actually Inspired", "ar": "16/9"}, {"u": "385b13b8-90a2-446b-9511-6e6960010d2e", "dur": "2:50", "title": "Años Veinte: The Golden Echo", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "e4dd833d-7cb4-4999-8013-0ebcccbcd8fc", "dur": "3:00", "title": "Big Bad Wolf: Afterhours Payroll", "sub": "Afterhours Gloom", "ar": "16/9"}, {"u": "b51cb4b6-fcde-4c7a-b186-a110046d1408", "dur": "1:34", "title": "Verdigris Afterglow", "sub": "Saturated 35mm Film", "ar": "9/16"}, {"u": "703ff102-dea9-4459-8db4-9318ebe6a5e4", "dur": "2:21", "title": "Northern Regime: The Afterhours Score", "sub": "Afterhours Gloom", "ar": "16/9"}, {"u": "e9e8b577-ff0b-438d-b223-89c921289660", "dur": "4:14", "title": "The Horizon's Kiss", "sub": "Love Actually Inspired", "ar": "16/9"}, {"u": "49baa8ae-b205-4cfb-aebb-dd54dee684fe", "dur": "3:11", "title": "Smooth Vibe: The Studio Sessions", "sub": "Wong Kar-wai Inspired", "ar": "16/9"}, {"u": "e66ca6be-cb7b-40dc-83a3-f96ddf3a8a4a", "dur": "3:41", "title": "Floating Home", "sub": "Cloudlight Reverie", "ar": "16/9"}, {"u": "f20dce55-8c17-4fa3-85ab-c21118e27f75", "dur": "2:17", "title": "AudioJet Saloon 4.1.1: The Cyber-Can-Can", "sub": "Metro Tech Noir", "ar": "16/9"}, {"u": "a46cdbbf-01ab-4ca9-a530-a7fdfd590d7d", "dur": "4:44", "title": "The Cowboy's Prayer", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "5a7fc3e0-7d6a-4659-b5aa-24eae7a0674a", "dur": "2:41", "title": "Benefits in the Sun", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "fb186718-d1bf-4e6e-965f-1428ae2f7459", "dur": "1:36", "title": "Sweet Caffeine Rewind", "sub": "Retro VHS", "ar": "9/16"}, {"u": "4467353a-20ec-4a49-b76a-7fe970d5bf9d", "dur": "4:43", "title": "Dreaming of the Mirage", "sub": "Desert Mirage", "ar": "16/9"}, {"u": "977f4243-10fd-4035-a989-e8ce75deec3d", "dur": "2:42", "title": "Sheldon McCann: Chrome Celebration", "sub": "Liquid Chrome Futurism", "ar": "16/9"}, {"u": "8d98c0d1-4e54-414b-a6ae-a9b5ea60e2f0", "dur": "4:29", "title": "Only Your Presence", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "c246bded-e482-4908-91ee-e5762c83e56d", "dur": "4:14", "title": "Snowbelt Surprise", "sub": "Holiday Atmosphere", "ar": "16/9"}, {"u": "19b17c4f-4964-4195-9c25-0379204b2777", "dur": "2:22", "title": "Yéyé Retrospective", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "476807de-e26b-4949-a6d6-e4b6f98707a7", "dur": "2:22", "title": "Détache-toi", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "7203027c-9b23-49ac-be8d-8abff2536411", "dur": "4:33", "title": "The Rain Remembers", "sub": "Wong Kar-wai Inspired", "ar": "16/9"}, {"u": "3d6bfc63-dd32-42fb-b094-b5f7b65787b2", "dur": "1:01", "title": "Neon Exit", "sub": "Y2K Glossy Futuristic", "ar": "9/16"}, {"u": "d4d3b098-2d3c-4f82-81b5-b28e38ddb0a8", "dur": "3:21", "title": "Redline Signal", "sub": "Metro Tech Noir", "ar": "16/9"}, {"u": "9d69db14-5c78-4e7b-9d22-13343e2101a5", "dur": "4:03", "title": "Magical Brazil: The Global Odyssey", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "d4150c62-ace2-470d-9b12-243de65f9b3b", "dur": "2:48", "title": "Alice in Wonder Rave: Pantofelek o Północy", "sub": "HD Digital Film", "ar": "16/9"}, {"u": "08229c1c-e5a0-4c03-8fcd-88f82852ec72", "dur": "2:20", "title": "Te Vreau - A Winter Memory", "sub": "Wong Kar-wai Inspired", "ar": "16/9"}, {"u": "6084317f-f2eb-4748-9e02-f28212f3c3e4", "dur": "1:30", "title": "Neon Ghost Arcade", "sub": "Retro VHS", "ar": "9/16"}, {"u": "08678045-e603-43b9-bb7a-03dff94c322b", "dur": "1:50", "title": "The Sun Burns Out", "sub": "Cinematic", "ar": "9/16"}, {"u": "4ab7ecfa-2c21-41db-b26f-36ce8a5ca42e", "dur": "1:52", "title": "Sweet-Talking Remedy", "sub": "Editorial", "ar": "9/16"}, {"u": "0139be73-9d58-45c2-a3df-61fdaeef5a05", "dur": "1:15", "title": "Compass in the Neon Rain", "sub": "Cyber-Noir", "ar": "9/16"}, {"u": "ba722ca6-7e20-450a-8ec2-3a4ff2e98478", "dur": "1:22", "title": "Static in the Midnight City", "sub": "French New Wave Film", "ar": "9/16"}, {"u": "2f4f93f5-d83b-42f6-bcd6-b72d7af4b801", "dur": "1:10", "title": "Electric Current", "sub": "Vogue Editorial Studio", "ar": "9/16"}, {"u": "7d401f9f-aa57-497b-bb78-5607a0fa4dc3", "dur": "1:10", "title": "Double Take: Digital Eyes", "sub": "Y2K Cyber-Glitch", "ar": "9/16"}]</script>
+<script>
+/* ---------------------------------------------------------------------------
+   Gallery. Same two tidy frame shapes as the landing page's wall — 16:9 for
+   landscape clips and 3:4 for portrait — so a portrait clip never becomes a
+   skyscraper in the grid. Video mounts on hover only and is torn down on leave,
+   so the page never holds more than one decoder.
+   --------------------------------------------------------------------------- */
+(()=>{
+const CDN='https://media.solmi.ai/ai-music-video/';
+const SHAPE={'16/9':0.5625, '9/16':1.3333};
+const CLIPS=JSON.parse(document.getElementById('clips').textContent);
+const grid=document.getElementById('grid'), more=document.getElementById('more');
+const fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
+let shown=0;
+/* 12, not 24: recipes are a shelf you reach for, not a showreel to scroll.
+   The rest is behind "Show more" so the tool keeps the page. */
+const PAGE=12;
+
+function tile(c){
+  const el=document.createElement('button');
+  el.className='tile'; el.type='button';
+  el.style.setProperty('--r',(SHAPE[c.ar]||0.5625).toFixed(4));
+  el.dataset.u=c.u;
+  el.setAttribute('aria-label','Play '+c.title);
+  const ratio=c.ar==='9/16'?'9:16':'16:9';
+  el.innerHTML='<img src="'+CDN+'narrative-thumb-'+c.u+'.jpg" alt="" loading="lazy" decoding="async">'+
+    '<span class="rcp">'+ratio+' · '+c.dur+'</span>'+
+    '<span class="d">'+c.dur+'</span>'+
+    '<span class="m"><b>'+c.title+'</b><i>'+c.sub+'</i></span>'+
+    '<span class="set"><button class="use" type="button" '+
+      'data-ar="'+ratio+'" data-style="'+c.sub.replace(/"/g,'')+'">Use this setup</button></span>';
+  return el;
+}
+function page(){
+  const slice=CLIPS.slice(shown, shown+PAGE);
+  slice.forEach(c=>grid.appendChild(tile(c)));
+  shown+=slice.length;
+  if(shown>=CLIPS.length) more.style.display='none';
+}
+page();
+more.addEventListener('click',page);
+
+function mount(el){
+  let v=el.querySelector('video');
+  if(v) return v;
+  v=document.createElement('video');
+  v.src=CDN+'narrative-video-'+el.dataset.u+'.mp4';
+  v.loop=true; v.muted=true; v.playsInline=true; v.preload='auto';
+  el.insertBefore(v, el.querySelector('img').nextSibling);
+  v.addEventListener('canplay',()=>v.classList.add('on'),{once:true});
+  return v;
+}
+function unmount(el){
+  const v=el.querySelector('video');
+  if(!v) return;
+  v.pause(); v.removeAttribute('src'); v.load(); v.remove();
+}
+if(fine){
+  grid.addEventListener('pointerover',e=>{
+    const el=e.target.closest('.tile');
+    if(!el||el.contains(e.relatedTarget)) return;
+    const v=mount(el);
+    const go=()=>{const p=v.play(); if(p) p.catch(()=>{});};
+    go();
+    /* a play() issued before the first frame is ready can be dropped silently */
+    if(v.readyState<3) v.addEventListener('canplay',go,{once:true});
+  });
+  grid.addEventListener('pointerout',e=>{
+    const el=e.target.closest('.tile');
+    if(el&&!el.contains(e.relatedTarget)) unmount(el);
+  });
+}
+
+/* ---- lightbox ---- */
+const lb=document.getElementById('lb'), lbVideo=document.getElementById('lbVideo'),
+      lbTitle=document.getElementById('lbTitle'), lbSub=document.getElementById('lbSub'),
+      lbDur=document.getElementById('lbDur'), lbClose=document.getElementById('lbClose');
+let lastFocus=null;
+function open_(el){
+  const c=CLIPS.find(x=>x.u===el.dataset.u);
+  if(!c) return;
+  lastFocus=document.activeElement;
+  lbTitle.textContent=c.title; lbSub.textContent=c.sub; lbDur.textContent=c.dur;
+  lbVideo.poster=CDN+'narrative-thumb-'+c.u+'.jpg';
+  lbVideo.src=CDN+'narrative-video-'+c.u+'.mp4';
+  lb.hidden=false; lb.dataset.open='true';
+  document.body.style.overflow='hidden';
+  lbVideo.muted=false;
+  const p=lbVideo.play();
+  if(p) p.catch(()=>{ lbVideo.muted=true; lbVideo.play().catch(()=>{}); });
+  lbClose.focus();
+}
+function close_(){
+  if(lb.dataset.open!=='true') return;
+  lb.dataset.open='false'; lb.hidden=true;
+  lbVideo.pause(); lbVideo.removeAttribute('src'); lbVideo.load();
+  document.body.style.overflow='';
+  if(lastFocus&&lastFocus.focus) lastFocus.focus();
+}
+grid.addEventListener('click',e=>{
+  const use=e.target.closest('.use');
+  if(use){                      /* a recipe loads into the composer */
+    e.stopPropagation();
+    setOpt(2, use.dataset.ar);
+    setOpt(5, use.dataset.style);
+    document.querySelector('.composer').scrollIntoView({block:'center'});
+    sum();
+    return;
+  }
+  const el=e.target.closest('.tile');
+  if(el) open_(el);
+});
+lbClose.addEventListener('click',close_);
+document.getElementById('lbScrim').addEventListener('click',close_);
+addEventListener('keydown',e=>{ if(e.key==='Escape') close_(); });
+
+/* ---- composer: the CTA reflects whether a track is attached ---- */
+const attach=document.querySelector('.attach'), go=document.querySelector('.go');
+let has=false;
+attach.addEventListener('click',()=>{
+  has=!has;
+  attach.classList.toggle('has',has);
+  attach.firstElementChild.nextSibling.textContent=has?' Neon Exit ':' Attach a song ';
+  go.lastChild.textContent=has?'Make the video':'Attach a Song to Start';
+});
+
+/* ---- settings with consequences ----
+   Each control cycles real values and the summary under the button restates
+   what they cost in time and credits. On the landing page these are chips that
+   describe the product; here they are settings you are about to spend on. */
+const opts=[...document.querySelectorAll('.opt')];
+const CYCLE={2:['16:9','9:16','1:1'], 3:['480p','720p','1080p'],
+             4:['Captions','No captions'],
+             5:['Auto style','Wong Kar-wai Inspired','90s MTV Aesthetic',
+                'Cloudlight Reverie','Y2K Glossy Futuristic'],
+             6:['Public','Unlisted']};
+const label=b=>[...b.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());
+function setOpt(i,val){
+  const b=opts[i]; if(!b) return;
+  const n=label(b); if(n) n.textContent=val;
+  b.classList.toggle('is-on', !/^No |^Auto /.test(val));
+}
+function readOpt(i){ const n=label(opts[i]); return n?n.textContent.trim():''; }
+const sumSet=document.getElementById('sumSet'),
+      sumTime=document.getElementById('sumTime'),
+      sumCost=document.getElementById('sumCost');
+function sum(){
+  const ar=readOpt(2), res=readOpt(3), cap=readOpt(4), vis=readOpt(6);
+  sumSet.textContent=ar+' · '+res+(cap==='Captions'?' · captions':'');
+  /* render time and credits both scale with resolution */
+  const mins={'480p':'~4 min','720p':'~7 min','1080p':'~10 min'}[res]||'~4 min';
+  const cr={'480p':1,'720p':2,'1080p':4}[res]||1;
+  sumTime.textContent=mins;
+  sumCost.textContent=cr+(cr===1?' credit':' credits')+' · '+vis.toLowerCase();
+}
+opts.forEach((b,i)=>b.addEventListener('click',()=>{
+  const list=CYCLE[i];
+  if(!list){ b.classList.toggle('is-on'); return; }
+  const cur=readOpt(i);
+  setOpt(i, list[(list.indexOf(cur)+1) % list.length]);
+  sum();
+}));
+sum();
+document.querySelectorAll('.tab').forEach(b=>
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('is-on'));
+    b.classList.add('is-on');
+  }));
+})();
+</script>
+</body>
+</html>
