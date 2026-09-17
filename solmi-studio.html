@@ -22,22 +22,25 @@
   color-scheme:dark;
 
   /* surfaces, taken from the shipped solmi.ai, not re-invented here */
-  --paper:#0A0A0A;
+  /* The shipped solmi.ai ground is #141614 — the same value the landing page's
+     dark theme uses. #0A0A0A was the OLD product page's ground; carrying it
+     over kept a token from the page this replaces. */
+  --paper:#141614;
   --raised:#1C1F1D;
   --ctrl:#262A28;
   --ctrl-hi:#313634;
-  --sunk:#141614;
+  --sunk:#0F1110;
 
   --ink:#F2F5F3;
-  --ink-2:rgba(242,245,243,.68);
+  --ink-2:#A9AEAB;
   --ink-3:rgba(242,245,243,.52);
 
   --action:#1ED760;
   --action-hi:#3BE87A;
   --accent:#1ED760;
 
-  --hair:rgba(255,255,255,.09);
-  --hair-2:rgba(255,255,255,.16);
+  --hair:#2B2F2D;
+  --hair-2:#3A3F3C;
 
   --ease:cubic-bezier(.22,.61,.36,1);
   --rail:248px;
@@ -95,8 +98,8 @@ button{font:inherit;color:inherit}
   transition:background .16s var(--ease),color .16s var(--ease)}
 .tbtn:hover{background:var(--ctrl);color:var(--ink)}
 .tbtn svg{width:14px;height:14px}
-.tbtn.solid{background:var(--ink);color:#0A0A0A;border-color:transparent;font-weight:700}
-.tbtn.solid:hover{background:#fff;color:#0A0A0A}
+.tbtn.solid{background:var(--ink);color:#0F1110;border-color:transparent;font-weight:700}
+.tbtn.solid:hover{background:#fff;color:#0F1110}
 
 /* ============ shell ============ */
 main{margin-left:var(--rail)}
@@ -149,11 +152,33 @@ h1 em{font-style:normal;color:var(--action)}
 .opt.is-on{color:var(--ink);border-color:var(--hair-2)}
 .opt.is-on>svg:first-child{color:var(--action)}
 .c-bar .sp{flex:1}
-.go{display:inline-flex;align-items:center;gap:9px;height:44px;padding:0 22px;
-  border:0;border-radius:14px;background:var(--action);color:#04140D;cursor:pointer;
-  font-size:15px;font-weight:700;letter-spacing:-.014em;
-  transition:background .18s var(--ease),transform .18s var(--ease)}
-.go:hover{background:var(--action-hi);transform:translateY(-1px)}
+/* The action button, to the token board's spec: 56/32/16, 17px 700 at -.018em,
+   #1ED760 on #04140D. Hover is not a lighter green — it is the brand's sweep,
+   turquoise through green to ember, drifting while the cursor is on it. The
+   warm stops sit ~6% darker than their light-theme values so the ramp reads
+   evenly on charcoal. isolation + z-index:-1 keeps the sweep above the button's
+   own fill but behind the label. */
+.go{display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  height:56px;padding:0 32px;border:0;border-radius:16px;cursor:pointer;
+  background:var(--action);color:#04140D;
+  font-size:17px;font-weight:700;letter-spacing:-.018em;white-space:nowrap;
+  position:relative;overflow:hidden;isolation:isolate;
+  transition:transform .2s var(--ease)}
+.go::before{content:"";position:absolute;inset:0;z-index:-1;opacity:0;
+  background:linear-gradient(100deg,#2BC4C4 0%,#1ED760 28%,#9BCB3C 52%,
+    #E9A02C 78%,#F0821F 100%);
+  background-size:240% 100%;background-position:0% 50%;
+  transition:opacity .3s var(--ease)}
+.go:hover,.go:focus-visible{transform:translateY(-2px)}
+.go:hover::before,.go:focus-visible::before{opacity:1;
+  animation:flow 2.2s linear infinite alternate}
+@keyframes flow{from{background-position:0% 50%}to{background-position:100% 50%}}
+@media (prefers-reduced-motion:reduce){
+  .go:hover::before,.go:focus-visible::before{animation:none;background-position:50% 50%}
+}
+/* secondary placements keep the same skin at a smaller size */
+.go.sm{height:44px;padding:0 22px;font-size:15px;letter-spacing:-.014em;gap:9px}
+
 .go svg{width:15px;height:15px}
 .note{display:flex;align-items:center;gap:8px;margin:12px 2px 0;font-size:12.5px;
   color:var(--ink-3)}
@@ -443,7 +468,7 @@ footer a:hover{color:var(--ink)}
         <h3>Introducing the Solmi Affiliate Program</h3>
         <p>Earn 20% of the first purchase from every creator you refer — subscription or credit pack. Free to join, paid monthly.</p>
       </div>
-      <button class="go" type="button">Learn more</button>
+      <button class="go sm" type="button">Learn more</button>
     </div>
 
     <footer>
