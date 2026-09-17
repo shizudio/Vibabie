@@ -106,7 +106,74 @@ main{margin-left:var(--rail)}
 .wrap{max-width:1080px;margin:0 auto;padding:0 var(--gut)}
 
 /* ============ hero ============ */
-.hero{padding:76px 0 0;text-align:center}
+/* ============ the tool owns the fold ============
+   No marketing headline here. Someone on this page either searched for the
+   generator or came through the pitch already — what they need is the machine,
+   so the composer starts 28px from the top bar and everything else is below
+   the fold. Type is capped and DM Mono carries the labels: the landing page
+   is editorial, this is an instrument panel. */
+.stage{padding:28px 0 0}
+.ctx{display:flex;align-items:center;gap:10px;margin:0 0 14px;
+  font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3)}
+.ctx .dot{width:5px;height:5px;border-radius:50%;background:var(--action)}
+.ctx b{font-weight:400;color:var(--ink-2);letter-spacing:.13em}
+.ctx .sp{flex:1}
+
+/* the settings summary: every control here costs time or credits, so say so */
+.summary{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  margin:12px 2px 0;font-family:"DM Mono",monospace;font-size:11.5px;
+  letter-spacing:.02em;color:var(--ink-3)}
+.summary b{color:var(--ink-2);font-weight:400}
+.summary .cost{margin-left:auto;color:var(--ink-2)}
+
+/* presets sit with the tool, left-aligned, not centred like a marketing row */
+.presets{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0 0}
+.presets .lbl{font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);margin-right:2px}
+
+/* ============ renders — the thing a landing page cannot have ============
+   State. What is running, what is queued, what is finished. */
+.jobs{margin:34px 0 0;border:1px solid var(--hair);border-radius:16px;
+  background:var(--raised);overflow:hidden}
+.jobs-head{display:flex;align-items:center;gap:12px;padding:13px 16px;
+  border-bottom:1px solid var(--hair)}
+.jobs-head h2{margin:0;font-size:14px;font-weight:700;letter-spacing:-.012em}
+.jobs-head .mono{margin-left:auto;font-family:"DM Mono",monospace;font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.job{display:grid;grid-template-columns:1fr auto;gap:4px 16px;
+  padding:14px 16px;border-bottom:1px solid var(--hair)}
+.job:last-child{border-bottom:0}
+.job .t{font-size:14px;font-weight:500;letter-spacing:-.012em}
+.job .meta{grid-column:1;font-family:"DM Mono",monospace;font-size:11px;
+  letter-spacing:.02em;color:var(--ink-3)}
+.job .state{grid-column:2;grid-row:1;align-self:center;
+  font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3)}
+.job.run .state{color:var(--action)}
+.job .act{grid-column:2;grid-row:2;align-self:center;justify-self:end;
+  background:none;border:1px solid var(--hair-2);border-radius:8px;
+  height:28px;padding:0 11px;font-size:12px;color:var(--ink-2);cursor:pointer;
+  transition:background .16s var(--ease),color .16s var(--ease)}
+.job .act:hover{background:var(--ctrl);color:var(--ink)}
+
+/* stages belong to a job, not to a marketing explainer — they show position */
+.stages{grid-column:1 / -1;display:flex;align-items:center;gap:6px;
+  flex-wrap:wrap;margin-top:10px}
+.stg{display:flex;align-items:center;gap:6px;height:24px;padding:0 9px;
+  border-radius:7px;background:var(--ctrl);
+  font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink-3);white-space:nowrap}
+.stg.done{color:var(--ink-2)}
+.stg.done::before{content:"";width:5px;height:5px;border-radius:50%;
+  background:var(--ink-3)}
+.stg.now{background:color-mix(in srgb,var(--action) 16%,var(--ctrl));
+  color:var(--action)}
+.stg.now::before{content:"";width:5px;height:5px;border-radius:50%;
+  background:var(--action)}
+.bar{grid-column:1 / -1;height:3px;border-radius:2px;background:var(--ctrl);
+  overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;background:var(--action);border-radius:2px}
 h1{margin:0;font-size:clamp(38px,4.6vw,60px);font-weight:500;line-height:1.04;
   letter-spacing:-.03em}
 /* the emphasis is carried by the brand green, not by a serif italic in a
@@ -182,6 +249,9 @@ h1 em{font-style:normal;color:var(--action)}
 .go svg{width:15px;height:15px}
 .note{display:flex;align-items:center;gap:8px;margin:12px 2px 0;font-size:12.5px;
   color:var(--ink-3)}
+/* format limits sit beside the control they govern, not in a footer strip */
+.hint{margin-left:10px;font-family:"DM Mono",monospace;font-size:10.5px;
+  letter-spacing:.06em;color:var(--ink-3)}
 .note svg{width:13px;height:13px;flex:none;color:var(--action)}
 
 /* format tabs + the spec line */
@@ -196,7 +266,7 @@ h1 em{font-style:normal;color:var(--action)}
   font-size:11px;line-height:1.7;letter-spacing:.02em;color:var(--ink-3)}
 
 /* ============ section heads ============ */
-.sec{padding:104px 0 0}
+.sec{padding:54px 0 0}
 .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:24px;
   margin-bottom:26px}
 .sec-head h2{margin:6px 0 0;font-size:27px;font-weight:500;letter-spacing:-.03em}
@@ -209,8 +279,22 @@ h1 em{font-style:normal;color:var(--action)}
 /* ============ gallery ============
    Uniform width, two tidy heights. Same construction as the landing page's
    wall so the two surfaces read as one family. */
+/* A tile here is a recipe you can load, not a showreel frame: the settings that
+   produced it are on the face, and the action is "use", not "watch". */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));
   gap:14px}
+.tile .set{position:absolute;left:8px;right:8px;bottom:8px;z-index:3;
+  display:flex;align-items:center;gap:6px;opacity:0;transform:translateY(4px);
+  transition:opacity .2s var(--ease),transform .2s var(--ease)}
+.tile:hover .set,.tile:focus-visible .set{opacity:1;transform:none}
+.tile .use{flex:1;height:30px;border:0;border-radius:8px;cursor:pointer;
+  background:var(--ink);color:var(--paper);font-size:12px;font-weight:700;
+  letter-spacing:-.008em}
+.tile .use:hover{background:#fff}
+.tile .rcp{position:absolute;left:8px;top:8px;z-index:3;
+  font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:.08em;
+  text-transform:uppercase;color:rgba(255,255,255,.82);
+  background:rgba(0,0,0,.5);padding:3px 6px;border-radius:5px}
 .tile{position:relative;padding-top:calc(100% * var(--r,.5625));border:0;padding-left:0;
   padding-right:0;padding-bottom:0;width:100%;border-radius:14px;overflow:hidden;
   cursor:pointer;background:linear-gradient(150deg,var(--ctrl),var(--raised));
@@ -371,15 +455,16 @@ footer a:hover{color:var(--ink)}
   </header>
 
   <div class="wrap">
-    <section class="hero">
-      <h1>Turn any song into a <em>music video</em>.</h1>
-      <p class="sub">Bring a song. Our agent drafts the treatment, casts the cast, and renders the final&nbsp;cut.</p>
+    <section class="stage">
+      <p class="ctx"><span class="dot"></span>Music video<span class="sp"></span>
+        <b>100 credits</b></p>
 
       <div class="composer">
         <button class="attach" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
           Attach a song <span class="req">Required</span>
         </button>
+        <span class="hint mono">MP3 · WAV · M4A · up to 200MB</span>
         <textarea class="prompt" rows="4" placeholder="Describe the music video you want, once you have a track attached."></textarea>
         <div class="c-bar">
         <button class="opt is-on" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>Studio<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
@@ -395,26 +480,64 @@ footer a:hover{color:var(--ink)}
             Attach a Song to Start
           </button>
         </div>
-        <p class="note">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 3 2.6 15 0 18M12 3c-2.6 3-2.6 15 0 18"/></svg>
-          Public is on: your finished video may appear in Solmi's gallery or social channels.
+        <p class="summary" id="sum">
+          <b id="sumSet">16:9 · 480p · captions</b>
+          <span>·</span><span id="sumTime">~4 min</span>
+          <span class="cost" id="sumCost">1 credit · public</span>
         </p>
       </div>
 
-      <div class="tabs">
+      <div class="presets">
+        <span class="lbl">Preset</span>
         <button class="tab is-on" type="button">Singing MV</button>
         <button class="tab" type="button">Story MV</button>
         <button class="tab" type="button">Abstract MV</button>
         <button class="tab" type="button">Viral Shorts</button>
       </div>
-      <p class="spec">MP3 · WAV · M4A · MP4 up to 200MB — MP4 export in 16:9 / 9:16, up to 1080p · typical render 3–10&nbsp;min</p>
+
+      <!-- Renders: the one surface a landing page cannot have — live state. -->
+      <section class="jobs" aria-label="Renders">
+        <div class="jobs-head">
+          <h2>Renders</h2>
+          <span class="mono">1 running · 1 queued</span>
+        </div>
+
+        <div class="job run">
+          <span class="t">Neon Exit</span>
+          <span class="state">Storyboard</span>
+          <span class="meta">16:9 · 1080p · Y2K Glossy Futuristic · 1:01</span>
+          <button class="act" type="button">Cancel</button>
+          <div class="stages">
+            <span class="stg done">Analyze</span>
+            <span class="stg done">Style</span>
+            <span class="stg done">References</span>
+            <span class="stg now">Storyboard</span>
+            <span class="stg">Render</span>
+          </div>
+          <div class="bar"><i style="width:62%"></i></div>
+        </div>
+
+        <div class="job">
+          <span class="t">Midnight Almost</span>
+          <span class="state">Queued</span>
+          <span class="meta">9:16 · 720p · Wong Kar-wai Inspired · 0:35</span>
+          <button class="act" type="button">Remove</button>
+        </div>
+
+        <div class="job">
+          <span class="t">Static Bound</span>
+          <span class="state">Done</span>
+          <span class="meta">16:9 · 1080p · 90s MTV Aesthetic · 1:01 · rendered 6 min ago</span>
+          <button class="act" type="button">Download MP4</button>
+        </div>
+      </section>
     </section>
 
     <section class="sec">
       <div class="sec-head">
         <div>
-          <span class="mono">The gallery</span>
-          <h2>Directed, not generated.</h2>
+          <span class="mono">Recipes</span>
+          <h2>Start from a setup</h2>
         </div>
         <div class="r">
           <button class="link" type="button">Browse all <span class="mono" style="font-size:11px">1,240</span>
@@ -463,13 +586,7 @@ footer a:hover{color:var(--ink)}
       </div>
     </section>
 
-    <div class="strip">
-      <div>
-        <h3>Introducing the Solmi Affiliate Program</h3>
-        <p>Earn 20% of the first purchase from every creator you refer — subscription or credit pack. Free to join, paid monthly.</p>
-      </div>
-      <button class="go sm" type="button">Learn more</button>
-    </div>
+    
 
     <footer>
       <span>© 2026 Solmi</span>
@@ -509,7 +626,9 @@ const CLIPS=JSON.parse(document.getElementById('clips').textContent);
 const grid=document.getElementById('grid'), more=document.getElementById('more');
 const fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
 let shown=0;
-const PAGE=24;
+/* 12, not 24: recipes are a shelf you reach for, not a showreel to scroll.
+   The rest is behind "Show more" so the tool keeps the page. */
+const PAGE=12;
 
 function tile(c){
   const el=document.createElement('button');
@@ -517,9 +636,13 @@ function tile(c){
   el.style.setProperty('--r',(SHAPE[c.ar]||0.5625).toFixed(4));
   el.dataset.u=c.u;
   el.setAttribute('aria-label','Play '+c.title);
+  const ratio=c.ar==='9/16'?'9:16':'16:9';
   el.innerHTML='<img src="'+CDN+'narrative-thumb-'+c.u+'.jpg" alt="" loading="lazy" decoding="async">'+
+    '<span class="rcp">'+ratio+' · '+c.dur+'</span>'+
     '<span class="d">'+c.dur+'</span>'+
-    '<span class="m"><b>'+c.title+'</b><i>'+c.sub+'</i></span>';
+    '<span class="m"><b>'+c.title+'</b><i>'+c.sub+'</i></span>'+
+    '<span class="set"><button class="use" type="button" '+
+      'data-ar="'+ratio+'" data-style="'+c.sub.replace(/"/g,'')+'">Use this setup</button></span>';
   return el;
 }
 function page(){
@@ -589,6 +712,15 @@ function close_(){
   if(lastFocus&&lastFocus.focus) lastFocus.focus();
 }
 grid.addEventListener('click',e=>{
+  const use=e.target.closest('.use');
+  if(use){                      /* a recipe loads into the composer */
+    e.stopPropagation();
+    setOpt(2, use.dataset.ar);
+    setOpt(5, use.dataset.style);
+    document.querySelector('.composer').scrollIntoView({block:'center'});
+    sum();
+    return;
+  }
   const el=e.target.closest('.tile');
   if(el) open_(el);
 });
@@ -606,9 +738,43 @@ attach.addEventListener('click',()=>{
   go.lastChild.textContent=has?'Make the video':'Attach a Song to Start';
 });
 
-/* option chips toggle, so the surface answers a click */
-document.querySelectorAll('.opt').forEach(b=>
-  b.addEventListener('click',()=>b.classList.toggle('is-on')));
+/* ---- settings with consequences ----
+   Each control cycles real values and the summary under the button restates
+   what they cost in time and credits. On the landing page these are chips that
+   describe the product; here they are settings you are about to spend on. */
+const opts=[...document.querySelectorAll('.opt')];
+const CYCLE={2:['16:9','9:16','1:1'], 3:['480p','720p','1080p'],
+             4:['Captions','No captions'],
+             5:['Auto style','Wong Kar-wai Inspired','90s MTV Aesthetic',
+                'Cloudlight Reverie','Y2K Glossy Futuristic'],
+             6:['Public','Unlisted']};
+const label=b=>[...b.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());
+function setOpt(i,val){
+  const b=opts[i]; if(!b) return;
+  const n=label(b); if(n) n.textContent=val;
+  b.classList.toggle('is-on', !/^No |^Auto /.test(val));
+}
+function readOpt(i){ const n=label(opts[i]); return n?n.textContent.trim():''; }
+const sumSet=document.getElementById('sumSet'),
+      sumTime=document.getElementById('sumTime'),
+      sumCost=document.getElementById('sumCost');
+function sum(){
+  const ar=readOpt(2), res=readOpt(3), cap=readOpt(4), vis=readOpt(6);
+  sumSet.textContent=ar+' · '+res+(cap==='Captions'?' · captions':'');
+  /* render time and credits both scale with resolution */
+  const mins={'480p':'~4 min','720p':'~7 min','1080p':'~10 min'}[res]||'~4 min';
+  const cr={'480p':1,'720p':2,'1080p':4}[res]||1;
+  sumTime.textContent=mins;
+  sumCost.textContent=cr+(cr===1?' credit':' credits')+' · '+vis.toLowerCase();
+}
+opts.forEach((b,i)=>b.addEventListener('click',()=>{
+  const list=CYCLE[i];
+  if(!list){ b.classList.toggle('is-on'); return; }
+  const cur=readOpt(i);
+  setOpt(i, list[(list.indexOf(cur)+1) % list.length]);
+  sum();
+}));
+sum();
 document.querySelectorAll('.tab').forEach(b=>
   b.addEventListener('click',()=>{
     document.querySelectorAll('.tab').forEach(x=>x.classList.remove('is-on'));
