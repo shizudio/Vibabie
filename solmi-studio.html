@@ -186,10 +186,7 @@ h1{margin:0;font-size:20px;font-weight:500;letter-spacing:-.018em;color:var(--in
 .track .hd{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .track .hd .lbl{font-family:"DM Mono",monospace;font-size:10.5px;
   letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
-.track .hd .got{margin-left:auto;display:none;align-items:center;gap:7px;
-  font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.08em;
-  text-transform:uppercase;color:var(--ink-3)}
-.track.has .hd .got{display:flex}
+
 /* Selecting a track used to collapse the whole shelf, which made four cards and
    three links vanish under the cursor and hid what else was on offer. The set
    stays put: the chosen one lights up, the rest recede but stay reachable, so
@@ -685,7 +682,6 @@ footer a:hover{color:var(--ink)}
         <div class="track" id="track">
           <div class="hd">
             <span class="lbl">Your track</span>
-            <span class="got"><span id="gotName"></span> selected</span>
           </div>
           <div class="samples">
             <div class="plus-wrap" id="plusWrap">
@@ -978,7 +974,6 @@ addEventListener('keydown',e=>{ if(e.key==='Escape') close_(); });
    The CTA only asks for a song once there is something to attach it to. */
 const go=document.querySelector('.go'),
       track=document.getElementById('track'),
-      gotName=document.getElementById('gotName'),
       prompt=document.querySelector('.prompt');
 let song=null;
 
@@ -986,10 +981,11 @@ function syncCTA(){
   const label = song ? 'Make the video' : 'Pick a track to render';
   go.lastChild.textContent=label;
 }
+/* No "X selected" line: the lit card is the confirmation, and saying it twice
+   just adds a word to read. */
 function setSong(name){
   song=name;
   track.classList.toggle('has',!!name);
-  gotName.textContent=name||'';
   document.querySelectorAll('.sample').forEach(b=>
     b.setAttribute('aria-pressed', String(b.dataset.song===name)));
   syncCTA();
