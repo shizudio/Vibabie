@@ -64,6 +64,12 @@ button{font:inherit;color:inherit}
 /* ============ the rail ============
    A product surface earns a persistent nav; the landing page does not. This is
    the one structural thing kept from the old page, because it is right. */
+/* ============ the rail collapses ============
+   Thirteen tools on a page whose job is one tool. Collapsed it keeps the
+   wayfinding (you can still see where you are and get anywhere) without
+   advertising twelve exits on the highest-traffic entry point. Width lives in
+   --rail, which main's margin already follows, so the whole layout reflows
+   from one value. */
 .rail{position:fixed;inset:0 auto 0 0;width:var(--rail);z-index:40;
   display:flex;flex-direction:column;gap:6px;
   padding:22px 14px;background:var(--sunk);border-right:1px solid var(--hair);
@@ -82,6 +88,23 @@ button{font:inherit;color:inherit}
 /* the active row is marked by the brand colour, never by a second hue */
 .nav-item[aria-current=page] svg{color:var(--action);opacity:1}
 .rail .foot{margin-top:auto;padding-top:16px}
+
+body.mini{--rail:68px}
+body.mini .rail{padding:22px 10px;align-items:center}
+body.mini .nav-item{justify-content:center;padding:0;width:44px;gap:0}
+body.mini .nav-item .full{display:none}
+body.mini .grp{display:none}
+body.mini .brand span{display:none}
+body.mini .brand{justify-content:center;padding:4px 0 18px}
+body.mini .railtog{transform:rotate(180deg)}
+/* the label still exists for screen readers and as a native tooltip */
+.railtog{position:absolute;top:26px;right:-11px;width:22px;height:22px;
+  border:1px solid var(--hair);border-radius:50%;background:var(--ctrl);
+  color:var(--ink-3);cursor:pointer;display:grid;place-items:center;padding:0;
+  transition:background .16s var(--ease),color .16s var(--ease),transform .2s var(--ease)}
+.railtog:hover{background:var(--ctrl-hi);color:var(--ink)}
+.railtog svg{width:12px;height:12px}
+@media (max-width:1100px){.railtog{display:none}}
 
 /* ============ top bar ============ */
 .top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;
@@ -220,6 +243,9 @@ h1{margin:0;font-size:20px;font-weight:500;letter-spacing:-.018em;color:var(--in
 
 /* ============ renders — the thing a landing page cannot have ============
    State. What is running, what is queued, what is finished. */
+/* Renders belongs to someone who has renders. A first-time visitor was being
+   shown three strangers' jobs and reading them as their own. */
+.jobs[hidden]{display:none}
 .jobs{margin:34px 0 0;border:1px solid var(--hair);border-radius:16px;
   background:var(--raised);overflow:hidden}
 .jobs-head{display:flex;align-items:center;gap:12px;padding:13px 16px;
@@ -502,20 +528,24 @@ footer a:hover{color:var(--ink)}
 <body>
 
 <nav class="rail" aria-label="Create">
+  <button class="railtog" id="railtog" type="button"
+          aria-label="Collapse tool rail" aria-expanded="true" title="Collapse">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+  </button>
   <a class="brand" href="/"><span>solmi<i>.</i></span></a>
   <div class="grp mono">Create</div>
-      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6L21 9.4l-4.5 4.3 1.1 6.1L12 17l-5.6 2.8 1.1-6.1L3 9.4l6.4-.8z"/></svg><span class="full">Featured</span><span class="short">Featured</span></a>
-      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/></svg><span class="full">Create Song</span><span class="short">Song</span></a>
-      <a class="nav-item" href="#" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l5-3v10l-5-3z"/><path d="M3 7h12v10H3z"/></svg><span class="full">Create Music Video</span><span class="short">Music</span></a>
-      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"/><path d="M5 11a7 7 0 0 0 14 0"/></svg><span class="full">Create Singing Video</span><span class="short">Singing</span></a>
-      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a1.6 1.6 0 1 0 0-.01"/><path d="M10 21l2-6 3 3 2 4"/><path d="M7 10l5-2 4 3"/></svg><span class="full">Create Dance Video</span><span class="short">Dance</span></a>
-      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h11M4 17h7"/></svg><span class="full">Create Lyrics Video</span><span class="short">Lyrics</span></a>
-      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 9h8v6H8z"/></svg><span class="full">Create Cover</span><span class="short">Cover</span></a>
-      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h4l3-7 3 14 3-7h4"/></svg><span class="full">Stem Splitter</span><span class="short">Stems</span></a>
-      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/><path d="M8 8v8M16 8v8M4 11v2M20 11v2"/></svg><span class="full">Vocal Remover</span><span class="short">Vocals</span></a>
-      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h3v16H5zM10 4h3v16h-3zM16 5l3 15"/></svg><span class="full">Library</span><span class="short">Library</span></a>
-      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h6l2 2h8v10H4z"/></svg><span class="full">Projects</span><span class="short">Projects</span></a>
-      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M4 12h10M4 17h6"/><path d="M18 9v8a2 2 0 1 1-2-2h2"/></svg><span class="full">Playlists</span><span class="short">Lists</span></a>
+      <a class="nav-item" title="Featured" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6L21 9.4l-4.5 4.3 1.1 6.1L12 17l-5.6 2.8 1.1-6.1L3 9.4l6.4-.8z"/></svg><span class="full">Featured</span><span class="short">Featured</span></a>
+      <a class="nav-item" title="Create Song" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/></svg><span class="full">Create Song</span><span class="short">Song</span></a>
+      <a class="nav-item" title="Create Music Video" href="#" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l5-3v10l-5-3z"/><path d="M3 7h12v10H3z"/></svg><span class="full">Create Music Video</span><span class="short">Music</span></a>
+      <a class="nav-item" title="Create Singing Video" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"/><path d="M5 11a7 7 0 0 0 14 0"/></svg><span class="full">Create Singing Video</span><span class="short">Singing</span></a>
+      <a class="nav-item" title="Create Dance Video" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a1.6 1.6 0 1 0 0-.01"/><path d="M10 21l2-6 3 3 2 4"/><path d="M7 10l5-2 4 3"/></svg><span class="full">Create Dance Video</span><span class="short">Dance</span></a>
+      <a class="nav-item" title="Create Lyrics Video" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h11M4 17h7"/></svg><span class="full">Create Lyrics Video</span><span class="short">Lyrics</span></a>
+      <a class="nav-item" title="Create Cover" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 9h8v6H8z"/></svg><span class="full">Create Cover</span><span class="short">Cover</span></a>
+      <a class="nav-item" title="Stem Splitter" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h4l3-7 3 14 3-7h4"/></svg><span class="full">Stem Splitter</span><span class="short">Stems</span></a>
+      <a class="nav-item" title="Vocal Remover" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/><path d="M8 8v8M16 8v8M4 11v2M20 11v2"/></svg><span class="full">Vocal Remover</span><span class="short">Vocals</span></a>
+      <a class="nav-item" title="Library" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h3v16H5zM10 4h3v16h-3zM16 5l3 15"/></svg><span class="full">Library</span><span class="short">Library</span></a>
+      <a class="nav-item" title="Projects" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h6l2 2h8v10H4z"/></svg><span class="full">Projects</span><span class="short">Projects</span></a>
+      <a class="nav-item" title="Playlists" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M4 12h10M4 17h6"/><path d="M18 9v8a2 2 0 1 1-2-2h2"/></svg><span class="full">Playlists</span><span class="short">Lists</span></a>
   <div class="foot">
     <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3 2.4V14"/><path d="M12 17.5v.01"/></svg><span>Help</span></a>
   </div>
@@ -611,7 +641,7 @@ footer a:hover{color:var(--ink)}
       
 
       <!-- Renders: the one surface a landing page cannot have — live state. -->
-      <section class="jobs" aria-label="Renders">
+      <section class="jobs" id="jobs" aria-label="Renders" hidden>
         <div class="jobs-head">
           <h2>Renders</h2>
           <span class="mono">1 running · 1 queued</span>
@@ -885,6 +915,42 @@ document.querySelectorAll('.look').forEach(b=>
     document.querySelectorAll('.look').forEach(x=>x.setAttribute('aria-pressed','false'));
     b.setAttribute('aria-pressed','true');
   }));
+
+/* ---- one signal drives both the rail and the Renders panel ----
+   A first-time visitor gets the focused page: rail collapsed, no Renders. A
+   returning user gets the workspace: rail open, their jobs on top. Sign in
+   stands in for the real session so both states can be seen. The rail toggle
+   still works independently, and its choice sticks. */
+const body=document.body,
+      railtog=document.getElementById('railtog'),
+      jobs=document.getElementById('jobs'),
+      signin=document.querySelector('.tbtn.solid');
+const LS={rail:'solmi:rail', user:'solmi:returning'};
+
+function setRail(mini,remember){
+  body.classList.toggle('mini',mini);
+  railtog.setAttribute('aria-expanded',String(!mini));
+  railtog.setAttribute('aria-label',mini?'Expand tool rail':'Collapse tool rail');
+  railtog.title=mini?'Expand':'Collapse';
+  if(remember){ try{ localStorage.setItem(LS.rail, mini?'mini':'open'); }catch(e){} }
+}
+function setReturning(on){
+  jobs.hidden=!on;
+  signin.textContent=on?'Sign out':'Sign in';
+  try{ localStorage.setItem(LS.user, on?'1':''); }catch(e){}
+  /* the rail follows the user unless they have set it themselves */
+  let pref=null;
+  try{ pref=localStorage.getItem(LS.rail); }catch(e){}
+  if(!pref) setRail(!on,false);
+}
+let returning=false, railPref=null;
+try{ returning=!!localStorage.getItem(LS.user); railPref=localStorage.getItem(LS.rail); }catch(e){}
+jobs.hidden=!returning;
+signin.textContent=returning?'Sign out':'Sign in';
+setRail(railPref? railPref==='mini' : !returning, false);
+
+railtog.addEventListener('click',()=>setRail(!body.classList.contains('mini'),true));
+signin.addEventListener('click',()=>setReturning(jobs.hidden));
 
 /* settings stay out of the way until asked for */
 const more2=document.getElementById('more2');
