@@ -113,9 +113,95 @@ main{margin-left:var(--rail)}
    the fold. Type is capped and DM Mono carries the labels: the landing page
    is editorial, this is an instrument panel. */
 .stage{padding:28px 0 0}
-.ctx{display:flex;align-items:center;gap:10px;margin:0 0 14px;
-  font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.13em;
+/* An H1 that carries the keyword without taking the fold. This page is the
+   highest organic entry point; killing the hero left it with no H1 at all. */
+h1{margin:0;font-size:20px;font-weight:500;letter-spacing:-.018em;color:var(--ink)}
+
+/* ============ pick a look first ============
+   Cold traffic arrives with nothing. Presets are the cheapest possible first
+   action: one click, no file, no typing. They were four grey pills below the
+   CTA; they are the on-ramp, so they go first and they get a face. */
+.looks{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0 18px}
+.look{position:relative;border:1px solid var(--hair);border-radius:12px;
+  overflow:hidden;cursor:pointer;background:var(--raised);padding:0;
+  text-align:left;transition:border-color .16s var(--ease),transform .16s var(--ease)}
+.look:hover{transform:translateY(-2px);border-color:var(--hair-2)}
+.look[aria-pressed=true]{border-color:var(--action);
+  box-shadow:0 0 0 1px var(--action)}
+.look img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;
+  opacity:.72;transition:opacity .16s var(--ease)}
+.look:hover img,.look[aria-pressed=true] img{opacity:1}
+.look .nm{display:block;padding:9px 11px;font-size:13px;font-weight:500;
+  letter-spacing:-.01em}
+.look .tick{position:absolute;top:8px;right:8px;width:18px;height:18px;
+  border-radius:50%;background:var(--action);display:none;place-items:center}
+.look[aria-pressed=true] .tick{display:grid}
+
+/* example prompts: the cure for a 128,000px blank box */
+.egs{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:10px 2px 0}
+.egs .lbl{font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.12em;
   text-transform:uppercase;color:var(--ink-3)}
+.eg{height:28px;padding:0 11px;border:1px solid var(--hair);border-radius:999px;
+  background:none;color:var(--ink-2);font-family:inherit;font-size:12.5px;
+  cursor:pointer;transition:background .16s var(--ease),color .16s var(--ease)}
+.eg:hover{background:var(--ctrl);color:var(--ink)}
+
+/* ============ the track, with its sources in the open ============
+   The library was behind a single "Attach a song · Required" button, so a
+   visitor with no file of their own saw a wall instead of a shelf. */
+.track{margin:16px 0 0;padding:13px 14px;border:1px solid var(--hair);
+  border-radius:14px;background:var(--sunk)}
+.track .hd{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.track .hd .lbl{font-family:"DM Mono",monospace;font-size:10.5px;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.track .hd .got{margin-left:auto;display:none;align-items:center;gap:7px;
+  font-size:13px;font-weight:500}
+.track.has .hd .got{display:flex}
+.track.has .samples,.track.has .srcs{display:none}
+.track.has{padding:11px 14px}
+.track .hd .got .x{width:20px;height:20px;border:0;border-radius:50%;
+  background:var(--ctrl);color:var(--ink-2);cursor:pointer;display:grid;
+  place-items:center;font-size:13px;line-height:1}
+/* Sample songs get the weight, because they are the only source that costs a
+   cold visitor nothing. Upload / link / create sit under them as text. */
+.samples{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sample{display:flex;align-items:center;gap:9px;padding:9px 10px;
+  border:1px solid var(--hair-2);border-radius:10px;background:var(--ctrl);
+  color:var(--ink);text-align:left;cursor:pointer;font-family:inherit;
+  transition:background .16s var(--ease),border-color .16s var(--ease)}
+.sample:hover{background:var(--ctrl-hi);border-color:var(--hair-2)}
+.sample .ic{flex:none;width:26px;height:26px;border-radius:7px;display:grid;
+  place-items:center;background:color-mix(in srgb,var(--action) 16%,transparent);
+  color:var(--action)}
+.sample .ic svg{width:13px;height:13px}
+.sample b{display:block;font-size:12.5px;font-weight:500;letter-spacing:-.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sample i{display:block;font-style:normal;font-family:"DM Mono",monospace;
+  font-size:9.5px;color:var(--ink-3);margin-top:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.srcs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:11px;
+  font-size:13px;color:var(--ink-3)}
+.src{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 11px;
+  border:1px solid transparent;border-radius:9px;background:none;
+  color:var(--ink-2);font-family:inherit;font-size:13px;font-weight:500;
+  cursor:pointer;transition:background .16s var(--ease),color .16s var(--ease)}
+.src:hover{background:var(--ctrl);color:var(--ink)}
+.src svg{width:14px;height:14px;flex:none}
+.srcs .sep{color:var(--hair-2)}
+.srcs .signin{margin-left:auto;font-family:"DM Mono",monospace;font-size:10.5px;
+  letter-spacing:.08em;color:var(--ink-3)}
+
+/* settings collapse: two decisions visible, the rest on request */
+.more{height:36px;padding:0 12px;border:0;border-radius:999px;background:none;
+  color:var(--ink-3);font-family:"DM Mono",monospace;font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+.more:hover{color:var(--ink-2)}
+.c-bar .opt.extra{display:none}
+.c-bar.open .opt.extra{display:inline-flex}
+
+.ctx{display:flex;align-items:center;gap:10px;margin:0 0 14px;color:var(--ink-3)}
+.ctx b{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.13em;
+  text-transform:uppercase;font-weight:400;color:var(--ink-2)}
 .ctx .dot{width:5px;height:5px;border-radius:50%;background:var(--action)}
 .ctx b{font-weight:400;color:var(--ink-2);letter-spacing:.13em}
 .ctx .sp{flex:1}
@@ -174,8 +260,7 @@ main{margin-left:var(--rail)}
 .bar{grid-column:1 / -1;height:3px;border-radius:2px;background:var(--ctrl);
   overflow:hidden;margin-top:10px}
 .bar i{display:block;height:100%;background:var(--action);border-radius:2px}
-h1{margin:0;font-size:clamp(38px,4.6vw,60px);font-weight:500;line-height:1.04;
-  letter-spacing:-.03em}
+
 /* the emphasis is carried by the brand green, not by a serif italic in a
    colour that appears nowhere else in the system */
 h1 em{font-style:normal;color:var(--action)}
@@ -456,24 +541,58 @@ footer a:hover{color:var(--ink)}
 
   <div class="wrap">
     <section class="stage">
-      <p class="ctx"><span class="dot"></span>Music video<span class="sp"></span>
-        <b>100 credits</b></p>
+      <div class="ctx"><span class="dot"></span><h1>AI music video generator</h1>
+        <span class="sp"></span><b>100 credits</b></div>
+
+      <div class="looks" role="group" aria-label="Pick a look">
+        <button class="look" type="button" aria-pressed="true" data-look="Singing MV"><img src="https://media.solmi.ai/ai-music-video/narrative-thumb-fba31b5e-0a28-418d-833a-f7c3393552d0.jpg" alt="" loading="lazy" decoding="async"><span class="nm">Singing MV</span><span class="tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#04140D" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+        <button class="look" type="button" aria-pressed="false" data-look="Story MV"><img src="https://media.solmi.ai/ai-music-video/narrative-thumb-3840eb9f-9f41-44f7-bb00-ccf1e9bbeb0a.jpg" alt="" loading="lazy" decoding="async"><span class="nm">Story MV</span><span class="tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#04140D" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+        <button class="look" type="button" aria-pressed="false" data-look="Abstract MV"><img src="https://media.solmi.ai/ai-music-video/narrative-thumb-eafb79a1-1e60-4461-a68d-a13e440d1365.jpg" alt="" loading="lazy" decoding="async"><span class="nm">Abstract MV</span><span class="tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#04140D" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+        <button class="look" type="button" aria-pressed="false" data-look="Viral Shorts"><img src="https://media.solmi.ai/ai-music-video/narrative-thumb-3d6bfc63-dd32-42fb-b094-b5f7b65787b2.jpg" alt="" loading="lazy" decoding="async"><span class="nm">Viral Shorts</span><span class="tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#04140D" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+      </div>
 
       <div class="composer">
-        <button class="attach" type="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-          Attach a song <span class="req">Required</span>
-        </button>
-        <span class="hint mono">MP3 · WAV · M4A · up to 200MB</span>
-        <textarea class="prompt" rows="4" placeholder="Describe the music video you want, once you have a track attached."></textarea>
+        <textarea class="prompt" rows="4" placeholder="Describe the video you want. A mood, a place, a reference — anything."></textarea>
+        <div class="egs">
+          <span class="lbl">Try</span>
+          <button class="eg" type="button">Neon-lit night drive through Tokyo</button>
+          <button class="eg" type="button">Handheld Super 8, beach at golden hour</button>
+          <button class="eg" type="button">One-take black and white performance</button>
+        </div>
+
+        <!-- The sources were all behind one button marked REQUIRED. They are the
+             reason a visitor with no file can still start, so they are visible. -->
+        <div class="track" id="track">
+          <div class="hd">
+            <span class="lbl">Your track</span>
+            <span class="got"><span id="gotName"></span>
+              <button class="x" id="clearTrack" type="button" aria-label="Remove track">×</button>
+            </span>
+          </div>
+          <div class="samples">
+            <button class="sample" type="button" data-song="Paper Boats"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Paper Boats</b><i>Folk · longing</i></span></button>
+            <button class="sample" type="button" data-song="Floating Home"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Floating Home</b><i>Dream pop</i></span></button>
+            <button class="sample" type="button" data-song="The Sound of Music"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>The Sound of Music</b><i>Classical</i></span></button>
+            <button class="sample" type="button" data-song="Sweet Dreams"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Sweet Dreams</b><i>Pop · romantic</i></span></button>
+          </div>
+          <div class="srcs">
+            <button class="src" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v13"/></svg>Upload a file</button>
+            <span class="sep">·</span>
+            <button class="src" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>Paste a link</button>
+            <span class="sep">·</span>
+            <button class="src" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>Create a song</button>
+            <span class="signin">Sign in for your own tracks</span>
+          </div>
+        </div>
         <div class="c-bar">
-        <button class="opt is-on" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>Studio<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-        <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 11l3 3 3-4 4 5"/></svg>Images<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="opt extra is-on" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>Studio<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 11l3 3 3-4 4 5"/></svg>Images<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
         <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18v12H3z"/></svg>16:9<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-        <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M8 12h8"/></svg>480p<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-        <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M8 11h3M13 11h3M8 14h8"/></svg>Captions<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-        <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12a7 7 0 1 1 7 7"/><path d="M12 8v4l3 2"/></svg>Auto style<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-        <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"/><path d="M3 12h18M12 3c3 3 3 15 0 18"/></svg>Public<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M8 12h8"/></svg>720p<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M8 11h3M13 11h3M8 14h8"/></svg>Captions<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12a7 7 0 1 1 7 7"/><path d="M12 8v4l3 2"/></svg>Auto style<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"/><path d="M3 12h18M12 3c3 3 3 15 0 18"/></svg>Public<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+          <button class="more" id="more2" type="button" aria-expanded="false">More options ⌄</button>
           <span class="sp"></span>
           <button class="go" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
@@ -481,19 +600,15 @@ footer a:hover{color:var(--ink)}
           </button>
         </div>
         <p class="summary" id="sum">
-          <b id="sumSet">16:9 · 480p · captions</b>
-          <span>·</span><span id="sumTime">~4 min</span>
-          <span class="cost" id="sumCost">1 credit · public</span>
+          <b id="sumSet">16:9 · 720p</b>
+          <span>·</span><span id="sumTime">~7 min</span>
+          <span class="cost" id="sumCost">2 credits · public</span>
         </p>
       </div>
 
-      <div class="presets">
-        <span class="lbl">Preset</span>
-        <button class="tab is-on" type="button">Singing MV</button>
-        <button class="tab" type="button">Story MV</button>
-        <button class="tab" type="button">Abstract MV</button>
-        <button class="tab" type="button">Viral Shorts</button>
-      </div>
+      
+
+      
 
       <!-- Renders: the one surface a landing page cannot have — live state. -->
       <section class="jobs" aria-label="Renders">
@@ -728,14 +843,56 @@ lbClose.addEventListener('click',close_);
 document.getElementById('lbScrim').addEventListener('click',close_);
 addEventListener('keydown',e=>{ if(e.key==='Escape') close_(); });
 
-/* ---- composer: the CTA reflects whether a track is attached ---- */
-const attach=document.querySelector('.attach'), go=document.querySelector('.go');
-let has=false;
-attach.addEventListener('click',()=>{
-  has=!has;
-  attach.classList.toggle('has',has);
-  attach.firstElementChild.nextSibling.textContent=has?' Neon Exit ':' Attach a song ';
-  go.lastChild.textContent=has?'Make the video':'Attach a Song to Start';
+/* ---- the on-ramp ----
+   Order of operations for someone arriving cold from search: pick a look (one
+   click, nothing required), write or borrow a prompt, then choose a track from
+   sources that are visible rather than hidden behind a button marked REQUIRED.
+   The CTA only asks for a song once there is something to attach it to. */
+const go=document.querySelector('.go'),
+      track=document.getElementById('track'),
+      gotName=document.getElementById('gotName'),
+      prompt=document.querySelector('.prompt');
+let song=null;
+
+function syncCTA(){
+  const label = song ? 'Make the video' : 'Pick a track to render';
+  go.lastChild.textContent=label;
+}
+function setSong(name){
+  song=name;
+  track.classList.toggle('has',!!name);
+  gotName.textContent=name||'';
+  syncCTA();
+}
+document.querySelectorAll('.sample').forEach(b=>
+  b.addEventListener('click',()=>setSong(b.dataset.song)));
+document.getElementById('clearTrack').addEventListener('click',()=>setSong(null));
+/* upload / link / create are real flows in the product; here they stand in */
+document.querySelectorAll('.src').forEach(b=>
+  b.addEventListener('click',()=>setSong(b.textContent.trim())));
+syncCTA();
+
+/* example prompts: the cure for the blank box */
+document.querySelectorAll('.eg').forEach(b=>
+  b.addEventListener('click',()=>{
+    prompt.value=b.textContent.trim();
+    prompt.focus();
+  }));
+
+/* look cards behave as one choice, not seven toggles */
+document.querySelectorAll('.look').forEach(b=>
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.look').forEach(x=>x.setAttribute('aria-pressed','false'));
+    b.setAttribute('aria-pressed','true');
+  }));
+
+/* settings stay out of the way until asked for */
+const more2=document.getElementById('more2');
+more2.addEventListener('click',()=>{
+  const bar=document.querySelector('.c-bar');
+  const open=bar.classList.toggle('open');
+  more2.setAttribute('aria-expanded',String(open));
+  more2.textContent=open?'Fewer options ⌃':'More options ⌄';
 });
 
 /* ---- settings with consequences ----
