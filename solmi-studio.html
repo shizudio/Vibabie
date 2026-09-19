@@ -1098,22 +1098,21 @@ function setRail(mini,remember){
   railtog.title=mini?'Expand':'Collapse';
   if(remember){ try{ localStorage.setItem(LS.rail, mini?'mini':'open'); }catch(e){} }
 }
+/* The rail is not session state. It stays collapsed for everyone — this page
+   has one job, and signing in does not change how much of the tool list you
+   need in view. Only the toggle moves it, and that choice sticks. */
 function setReturning(on){
   jobs.hidden=!on;
   body.classList.toggle('signed',on);
   signin.textContent=on?'Sign out':'Sign in';
   try{ localStorage.setItem(LS.user, on?'1':''); }catch(e){}
-  /* the rail follows the user unless they have set it themselves */
-  let pref=null;
-  try{ pref=localStorage.getItem(LS.rail); }catch(e){}
-  if(!pref) setRail(!on,false);
 }
 let returning=false, railPref=null;
 try{ returning=!!localStorage.getItem(LS.user); railPref=localStorage.getItem(LS.rail); }catch(e){}
 jobs.hidden=!returning;
 body.classList.toggle('signed',returning);
 signin.textContent=returning?'Sign out':'Sign in';
-setRail(railPref? railPref==='mini' : !returning, false);
+setRail(railPref ? railPref==='mini' : true, false);
 
 railtog.addEventListener('click',()=>setRail(!body.classList.contains('mini'),true));
 signin.addEventListener('click',()=>setReturning(jobs.hidden));
