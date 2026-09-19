@@ -226,8 +226,7 @@ h1{margin:0;font-size:20px;font-weight:500;letter-spacing:-.018em;color:var(--in
 .src:hover{background:var(--ctrl);color:var(--ink)}
 .src svg{width:14px;height:14px;flex:none}
 .srcs .sep{color:var(--hair-2)}
-.srcs .signin{margin-left:auto;font-family:"DM Mono",monospace;font-size:10.5px;
-  letter-spacing:.08em;color:var(--ink-3)}
+
 
 /* settings collapse: two decisions visible, the rest on request */
 .more{display:inline-flex;align-items:center;flex:none;
@@ -349,8 +348,13 @@ h1 em{font-style:normal;color:var(--action)}
 .opts.open .extras{max-width:660px;opacity:1}
 .extras .opt{flex:none}
 .more .ch{width:12px;height:12px;margin-left:5px;
-  transition:transform .3s var(--ease)}
-.opts.open .more .ch{transform:rotate(180deg)}
+  transition:transform .3s var(--ease),margin-left .3s var(--ease)}
+/* Open, the arrow is the whole control: the word collapses on the same curve as
+   the track it opens, so the two read as one motion rather than a text swap. */
+.more .mlbl{display:inline-block;overflow:hidden;white-space:nowrap;max-width:60px;
+  transition:max-width .3s var(--ease),opacity .18s var(--ease)}
+.opts.open .more .mlbl{max-width:0;opacity:0}
+.opts.open .more .ch{transform:rotate(180deg);margin-left:0}
 /* the CTA holds the right edge even when the chips wrap onto a second line */
 .c-bar .go{margin-left:auto}
 .opt{display:inline-flex;align-items:center;gap:6px;height:33px;padding:0 9px;
@@ -646,14 +650,13 @@ footer a:hover{color:var(--ink)}
             <button class="src" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>Paste a link</button>
             <span class="sep">·</span>
             <button class="src" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>Create a song</button>
-            <span class="signin">Sign in for your own tracks</span>
           </div>
         </div>
         <div class="c-bar">
           <div class="opts" id="opts">
             <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18v12H3z"/></svg>16:9<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
             <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M8 12h8"/></svg>720p<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-            <button class="more" id="more2" type="button" aria-expanded="false" aria-controls="extras" aria-label="Show more options">More<svg class="ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+            <button class="more" id="more2" type="button" aria-expanded="false" aria-controls="extras" aria-label="Show more options"><span class="mlbl">More</span><svg class="ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
             <div class="extras" id="extras">
               <button class="opt extra is-on" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>Studio<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
               <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 11l3 3 3-4 4 5"/></svg>Images<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
@@ -1005,8 +1008,7 @@ more2.addEventListener('click',()=>{
   const open=optsRow.classList.toggle('open');
   more2.setAttribute('aria-expanded',String(open));
   more2.setAttribute('aria-label',open?'Hide more options':'Show more options');
-  /* the label is a text node so the chevron svg survives the swap */
-  more2.firstChild.textContent=open?'Fewer':'More';
+  /* the word collapses via CSS; the arrow alone carries the open state */
 });
 
 /* ---- settings with consequences ----
