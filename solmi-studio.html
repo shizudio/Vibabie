@@ -244,8 +244,10 @@ h1{margin:0;font-size:20px;font-weight:500;letter-spacing:-.018em;color:var(--in
 
 
 .ctx{display:flex;align-items:center;gap:10px;margin:0 0 14px;color:var(--ink-3)}
-.ctx b{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.13em;
-  text-transform:uppercase;font-weight:400;color:var(--ink-2)}
+/* Credits are account state, not page state: they belong beside sign-in, the
+   same place every other product keeps a balance. */
+.credits{font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-3);white-space:nowrap}
 .ctx .dot{width:5px;height:5px;border-radius:50%;background:var(--action)}
 .ctx b{font-weight:400;color:var(--ink-2);letter-spacing:.13em}
 .ctx .sp{flex:1}
@@ -463,6 +465,8 @@ h1 em{font-style:normal;color:var(--action)}
 
 /* ============ section heads ============ */
 .sec{padding:54px 0 0}
+/* The FAQ reads as a column, not a slab: centred heading over a centred list. */
+.sec.mid .sec-head{justify-content:center;text-align:center}
 .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:24px;
   margin-bottom:26px}
 .sec-head h2{margin:6px 0 0;font-size:27px;font-weight:500;letter-spacing:-.03em}
@@ -524,7 +528,7 @@ h1 em{font-style:normal;color:var(--action)}
 .link.more{display:block;margin:26px auto 0}
 
 /* ============ faq ============ */
-.faq{max-width:760px}
+.faq{max-width:760px;margin-inline:auto}
 .q{border-bottom:1px solid var(--hair)}
 .q summary{display:flex;align-items:center;gap:16px;padding:20px 2px;cursor:pointer;
   list-style:none;font-size:17px;font-weight:500;letter-spacing:-.016em}
@@ -654,13 +658,13 @@ footer a:hover{color:var(--ink)}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 3 2.6 15 0 18M12 3c-2.6 3-2.6 15 0 18"/></svg>
       English
     </button>
+    <span class="credits mono">100 credits</span>
     <button class="tbtn solid" type="button">Sign in</button>
   </header>
 
   <div class="wrap">
     <section class="stage">
-      <div class="ctx"><span class="dot"></span><h1>AI music video generator</h1>
-        <span class="sp"></span><b>100 credits</b></div>
+      <div class="ctx"><span class="dot"></span><h1>AI music video generator</h1></div>
 
       <div class="looks" role="group" aria-label="Pick a look">
         <button class="look" type="button" aria-pressed="true" data-look="Singing MV"><img src="https://media.solmi.ai/ai-music-video/narrative-thumb-fba31b5e-0a28-418d-833a-f7c3393552d0.jpg" alt="" loading="lazy" decoding="async"><span class="nm">Singing MV</span><span class="tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#04140D" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
@@ -721,7 +725,6 @@ footer a:hover{color:var(--ink)}
             Attach a Song to Start
           </button>
           </div>
-        </div>
         </div>
         <p class="summary" id="sum">
           <b id="sumSet">16:9 · 720p</b>
@@ -790,7 +793,7 @@ footer a:hover{color:var(--ink)}
       </button>
     </section>
 
-    <section class="sec">
+    <section class="sec mid">
       <div class="sec-head">
         <div>
           <span class="mono">Quick answers</span>
