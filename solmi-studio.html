@@ -331,7 +331,17 @@ h1 em{font-style:normal;color:var(--action)}
   font-family:inherit;font-size:16.5px;line-height:1.55;letter-spacing:-.011em}
 .prompt::placeholder{color:var(--ink-3)}
 .prompt:focus{outline:none}
-.c-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:12px}
+/* Two rows that never trade places. The chips wrap among themselves across the
+   full width; the action sits on its own line below. Before this, chips (720px)
+   plus More (140px) left only 110px for a 211px button, so revealing the extra
+   options bumped the CTA onto a new line and shifted everything below it by
+   62px. Now expanding costs zero height. */
+.c-bar{display:flex;flex-direction:column;gap:11px;margin-top:12px}
+.opts{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.c-act{display:flex;align-items:center;gap:6px}
+.opt.extra{opacity:0;transform:translateY(-2px);
+  transition:opacity .18s var(--ease),transform .18s var(--ease)}
+.c-bar.open .opt.extra{opacity:1;transform:none}
 /* the CTA holds the right edge even when the chips wrap onto a second line */
 .c-bar .go{margin-left:auto}
 .opt{display:inline-flex;align-items:center;gap:6px;height:33px;padding:0 9px;
@@ -628,19 +638,23 @@ footer a:hover{color:var(--ink)}
           </div>
         </div>
         <div class="c-bar">
-        <button class="opt extra is-on" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>Studio<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-        <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 11l3 3 3-4 4 5"/></svg>Images<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-        <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18v12H3z"/></svg>16:9<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-        <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M8 12h8"/></svg>720p<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-        <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M8 11h3M13 11h3M8 14h8"/></svg>Captions<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-        <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12a7 7 0 1 1 7 7"/><path d="M12 8v4l3 2"/></svg>Auto style<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-        <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"/><path d="M3 12h18M12 3c3 3 3 15 0 18"/></svg>Public<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-          <button class="more" id="more2" type="button" aria-expanded="false">More options ⌄</button>
-          <span class="sp"></span>
-          <button class="go" type="button">
+          <div class="opts">
+            <button class="opt extra is-on" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>Studio<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+            <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 11l3 3 3-4 4 5"/></svg>Images<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+            <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18v12H3z"/></svg>16:9<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+            <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M8 12h8"/></svg>720p<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+            <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M8 11h3M13 11h3M8 14h8"/></svg>Captions<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+            <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12a7 7 0 1 1 7 7"/><path d="M12 8v4l3 2"/></svg>Auto style<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+            <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"/><path d="M3 12h18M12 3c3 3 3 15 0 18"/></svg>Public<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+          </div>
+          <div class="c-act">
+            <button class="more" id="more2" type="button" aria-expanded="false">More options ⌄</button>
+            <span class="sp"></span>
+            <button class="go" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
             Attach a Song to Start
           </button>
+          </div>
         </div>
         <p class="summary" id="sum">
           <b id="sumSet">16:9 · 720p</b>
