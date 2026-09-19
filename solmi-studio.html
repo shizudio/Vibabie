@@ -230,12 +230,12 @@ h1{margin:0;font-size:20px;font-weight:500;letter-spacing:-.018em;color:var(--in
   letter-spacing:.08em;color:var(--ink-3)}
 
 /* settings collapse: two decisions visible, the rest on request */
-.more{height:36px;padding:0 12px;border:0;border-radius:999px;background:none;
+.more{display:inline-flex;align-items:center;flex:none;
+  height:36px;padding:0 12px;border:0;border-radius:999px;background:none;
   color:var(--ink-3);font-family:"DM Mono",monospace;font-size:11px;
   letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
 .more:hover{color:var(--ink-2)}
-.c-bar .opt.extra{display:none}
-.c-bar.open .opt.extra{display:inline-flex}
+
 
 .ctx{display:flex;align-items:center;gap:10px;margin:0 0 14px;color:var(--ink-3)}
 .ctx b{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.13em;
@@ -339,9 +339,18 @@ h1 em{font-style:normal;color:var(--action)}
 .c-bar{display:flex;flex-direction:column;gap:11px;margin-top:12px}
 .opts{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .c-act{display:flex;align-items:center;gap:6px}
-.opt.extra{opacity:0;transform:translateY(-2px);
-  transition:opacity .18s var(--ease),transform .18s var(--ease)}
-.c-bar.open .opt.extra{opacity:1;transform:none}
+/* The extras live in their own track and open sideways from the More button,
+   which stays put at the right edge of the always-on options. max-width rather
+   than width because there is no animating to auto, and overflow:hidden so the
+   chips are clipped mid-slide instead of spilling. */
+.extras{display:flex;align-items:center;gap:6px;flex:none;overflow:hidden;
+  max-width:0;opacity:0;
+  transition:max-width .34s var(--ease),opacity .2s var(--ease)}
+.opts.open .extras{max-width:660px;opacity:1}
+.extras .opt{flex:none}
+.more .ch{width:12px;height:12px;margin-left:5px;
+  transition:transform .3s var(--ease)}
+.opts.open .more .ch{transform:rotate(180deg)}
 /* the CTA holds the right edge even when the chips wrap onto a second line */
 .c-bar .go{margin-left:auto}
 .opt{display:inline-flex;align-items:center;gap:6px;height:33px;padding:0 9px;
@@ -458,7 +467,10 @@ h1 em{font-style:normal;color:var(--action)}
   font-size:9.5px;color:#fff;background:rgba(0,0,0,.48);padding:2px 6px;
   border-radius:6px;opacity:0;transition:opacity .24s var(--ease)}
 .tile:hover .d,.tile:focus-visible .d{opacity:1}
-.more{display:block;margin:26px auto 0}
+/* Scoped: the recipes "Show more" is .link.more. Unscoped, its margin:auto
+   landed on the settings toggle, which shares the class, and pushed it left as
+   the options track grew. */
+.link.more{display:block;margin:26px auto 0}
 
 /* ============ faq ============ */
 .faq{max-width:760px}
@@ -638,23 +650,26 @@ footer a:hover{color:var(--ink)}
           </div>
         </div>
         <div class="c-bar">
-          <div class="opts">
-            <button class="opt extra is-on" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>Studio<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-            <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 11l3 3 3-4 4 5"/></svg>Images<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+          <div class="opts" id="opts">
             <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18v12H3z"/></svg>16:9<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
             <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M8 12h8"/></svg>720p<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-            <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M8 11h3M13 11h3M8 14h8"/></svg>Captions<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-            <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12a7 7 0 1 1 7 7"/><path d="M12 8v4l3 2"/></svg>Auto style<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-            <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"/><path d="M3 12h18M12 3c3 3 3 15 0 18"/></svg>Public<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+            <button class="more" id="more2" type="button" aria-expanded="false" aria-controls="extras" aria-label="Show more options">More<svg class="ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+            <div class="extras" id="extras">
+              <button class="opt extra is-on" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>Studio<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+              <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 11l3 3 3-4 4 5"/></svg>Images<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+              <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M8 11h3M13 11h3M8 14h8"/></svg>Captions<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+              <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12a7 7 0 1 1 7 7"/><path d="M12 8v4l3 2"/></svg>Auto style<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+              <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"/><path d="M3 12h18M12 3c3 3 3 15 0 18"/></svg>Public<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+            </div>
           </div>
           <div class="c-act">
-            <button class="more" id="more2" type="button" aria-expanded="false">More options ⌄</button>
             <span class="sp"></span>
             <button class="go" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
             Attach a Song to Start
           </button>
           </div>
+        </div>
         </div>
         <p class="summary" id="sum">
           <b id="sumSet">16:9 · 720p</b>
@@ -985,12 +1000,13 @@ railtog.addEventListener('click',()=>setRail(!body.classList.contains('mini'),tr
 signin.addEventListener('click',()=>setReturning(jobs.hidden));
 
 /* settings stay out of the way until asked for */
-const more2=document.getElementById('more2');
+const more2=document.getElementById('more2'), optsRow=document.getElementById('opts');
 more2.addEventListener('click',()=>{
-  const bar=document.querySelector('.c-bar');
-  const open=bar.classList.toggle('open');
+  const open=optsRow.classList.toggle('open');
   more2.setAttribute('aria-expanded',String(open));
-  more2.textContent=open?'Fewer options ⌃':'More options ⌄';
+  more2.setAttribute('aria-label',open?'Hide more options':'Show more options');
+  /* the label is a text node so the chevron svg survives the swap */
+  more2.firstChild.textContent=open?'Fewer':'More';
 });
 
 /* ---- settings with consequences ----
