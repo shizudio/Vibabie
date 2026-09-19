@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
   Solmi — Design System
-  Shizudio · snapshot 2026-09-17
+  Shizudio · snapshot 20 Sep 2026
 
   Self-contained: double-click to open, no server or build step.
   Every swatch, button and panel below is the live CSS, not a picture of it —
@@ -173,6 +173,51 @@ pre b{color:var(--ink);font-weight:400}
 footer{margin-top:64px;padding:26px 0 60px;border-top:1px solid var(--hair);
   display:flex;gap:16px;color:var(--ink-3);font-size:13px}
 footer .sp{flex:1}
+/* --- product patterns (composer) --- */
+.egs{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.egs .lbl{font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3)}
+.eg{height:30px;padding:0 12px;border:1px solid var(--hair);border-radius:999px;
+  background:none;color:var(--ink-2);font-family:inherit;font-size:13px;
+  cursor:pointer;transition:background .16s var(--ease),color .16s var(--ease)}
+.eg:hover{background:var(--ctrl);color:var(--ink)}
+
+.shelf{display:grid;grid-template-columns:auto repeat(3,1fr);gap:8px;
+  align-items:stretch;max-width:520px}
+.plus{width:auto;aspect-ratio:1;align-self:stretch;border:1px dashed var(--hair-2);
+  border-radius:10px;background:var(--ctrl);color:var(--ink-2);cursor:pointer;
+  display:grid;place-items:center;padding:0;font-size:18px;line-height:1}
+.plus:hover{background:var(--ctrl-hi);color:var(--ink);border-color:var(--ink-3)}
+.tile{display:flex;flex-direction:column;justify-content:center;gap:3px;
+  padding:9px 11px;border:1px solid var(--hair);border-radius:10px;
+  background:var(--ctrl);cursor:pointer;text-align:left;font-family:inherit;
+  transition:background .16s var(--ease),border-color .16s var(--ease),
+             opacity .16s var(--ease)}
+.tile .n{font-size:12.5px;font-weight:500;color:var(--ink);letter-spacing:-.01em}
+.tile .d{font-family:"DM Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+.tile.on{border-color:color-mix(in srgb,var(--action) 40%,transparent);
+  background:color-mix(in srgb,var(--action) 12%,var(--ctrl))}
+.shelf.picked .tile:not(.on){opacity:.42}
+
+/* the stacked job actions: unequal by design */
+.jrow{display:grid;grid-template-columns:1fr auto;gap:4px 16px;padding:14px 16px;
+  border:1px solid var(--hair);border-radius:14px;background:var(--raised);
+  max-width:460px}
+.jrow .t{font-size:14px;font-weight:500;letter-spacing:-.012em}
+.jrow .meta{grid-column:1;font-family:"DM Mono",monospace;font-size:11px;
+  color:var(--ink-3)}
+.jrow .state{grid-column:2;grid-row:1;align-self:center;font-family:"DM Mono",monospace;
+  font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.jrow .acts{grid-column:2;grid-row:2;align-self:center;justify-self:end;
+  display:flex;flex-direction:column;align-items:stretch;gap:6px}
+.jrow .act2{height:28px;padding:0 11px;border:1px solid var(--hair-2);
+  border-radius:8px;background:none;color:var(--ink-2);font-family:inherit;
+  font-size:12px;cursor:pointer;white-space:nowrap;
+  transition:background .16s var(--ease),color .16s var(--ease)}
+.jrow .act2:hover{background:var(--ctrl);color:var(--ink)}
+.jrow .act2.edit{color:var(--ink)}
+.jrow .act2.edit:hover{background:var(--ctrl-hi);border-color:var(--ink-3)}
+
 @media (max-width:760px){
   .wrap,header.top{padding-left:20px;padding-right:20px}
   .scale .m{width:120px}
@@ -191,7 +236,7 @@ footer .sp{flex:1}
 <div class="wrap">
 
   <div class="lede">
-    <p class="kicker">Design system · snapshot 17 Sep 2026</p>
+    <p class="kicker">Design system · snapshot 20 Sep 2026</p>
     <h1>One system, two dialects.</h1>
     <p>Everything below is the live CSS from the shipped solmi.ai, read off the
       site rather than redrawn. Copy any value, or take the whole token block at
@@ -331,6 +376,82 @@ footer .sp{flex:1}
     </div>
   </section>
 
+  <!-- ============ PRODUCT PATTERNS ============ -->
+  <section>
+    <h2>Product patterns</h2>
+    <p class="sub">Four composites that only appear on tool surfaces. They are
+      built from the components above — no new colour, no new type — but the
+      arrangement carries a rule, and the rule is the part worth copying to the
+      other pages.</p>
+
+    <h3>Starter chips</h3>
+    <p class="sub">Above an empty input, never below it. One click fills the
+      field with a working value the user then edits. They double as
+      documentation: this is what a good input looks like, shown rather than
+      explained.</p>
+    <div class="demo">
+      <div class="egs">
+        <span class="lbl">Try</span>
+        <button class="eg" type="button">Neon city, rain, one long take</button>
+        <button class="eg" type="button">Super-8 desert road trip</button>
+        <button class="eg" type="button">Black-and-white studio performance</button>
+      </div>
+    </div>
+
+    <h3>Asset shelf</h3>
+    <p class="sub">The sources a user can add go in a square <b>+</b> as the
+      first tile — the place every chat interface has trained people to look.
+      Sample assets fill the remaining slots and are replaced by the user's own
+      once they have any, so the shelf never renders an empty state and the
+      layout never changes shape.</p>
+    <div class="demo" style="display:block">
+      <div class="shelf picked">
+        <button class="plus" type="button" aria-label="Add a track">+</button>
+        <button class="tile on" type="button"><span class="n">Neon Exit</span><span class="d">2:14</span></button>
+        <button class="tile" type="button"><span class="n">Paper Boats</span><span class="d">3:02</span></button>
+        <button class="tile" type="button"><span class="n">Static Bound</span><span class="d">2:41</span></button>
+      </div>
+      <p class="mono" style="font-size:11.5px;color:var(--ink-3);margin:14px 0 0">
+        Selected tiles tint; unselected drop to 42% opacity. <b>They never
+        disappear</b> — selection is not confirmation, and the user is often
+        still choosing.</p>
+    </div>
+
+    <h3>Progressive settings</h3>
+    <p class="sub">Common settings on the row, the rest behind one toggle that
+      expands <b>rightwards into the same row</b> — 340ms on the standard curve,
+      animating <span class="mono">max-width</span>. Never downwards: a control
+      that pushes the primary button down the page is a control that causes
+      mis-clicks. Once open, the toggle's label collapses to just its arrow.</p>
+    <div class="demo">
+      <button class="pill on" type="button">16:9</button>
+      <button class="pill" type="button">1080p</button>
+      <button class="pill" type="button">0:35</button>
+      <button class="pill" type="button">More options &nbsp;▸</button>
+      <p class="mono" style="font-size:11.5px;color:var(--ink-3);max-width:24ch;margin:0">
+        No chevrons on value chips — they cycle in place, and a ▾ promises a
+        dropdown that does not exist.</p>
+    </div>
+
+    <h3>Job row</h3>
+    <p class="sub">State the marketing site cannot show. Two actions on a
+      running job, stacked and <b>deliberately unequal</b>: the constructive one
+      on top at full ink, the destructive one muted underneath. Both stretch to
+      the same width so the action column stays a straight edge down the
+      panel.</p>
+    <div class="demo" style="background:none;border:0;padding:0">
+      <div class="jrow">
+        <span class="t">Neon Exit</span>
+        <span class="state">Storyboard</span>
+        <span class="meta">16:9 · 1080p · Y2K Glossy · 1:01</span>
+        <div class="acts">
+          <button class="act2 edit" type="button">Edit</button>
+          <button class="act2" type="button">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ DIALECTS ============ -->
   <section>
     <h2>Two dialects</h2>
@@ -376,7 +497,19 @@ footer .sp{flex:1}
     <div class="rule"><span class="no">06</span><p><b>Video tiles take one of two
       shapes</b> — 16:9 for landscape, 3:4 for portrait. Never a raw 9:16: it
       becomes a skyscraper in any grid and gets sliced by its own frame.</p></div>
-    <div class="rule"><span class="no">07</span><p><b>One easing curve.</b>
+    <div class="rule"><span class="no">07</span><p><b>Expand along the axis with
+      free space.</b> Progressive disclosure goes sideways into its own row, not
+      downwards into the stack. Nothing an interaction reveals may move the
+      primary button.</p></div>
+    <div class="rule"><span class="no">08</span><p><b>Selection is not
+      confirmation.</b> Picking one option tints it and dims the others. It
+      never hides them, and it never prints a sentence saying what was picked —
+      the state is the confirmation.</p></div>
+    <div class="rule"><span class="no">09</span><p><b>Session changes content,
+      never chrome.</b> Signing in may reveal panels and swap sample data for
+      real data. It must not resize the rail, move the composer or reflow the
+      page.</p></div>
+    <div class="rule"><span class="no">10</span><p><b>One easing curve.</b>
       cubic-bezier(.22,.61,.36,1) for everything. Micro 160ms, standard 200ms,
       entrances 300–450ms.</p></div>
   </section>
@@ -437,7 +570,7 @@ footer .sp{flex:1}
   <footer>
     <span>Solmi design system</span>
     <span class="sp"></span>
-    <span class="mono">Shizudio · 17 Sep 2026</span>
+    <span class="mono">Shizudio · 20 Sep 2026</span>
   </footer>
 </div>
 

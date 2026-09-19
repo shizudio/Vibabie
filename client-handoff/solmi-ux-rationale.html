@@ -1,0 +1,510 @@
+<!doctype html>
+<!--
+  Solmi — AI Music Video Generator: what changed, and why
+  Shizudio · 20 Sep 2026
+
+  A written companion to solmi-music-video-studio.html. Every "before" below
+  describes the page currently live at solmi.ai/ai-music-video-generator.
+-->
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solmi — What changed on the generator page</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --paper:#141614; --raised:#1C1F1D; --ctrl:#262A28; --ctrl-hi:#313634;
+  --sunk:#0F1110; --ink:#F2F5F3; --ink-2:#A9AEAB; --ink-3:#6F7573;
+  --hair:#2B2F2D; --hair-2:#3A3F3C;
+  --action:#1ED760; --action-ink:#04140D;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+:root[data-theme=light]{
+  color-scheme:light;
+  --paper:#F6FAFF; --raised:#FFFFFF; --ctrl:#F1F3F6; --ctrl-hi:#E7EAEE;
+  --sunk:#E9EEF4; --ink:#101110; --ink-2:#6A6C6B; --ink-3:#8E918F;
+  --hair:#E4E7EA; --hair-2:#D3D8DC;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"DM Sans",system-ui,sans-serif;font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased}
+.mono{font-family:"DM Mono",ui-monospace,monospace}
+.wrap{max-width:1000px;margin:0 auto;padding:0 40px}
+
+header.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;
+  gap:14px;padding:16px 40px;
+  background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(14px);border-bottom:1px solid var(--hair)}
+.mark{font-size:22px;font-weight:500;letter-spacing:-.04em}
+.mark i{font-style:normal;color:var(--action)}
+.top .sp{flex:1}
+.tog{height:34px;padding:0 14px;border:1px solid var(--hair-2);border-radius:999px;
+  background:none;color:var(--ink-2);cursor:pointer;font-family:"DM Mono",monospace;
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.tog:hover{background:var(--ctrl);color:var(--ink)}
+
+.lede{padding:56px 0 8px}
+.kicker{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-3)}
+.lede h1{margin:10px 0 0;font-size:34px;font-weight:500;letter-spacing:-.028em;
+  line-height:1.12}
+.lede p{max-width:66ch;margin:16px 0 0;color:var(--ink-2);font-size:16px}
+.lede p b{color:var(--ink);font-weight:500}
+
+/* the thesis: one claim, set apart, because everything else follows from it */
+.thesis{margin:34px 0 0;padding:22px 24px;border-left:2px solid var(--action);
+  background:var(--raised);border-radius:0 14px 14px 0}
+.thesis p{margin:0;font-size:17px;letter-spacing:-.014em;line-height:1.5}
+.thesis p + p{margin-top:12px;font-size:14.5px;color:var(--ink-2);
+  letter-spacing:0}
+
+section{padding:54px 0 0}
+.shead{display:flex;align-items:baseline;gap:14px;margin:0 0 6px}
+.shead .no{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.12em;
+  color:var(--action);flex:none}
+h2{margin:0;font-size:21px;font-weight:500;letter-spacing:-.02em}
+.sub{margin:0 0 24px;color:var(--ink-2);font-size:14.5px;max-width:74ch;
+  padding-left:36px}
+
+/* Each change is a before/after pair plus the reason. The reason is the part
+   that travels — the client will be making these calls on other pages without
+   us, so the rule matters more than the instance. */
+.chg{border:1px solid var(--hair);border-radius:16px;background:var(--raised);
+  overflow:hidden;margin:0 0 14px}
+.chg > .ttl{display:flex;align-items:baseline;gap:10px;padding:15px 20px 0}
+.chg > .ttl h3{margin:0;font-size:15.5px;font-weight:700;letter-spacing:-.014em}
+.chg > .ttl .tag{margin-left:auto;font-family:"DM Mono",monospace;font-size:10px;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);flex:none}
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--hair);
+  margin:15px 0 0;border-top:1px solid var(--hair)}
+.ba > div{background:var(--raised);padding:15px 20px 17px}
+.ba .lbl{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);margin:0 0 7px}
+.ba .before .lbl{color:#C0716A}
+.ba .after .lbl{color:var(--action)}
+.ba p{margin:0;font-size:14px;color:var(--ink-2);line-height:1.55}
+.ba p b{color:var(--ink);font-weight:500}
+.why{padding:15px 20px 17px;border-top:1px solid var(--hair);background:var(--sunk)}
+.why p{margin:0;font-size:14px;color:var(--ink-2)}
+.why p b{color:var(--ink);font-weight:500}
+.why .lbl{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);margin:0 0 7px}
+
+/* measured numbers earn their own treatment — they are the non-negotiable part */
+.nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));
+  gap:12px;margin:26px 0 0}
+.nums div{border:1px solid var(--hair);border-radius:12px;padding:14px 16px;
+  background:var(--raised)}
+.nums b{display:block;font-family:"DM Mono",monospace;font-size:23px;
+  font-weight:400;letter-spacing:-.02em;color:var(--ink)}
+.nums span{display:block;margin-top:5px;font-size:12.5px;color:var(--ink-3);
+  line-height:1.45}
+
+.keep{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--hair)}
+.keep:last-child{border-bottom:0}
+.keep .tick{flex:none;width:20px;color:var(--action);font-family:"DM Mono",monospace;
+  font-size:12px;padding-top:2px}
+.keep p{margin:0;color:var(--ink-2);font-size:14px}
+.keep p b{color:var(--ink);font-weight:500}
+
+.open{border:1px solid var(--hair-2);border-radius:16px;padding:20px 22px;
+  background:none}
+.open h3{margin:0 0 4px;font-size:14px;font-weight:700;letter-spacing:-.012em}
+.open ul{margin:12px 0 0;padding-left:18px;color:var(--ink-2);font-size:14px}
+.open li{margin:0 0 8px}
+.open li b{color:var(--ink);font-weight:500}
+
+footer{margin-top:70px;padding:26px 0 60px;border-top:1px solid var(--hair);
+  display:flex;gap:16px;color:var(--ink-3);font-size:13px}
+footer .sp{flex:1}
+
+@media (max-width:760px){
+  .wrap,header.top{padding-left:20px;padding-right:20px}
+  .lede h1{font-size:27px}
+  .sub{padding-left:0}
+  .ba{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <span class="mark">solmi<i>.</i></span>
+  <span class="sp"></span>
+  <button class="tog" id="tog" type="button">Light</button>
+</header>
+
+<div class="wrap">
+
+  <div class="lede">
+    <p class="kicker">Generator page · redesign rationale · 20 Sep 2026</p>
+    <h1>What changed, and why it changes the numbers.</h1>
+    <p>Every <em>before</em> on this page describes
+      <b>solmi.ai/ai-music-video-generator</b> as it is live today. Every
+      <em>after</em> is in the prototype sitting next to this file. The page was
+      not restyled — the order in which it asks for things was rebuilt, and the
+      styling followed.</p>
+  </div>
+
+  <div class="thesis">
+    <p>The old page asks a visitor to write a music-video prompt and attach a
+      song before it shows them a single thing they could pick.</p>
+    <p>Everything needed to solve that was already built — four sample songs, a
+      library, paste-a-link, upload, Create Song. All of it sat behind one
+      button labelled <span class="mono">ATTACH A SONG · REQUIRED</span>. The
+      product had already solved the cold start and then hidden the solution
+      behind the word <em>required</em>. The redesign mostly consists of opening
+      that door.</p>
+  </div>
+
+  <div class="nums">
+    <div><b>0 / 883</b><span>elements on the live page using its own
+      <span class="mono">--primary</span> token. The orange was dead CSS.</span></div>
+    <div><b>2 clicks</b><span>to reach a usable song before. Zero now — four
+      are on the page.</span></div>
+    <div><b>1 screen</b><span>from landing to the button that spends credits.
+      The composer starts 28px below the top bar.</span></div>
+    <div><b>0 px</b><span>of layout shift when settings open. It was a
+      vertical push before.</span></div>
+  </div>
+
+  <!-- ==================== 1. THE COLD START ==================== -->
+  <section>
+    <div class="shead"><span class="no">01</span><h2>The cold start</h2></div>
+    <p class="sub">This page gets the most SEO traffic of any page on the site,
+      which means most of its visitors arrive knowing nothing and owning
+      nothing. The old page opened with two empty required fields. That is the
+      single biggest thing we changed.</p>
+
+    <div class="chg">
+      <div class="ttl"><h3>The song sources came out from behind the modal</h3>
+        <span class="tag">Highest impact</span></div>
+      <div class="ba">
+        <div class="before"><p class="lbl">Before</p>
+          <p>One button: <b>Attach a song · REQUIRED</b>. Behind it, a modal
+            holding paste-a-link, upload, four sample tracks, Create Song and My
+            Songs. A first-time visitor sees none of it, and the word
+            <em>required</em> reads as a wall.</p></div>
+        <div class="after"><p class="lbl">After</p>
+          <p>A <b>track shelf</b> on the page. Four real songs you can click, and
+            a square <b>+</b> as the first tile holding upload, paste-a-link and
+            Create Song — the same place ChatGPT and Claude put attachment.</p></div>
+      </div>
+      <div class="why"><p class="lbl">Why</p>
+        <p>A sample the visitor can hear beats an empty required field every
+          time. <b>Nothing was invented here</b> — the same four tracks, the same
+          three sources. They were moved from inside a modal onto the surface,
+          which costs the product nothing and removes the only hard stop on the
+          page.</p></div>
+    </div>
+
+    <div class="chg">
+      <div class="ttl"><h3>The prompt box has something in it before you type</h3></div>
+      <div class="ba">
+        <div class="before"><p class="lbl">Before</p>
+          <p>An empty textarea with placeholder text. The visitor has to invent
+            the concept, the visual language and the vocabulary the model
+            responds to, from nothing.</p></div>
+        <div class="after"><p class="lbl">After</p>
+          <p>A row of <b>TRY chips above the box</b>. One click writes a
+            full, working prompt into the field, which the visitor can then
+            edit rather than author.</p></div>
+      </div>
+      <div class="why"><p class="lbl">Why</p>
+        <p>Editing is a far lower bar than authoring, and the chips double as
+          documentation: they teach what a good Solmi prompt looks like without
+          a tooltip or a help page. They sit <b>above</b> the box, not below,
+          because they are read before the field is used, not after.</p></div>
+    </div>
+  </section>
+
+  <!-- ==================== 2. STABILITY ==================== -->
+  <section>
+    <div class="shead"><span class="no">02</span><h2>The page stopped moving</h2></div>
+    <p class="sub">Three separate interactions used to reflow the layout under
+      the cursor. Each one has the same fix: change appearance, not geometry.</p>
+
+    <div class="chg">
+      <div class="ttl"><h3>Settings expand sideways, not downward</h3></div>
+      <div class="ba">
+        <div class="before"><p class="lbl">Before</p>
+          <p>Opening more options pushed a new row into the stack. Everything
+            below it — including the button that spends credits — jumped down,
+            then jumped back on close.</p></div>
+        <div class="after"><p class="lbl">After</p>
+          <p><b>More options</b> expands rightwards into the row it already
+            occupies, over 340ms. The settings and the main CTA share one line.
+            Nothing below moves.</p></div>
+      </div>
+      <div class="why"><p class="lbl">Why</p>
+        <p>A control that moves the primary button is a control that causes
+          mis-clicks. Expanding along the axis with free space keeps the
+          composer a fixed object — and it is what let the settings and the CTA
+          end up on the same row, with <b>73px of clearance</b>.</p></div>
+    </div>
+
+    <div class="chg">
+      <div class="ttl"><h3>Picking a track highlights it instead of collapsing the shelf</h3></div>
+      <div class="ba">
+        <div class="before"><p class="lbl">Before</p>
+          <p>Selecting a track collapsed the column and hid every other option.
+            The alternatives vanished at the exact moment the visitor was still
+            deciding between them.</p></div>
+        <div class="after"><p class="lbl">After</p>
+          <p>The chosen tile <b>lights up and the rest dim</b>. Everything stays
+            where it was, so changing your mind is one click, not a
+            re-open.</p></div>
+      </div>
+      <div class="why"><p class="lbl">Why</p>
+        <p>Selection is not confirmation. Hiding the alternatives treats a first
+          click as a final answer, and it makes the interface feel like it is
+          shutting doors behind you.</p></div>
+    </div>
+
+    <div class="chg">
+      <div class="ttl"><h3>The rail is the same whether you are signed in or not</h3></div>
+      <div class="ba">
+        <div class="before"><p class="lbl">Before</p>
+          <p>Thirteen tools listed with labels, permanently. Signing in changed
+            the rail width, so the page reflowed at the moment the visitor
+            started working.</p></div>
+        <div class="after"><p class="lbl">After</p>
+          <p><b>Collapsed to icons</b> by default, in both states. A toggle
+            expands it, and that choice is remembered.</p></div>
+      </div>
+      <div class="why"><p class="lbl">Why</p>
+        <p>This page has one job. Twelve other tool names next to the composer
+          are twelve invitations to leave before making anything — and having an
+          account is not a reason to need more of that list in view.</p></div>
+    </div>
+  </section>
+
+  <!-- ==================== 3. SIGNAL ==================== -->
+  <section>
+    <div class="shead"><span class="no">03</span><h2>Signal over decoration</h2></div>
+    <p class="sub">A production tool is judged on how fast it can be read, not
+      on how much it explains. Three passes of subtraction.</p>
+
+    <div class="chg">
+      <div class="ttl"><h3>Confirmation strings removed</h3></div>
+      <div class="ba">
+        <div class="before"><p class="lbl">Before</p>
+          <p>Picking a track printed <em>"The Sound of Music selected"</em>
+            underneath it. The same pattern repeated for other controls.</p></div>
+        <div class="after"><p class="lbl">After</p>
+          <p>Gone. The tile is visibly selected — <b>the state is the
+            confirmation</b>.</p></div>
+      </div>
+      <div class="why"><p class="lbl">Why</p>
+        <p>Narrating a result the user can already see costs a line of vertical
+          space and adds nothing. Text should appear when something is
+          <em>not</em> visible — a cost, a constraint, an error.</p></div>
+    </div>
+
+    <div class="chg">
+      <div class="ttl"><h3>Chevrons removed from the setting chips</h3></div>
+      <div class="ba">
+        <div class="before"><p class="lbl">Before</p>
+          <p>Every setting chip carried a ▾, which promises a dropdown. There is
+            no dropdown — the chips cycle their value in place.</p></div>
+        <div class="after"><p class="lbl">After</p>
+          <p>Plain chips. <b>18px recovered per chip</b>, which is precisely what
+            made the one-row control bar fit.</p></div>
+      </div>
+      <div class="why"><p class="lbl">Why</p>
+        <p>An affordance that lies is worse than no affordance: it buys a click
+          that returns nothing the visitor expected. Removing them was correct
+          on its own terms — the space was a bonus.</p></div>
+    </div>
+
+    <div class="chg">
+      <div class="ttl"><h3>Every control states its cost, next to the button</h3></div>
+      <div class="ba">
+        <div class="before"><p class="lbl">Before</p>
+          <p>Resolution, length and ratio changed what a render costs, and the
+            page did not say so until later in the flow.</p></div>
+        <div class="after"><p class="lbl">After</p>
+          <p>A live line under the CTA restating <b>render time and credit
+            cost</b> for the exact settings currently picked.</p></div>
+      </div>
+      <div class="why"><p class="lbl">Why</p>
+        <p>Credits are the unit of trust in a generative product. Showing the
+          price at the moment of the decision — rather than on a pricing page —
+          is what stops the first render from feeling like a gamble.</p></div>
+    </div>
+  </section>
+
+  <!-- ==================== 4. RETURNING ==================== -->
+  <section>
+    <div class="shead"><span class="no">04</span><h2>The returning user gets a different page</h2></div>
+    <p class="sub">The old page was identical for a stranger and for someone on
+      their fortieth render. Those are different problems. Toggle
+      <b>Sign in</b> in the prototype to see the second one.</p>
+
+    <div class="chg">
+      <div class="ttl"><h3>Renders only exist once you have some</h3></div>
+      <div class="ba">
+        <div class="before"><p class="lbl">Before</p>
+          <p>A job panel on the page regardless of session — showing a
+            stranger's renders to a first-time visitor, or an empty box.</p></div>
+        <div class="after"><p class="lbl">After</p>
+          <p>Hidden when signed out. Signed in, it shows <b>what is rendering,
+            what is queued and what is done</b>, with live stage and
+            progress.</p></div>
+      </div>
+      <div class="why"><p class="lbl">Why</p>
+        <p>State is the thing a landing page cannot have, and it is the reason
+          to come back to a product page rather than to the marketing site.
+          Shown to the wrong person it is noise; shown to the right one it is
+          the whole value.</p></div>
+    </div>
+
+    <div class="chg">
+      <div class="ttl"><h3>A render in flight can be edited, not just cancelled</h3>
+        <span class="tag">New</span></div>
+      <div class="ba">
+        <div class="before"><p class="lbl">Before</p>
+          <p>A running job offered <b>Cancel</b> and nothing else. The only way
+            to change a video you could already tell was wrong was to throw it
+            away and start over.</p></div>
+        <div class="after"><p class="lbl">After</p>
+          <p><b>Edit</b> sits above Cancel, at full contrast. Cancel stays
+            muted underneath.</p></div>
+      </div>
+      <div class="why"><p class="lbl">Why</p>
+        <p>The storyboard stage is the last point where a change is cheap. After
+          it, the user is paying for a render they already know is wrong.
+          <b>Cancel-or-wait was the wrong pair of choices</b>, and Cancel being
+          the only button made it look like the intended one.</p></div>
+    </div>
+
+    <div class="chg">
+      <div class="ttl"><h3>The track shelf becomes your library</h3></div>
+      <div class="ba">
+        <div class="before"><p class="lbl">Before</p>
+          <p>My Songs was another tab inside the attach modal — the same two
+            clicks away on every visit, forever.</p></div>
+        <div class="after"><p class="lbl">After</p>
+          <p>The four samples are replaced by <b>your own tracks</b> in the same
+            shelf. The demo content is scaffolding that removes itself.</p></div>
+      </div>
+      <div class="why"><p class="lbl">Why</p>
+        <p>Sample content should occupy the slot the real content will later
+          fill, so the layout a visitor learns on day one is the layout they
+          keep. It also means the shelf never has to render an empty
+          state.</p></div>
+    </div>
+  </section>
+
+  <!-- ==================== 5. ONE LANGUAGE ==================== -->
+  <section>
+    <div class="shead"><span class="no">05</span><h2>One design language, two dialects</h2></div>
+    <p class="sub">The generator page and the marketing site did not look like
+      the same company. They do now — without the product page becoming a second
+      landing page.</p>
+
+    <div class="chg">
+      <div class="ttl"><h3>The page now uses the tokens the site actually ships</h3></div>
+      <div class="ba">
+        <div class="before"><p class="lbl">Before</p>
+          <p>A leftover component-library palette, including an orange
+            <span class="mono">--primary</span> that <b>zero of the page's 883
+            elements referenced</b>. The ground was a different black from the
+            rest of the site.</p></div>
+        <div class="after"><p class="lbl">After</p>
+          <p>The shipped dark tokens: <span class="mono">#141614</span> ground,
+            DM Sans and DM Mono, <span class="mono">#1ED760</span> as the only
+            saturated colour, and the landing page's sweep on the CTA.</p></div>
+      </div>
+      <div class="why"><p class="lbl">Why</p>
+        <p>Dead tokens are how a codebase drifts: nobody deletes them, so the
+          next page inherits them. Everything on the new page reads from the
+          variables, which is what makes the design system in this folder
+          enforceable rather than advisory.</p></div>
+    </div>
+
+    <div class="chg">
+      <div class="ttl"><h3>The tool owns the fold</h3></div>
+      <div class="ba">
+        <div class="before"><p class="lbl">Before</p>
+          <p>A marketing headline, a promise and proof above the tool — a second
+            pitch, delivered to people who had already accepted the first
+            one.</p></div>
+        <div class="after"><p class="lbl">After</p>
+          <p>One mono context line, then the composer, <b>28px below the top
+            bar</b>. Recipes, FAQ and the rest sit below the fold, for the
+            visitors who want them.</p></div>
+      </div>
+      <div class="why"><p class="lbl">Why</p>
+        <p>Someone on this page either searched for a music-video generator or
+          came through the pitch already. Re-pitching them costs a screen of
+          scroll and implies the tool is not ready. <b>Depth belongs behind
+          panels, not below the fold.</b></p></div>
+    </div>
+  </section>
+
+  <!-- ==================== KEPT ==================== -->
+  <section>
+    <div class="shead"><span class="no">06</span><h2>What we deliberately did not change</h2></div>
+    <p class="sub">Redesigns lose things quietly. These were checked and kept.</p>
+    <div class="keep"><span class="tick">✓</span><p><b>Every capability in the
+      old attach modal.</b> Upload, paste-a-link, Create Song, My Songs and the
+      four samples all survive — relocated, not removed.</p></div>
+    <div class="keep"><span class="tick">✓</span><p><b>The URL and the page's
+      SEO shape.</b> It remains one indexable page with the FAQ in the markup,
+      which is what the traffic is arriving for.</p></div>
+    <div class="keep"><span class="tick">✓</span><p><b>Every setting.</b> Ratio,
+      resolution, length, style, captions and the rest are all still reachable —
+      the common ones on the row, the rest one expand away.</p></div>
+    <div class="keep"><span class="tick">✓</span><p><b>The brand's one moment of
+      motion.</b> The CTA sweep is the landing page's, unchanged, so the two
+      surfaces share a signature.</p></div>
+    <div class="keep"><span class="tick">✓</span><p><b>Contrast.</b> Body text
+      clears 4.5:1 throughout; the muted token is a solid value rather than an
+      alpha, so it does not drift over different surfaces.</p></div>
+  </section>
+
+  <!-- ==================== OPEN ==================== -->
+  <section>
+    <div class="shead"><span class="no">07</span><h2>Open items for your team</h2></div>
+    <p class="sub">Decisions that need your side of the product, not ours.</p>
+    <div class="open">
+      <h3>Before this ships</h3>
+      <ul>
+        <li><b>The Edit route.</b> The Edit button points at
+          <span class="mono">/studio/edit/&lt;job&gt;</span>, a placeholder.
+          Point it at the real editor.</li>
+        <li><b>The four sample tracks.</b> They are the ones from the live
+          modal. Now that they are on the page rather than behind it, they are
+          the first thing a visitor hears — worth choosing on merit.</li>
+        <li><b>Credit and render-time figures</b> are plausible placeholders.
+          Swap in the real numbers; the line updates from one lookup
+          table.</li>
+        <li><b>Sign-in is a front-end toggle</b> in the prototype, standing in
+          for your real session state.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <span>Solmi · generator page redesign</span>
+    <span class="sp"></span>
+    <span class="mono">Shizudio · 20 Sep 2026</span>
+  </footer>
+</div>
+
+<script>
+const root=document.documentElement, tog=document.getElementById('tog');
+tog.addEventListener('click',()=>{
+  const light=root.getAttribute('data-theme')==='light';
+  root.setAttribute('data-theme', light?'dark':'light');
+  tog.textContent = light?'Light':'Dark';
+});
+</script>
+</body>
+</html>
