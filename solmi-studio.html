@@ -153,6 +153,13 @@ h1{margin:0;font-size:20px;font-weight:500;letter-spacing:-.018em;color:var(--in
   box-shadow:0 0 0 1px var(--action)}
 .look img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;
   opacity:.72;transition:opacity .16s var(--ease)}
+/* Hover plays the look, same as the recipe tiles below. The clip is pinned to
+   the thumbnail's box rather than the whole card, so it never covers the name,
+   and it shares the img's aspect so the two line up exactly. */
+.look video{position:absolute;top:0;left:0;width:100%;aspect-ratio:16/10;
+  object-fit:cover;display:block;opacity:0;
+  transition:opacity .35s var(--ease)}
+.look video.on{opacity:1}
 .look:hover img,.look[aria-pressed=true] img{opacity:1}
 .look .nm{display:block;padding:9px 11px;font-size:13px;font-weight:500;
   letter-spacing:-.01em}
@@ -958,6 +965,47 @@ document.querySelectorAll('.eg').forEach(b=>
     prompt.value=b.textContent.trim();
     prompt.focus();
   }));
+
+/* Look cards preview on hover. Separate names from the grid's mount/unmount
+   because both live in this scope, and the uuid comes off the thumbnail src so
+   the markup needs no second copy of it. */
+if(matchMedia('(hover:hover) and (pointer:fine)').matches){
+  const looksRow=document.querySelector('.looks');
+  const uuidOf=el=>{
+    const m=(el.querySelector('img')?.src||'').match(/narrative-thumb-([0-9a-f-]{36})/);
+    return m?m[1]:null;
+  };
+  const mountLook=el=>{
+    let v=el.querySelector('video');
+    if(v) return v;
+    const u=uuidOf(el); if(!u) return null;
+    v=document.createElement('video');
+    v.src=CDN+'narrative-video-'+u+'.mp4';
+    v.loop=true; v.muted=true; v.playsInline=true; v.preload='auto';
+    v.setAttribute('aria-hidden','true');
+    el.insertBefore(v, el.querySelector('img').nextSibling);
+    v.addEventListener('canplay',()=>v.classList.add('on'),{once:true});
+    return v;
+  };
+  const unmountLook=el=>{
+    const v=el.querySelector('video');
+    if(!v) return;
+    v.pause(); v.removeAttribute('src'); v.load(); v.remove();
+  };
+  looksRow.addEventListener('pointerover',e=>{
+    const el=e.target.closest('.look');
+    if(!el||el.contains(e.relatedTarget)) return;
+    const v=mountLook(el); if(!v) return;
+    const go=()=>{ const p=v.play(); if(p) p.catch(()=>{}); };
+    go();
+    /* a play() issued before the first frame is ready can be dropped silently */
+    if(v.readyState<3) v.addEventListener('canplay',go,{once:true});
+  });
+  looksRow.addEventListener('pointerout',e=>{
+    const el=e.target.closest('.look');
+    if(el&&!el.contains(e.relatedTarget)) unmountLook(el);
+  });
+}
 
 /* look cards behave as one choice, not seven toggles */
 document.querySelectorAll('.look').forEach(b=>
