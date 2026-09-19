@@ -168,7 +168,9 @@ h1{margin:0;font-size:20px;font-weight:500;letter-spacing:-.018em;color:var(--in
 .look[aria-pressed=true] .tick{display:grid}
 
 /* example prompts: the cure for a 128,000px blank box */
-.egs{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:10px 2px 0}
+/* Above the box, not below it: examples are a way in, and underneath they read
+   as an afterthought you notice only once you are already stuck. */
+.egs{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:2px 2px 0}
 .egs .lbl{font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.12em;
   text-transform:uppercase;color:var(--ink-3)}
 .eg{height:28px;padding:0 11px;border:1px solid var(--hair);border-radius:999px;
@@ -201,7 +203,8 @@ h1{margin:0;font-size:20px;font-weight:500;letter-spacing:-.018em;color:var(--in
   place-items:center;font-size:13px;line-height:1}
 /* Sample songs get the weight, because they are the only source that costs a
    cold visitor nothing. Upload / link / create sit under them as text. */
-.samples{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.samples{display:grid;grid-template-columns:auto repeat(4,1fr);gap:8px;
+  align-items:stretch}
 .sample{display:flex;align-items:center;gap:9px;padding:9px 10px;
   border:1px solid var(--hair-2);border-radius:10px;background:var(--ctrl);
   color:var(--ink);text-align:left;cursor:pointer;font-family:inherit;
@@ -332,7 +335,12 @@ h1 em{font-style:normal;color:var(--action)}
 .attach.has{border-style:solid;border-color:var(--action)}
 .attach.has .req{display:none}
 .attach.has svg{color:var(--action)}
-.prompt{display:block;width:100%;min-height:132px;margin:12px 0 0;padding:2px 4px;
+/* The + sits where typing starts, aligned to the first line rather than the
+   control bar, so the one control that brings material in is next to the place
+   you describe what to do with it. */
+.pbox{display:flex;align-items:flex-start;gap:10px;margin:10px 0 0}
+.pbox .plus-wrap{margin-top:1px}
+.prompt{display:block;width:100%;min-height:88px;margin:12px 0 0;padding:4px 2px;
   border:0;background:none;resize:vertical;color:var(--ink);
   font-family:inherit;font-size:16.5px;line-height:1.55;letter-spacing:-.011em}
 .prompt::placeholder{color:var(--ink-3)}
@@ -342,25 +350,33 @@ h1 em{font-style:normal;color:var(--action)}
    plus More (140px) left only 110px for a 211px button, so revealing the extra
    options bumped the CTA onto a new line and shifted everything below it by
    62px. Now expanding costs zero height. */
-.c-bar{display:flex;flex-direction:column;gap:11px;margin-top:12px}
-.opts{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+/* Settings and the action share one row now, baseline-aligned. That only works
+   because the + left the bar and the chips are tight enough to clear the CTA
+   even fully expanded — measured, not assumed. */
+.c-bar{display:flex;align-items:center;gap:14px;margin-top:12px}
+.c-act{margin-left:auto}
+.opts{display:flex;align-items:center;gap:6px;flex:1;min-width:0}
 
 /* The + sits at the left of the control bar, where ChatGPT and Claude put it:
    the one control that brings your own material in. Everything it opens used to
    be a row of text links under the samples. */
-.plus-wrap{position:relative;flex:none}
-.plus{width:36px;height:36px;border:1px solid var(--hair-2);border-radius:50%;
-  background:var(--ctrl);color:var(--ink);cursor:pointer;display:grid;
-  place-items:center;padding:0;
-  transition:background .16s var(--ease),transform .2s var(--ease)}
-.plus:hover{background:var(--ctrl-hi)}
-.plus svg{width:15px;height:15px;transition:transform .24s var(--ease)}
-.plus-wrap.open .plus{background:var(--ctrl-hi)}
+.plus-wrap{position:relative;flex:none;display:flex}
+/* Square and card-shaped: it is the first tile on the track shelf, so it reads
+   as one of the sources rather than as chrome borrowed from elsewhere. */
+.plus{width:auto;aspect-ratio:1;align-self:stretch;border:1px dashed var(--hair-2);
+  border-radius:10px;background:var(--ctrl);color:var(--ink-2);cursor:pointer;
+  display:grid;place-items:center;padding:0;
+  transition:background .16s var(--ease),color .16s var(--ease),
+             border-color .16s var(--ease)}
+.plus:hover{color:var(--ink);border-color:var(--ink-3)}
+.plus svg{width:16px;height:16px;transition:transform .24s var(--ease)}
+.plus-wrap.open .plus{background:var(--ctrl-hi);color:var(--ink);
+  border-style:solid;border-color:var(--ink-3)}
 .plus-wrap.open .plus svg{transform:rotate(45deg)}
-.plusmenu{position:absolute;bottom:calc(100% + 9px);left:0;z-index:30;
+.plusmenu{position:absolute;top:calc(100% + 9px);left:0;z-index:30;
   min-width:210px;padding:6px;border:1px solid var(--hair-2);border-radius:12px;
   background:var(--raised);box-shadow:var(--lift);
-  opacity:0;visibility:hidden;transform:translateY(4px);
+  opacity:0;visibility:hidden;transform:translateY(-4px);
   transition:opacity .16s var(--ease),transform .16s var(--ease),
              visibility 0s linear .16s}
 .plus-wrap.open .plusmenu{opacity:1;visibility:visible;transform:none;
@@ -398,7 +414,7 @@ h1 em{font-style:normal;color:var(--action)}
   border-color .16s var(--ease)}
 .opt:hover{background:var(--ctrl-hi);color:var(--ink)}
 .opt svg{width:14px;height:14px;flex:none}
-.opt .cv{width:11px;height:11px;opacity:.6;margin-left:1px}
+
 .opt.is-on{color:var(--ink);border-color:var(--hair-2)}
 .opt.is-on>svg:first-child{color:var(--action)}
 .c-bar .sp{flex:1}
@@ -657,14 +673,13 @@ footer a:hover{color:var(--ink)}
       </div>
 
       <div class="composer">
-        <textarea class="prompt" rows="4" placeholder="Describe the video you want. A mood, a place, a reference — anything."></textarea>
         <div class="egs">
           <span class="lbl">Try</span>
           <button class="eg" type="button">Neon-lit night drive through Tokyo</button>
           <button class="eg" type="button">Handheld Super 8, beach at golden hour</button>
           <button class="eg" type="button">One-take black and white performance</button>
         </div>
-
+        <textarea class="prompt" rows="3" placeholder="Describe the video you want. A mood, a place, a reference — anything."></textarea>
         <!-- The sources were all behind one button marked REQUIRED. They are the
              reason a visitor with no file can still start, so they are visible. -->
         <div class="track" id="track">
@@ -673,6 +688,17 @@ footer a:hover{color:var(--ink)}
             <span class="got"><span id="gotName"></span> selected</span>
           </div>
           <div class="samples">
+            <div class="plus-wrap" id="plusWrap">
+            <button class="plus" id="plus" type="button" aria-haspopup="true"
+                    aria-expanded="false" aria-controls="plusmenu" aria-label="Add a track">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            <div class="plusmenu" id="plusmenu" role="menu" aria-label="Add a track">
+              <button class="pmi" role="menuitem" type="button" data-src="Uploaded file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v13"/></svg>Upload a file</button>
+              <button class="pmi" role="menuitem" type="button" data-src="Linked track"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>Paste a link</button>
+              <button class="pmi" role="menuitem" type="button" data-src="New song"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>Create a song</button>
+            </div>
+          </div>
             <button class="sample" type="button" aria-pressed="false" data-song="Paper Boats"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Paper Boats</b><i>Folk · longing</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
             <button class="sample" type="button" aria-pressed="false" data-song="Floating Home"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Floating Home</b><i>Dream pop</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
             <button class="sample" type="button" aria-pressed="false" data-song="The Sound of Music"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>The Sound of Music</b><i>Classical</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
@@ -681,26 +707,15 @@ footer a:hover{color:var(--ink)}
         </div>
         <div class="c-bar">
           <div class="opts" id="opts">
-            <div class="plus-wrap" id="plusWrap">
-              <button class="plus" id="plus" type="button" aria-haspopup="true"
-                      aria-expanded="false" aria-controls="plusmenu" aria-label="Add a track">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-              </button>
-              <div class="plusmenu" id="plusmenu" role="menu" aria-label="Add a track">
-                <button class="pmi" role="menuitem" type="button" data-src="Uploaded file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v13"/></svg>Upload a file</button>
-                <button class="pmi" role="menuitem" type="button" data-src="Linked track"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>Paste a link</button>
-                <button class="pmi" role="menuitem" type="button" data-src="New song"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>Create a song</button>
-              </div>
-            </div>
-            <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18v12H3z"/></svg>16:9<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-            <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M8 12h8"/></svg>720p<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+            <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18v12H3z"/></svg>16:9</button>
+            <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M8 12h8"/></svg>720p</button>
             <button class="more" id="more2" type="button" aria-expanded="false" aria-controls="extras" aria-label="Show more options"><span class="mlbl">More</span><svg class="ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
             <div class="extras" id="extras">
-              <button class="opt extra is-on" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>Studio<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-              <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 11l3 3 3-4 4 5"/></svg>Images<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-              <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M8 11h3M13 11h3M8 14h8"/></svg>Captions<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-              <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12a7 7 0 1 1 7 7"/><path d="M12 8v4l3 2"/></svg>Auto style<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
-              <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"/><path d="M3 12h18M12 3c3 3 3 15 0 18"/></svg>Public<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+              <button class="opt extra is-on" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>Studio</button>
+              <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 11l3 3 3-4 4 5"/></svg>Images</button>
+              <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M8 11h3M13 11h3M8 14h8"/></svg>Captions</button>
+              <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12a7 7 0 1 1 7 7"/><path d="M12 8v4l3 2"/></svg>Auto style</button>
+              <button class="opt extra" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"/><path d="M3 12h18M12 3c3 3 3 15 0 18"/></svg>Public</button>
             </div>
           </div>
           <div class="c-act">
