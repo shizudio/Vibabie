@@ -296,8 +296,23 @@ body.signed .sample.mine{display:flex}
 .job .act{grid-column:2;grid-row:2;align-self:center;justify-self:end;
   background:none;border:1px solid var(--hair-2);border-radius:8px;
   height:28px;padding:0 11px;font-size:12px;color:var(--ink-2);cursor:pointer;
-  transition:background .16s var(--ease),color .16s var(--ease)}
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  white-space:nowrap;text-decoration:none;
+  transition:background .16s var(--ease),color .16s var(--ease),
+             border-color .16s var(--ease)}
 .job .act:hover{background:var(--ctrl);color:var(--ink)}
+
+/* A render in flight has two things you can do to it, and they are not equal.
+   Editing is the one you actually want at Storyboard — that is the last point
+   where a change is cheap. Cancel is the escape hatch. So Edit sits on top,
+   reads at full ink, and Cancel stays muted underneath. */
+.job .acts{grid-column:2;grid-row:2;align-self:center;justify-self:end;
+  display:flex;flex-direction:column;align-items:stretch;gap:6px}
+.job .acts .act{grid-column:auto;grid-row:auto;justify-self:auto;
+  align-self:stretch}
+.job .act.edit{color:var(--ink)}
+.job .act.edit:hover{background:var(--ctrl-hi);border-color:var(--ink-3)}
+.job .act.edit svg{width:12px;height:12px;flex:none}
 
 /* stages belong to a job, not to a marketing explainer — they show position */
 .stages{grid-column:1 / -1;display:flex;align-items:center;gap:6px;
@@ -757,7 +772,14 @@ footer a:hover{color:var(--ink)}
           <span class="t">Neon Exit</span>
           <span class="state">Storyboard</span>
           <span class="meta">16:9 · 1080p · Y2K Glossy Futuristic · 1:01</span>
-          <button class="act" type="button">Cancel</button>
+          <div class="acts">
+            <a class="act edit" href="/studio/edit/neon-exit" data-job="neon-exit">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M11.2 2.6a1.7 1.7 0 0 1 2.4 2.4L5.8 12.8l-3.2.8.8-3.2z"/>
+              </svg>Edit</a>
+            <button class="act" type="button">Cancel</button>
+          </div>
           <div class="stages">
             <span class="stg done">Analyze</span>
             <span class="stg done">Style</span>
