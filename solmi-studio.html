@@ -178,10 +178,17 @@ h1{margin:0;font-size:20px;font-weight:500;letter-spacing:-.018em;color:var(--in
 .track .hd .lbl{font-family:"DM Mono",monospace;font-size:10.5px;
   letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
 .track .hd .got{margin-left:auto;display:none;align-items:center;gap:7px;
-  font-size:13px;font-weight:500}
+  font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink-3)}
 .track.has .hd .got{display:flex}
-.track.has .samples,.track.has .srcs{display:none}
-.track.has{padding:11px 14px}
+/* Selecting a track used to collapse the whole shelf, which made four cards and
+   three links vanish under the cursor and hid what else was on offer. The set
+   stays put: the chosen one lights up, the rest recede but stay reachable, so
+   changing your mind is still one click. */
+.track.has .sample:not([aria-pressed=true]),
+.track.has .src{opacity:.38;transition:opacity .18s var(--ease)}
+.track.has .sample:not([aria-pressed=true]):hover,
+.track.has .src:hover{opacity:1}
 .track .hd .got .x{width:20px;height:20px;border:0;border-radius:50%;
   background:var(--ctrl);color:var(--ink-2);cursor:pointer;display:grid;
   place-items:center;font-size:13px;line-height:1}
@@ -193,6 +200,14 @@ h1{margin:0;font-size:20px;font-weight:500;letter-spacing:-.018em;color:var(--in
   color:var(--ink);text-align:left;cursor:pointer;font-family:inherit;
   transition:background .16s var(--ease),border-color .16s var(--ease)}
 .sample:hover{background:var(--ctrl-hi);border-color:var(--hair-2)}
+.sample[aria-pressed=true]{border-color:var(--action);
+  background:color-mix(in srgb,var(--action) 12%,var(--ctrl))}
+.sample[aria-pressed=true] .ic{background:var(--action);color:var(--action-ink,#04140D)}
+.sample .x{margin-left:auto;flex:none;width:18px;height:18px;border:0;
+  border-radius:50%;background:transparent;color:var(--ink-3);cursor:pointer;
+  display:none;place-items:center;font-size:13px;line-height:1;padding:0}
+.sample[aria-pressed=true] .x{display:grid}
+.sample .x:hover{background:var(--ctrl-hi);color:var(--ink)}
 .sample .ic{flex:none;width:26px;height:26px;border-radius:7px;display:grid;
   place-items:center;background:color-mix(in srgb,var(--action) 16%,transparent);
   color:var(--action)}
@@ -595,15 +610,13 @@ footer a:hover{color:var(--ink)}
         <div class="track" id="track">
           <div class="hd">
             <span class="lbl">Your track</span>
-            <span class="got"><span id="gotName"></span>
-              <button class="x" id="clearTrack" type="button" aria-label="Remove track">×</button>
-            </span>
+            <span class="got"><span id="gotName"></span> selected</span>
           </div>
           <div class="samples">
-            <button class="sample" type="button" data-song="Paper Boats"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Paper Boats</b><i>Folk · longing</i></span></button>
-            <button class="sample" type="button" data-song="Floating Home"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Floating Home</b><i>Dream pop</i></span></button>
-            <button class="sample" type="button" data-song="The Sound of Music"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>The Sound of Music</b><i>Classical</i></span></button>
-            <button class="sample" type="button" data-song="Sweet Dreams"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Sweet Dreams</b><i>Pop · romantic</i></span></button>
+            <button class="sample" type="button" aria-pressed="false" data-song="Paper Boats"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Paper Boats</b><i>Folk · longing</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
+            <button class="sample" type="button" aria-pressed="false" data-song="Floating Home"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Floating Home</b><i>Dream pop</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
+            <button class="sample" type="button" aria-pressed="false" data-song="The Sound of Music"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>The Sound of Music</b><i>Classical</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
+            <button class="sample" type="button" aria-pressed="false" data-song="Sweet Dreams"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Sweet Dreams</b><i>Pop · romantic</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
           </div>
           <div class="srcs">
             <button class="src" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v13"/></svg>Upload a file</button>
@@ -892,11 +905,16 @@ function setSong(name){
   song=name;
   track.classList.toggle('has',!!name);
   gotName.textContent=name||'';
+  document.querySelectorAll('.sample').forEach(b=>
+    b.setAttribute('aria-pressed', String(b.dataset.song===name)));
   syncCTA();
 }
 document.querySelectorAll('.sample').forEach(b=>
-  b.addEventListener('click',()=>setSong(b.dataset.song)));
-document.getElementById('clearTrack').addEventListener('click',()=>setSong(null));
+  b.addEventListener('click',e=>{
+    /* the x clears without re-picking the card it sits on */
+    if(e.target.closest('.x')){ e.stopPropagation(); setSong(null); return; }
+    setSong(b.dataset.song);
+  }));
 /* upload / link / create are real flows in the product; here they stand in */
 document.querySelectorAll('.src').forEach(b=>
   b.addEventListener('click',()=>setSong(b.textContent.trim())));
