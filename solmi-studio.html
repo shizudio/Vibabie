@@ -202,6 +202,13 @@ h1{margin:0;font-size:20px;font-weight:500;letter-spacing:-.018em;color:var(--in
    cold visitor nothing. Upload / link / create sit under them as text. */
 .samples{display:grid;grid-template-columns:auto repeat(4,1fr);gap:8px;
   align-items:stretch}
+/* Two shelves, one visible: a signed-out visitor gets the four samples, a
+   signed-in one gets their own library. Same tiles, different source. */
+/* One shelf, two sets of tiles: a signed-out visitor sees the four samples, a
+   signed-in one sees their own library. The + is the constant first tile. */
+.sample.mine{display:none}
+body.signed .sample.demo{display:none}
+body.signed .sample.mine{display:flex}
 .sample{display:flex;align-items:center;gap:9px;padding:9px 10px;
   border:1px solid var(--hair-2);border-radius:10px;background:var(--ctrl);
   color:var(--ink);text-align:left;cursor:pointer;font-family:inherit;
@@ -688,22 +695,24 @@ footer a:hover{color:var(--ink)}
             <span class="lbl">Your track</span>
           </div>
           <div class="samples">
-            <div class="plus-wrap" id="plusWrap">
-            <button class="plus" id="plus" type="button" aria-haspopup="true"
-                    aria-expanded="false" aria-controls="plusmenu" aria-label="Add a track">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-            </button>
-            <div class="plusmenu" id="plusmenu" role="menu" aria-label="Add a track">
-              <button class="pmi" role="menuitem" type="button" data-src="Uploaded file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v13"/></svg>Upload a file</button>
-              <button class="pmi" role="menuitem" type="button" data-src="Linked track"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>Paste a link</button>
-              <button class="pmi" role="menuitem" type="button" data-src="New song"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>Create a song</button>
+              <div class="plus-wrap" id="plusWrap">
+                <button class="plus" id="plus" type="button" aria-haspopup="true"
+                        aria-expanded="false" aria-controls="plusmenu" aria-label="Add a track"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+                <div class="plusmenu" id="plusmenu" role="menu" aria-label="Add a track">
+                  <button class="pmi" role="menuitem" type="button" data-src="Uploaded file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v13"/></svg>Upload a file</button>
+                  <button class="pmi" role="menuitem" type="button" data-src="Linked track"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>Paste a link</button>
+                  <button class="pmi" role="menuitem" type="button" data-src="New song"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>Create a song</button>
+                </div>
+              </div>
+              <button class="sample demo" type="button" aria-pressed="false" data-song="Paper Boats"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Paper Boats</b><i>Folk · longing</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
+              <button class="sample demo" type="button" aria-pressed="false" data-song="Floating Home"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Floating Home</b><i>Dream pop</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
+              <button class="sample demo" type="button" aria-pressed="false" data-song="The Sound of Music"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>The Sound of Music</b><i>Classical</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
+              <button class="sample demo" type="button" aria-pressed="false" data-song="Sweet Dreams"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Sweet Dreams</b><i>Pop · romantic</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
+              <button class="sample mine" type="button" aria-pressed="false" data-song="Neon Exit"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Neon Exit</b><i>1:01</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
+              <button class="sample mine" type="button" aria-pressed="false" data-song="Midnight Almost"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Midnight Almost</b><i>0:35</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
+              <button class="sample mine" type="button" aria-pressed="false" data-song="Verdigris Afterglow"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Verdigris Afterglow</b><i>1:34</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
+              <button class="sample mine" type="button" aria-pressed="false" data-song="Static Bound"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Static Bound</b><i>1:01</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
             </div>
-          </div>
-            <button class="sample" type="button" aria-pressed="false" data-song="Paper Boats"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Paper Boats</b><i>Folk · longing</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
-            <button class="sample" type="button" aria-pressed="false" data-song="Floating Home"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Floating Home</b><i>Dream pop</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
-            <button class="sample" type="button" aria-pressed="false" data-song="The Sound of Music"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>The Sound of Music</b><i>Classical</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
-            <button class="sample" type="button" aria-pressed="false" data-song="Sweet Dreams"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Sweet Dreams</b><i>Pop · romantic</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
-          </div>
         </div>
         <div class="c-bar">
           <div class="opts" id="opts">
@@ -1091,6 +1100,7 @@ function setRail(mini,remember){
 }
 function setReturning(on){
   jobs.hidden=!on;
+  body.classList.toggle('signed',on);
   signin.textContent=on?'Sign out':'Sign in';
   try{ localStorage.setItem(LS.user, on?'1':''); }catch(e){}
   /* the rail follows the user unless they have set it themselves */
@@ -1101,6 +1111,7 @@ function setReturning(on){
 let returning=false, railPref=null;
 try{ returning=!!localStorage.getItem(LS.user); railPref=localStorage.getItem(LS.rail); }catch(e){}
 jobs.hidden=!returning;
+body.classList.toggle('signed',returning);
 signin.textContent=returning?'Sign out':'Sign in';
 setRail(railPref? railPref==='mini' : !returning, false);
 
