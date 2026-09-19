@@ -344,6 +344,33 @@ h1 em{font-style:normal;color:var(--action)}
    62px. Now expanding costs zero height. */
 .c-bar{display:flex;flex-direction:column;gap:11px;margin-top:12px}
 .opts{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+
+/* The + sits at the left of the control bar, where ChatGPT and Claude put it:
+   the one control that brings your own material in. Everything it opens used to
+   be a row of text links under the samples. */
+.plus-wrap{position:relative;flex:none}
+.plus{width:36px;height:36px;border:1px solid var(--hair-2);border-radius:50%;
+  background:var(--ctrl);color:var(--ink);cursor:pointer;display:grid;
+  place-items:center;padding:0;
+  transition:background .16s var(--ease),transform .2s var(--ease)}
+.plus:hover{background:var(--ctrl-hi)}
+.plus svg{width:15px;height:15px;transition:transform .24s var(--ease)}
+.plus-wrap.open .plus{background:var(--ctrl-hi)}
+.plus-wrap.open .plus svg{transform:rotate(45deg)}
+.plusmenu{position:absolute;bottom:calc(100% + 9px);left:0;z-index:30;
+  min-width:210px;padding:6px;border:1px solid var(--hair-2);border-radius:12px;
+  background:var(--raised);box-shadow:var(--lift);
+  opacity:0;visibility:hidden;transform:translateY(4px);
+  transition:opacity .16s var(--ease),transform .16s var(--ease),
+             visibility 0s linear .16s}
+.plus-wrap.open .plusmenu{opacity:1;visibility:visible;transform:none;
+  transition-delay:0s}
+.pmi{display:flex;align-items:center;gap:10px;width:100%;height:38px;
+  padding:0 10px;border:0;border-radius:8px;background:none;color:var(--ink);
+  font-family:inherit;font-size:13.5px;font-weight:500;text-align:left;
+  cursor:pointer;transition:background .14s var(--ease)}
+.pmi:hover{background:var(--ctrl)}
+.pmi svg{width:15px;height:15px;flex:none;color:var(--ink-3)}
 .c-act{display:flex;align-items:center;gap:6px}
 /* The extras live in their own track and open sideways from the More button,
    which stays put at the right edge of the always-on options. max-width rather
@@ -651,16 +678,20 @@ footer a:hover{color:var(--ink)}
             <button class="sample" type="button" aria-pressed="false" data-song="The Sound of Music"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>The Sound of Music</b><i>Classical</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
             <button class="sample" type="button" aria-pressed="false" data-song="Sweet Dreams"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Sweet Dreams</b><i>Pop · romantic</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
           </div>
-          <div class="srcs">
-            <button class="src" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v13"/></svg>Upload a file</button>
-            <span class="sep">·</span>
-            <button class="src" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>Paste a link</button>
-            <span class="sep">·</span>
-            <button class="src" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>Create a song</button>
-          </div>
         </div>
         <div class="c-bar">
           <div class="opts" id="opts">
+            <div class="plus-wrap" id="plusWrap">
+              <button class="plus" id="plus" type="button" aria-haspopup="true"
+                      aria-expanded="false" aria-controls="plusmenu" aria-label="Add a track">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              </button>
+              <div class="plusmenu" id="plusmenu" role="menu" aria-label="Add a track">
+                <button class="pmi" role="menuitem" type="button" data-src="Uploaded file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v13"/></svg>Upload a file</button>
+                <button class="pmi" role="menuitem" type="button" data-src="Linked track"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>Paste a link</button>
+                <button class="pmi" role="menuitem" type="button" data-src="New song"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>Create a song</button>
+              </div>
+            </div>
             <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18v12H3z"/></svg>16:9<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
             <button class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M8 12h8"/></svg>720p<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
             <button class="more" id="more2" type="button" aria-expanded="false" aria-controls="extras" aria-label="Show more options"><span class="mlbl">More</span><svg class="ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
@@ -954,9 +985,21 @@ document.querySelectorAll('.sample').forEach(b=>
     if(e.target.closest('.x')){ e.stopPropagation(); setSong(null); return; }
     setSong(b.dataset.song);
   }));
-/* upload / link / create are real flows in the product; here they stand in */
-document.querySelectorAll('.src').forEach(b=>
-  b.addEventListener('click',()=>setSong(b.textContent.trim())));
+/* The + menu: upload / link / create are real flows in the product; here they
+   stand in by naming the track they would produce. */
+const plusWrap=document.getElementById('plusWrap'), plus=document.getElementById('plus');
+const closePlus=()=>{ plusWrap.classList.remove('open');
+                      plus.setAttribute('aria-expanded','false'); };
+plus.addEventListener('click',e=>{
+  e.stopPropagation();
+  const open=plusWrap.classList.toggle('open');
+  plus.setAttribute('aria-expanded',String(open));
+});
+document.querySelectorAll('.pmi').forEach(b=>
+  b.addEventListener('click',()=>{ setSong(b.dataset.src); closePlus(); }));
+/* a menu you cannot dismiss is a trap */
+document.addEventListener('click',e=>{ if(!e.target.closest('.plus-wrap')) closePlus(); });
+addEventListener('keydown',e=>{ if(e.key==='Escape') closePlus(); });
 syncCTA();
 
 /* example prompts: the cure for the blank box */
