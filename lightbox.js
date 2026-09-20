@@ -58,8 +58,15 @@ export function initLightbox(overlayEl, imgEl, captionEl, closeBtn) {
       document.body.style.overflow = ''
     }
     window.scrollTo(0, scrollY)
-    // Delay src clear so CSS transition completes before image disappears
-    setTimeout(() => { imgEl.src = '' }, 350)
+    // Delay src clear so the CSS transition completes before the image
+    // disappears — but only if the lightbox is still closed when the timer
+    // fires. Reopening within the fade window used to have its brand-new
+    // image cleared out from under it, leaving a broken <img> whose src had
+    // resolved to the page URL. Only reachable by dismissing and reopening
+    // quickly, which is exactly what people do.
+    setTimeout(() => {
+      if (!overlayEl.classList.contains('open')) imgEl.src = ''
+    }, 350)
   }
 
   closeBtn.addEventListener('click', close)
