@@ -963,7 +963,7 @@
    height change, so revealing it never reflows the page. */
 .peek-band {
   position: fixed;
-  top: 58px;                 /* the fixed topbar's lower edge */
+  top: 0;
   left: 0;
   width: 100%;
   height: 4.2vw;             /* 8:1 strip tiled at a third width => ~60px @1440 */
@@ -971,11 +971,23 @@
   z-index: 1;                /* under the topbar (--z-nav 50), over the page */
   background-image: url('/About/overscroll-pattern.webp');
   background-repeat: repeat-x;
-  background-position: center top;
+  background-position: center bottom;
   background-size: 33.333% auto;
+  /* At rest the band is ENTIRELY above the viewport — its bottom edge at
+     y=0 — not merely tucked behind the topbar. The first version parked it
+     at the topbar's lower edge and let the bar hide it, and the bar
+     auto-hides on scroll-down: the moment it slid away the band was left
+     standing there, "attached below the topbar". Hidden must mean off-screen,
+     never covered-by-something-else. Doubly so: visibility is only granted
+     while a pull is actually open (see .is-open), so even a stray transform
+     cannot leave it showing. */
   transform: translate3d(0, -100%, 0);
+  visibility: hidden;
   will-change: transform;
   pointer-events: none;
+}
+.peek-band.is-open {
+  visibility: visible;
 }
 
 /* The reveal is a flourish, not information. */
@@ -983,6 +995,3 @@
   .peek-band { display: none; }
 }
 
-@media (max-width: 767px) {
-  .peek-band { top: 54px; }  /* shorter topbar on mobile */
-}

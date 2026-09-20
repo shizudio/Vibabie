@@ -50,18 +50,31 @@ const TOP_ZONE = 64
 const IDLE_MS = 220
 
 function controller() {
-  const s = { band: null, pull: 0, height: 0, idleTimer: 0, raf: 0, springing: false }
+  const s = { band: null, pull: 0, height: 0, navH: 58, idleTimer: 0, raf: 0, springing: false }
 
   function measure() {
     if (s.band) s.height = s.band.getBoundingClientRect().height || 60
+    // The band slides out from under the topbar, so the reveal starts at the
+    // bar's lower edge — measured, since it is 58px on desktop and 54 on mobile.
+    const nav = document.querySelector('nav')
+    s.navH = nav ? Math.round(nav.getBoundingClientRect().height) : 58
   }
 
   function paint() {
     s.raf = 0
     if (!s.band) return
     const shown = Math.min(s.pull, s.height * MAX_REVEAL)
-    const pct = s.height ? (shown / s.height) * 100 : 0
-    s.band.style.transform = `translate3d(0, ${pct - 100}%, 0)`
+    // At rest: bottom edge at y=0, fully above the viewport. Open: bottom edge
+    // at navH + shown, so exactly `shown` px peek out below the topbar. The
+    // band exists only while something is showing — visibility, not just
+    // position, so it can never be left standing when the bar auto-hides.
+    if (shown > 0.5) {
+      s.band.classList.add('is-open')
+      s.band.style.transform = `translate3d(0, calc(-100% + ${s.navH + shown}px), 0)`
+    } else {
+      s.band.style.transform = 'translate3d(0, -100%, 0)'
+      s.band.classList.remove('is-open')
+    }
   }
 
   function schedulePaint() {
