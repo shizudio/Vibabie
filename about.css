@@ -943,58 +943,52 @@
 }
 
 /* ── OVERSCROLL PEEK ────────────────────────────────────────────────────────
-   A band of the silk floral hidden ABOVE the top of the document, glimpsed
-   only when the visitor rubber-bands past the top and gone the moment the
-   spring returns. No JS, no scroll listener: the browser's own overscroll
-   does the reveal.
+   A band of the silk floral, glimpsed only when the visitor rubber-bands
+   past the top and gone the moment the spring returns. No JS, no scroll
+   listener — the browser's own overscroll does the reveal.
 
-   Why a real element and not html's background: the canvas paints its
-   background COLOUR into the overscroll region, but the background IMAGE is
-   positioned inside the document box starting at y=0 — which is precisely
-   where body's opaque paper covers it. The image could never appear above
-   the fold, whatever the position value.
+   Third approach, and the reasoning matters because the first two were both
+   aimed at the wrong place:
 
-   This strip is absolutely positioned with `bottom: 100%`, so it sits
-   directly on top of body's top edge, entirely outside the scrollable area.
-   Unreachable by normal scrolling, revealed by the spring.
+     1. Canvas background at `top` — the canvas paints its COLOUR into the
+        overscroll region, but the IMAGE is positioned inside the document
+        box starting at y=0, precisely where body's opaque paper covers it.
+     2. A real element above the document (bottom: 100%) — the scrolling
+        contents layer is bounded by the document, so content above y=0 is
+        clipped rather than painted during the spring.
 
-   Height is 12.5vw because the source is an 8:1 strip (2400x300) and
-   `bottom: 100%` needs the box to be exactly as tall as the image renders at
-   full width — so the strip's bottom edge lands flush on the document top
-   with no gap and no overlap.
+   What the rubber-band actually exposes is the top strip of the VIEWPORT.
+   So the pattern is pinned to the viewport with `background-attachment:
+   fixed`: it is painted at the top of the screen at all times, sitting
+   behind everything, and body's opaque --paper covers it completely at
+   rest. When the spring pulls the body down, the strip it uncovers already
+   has the pattern in it. Nothing has to be painted out of bounds.
 
-   body keeps `overflow-x: clip` for the full-bleed rail. That clips the X
-   axis only, so this Y-axis overflow is untouched; `hidden` would have
-   clipped it and forced the other axis to `auto`. html must stay
-   `overflow-x: visible` — on the ROOT it propagates to the viewport and
-   clips the rubber-band region itself. */
+   That is also why body MUST keep an opaque background — make it
+   transparent and the pattern shows behind the whole page.
+
+   html must stay `overflow-x: visible`: style.css pins overflow-x: clip
+   site-wide, and on the ROOT that propagates to the viewport and clips the
+   rubber-band region itself. The horizontal clamp moves down to body, where
+   `clip` affects the X axis only. */
 html {
   overflow-x: visible;
-  background: var(--paper);
+  background-color: var(--paper);
+  background-image: url('/About/overscroll-pattern.webp');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center top;
+  /* 8:1 source, so a full-width band stands ~12.5vw tall (180px at 1440). */
+  background-size: 100% auto;
 }
 
 body {
-  position: relative;
   overflow-x: clip;
   background: var(--paper);
-}
-
-body::before {
-  content: '';
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  width: 100%;
-  height: 12.5vw;
-  background-image: url('/About/overscroll-pattern.webp');
-  background-repeat: no-repeat;
-  background-position: center bottom;
-  background-size: 100% 100%;
-  pointer-events: none;
 }
 
 /* The reveal is a flourish, not information. Anyone who has asked for less
    motion keeps a plain paper ground. */
 @media (prefers-reduced-motion: reduce) {
-  body::before { display: none; }
+  html { background-image: none; }
 }
