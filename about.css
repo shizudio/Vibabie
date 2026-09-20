@@ -941,3 +941,37 @@
     scroll-behavior: auto;
   }
 }
+
+/* ── OVERSCROLL PEEK ────────────────────────────────────────────────────────
+   A band of the silk floral pattern hidden behind the page, glimpsed only
+   when the visitor rubber-bands past the top and gone the moment the spring
+   returns. No JS, no scroll listener, nothing that can jank: it is the
+   browser's own overscroll doing the reveal.
+
+   The mechanism is CSS background propagation. html's background paints the
+   whole canvas — including the strip the rubber-band exposes above the
+   document — while body's opaque --paper paints only body's own box. At rest
+   the body covers the pattern completely; during the spring the body travels
+   down and the canvas behind it shows through.
+
+   That is also why body MUST keep an opaque background: make it transparent
+   and body's box would stop covering the pattern, leaving it visible behind
+   the whole page. */
+html {
+  background-color: var(--paper);
+  background-image: url('/About/overscroll-pattern.webp');
+  background-repeat: no-repeat;
+  background-position: center top;
+  /* Full-width band; height follows the 8:1 strip (~180px at 1440). */
+  background-size: 100% auto;
+}
+
+body {
+  background: var(--paper);
+}
+
+/* The reveal is a flourish, not information. Anyone who has asked for less
+   motion keeps a plain paper ground. */
+@media (prefers-reduced-motion: reduce) {
+  html { background-image: none; }
+}
