@@ -280,12 +280,53 @@ viewport.addEventListener('wheel', e => {
 }, { passive: false })
 
 // ── Desktop: drag the native scroller ─────────────────────
+// ── Desktop drag, with flick inertia ────────────────────────────────────────
+// Dragging used to stop dead the moment the pointer lifted: you could drag the
+// rail, but flicking it did nothing, so the same gesture behaved differently
+// here than it does on a trackpad or on the phone (which already had inertia).
+// A flick now carries, decays, and settles into the snap — so scrolling,
+// dragging and flicking all "work like you expect".
 let dragging = false, dragStartX = 0, dragStartScroll = 0, moved = 0
+let dragVel = 0, dragLastX = 0, dragLastT = 0, glideRAF = null
+
+// Per-frame decay. 0.94 at ~60fps sheds roughly half the speed every 175ms:
+// long enough to read as momentum, short enough not to feel like it is sliding
+// away from you.
+const GLIDE_DECAY = 0.94
+// Below this the movement is sub-pixel; stop and let the snap take it.
+const GLIDE_MIN = 0.02
+
+function stopGlide() {
+  if (glideRAF) { cancelAnimationFrame(glideRAF); glideRAF = null }
+}
+
+function glide() {
+  stopGlide()
+  let last = performance.now()
+  const step = now => {
+    const dt = Math.min(64, now - last)
+    last = now
+    viewport.scrollLeft -= dragVel * dt
+    dragVel *= Math.pow(GLIDE_DECAY, dt / 16.67)
+    const atEnd = viewport.scrollLeft <= 0 ||
+      viewport.scrollLeft >= viewport.scrollWidth - viewport.clientWidth - 1
+    if (Math.abs(dragVel) > GLIDE_MIN && !atEnd) {
+      glideRAF = requestAnimationFrame(step)
+    } else {
+      glideRAF = null
+      clearTimeout(snapTimer); snapTimer = setTimeout(snap, 40)
+    }
+  }
+  glideRAF = requestAnimationFrame(step)
+}
+
 viewport.addEventListener('pointerdown', e => {
   if (mobileLayout) return
   cancelSnap()
+  stopGlide()                       // grabbing mid-glide takes control back
   dragging = true; moved = 0
   dragStartX = e.clientX; dragStartScroll = viewport.scrollLeft
+  dragLastX = e.clientX; dragLastT = performance.now(); dragVel = 0
   viewport.classList.add('dragging')
 })
 window.addEventListener('pointermove', e => {
@@ -293,12 +334,26 @@ window.addEventListener('pointermove', e => {
   const dx = e.clientX - dragStartX
   moved = Math.max(moved, Math.abs(dx))
   viewport.scrollLeft = dragStartScroll - dx
+
+  // Track instantaneous velocity, smoothed so one jittery sample cannot throw
+  // the flick.
+  const now = performance.now()
+  const dt = now - dragLastT
+  if (dt > 0) {
+    const v = (e.clientX - dragLastX) / dt
+    dragVel = dragVel * 0.7 + v * 0.3
+    dragLastX = e.clientX; dragLastT = now
+  }
 })
 window.addEventListener('pointerup', () => {
   if (!dragging) return
   dragging = false
   viewport.classList.remove('dragging')
-  clearTimeout(snapTimer); snapTimer = setTimeout(snap, 60)
+  // A slow release is a placement, not a flick: only carry real speed, and
+  // only if the gesture has not already gone stale in the hand.
+  const stale = performance.now() - dragLastT > 90
+  if (!stale && Math.abs(dragVel) > 0.15) glide()
+  else { clearTimeout(snapTimer); snapTimer = setTimeout(snap, 60) }
 })
 
 // ── Mobile: custom pointer + inertia (no native scroll → no swipe trembling) ──
