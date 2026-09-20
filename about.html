@@ -26,9 +26,9 @@
     </div>
   </nav>
 
-  <!-- Pull-to-reveal band. Sits behind nothing and above nothing: it slides
-       down from under the topbar when the visitor pulls at the very top of
-       the page, and springs back when they let go. See about-peek.js. -->
+  <!-- Peek band. A still layer painted BEHIND the page, under the topbar.
+       Pulling past the top slides the page off it; the bounce slides the page
+       back over it. No script — the compositor does the reveal. -->
   <div class="peek-band" id="peekBand" aria-hidden="true"></div>
 
   <main>
@@ -122,7 +122,6 @@
   <script type="module" src="script.js"></script>
   <script type="module" src="about-work.js"></script>
   <script type="module" src="about-art.js"></script>
-  <script type="module" src="about-peek.js"></script>
   <script type="module" src="vinyl-widget.js"></script>
 </body>
 </html>
