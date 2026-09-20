@@ -50,7 +50,7 @@ const TOP_ZONE = 64
 const IDLE_MS = 220
 
 function controller() {
-  const s = { band: null, pull: 0, height: 0, navH: 58, idleTimer: 0, raf: 0, springing: false }
+  const s = { band: null, intro: null, pull: 0, height: 0, navH: 58, idleTimer: 0, raf: 0, springing: false, geomSeen: false }
 
   function measure() {
     if (s.band) s.height = s.band.getBoundingClientRect().height || 60
@@ -58,6 +58,17 @@ function controller() {
     // bar's lower edge — measured, since it is 58px on desktop and 54 on mobile.
     const nav = document.querySelector('nav')
     s.navH = nav ? Math.round(nav.getBoundingClientRect().height) : 58
+  }
+
+  // The gap the landing has actually opened below the topbar, read live.
+  // During the spring the landing moves and this number moves with it — which
+  // is what lets the band close at the exact moment the landing lands, rather
+  // than on a timer of its own. Some browsers (Chrome's macOS bounce) do not
+  // move element rects during overscroll; there the gap stays 0 and the
+  // wheel-driven pull carries the effect alone.
+  function gap() {
+    if (!s.intro) return 0
+    return Math.max(0, s.intro.getBoundingClientRect().top - s.navH)
   }
 
   function paint() {
@@ -88,7 +99,7 @@ function controller() {
     s.springing = true
     const from = s.pull
     const t0 = performance.now()
-    const DUR = 420
+    const DUR = 260
     const ease = t => 1 - Math.pow(1 - t, 3)
     const step = now => {
       const t = Math.min(1, (now - t0) / DUR)
@@ -124,16 +135,38 @@ function controller() {
 
     if (s.springing) s.springing = false
     if (!s.height) measure()
+    if (s.pull <= 0) s.geomSeen = false
 
     // deltaMode 1 (Firefox line mode) needs a line height to become pixels.
     const px = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY
     s.pull = Math.min(s.height * MAX_REVEAL, s.pull + -px * PULL_RATIO)
+    // Where the landing itself is visibly displaced, the band IS that gap —
+    // never more than it (the wheel would otherwise run ahead of the landing
+    // and the band would overshoot the space it is meant to fill).
+    const g = gap()
+    if (g > 0.5) { s.geomSeen = true; s.pull = Math.min(g, s.height * MAX_REVEAL) }
     schedulePaint()
-    armIdle()
+    // The idle spring is only a fallback for browsers whose bounce does not
+    // move the landing's rect; when geometry is live, onScroll closes the band.
+    if (!s.geomSeen) armIdle()
   }
 
+  // Scroll events fire throughout the landing's snap-back. If the landing is
+  // visibly moving (geometry informative), the band is tied to it: it can never
+  // be more open than the gap the landing has left, and it hits zero the same
+  // frame the landing lands. No timer, no separate easing — one motion.
   function onScroll() {
-    if ((window.scrollY || 0) > TOP_ZONE && s.pull > 0) spring()
+    if (s.pull <= 0) return
+    if ((window.scrollY || 0) > TOP_ZONE) { spring(); return }
+    const g = gap()
+    if (g > 0.5) s.geomSeen = true
+    if (s.geomSeen) {
+      clearTimeout(s.idleTimer)
+      s.springing = false
+      s.pull = Math.min(s.pull, g)
+      if (g <= 0.5) s.pull = 0
+      schedulePaint()
+    }
   }
 
   let resizeTimer = 0
@@ -151,8 +184,10 @@ function controller() {
   return {
     attach(band) {
       s.band = band
+      s.intro = document.querySelector('.about-intro')
       s.pull = 0
       s.springing = false
+      s.geomSeen = false
       band.dataset.peekBound = '1'
       measure()
       // Images and fonts may still be settling; re-measure shortly after.
