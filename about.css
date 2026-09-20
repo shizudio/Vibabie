@@ -942,67 +942,47 @@
   }
 }
 
-/* ── OVERSCROLL PEEK ────────────────────────────────────────────────────────
-   A band of the silk floral, glimpsed only when the visitor rubber-bands
-   past the top and gone the moment the spring returns. No JS, no scroll
-   listener — the browser's own overscroll does the reveal.
+/* ── PULL-TO-REVEAL BAND ────────────────────────────────────────────────────
+   A band of the silk floral that slides down from under the topbar when the
+   visitor pulls at the very top of the page, and springs back when they stop.
 
-   Third approach, and the reasoning matters because the first two were both
-   aimed at the wrong place:
+   Three CSS-only versions of this failed before, all for the same underlying
+   reason: they relied on the browser painting something in the rubber-band
+   region — the canvas background image above y=0, then an element above the
+   document, then a viewport-fixed background. Whether any of those actually
+   paint during the spring is a compositor detail that differs by browser and
+   cannot be observed from a headless test, so every attempt was a guess.
 
-     1. Canvas background at `top` — the canvas paints its COLOUR into the
-        overscroll region, but the IMAGE is positioned inside the document
-        box starting at y=0, precisely where body's opaque paper covers it.
-     2. A real element above the document (bottom: 100%) — the scrolling
-        contents layer is bounded by the document, so content above y=0 is
-        clipped rather than painted during the spring.
+   This version owns the motion instead of borrowing it, which makes it both
+   verifiable and identical everywhere. It never calls preventDefault and
+   never touches the scroll position: at the top of the page an upward wheel
+   already does nothing, so reading it costs the visitor nothing. The native
+   bounce still happens underneath and simply adds to the effect.
 
-   What the rubber-band actually exposes is the top strip of the VIEWPORT.
-   So the pattern is pinned to the viewport with `background-attachment:
-   fixed`: it is painted at the top of the screen at all times, sitting
-   behind everything, and body's opaque --paper covers it completely at
-   rest. When the spring pulls the body down, the strip it uncovers already
-   has the pattern in it. Nothing has to be painted out of bounds.
-
-   That is also why body MUST keep an opaque background — make it
-   transparent and the pattern shows behind the whole page.
-
-   html must stay `overflow-x: visible`: style.css pins overflow-x: clip
-   site-wide, and on the ROOT that propagates to the viewport and clips the
-   rubber-band region itself. The horizontal clamp moves down to body, where
-   `clip` affects the X axis only. */
-html {
-  overflow-x: visible;
-  background-color: var(--paper);
+   The band is fixed under the topbar and hidden by a translate rather than a
+   height change, so revealing it never reflows the page. */
+.peek-band {
+  position: fixed;
+  top: 58px;                 /* the fixed topbar's lower edge */
+  left: 0;
+  width: 100%;
+  height: 4.2vw;             /* 8:1 strip tiled at a third width => ~60px @1440 */
+  min-height: 44px;
+  z-index: 1;                /* under the topbar (--z-nav 50), over the page */
   background-image: url('/About/overscroll-pattern.webp');
   background-repeat: repeat-x;
-  background-attachment: fixed;
-  /* Offset below the fixed topbar (58px, see nav in style.css). The bar is
-     fixed and does not travel with the spring, so a band pinned to `top`
-     would sit behind it and only its last couple of pixels would ever show.
-     Starting it at the bar's lower edge puts it exactly in the gap the pull
-     opens up. */
-  background-position: center 58px;
-  /* Tiled at a third of the width rather than stretched across it: the strip
-     is 8:1, so a third-width tile stands ~4.2vw tall (60px at 1440) and
-     repeats three times. Stretching one copy full-width blew the flowers up
-     to 180px and read as a photograph; tiled at this scale it reads as the
-     silk it is. */
+  background-position: center top;
   background-size: 33.333% auto;
+  transform: translate3d(0, -100%, 0);
+  will-change: transform;
+  pointer-events: none;
 }
 
-body {
-  overflow-x: clip;
-  background: var(--paper);
-}
-
-/* The reveal is a flourish, not information. Anyone who has asked for less
-   motion keeps a plain paper ground. */
+/* The reveal is a flourish, not information. */
 @media (prefers-reduced-motion: reduce) {
-  html { background-image: none; }
+  .peek-band { display: none; }
 }
 
 @media (max-width: 767px) {
-  /* Mobile topbar is 54px rather than 58px. */
-  html { background-position: center 54px; }
+  .peek-band { top: 54px; }  /* shorter topbar on mobile */
 }
