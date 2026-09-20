@@ -958,6 +958,17 @@
    and body's box would stop covering the pattern, leaving it visible behind
    the whole page. */
 html {
+  /* THE critical line. style.css pins `overflow-x: clip` on html site-wide,
+     and overflow on the root element propagates to the VIEWPORT — which
+     clips the rubber-band region itself, the exact strip this effect lives
+     in. Nothing could ever show while the root was clipped.
+
+     The horizontal clamp still matters (the art rail and work grid are
+     full-bleed), so it moves down to body rather than disappearing. `clip`
+     does not force the other axis to `auto` the way `hidden` would, so
+     vertical scrolling is untouched. */
+  overflow-x: visible;
+
   background-color: var(--paper);
   background-image: url('/About/overscroll-pattern.webp');
   background-repeat: no-repeat;
@@ -967,6 +978,7 @@ html {
 }
 
 body {
+  overflow-x: clip;
   background: var(--paper);
 }
 
