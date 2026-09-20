@@ -61,7 +61,7 @@
     /* Clear the fixed topbar and nothing more — the hero owns its own height
        now, so the old 140px top padding would just push it past the fold. */
     main {
-      padding-top: 58px;
+      padding-top: 0;
     }
   }
 
@@ -576,7 +576,7 @@
 
   @media (max-width: 767px) {
     main {
-      padding: 80px var(--page-gutter) 60px;
+      padding: 26px var(--page-gutter) 60px;   /* 80 minus the 54px now on body */
     }
 
     .about-intro {
@@ -964,10 +964,22 @@
         this page body's height is `auto`, so its paper runs the full length.
    The topbar auto-hiding is irrelevant here: the band is covered by the
    page, not by the bar. */
+/* The topbar clearance lives on body, not main. body's TOP EDGE is what
+   uncovers the band when the page is pulled, so that edge has to rest exactly
+   at the bar's lower edge. With the clearance inside main, body started 58px
+   above the viewport (the snap parked it there) and the band only began to
+   appear after 116px of travel — which is why revealing it felt so hard. */
 body {
   height: auto;
-  min-height: 100dvh;
+  margin-top: 58px;
   background: var(--paper);
+}
+
+/* Snap the intro to the bar's lower edge, not the viewport top. This is the
+   standard fixed-header idiom, and it is what lets the page rest at
+   scrollTop 0 instead of 58. */
+html {
+  scroll-padding-top: 58px;
 }
 
 .peek-band {
@@ -991,5 +1003,7 @@ body {
 }
 
 @media (max-width: 767px) {
-  .peek-band { top: 54px; }  /* shorter topbar on mobile */
+  body { margin-top: 54px; }   /* shorter topbar on mobile */
+  html { scroll-padding-top: 54px; }
+  .peek-band { top: 54px; }
 }
