@@ -975,11 +975,20 @@ html {
   overflow-x: visible;
   background-color: var(--paper);
   background-image: url('/About/overscroll-pattern.webp');
-  background-repeat: no-repeat;
+  background-repeat: repeat-x;
   background-attachment: fixed;
-  background-position: center top;
-  /* 8:1 source, so a full-width band stands ~12.5vw tall (180px at 1440). */
-  background-size: 100% auto;
+  /* Offset below the fixed topbar (58px, see nav in style.css). The bar is
+     fixed and does not travel with the spring, so a band pinned to `top`
+     would sit behind it and only its last couple of pixels would ever show.
+     Starting it at the bar's lower edge puts it exactly in the gap the pull
+     opens up. */
+  background-position: center 58px;
+  /* Tiled at a third of the width rather than stretched across it: the strip
+     is 8:1, so a third-width tile stands ~4.2vw tall (60px at 1440) and
+     repeats three times. Stretching one copy full-width blew the flowers up
+     to 180px and read as a photograph; tiled at this scale it reads as the
+     silk it is. */
+  background-size: 33.333% auto;
 }
 
 body {
@@ -991,4 +1000,9 @@ body {
    motion keeps a plain paper ground. */
 @media (prefers-reduced-motion: reduce) {
   html { background-image: none; }
+}
+
+@media (max-width: 767px) {
+  /* Mobile topbar is 54px rather than 58px. */
+  html { background-position: center 54px; }
 }
