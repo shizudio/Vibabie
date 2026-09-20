@@ -1,6 +1,36 @@
 {
   "artworks": [
     {
+      "src": "Art/web/Peony Heart.webp",
+      "title": "Peony Heart",
+      "meta": "Acrylic on canvas",
+      "description": "Petals crowd the whole canvas in rose, plum and dusty coral, wrapping inward until the only still point is the green-gold centre and its scatter of yellow stamens."
+    },
+    {
+      "src": "Art/web/Lily Stamens.webp",
+      "title": "Lily Stamens",
+      "meta": "Oil on canvas · 2019",
+      "description": "Six dark stamens stand almost black against petals of cream, butter yellow and mauve — the flower reduced to its silhouette and the light coming through behind it."
+    },
+    {
+      "src": "Art/web/Ember.webp",
+      "title": "Ember",
+      "meta": "Oil on canvas",
+      "description": "Rust and burnt sienna curl through a field of warm white, one small dark knot holding the heat while everything around it softens into cloud."
+    },
+    {
+      "src": "Art/web/Blush Field.webp",
+      "title": "Blush Field",
+      "meta": "Acrylic on canvas",
+      "description": "A quiet wash of peach and pink, almost empty, with a handful of thick palette-knife marks left standing where the paint was laid on and not smoothed away."
+    },
+    {
+      "src": "Art/web/Two Lilies.webp",
+      "title": "Two Lilies",
+      "meta": "Oil on canvas",
+      "description": "Two lilies drawn in fine crimson and yellow lines float on a washed-out ground, one rising, one bending low, with a bruise of deep red bleeding down the left edge."
+    },
+    {
       "src": "Art/web/Pivot After.webp",
       "beforeSrc": "Art/web/Pivot Before.webp",
       "title": "The Pivot",
