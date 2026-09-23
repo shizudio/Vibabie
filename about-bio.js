@@ -81,6 +81,12 @@ function controller() {
     outgoing.classList.remove('is-active')
     incoming.classList.add('is-active')
 
+    // On mobile the bio is a sheet over the page, and things that float above
+    // the page (the record at z-index 100) have to know to get out from in
+    // front of it. Nothing here touches scroll: the page underneath does not
+    // move, which is what puts the visitor back where they were on close.
+    document.body.classList.toggle('shiz-bio-open', toBio)
+
     if (!toBio) rewindPages()
   }
 
@@ -106,6 +112,7 @@ function controller() {
       btn.setAttribute('aria-expanded', 'false')
       btn.textContent = btn.dataset.labelOpen || 'About Shina'
       deck.removeAttribute('data-direction')
+      document.body.classList.remove('shiz-bio-open')
       rewindPages()
     },
   }
