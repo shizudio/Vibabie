@@ -242,59 +242,14 @@ h1{margin:0;font-size:20px;font-weight:500;letter-spacing:-.018em;color:var(--in
 .track .hd .lbl{font-family:"DM Mono",monospace;font-size:10.5px;
   letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
 
-/* Selecting a track used to collapse the whole shelf, which made four cards and
-   three links vanish under the cursor and hid what else was on offer. The set
-   stays put: the chosen one lights up, the rest recede but stay reachable, so
-   changing your mind is still one click. */
-.track.has .sample:not([aria-pressed=true]),
-.track.has .src{opacity:.38;transition:opacity .18s var(--ease)}
-.track.has .sample:not([aria-pressed=true]):hover,
-.track.has .src:hover{opacity:1}
-.track .hd .got .x{width:20px;height:20px;border:0;border-radius:50%;
-  background:var(--ctrl);color:var(--ink-2);cursor:pointer;display:grid;
-  place-items:center;font-size:13px;line-height:1}
 /* Sample songs get the weight, because they are the only source that costs a
    cold visitor nothing. Upload / link / create sit under them as text. */
-.samples{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
-  align-items:stretch}
 /* Two shelves, one visible: a signed-out visitor gets the four samples, a
    signed-in one gets their own library. Same tiles, different source. */
 /* One shelf, two sets of tiles: a signed-out visitor sees the four samples, a
    signed-in one sees their own library. The + is the constant first tile. */
-.sample.mine{display:none}
-body.signed .sample.demo{display:none}
-body.signed .sample.mine{display:flex}
-.sample{display:flex;align-items:center;gap:7px;padding:7px 8px;min-width:0;
-  border:1px solid var(--hair-2);border-radius:10px;background:var(--ctrl);
-  color:var(--ink);text-align:left;cursor:pointer;font-family:inherit;
-  transition:background .16s var(--ease),border-color .16s var(--ease)}
-.sample:hover{background:var(--ctrl-hi);border-color:var(--hair-2)}
-.sample[aria-pressed=true]{border-color:var(--action);
-  background:color-mix(in srgb,var(--action) 12%,var(--ctrl))}
-.sample[aria-pressed=true] .ic{background:var(--action);color:var(--action-ink,#04140D)}
-.sample .x{margin-left:auto;flex:none;width:16px;height:16px;border:0;
-  border-radius:50%;background:transparent;color:var(--ink-3);cursor:pointer;
-  display:none;place-items:center;font-size:13px;line-height:1;padding:0}
-.sample[aria-pressed=true] .x{display:grid}
-.sample .x:hover{background:var(--ctrl-hi);color:var(--ink)}
-.sample .ic{flex:none;width:22px;height:22px;border-radius:6px;display:grid;
-  place-items:center;background:color-mix(in srgb,var(--action) 16%,transparent);
-  color:var(--action)}
-.sample .ic svg{width:11px;height:11px}
-.sample>span:nth-child(2){min-width:0;flex:1}
-.sample b{display:block;font-size:11.5px;font-weight:500;letter-spacing:-.012em;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sample i{display:block;font-style:normal;font-family:"DM Mono",monospace;
-  font-size:9px;color:var(--ink-3);margin-top:2px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.srcs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:11px;
+body.signed body.signed .srcs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:11px;
   font-size:13px;color:var(--ink-3)}
-.src{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 11px;
-  border:1px solid transparent;border-radius:9px;background:none;
-  color:var(--ink-2);font-family:inherit;font-size:13px;font-weight:500;
-  cursor:pointer;transition:background .16s var(--ease),color .16s var(--ease)}
-.src:hover{background:var(--ctrl);color:var(--ink)}
-.src svg{width:14px;height:14px;flex:none}
 .srcs .sep{color:var(--hair-2)}
 
 
@@ -433,54 +388,84 @@ h1 em{font-style:normal;color:var(--action)}
 .c-act{margin-left:auto}
 .opts{display:flex;align-items:center;gap:6px;flex:1;min-width:0}
 
-/* ---- step 1, two tiers ----
-   The three sources are verbs: each opens something and produces a track that
-   does not exist yet. The four songs are nouns: objects that already exist and
-   light up when picked. A control that opens something and a control that
-   toggles selected must not share a shape, so sources are unfilled and songs
-   keep the --ctrl fill. */
-.sources{margin:0}
-.srcbtns{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.src{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px;
-  border:1px solid var(--hair-2);border-radius:10px;background:none;
-  color:var(--ink-2);text-decoration:none;cursor:pointer;
-  font-family:inherit;font-size:12.5px;font-weight:500;letter-spacing:-.01em;
-  white-space:nowrap;
-  transition:background .16s var(--ease),color .16s var(--ease),
-             border-color .16s var(--ease)}
-.src:hover{background:var(--ctrl);color:var(--ink);border-color:var(--ink-3)}
-.src svg{width:15px;height:15px;flex:none}
-/* Upload carries the weight — it is the source most people arrive able to use */
-.src.lead{background:var(--ctrl-hi);border-color:var(--ink-3);color:var(--ink)}
-.src.lead:hover{background:var(--action);border-color:var(--action);
+/* ---- step 1: one question, one control ----
+   Upload, create and the library are all answers to "which song?", so they sit
+   under one button rather than competing as three. The link field is the one
+   source that is a paste rather than a pick, so it stays in the open beside it
+   — and it names Suno and YouTube, because "paste a link" on its own does not
+   tell you what will be accepted. */
+.pickrow{display:flex;align-items:center;gap:10px}
+.pick-wrap{position:relative;flex:none;display:flex;align-items:center}
+.pick{display:inline-flex;align-items:center;gap:9px;height:40px;padding:0 13px;
+  border:1px solid var(--ink-3);border-radius:10px;background:var(--ctrl-hi);
+  color:var(--ink);cursor:pointer;font-family:inherit;font-size:13px;
+  font-weight:500;letter-spacing:-.01em;white-space:nowrap;
+  transition:background .16s var(--ease),border-color .16s var(--ease)}
+.pick:hover{background:var(--action);border-color:var(--action);
   color:var(--action-ink,#04140D)}
-.src .out{width:12px;height:12px;opacity:.55;
-  transition:transform .18s var(--ease)}
-.src:hover .out{transform:translateX(2px)}
+.pick .pic{display:grid;place-items:center;width:16px;height:16px;flex:none}
+.pick .pic svg{width:15px;height:15px}
+.pick .chev{width:12px;height:12px;flex:none;opacity:.7;
+  transition:transform .22s var(--ease)}
+.pick-wrap.open .chev{transform:rotate(180deg)}
+/* a chosen track is named on the button, so the row states it without a shelf */
+.pick-wrap.has .pick{background:color-mix(in srgb,var(--action) 13%,var(--ctrl));
+  border-color:color-mix(in srgb,var(--action) 42%,transparent)}
+.pick-wrap.has .pick:hover{background:var(--action)}
+.pick-wrap.has .pick .pic{color:var(--action)}
+.pick-wrap.has .pick:hover .pic{color:inherit}
+.pickx{flex:none;width:26px;height:40px;margin-left:2px;border:0;background:none;
+  color:var(--ink-3);font-size:17px;line-height:1;cursor:pointer;border-radius:8px}
+.pickx:hover{background:var(--ctrl);color:var(--ink)}
 
-/* the link field takes the buttons' place at their exact height: expanding
-   sideways into space that already exists, never downwards into the stack */
-.linkrow{display:flex;align-items:center;gap:8px;height:38px}
-.linkrow[hidden],.srcbtns[hidden]{display:none}
-.linkin{flex:1;min-width:0;height:38px;padding:0 13px;
-  border:1px solid var(--ink-3);border-radius:10px;background:var(--ctrl);
+.pickmenu{position:absolute;top:calc(100% + 8px);left:0;z-index:30;
+  width:308px;max-height:352px;overflow-y:auto;padding:6px;
+  border:1px solid var(--hair-2);border-radius:13px;background:var(--raised);
+  box-shadow:var(--lift);
+  opacity:0;visibility:hidden;transform:translateY(-4px);
+  transition:opacity .16s var(--ease),transform .16s var(--ease),
+             visibility 0s linear .16s}
+.pick-wrap.open .pickmenu{opacity:1;visibility:visible;transform:none;
+  transition-delay:0s}
+.mi{display:flex;align-items:center;gap:10px;width:100%;padding:0 10px;height:40px;
+  border:0;border-radius:9px;background:none;color:var(--ink);text-decoration:none;
+  font-family:inherit;font-size:13.5px;font-weight:500;text-align:left;
+  cursor:pointer;transition:background .14s var(--ease)}
+.mi:hover{background:var(--ctrl)}
+.mi > svg{width:15px;height:15px;flex:none;color:var(--ink-3)}
+.mi .out{margin-left:auto;width:12px;height:12px;opacity:.5}
+/* the two makers sit above the library: they produce, the rest just select */
+.mihead{margin:7px 4px 3px;font-family:"DM Mono",monospace;font-size:9.5px;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+  border-top:1px solid var(--hair);padding-top:9px}
+.lib-mine,body.signed .lib-demo{display:none}
+body.signed .lib-mine{display:inline}
+.mi.song{height:46px}
+.mi.song .ic{flex:none;width:26px;height:26px;border-radius:7px;display:grid;
+  place-items:center;background:color-mix(in srgb,var(--action) 16%,transparent);
+  color:var(--action)}
+.mi.song .ic svg{width:13px;height:13px}
+.mi.song .tx{min-width:0;flex:1}
+.mi.song b{display:block;font-size:13px;font-weight:500;letter-spacing:-.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mi.song i{display:block;font-style:normal;font-family:"DM Mono",monospace;
+  font-size:10px;color:var(--ink-3);margin-top:1px}
+.mi.song .on{flex:none;width:16px;height:16px;border-radius:50%;
+  background:var(--action);color:var(--action-ink,#04140D);
+  display:none;place-items:center}
+.mi.song .on svg{width:9px;height:9px}
+.mi.song[aria-pressed=true] .on{display:grid}
+.mi.song.mine{display:none}
+body.signed .mi.song.demo{display:none}
+body.signed .mi.song.mine{display:flex}
+
+/* the one source that is a paste, not a pick */
+.linkin{flex:1;min-width:0;height:40px;padding:0 13px;
+  border:1px solid var(--hair);border-radius:10px;background:var(--sunk);
   color:var(--ink);font-family:inherit;font-size:13px;letter-spacing:-.008em}
 .linkin::placeholder{color:var(--ink-3)}
-.linkin:focus{outline:none;border-color:var(--action)}
-.linkgo{flex:none;height:38px;padding:0 16px;border:0;border-radius:10px;
-  background:var(--action);color:var(--action-ink,#04140D);cursor:pointer;
-  font-family:inherit;font-size:12.5px;font-weight:700;letter-spacing:-.01em}
-.linkgo[disabled]{opacity:.38;cursor:default}
-.linkx{flex:none;width:32px;height:38px;border:0;background:none;
-  color:var(--ink-3);font-size:18px;line-height:1;cursor:pointer;border-radius:8px}
-.linkx:hover{background:var(--ctrl);color:var(--ink)}
-
-/* Says the relationship once, quietly, instead of leaving it to be inferred
-   from a gap. */
-.orrule{display:flex;align-items:center;gap:12px;margin:14px 0 12px;
-  font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:.13em;
-  text-transform:uppercase;color:var(--ink-3)}
-.orrule::before,.orrule::after{content:"";flex:1;height:1px;background:var(--hair)}
+.linkin:hover{border-color:var(--hair-2)}
+.linkin:focus{outline:none;border-color:var(--action);background:var(--ctrl)}
 .c-act{display:flex;align-items:center;gap:6px}
 /* The extras live in their own track and open sideways from the More button,
    which stays put at the right edge of the always-on options. max-width rather
@@ -688,13 +673,13 @@ footer a:hover{color:var(--ink)}
    sit two-up; below 560 the type tiles do the same. Measured, not guessed:
    at 375px the five-across grid gave 23px tiles and overflowed the page. */
 @media (max-width:860px){
-  .samples{grid-template-columns:repeat(2,1fr)}
-  /* three labelled buttons need ~390px side by side; below that they wrap to
-     equal thirds of the row rather than clipping their labels */
-  .srcbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .src{justify-content:center;padding:0 10px}
-  .src.lead{grid-column:1 / -1}
-  .src .out{display:none}
+    /* the field cannot share a 375px row with the button and still show what it
+     accepts, so it takes its own line */
+  .pickrow{flex-wrap:wrap}
+  .pick-wrap{width:100%}
+  .pick{flex:1}
+  .linkin{flex:1 0 100%}
+  .pickmenu{width:100%}
 }
 @media (max-width:560px){
   .looks{grid-template-columns:repeat(2,1fr)}
@@ -793,58 +778,57 @@ footer a:hover{color:var(--ink)}
             <span class="sn"><i>1</i><svg class="tk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span><span class="lbl">Pick a track</span>
             <span class="need">required</span>
           </div>
-          <div class="shelf">
 
               <!-- Three sources, one row. They are verbs — each one opens
                    something and produces a track that does not exist yet — so
                    they are unfilled, against the filled cards below which are
                    objects you select. Upload keeps the weight: it is the one
                    most people arrive able to use. -->
-              <div class="sources" id="sources">
-                <div class="srcbtns" id="srcbtns">
-                  <button class="src lead" id="btnUpload" type="button">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
-                         stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
-                    Upload song
+              <!-- One way in. Upload, create and the library are all answers to
+                   the same question — "which song?" — so they live under one
+                   button instead of competing as three. The link field sits
+                   beside it as the one source that is a paste, not a pick, and
+                   names Suno and YouTube so "link" means something. -->
+              <div class="pickrow">
+                <div class="pick-wrap" id="pickWrap">
+                  <button class="pick" id="pick" type="button" aria-haspopup="menu"
+                          aria-expanded="false" aria-controls="pickmenu">
+                    <span class="pic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="2.6"/><circle cx="16.5" cy="16" r="2.6"/></svg></span>
+                    <span class="plabel" id="pickLabel">Choose a song</span>
+                    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
                   </button>
-                  <button class="src" id="btnLink" type="button" aria-expanded="false" aria-controls="linkrow">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
-                         stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>
-                    Paste link
-                  </button>
-                  <a class="src" id="btnCreate" href="/create-song" data-from="music-video">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
-                         stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>
-                    Create song
-                    <svg class="out" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                         stroke-width="2.1" stroke-linecap="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
-                  </a>
+                  <button class="pickx" id="pickx" type="button" aria-label="Clear track" hidden>&times;</button>
+
+                  <div class="pickmenu" id="pickmenu" role="menu" aria-label="Choose a song">
+                    <button class="mi act" role="menuitem" type="button" id="miUpload">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                           stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+                      Upload a song
+                    </button>
+                    <a class="mi act" role="menuitem" href="/create-song" data-from="music-video">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                           stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>
+                      Create a song
+                      <svg class="out" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                           stroke-width="2.1" stroke-linecap="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+                    </a>
+                    <div class="mihead"><span class="lib-demo">From Solmi</span><span class="lib-mine">Your library</span></div>
+                  <button class="mi song demo" role="menuitem" type="button" data-song="Paper Boats"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="2.6"/><circle cx="16.5" cy="16" r="2.6"/></svg></span><span class="tx"><b>Paper Boats</b><i>Folk · longing</i></span><span class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+                  <button class="mi song demo" role="menuitem" type="button" data-song="Floating Home"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="2.6"/><circle cx="16.5" cy="16" r="2.6"/></svg></span><span class="tx"><b>Floating Home</b><i>Dream pop</i></span><span class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+                  <button class="mi song demo" role="menuitem" type="button" data-song="The Sound of Music"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="2.6"/><circle cx="16.5" cy="16" r="2.6"/></svg></span><span class="tx"><b>The Sound of Music</b><i>Classical</i></span><span class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+                  <button class="mi song demo" role="menuitem" type="button" data-song="Sweet Dreams"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="2.6"/><circle cx="16.5" cy="16" r="2.6"/></svg></span><span class="tx"><b>Sweet Dreams</b><i>Pop · romantic</i></span><span class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+                  <button class="mi song mine" role="menuitem" type="button" data-song="Neon Exit"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="2.6"/><circle cx="16.5" cy="16" r="2.6"/></svg></span><span class="tx"><b>Neon Exit</b><i>1:01</i></span><span class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+                  <button class="mi song mine" role="menuitem" type="button" data-song="Midnight Almost"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="2.6"/><circle cx="16.5" cy="16" r="2.6"/></svg></span><span class="tx"><b>Midnight Almost</b><i>0:35</i></span><span class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+                  <button class="mi song mine" role="menuitem" type="button" data-song="Verdigris Afterglow"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="2.6"/><circle cx="16.5" cy="16" r="2.6"/></svg></span><span class="tx"><b>Verdigris Afterglow</b><i>1:34</i></span><span class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+                  <button class="mi song mine" role="menuitem" type="button" data-song="Static Bound"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="2.6"/><circle cx="16.5" cy="16" r="2.6"/></svg></span><span class="tx"><b>Static Bound</b><i>1:01</i></span><span class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+                  </div>
                 </div>
 
-                <!-- Swaps in over the buttons at the same height, so nothing
-                     below shifts. The placeholder names the services rather
-                     than saying "link", which is the one thing the landing
-                     page does better than anything else on this flow. -->
-                <div class="linkrow" id="linkrow" hidden>
-                  <input class="linkin" id="linkin" type="url" spellcheck="false"
-                         placeholder="Paste a YouTube, TikTok or Spotify link">
-                  <button class="linkgo" id="linkgo" type="button">Use</button>
-                  <button class="linkx" id="linkx" type="button" aria-label="Cancel">&times;</button>
-                </div>
+                <input class="linkin" id="linkin" type="url" spellcheck="false"
+                       placeholder="or paste a suno/youtube link">
               </div>
 
-              <div class="orrule"><span>or start from one of ours</span></div>
-
-              <div class="samples">
-              <button class="sample demo" type="button" aria-pressed="false" data-song="Paper Boats"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Paper Boats</b><i>Folk · longing</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
-              <button class="sample demo" type="button" aria-pressed="false" data-song="Floating Home"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Floating Home</b><i>Dream pop</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
-              <button class="sample demo" type="button" aria-pressed="false" data-song="The Sound of Music"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>The Sound of Music</b><i>Classical</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
-              <button class="sample demo" type="button" aria-pressed="false" data-song="Sweet Dreams"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Sweet Dreams</b><i>Pop · romantic</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
-              <button class="sample mine" type="button" aria-pressed="false" data-song="Neon Exit"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Neon Exit</b><i>1:01</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
-              <button class="sample mine" type="button" aria-pressed="false" data-song="Midnight Almost"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Midnight Almost</b><i>0:35</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
-              <button class="sample mine" type="button" aria-pressed="false" data-song="Verdigris Afterglow"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Verdigris Afterglow</b><i>1:34</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
-              <button class="sample mine" type="button" aria-pressed="false" data-song="Static Bound"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Static Bound</b><i>1:01</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
-            </div>
         </div>
         <!-- Step 2. The prompt used to sit naked on the composer while the two
              blocks under it were bordered panels with labels — which is why it
@@ -1175,54 +1159,58 @@ function syncCTA(){
 function setSong(name){
   song=name;
   track.classList.toggle('has',!!name);
-  document.querySelectorAll('.sample').forEach(b=>
+  /* With the shelf gone the button is the only readout, so it has to carry the
+     name — a control that says "Choose a song" after you chose one is a
+     control you stop trusting. */
+  pickWrap.classList.toggle('has',!!name);
+  pickLabel.textContent = name || 'Choose a song';
+  pickx.hidden = !name;
+  document.querySelectorAll('.mi.song').forEach(b=>
     b.setAttribute('aria-pressed', String(b.dataset.song===name)));
   syncCTA();
   steps();
 }
-document.querySelectorAll('.sample').forEach(b=>
-  b.addEventListener('click',e=>{
-    /* the x clears without re-picking the card it sits on */
-    if(e.target.closest('.x')){ e.stopPropagation(); setSong(null); return; }
-    setSong(b.dataset.song);
-  }));
-/* The three sources. Upload and Create are single acts; Paste link needs
-   somewhere to paste, so its field takes the buttons' place in the same row at
-   the same height — expanding into space that exists rather than pushing the
-   songs down. In the product these are the real file picker, the real link
-   resolver and a trip to the song tool; here they stand in by naming the track
-   they would produce. */
-const srcbtns=document.getElementById('srcbtns'),
-      linkrow=document.getElementById('linkrow'),
-      linkin=document.getElementById('linkin'),
-      linkgo=document.getElementById('linkgo');
+/* One button, one menu. Upload and Create sit above the library because they
+   produce a track; everything under the rule only selects one. In the product
+   Upload is the real file picker and Create is a trip to the song tool; here
+   they stand in by naming the track they would produce. */
+const pickWrap=document.getElementById('pickWrap'),
+      pick=document.getElementById('pick'),
+      pickLabel=document.getElementById('pickLabel'),
+      pickx=document.getElementById('pickx'),
+      pickmenu=document.getElementById('pickmenu'),
+      linkin=document.getElementById('linkin');
 
-function showLink(on){
-  srcbtns.hidden=on; linkrow.hidden=!on;
-  document.getElementById('btnLink').setAttribute('aria-expanded',String(on));
-  if(on){ linkin.focus(); } else { linkin.value=''; syncLinkGo(); }
+const closePick=()=>{ pickWrap.classList.remove('open');
+                      pick.setAttribute('aria-expanded','false'); };
+pick.addEventListener('click',e=>{
+  e.stopPropagation();
+  const open=pickWrap.classList.toggle('open');
+  pick.setAttribute('aria-expanded',String(open));
+});
+pickx.addEventListener('click',e=>{ e.stopPropagation(); setSong(null); });
+pickmenu.addEventListener('click',e=>{
+  const songBtn=e.target.closest('.mi.song');
+  if(songBtn){ setSong(songBtn.dataset.song); closePick(); return; }
+  if(e.target.closest('#miUpload')){ setSong('Uploaded file'); closePick(); }
+  /* Create a song is a real link out — let it navigate */
+});
+/* a menu you cannot dismiss is a trap */
+document.addEventListener('click',e=>{ if(!e.target.closest('.pick-wrap')) closePick(); });
+addEventListener('keydown',e=>{ if(e.key==='Escape') closePick(); });
+
+/* The link is the one source you paste rather than pick, so it stays open.
+   Commit on Enter or on leaving the field with something in it — asking for a
+   separate button next to an input the user has already filled is a click that
+   buys nothing. */
+function commitLink(){
+  const v=linkin.value.trim();
+  if(v) setSong(/suno/i.test(v) ? 'Suno track' : 'Linked track');
 }
-function syncLinkGo(){ linkgo.disabled=!linkin.value.trim(); }
-
-document.getElementById('btnUpload')
-  .addEventListener('click',()=>setSong('Uploaded file'));
-document.getElementById('btnLink')
-  .addEventListener('click',()=>showLink(true));
-document.getElementById('linkx')
-  .addEventListener('click',()=>showLink(false));
-linkin.addEventListener('input',syncLinkGo);
-linkgo.addEventListener('click',()=>{
-  if(!linkin.value.trim()) return;
-  setSong('Linked track');
-  showLink(false);
-});
-/* Enter submits, Escape backs out — a field you can only leave with the mouse
-   is a field that traps a keyboard user mid-flow. */
 linkin.addEventListener('keydown',e=>{
-  if(e.key==='Enter'){ e.preventDefault(); linkgo.click(); }
-  if(e.key==='Escape'){ e.preventDefault(); showLink(false); }
+  if(e.key==='Enter'){ e.preventDefault(); commitLink(); linkin.blur(); }
 });
-syncLinkGo();
+linkin.addEventListener('blur',commitLink);
 syncCTA();
 
 /* example prompts: the cure for the blank box */
