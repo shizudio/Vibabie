@@ -20,11 +20,20 @@ When the user says "push to production" or "go live":
 
 ## Dev Server
 
-Vite dev server runs from the worktree at `.claude/worktrees/practical-solomon-0e623d/`.
-After editing source files, sync to worktree:
+Run Vite from the repo root. Edits are live — there is no worktree to sync to.
+
 ```bash
-cp <file> .claude/worktrees/practical-solomon-0e623d/<file>
+npm run dev
 ```
+
+Vite takes 5173 if it is free and steps to the next port if not, so read the
+port off its own startup line rather than assuming 5173. A tool that reports a
+different port may be proxying; the port Vite prints is the real one.
+
+Earlier revisions of this file told agents to serve the site from
+`.claude/worktrees/practical-solomon-0e623d/` and `cp` each edited file across.
+That worktree was 229 commits behind `main` and has been removed — following
+those instructions served a months-old site.
 
 ## Skill routing
 
