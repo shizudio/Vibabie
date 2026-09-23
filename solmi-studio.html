@@ -255,7 +255,7 @@ h1{margin:0;font-size:20px;font-weight:500;letter-spacing:-.018em;color:var(--in
   place-items:center;font-size:13px;line-height:1}
 /* Sample songs get the weight, because they are the only source that costs a
    cold visitor nothing. Upload / link / create sit under them as text. */
-.samples{display:grid;grid-template-columns:auto repeat(4,1fr);gap:8px;
+.samples{display:grid;grid-template-columns:auto auto repeat(4,1fr);gap:8px;
   align-items:stretch}
 /* Two shelves, one visible: a signed-out visitor gets the four samples, a
    signed-in one gets their own library. Same tiles, different source. */
@@ -451,6 +451,21 @@ h1 em{font-style:normal;color:var(--action)}
              border-color .16s var(--ease)}
 .plus:hover{background:var(--action);border-color:var(--action);
   color:var(--action-ink,#04140D)}
+/* Same shape and height as Upload so they read as one pair of ways in, but
+   hairline rather than solid: this one costs you a detour, so it should not
+   compete with the control that finishes the job in place. */
+.mksong{align-self:stretch;display:inline-flex;align-items:center;gap:8px;
+  padding:0 13px;border:1px solid var(--hair-2);border-radius:10px;
+  background:none;color:var(--ink-2);text-decoration:none;
+  font-family:inherit;font-size:12.5px;font-weight:500;letter-spacing:-.01em;
+  white-space:nowrap;
+  transition:background .16s var(--ease),color .16s var(--ease),
+             border-color .16s var(--ease)}
+.mksong:hover{background:var(--ctrl);color:var(--ink);border-color:var(--ink-3)}
+.mksong svg{width:15px;height:15px;flex:none}
+.mksong .out{width:12px;height:12px;opacity:.6;
+  transition:transform .18s var(--ease)}
+.mksong:hover .out{transform:translateX(2px)}
 .plus svg{width:16px;height:16px;transition:transform .24s var(--ease)}
 .plus-wrap.open .plus{background:var(--action);color:var(--action-ink,#04140D);
   border-color:var(--action)}
@@ -677,8 +692,8 @@ footer a:hover{color:var(--ink)}
    at 375px the five-across grid gave 23px tiles and overflowed the page. */
 @media (max-width:860px){
   .samples{grid-template-columns:repeat(2,1fr)}
-  .plus-wrap{grid-column:1 / -1}
-  .plus{width:100%;height:42px}
+  .plus-wrap,.mksong{grid-column:1 / -1}
+  .plus,.mksong{width:100%;height:42px;justify-content:center}
 }
 @media (max-width:560px){
   .looks{grid-template-columns:repeat(2,1fr)}
@@ -784,9 +799,19 @@ footer a:hover{color:var(--ink)}
                 <div class="plusmenu" id="plusmenu" role="menu" aria-label="Add a track">
                   <button class="pmi" role="menuitem" type="button" data-src="Uploaded file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v13"/></svg>Upload a file</button>
                   <button class="pmi" role="menuitem" type="button" data-src="Linked track"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>Paste a link</button>
-                  <button class="pmi" role="menuitem" type="button" data-src="New song"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>Create a song</button>
                 </div>
               </div>
+              <!-- Create a song is not a third way to attach a file — it hands
+                   the visitor to another Solmi tool and brings them back with a
+                   track. It carries an outward arrow for that reason, and it is
+                   the answer for everyone who arrives with no music at all. -->
+              <a class="mksong" href="/create-song" data-from="music-video">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                     stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>
+                <span class="mlbl2">Create a song</span>
+                <svg class="out" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.1" stroke-linecap="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+              </a>
               <button class="sample demo" type="button" aria-pressed="false" data-song="Paper Boats"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Paper Boats</b><i>Folk · longing</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
               <button class="sample demo" type="button" aria-pressed="false" data-song="Floating Home"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Floating Home</b><i>Dream pop</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
               <button class="sample demo" type="button" aria-pressed="false" data-song="The Sound of Music"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>The Sound of Music</b><i>Classical</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
@@ -1129,6 +1154,7 @@ function setSong(name){
   document.querySelectorAll('.sample').forEach(b=>
     b.setAttribute('aria-pressed', String(b.dataset.song===name)));
   syncCTA();
+  steps();
 }
 document.querySelectorAll('.sample').forEach(b=>
   b.addEventListener('click',e=>{
@@ -1213,22 +1239,20 @@ document.querySelectorAll('.look').forEach(b=>
    Each numeral is a tick once its step is satisfied. Recomputed from the DOM
    rather than tracked in a variable, so it cannot drift out of sync with what
    the user can actually see is selected. */
-const stepEls={1:document.getElementById('track'),
-               2:document.getElementById('pstep'),
-               3:document.getElementById('vtype')};
 function steps(){
-  const done={
-    1:!!document.querySelector('.sample[aria-pressed=true]'),
-    2:document.querySelector('.prompt').value.trim().length>0,
-    3:!!document.querySelector('.look[aria-pressed=true]')
-  };
-  for(const n in stepEls) stepEls[n].classList.toggle('done',done[n]);
+  /* Step 1 reads .has, the same flag setSong sets — not "is a sample tile
+     pressed", which was wrong for a track that arrives by upload or link:
+     those select a song with no tile to light up, so the CTA unlocked while
+     the numeral stayed on 1. Elements are looked up here rather than captured
+     above so setSong can call this before this line is evaluated. */
+  const el=n=>document.getElementById(n);
+  el('track').classList.toggle('done', el('track').classList.contains('has'));
+  el('pstep').classList.toggle('done', document.querySelector('.prompt').value.trim().length>0);
+  el('vtype').classList.toggle('done', !!document.querySelector('.look[aria-pressed=true]'));
 }
 document.querySelector('.prompt').addEventListener('input',steps);
-document.querySelector('#track').addEventListener('click',()=>setTimeout(steps,0));
 document.querySelector('.looks').addEventListener('click',()=>setTimeout(steps,0));
 document.querySelectorAll('.eg').forEach(b=>b.addEventListener('click',()=>setTimeout(steps,0)));
-document.querySelectorAll('.pmi').forEach(b=>b.addEventListener('click',()=>setTimeout(steps,0)));
 steps();
 
 /* ---- one signal drives both the rail and the Renders panel ----
