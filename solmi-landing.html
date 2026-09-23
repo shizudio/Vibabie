@@ -381,7 +381,22 @@ h1{font-size:64px;font-weight:500;line-height:72px;margin:0;color:var(--ink);
    on the same line at the same weight with a hairline between. Before this the
    field ran the full width of the row and the picker was a filled chip in the
    row below, which read as "attach a link first, then you may choose". */
-.c-or{flex:none;align-self:stretch;width:1px;margin:6px 2px;background:var(--hair)}
+/* The frame. --hair-2 rather than --hair: the old seam was drawn in the same
+   value as the card's own border, so it read as part of the card rather than
+   as a relationship between two controls. */
+.trackbox{flex:1;min-width:0;display:flex;align-items:center;
+  border:1px solid var(--hair-2);border-radius:14px;
+  transition:border-color .16s var(--ease)}
+.trackbox:focus-within{border-color:color-mix(in srgb,var(--action) 45%,transparent)}
+.trackbox .c-field{flex:1;min-width:0;padding-left:14px}
+.trackbox .drop{flex:none}
+
+/* A drawn cut, not a typed slash: it scales with the frame and never reads as
+   a fraction. The wrapper clips the rotated line; the menu lives in .drop and
+   is untouched by it. */
+.c-or{flex:none;align-self:stretch;position:relative;width:15px;overflow:hidden}
+.c-or i{position:absolute;left:50%;top:-14%;height:128%;width:1px;
+  background:var(--hair-2);transform:translateX(-50%) rotate(13deg)}
 /* One track, one source. Committing to either side settles the question, so
    the other side goes quiet rather than sitting there implying you still owe
    it something. Both sides clear the same way. */
@@ -405,18 +420,18 @@ h1{font-size:64px;font-weight:500;line-height:72px;margin:0;color:var(--ink);
 .off{opacity:.34;pointer-events:none}
 .c-top #dropbtn:disabled{cursor:default}
 /* a chosen song is the answer to the whole row, so it reads like one */
-.c-top #dropbtn.picked{background:color-mix(in srgb,var(--action) 14%,transparent);
-  border:1px solid color-mix(in srgb,var(--action) 42%,transparent);
-  border-radius:12px;height:45px;padding:0 13px;color:var(--ink);
-  font-size:14.5px;font-weight:700;letter-spacing:-.012em;max-width:300px}
+/* fills the right half of the frame rather than drawing a border inside one */
+.c-top #dropbtn.picked{background:color-mix(in srgb,var(--action) 13%,transparent);
+  border:0;border-radius:0 13px 13px 0;height:43px;padding:0 14px;color:var(--ink);
+  font-size:14.5px;font-weight:700;letter-spacing:-.012em;max-width:320px}
 .c-top #dropbtn.picked #droplabel{overflow:hidden;text-overflow:ellipsis;
   white-space:nowrap}
-.c-top #dropbtn.picked:hover{background:color-mix(in srgb,var(--action) 20%,transparent)}
+.c-top #dropbtn.picked:hover{background:color-mix(in srgb,var(--action) 19%,transparent)}
 .c-top .drop{flex:none}
 /* bare like the field beside it — fill would make it the louder of the two */
 .c-top #dropbtn{background:none;border:0;height:45px;padding:0 12px;
   color:var(--ink-2);font-weight:500}
-.c-top #dropbtn:hover{background:var(--ctrl);color:var(--ink);border-radius:12px}
+.c-top #dropbtn:hover{background:var(--ctrl);color:var(--ink);border-radius:0 13px 13px 0}
 .c-field input{flex:1;min-width:0;background:none;border:0;outline:none;font-size:16px;
   min-height:45px;color:var(--ink);text-overflow:ellipsis;letter-spacing:-.011em}
 .c-field input::placeholder{color:var(--ink-3)}
@@ -932,12 +947,16 @@ footer a:hover{color:var(--ink)}
   .composer{max-width:calc(100% - var(--gut)*2);padding:10px;border-radius:20px;
     margin-top:22px}
   .c-top{flex-direction:column;align-items:stretch;gap:8px}
-  .c-field{padding:4px 12px}
-  /* stacked, so the divider lies flat and the picker fills the width */
-  .c-or{width:auto;height:1px;align-self:auto;margin:2px 12px}
+
+  /* the frame stacks internally; the cut lies flat across it, still angled */
+  .trackbox{flex-direction:column;align-items:stretch;border-radius:16px}
+  .trackbox .c-field{padding:2px 12px}
+  .c-or{width:auto;height:13px;align-self:stretch;margin:0}
+  .c-or i{left:0;top:50%;width:100%;height:1px;
+    transform:translateY(-50%) rotate(-2.2deg)}
   .c-top .drop{width:100%}
   .c-top #dropbtn{width:100%;justify-content:flex-start;height:44px}
-  .c-top #dropbtn.picked{height:44px;max-width:none}
+  .c-top #dropbtn.picked{height:44px;max-width:none;border-radius:0 0 15px 15px}
   .c-top #dropbtn .chev,.c-top #dropbtn .sx{margin-left:auto;margin-right:0}
   .cta{width:100%;font-size:16px;height:50px}
   .c-bot{margin-top:8px;gap:6px}
@@ -1049,12 +1068,17 @@ footer a:hover{color:var(--ink)}
     <!-- composer -->
     <div class="composer" data-enter style="--d:980ms">
       <div class="c-top">
+        <!-- One control, two ways in. The track is a single piece of state, so
+             the two sources are two halves of one object rather than two
+             objects — which is also what makes dimming one of them read as
+             "not in play" instead of "disabled field". -->
+        <div class="trackbox" id="trackBox">
         <div class="c-field" id="cField">
           <svg class="c-ic" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>
           <input id="song" type="text" aria-label="Song link" placeholder="Paste a Suno, TikTok or YouTube link">
           <button class="fx" id="linkx" type="button" aria-label="Clear link" hidden>&times;</button>
         </div>
-        <span class="c-or" aria-hidden="true"></span>
+          <span class="c-or" aria-hidden="true"><i></i></span>
           <div class="drop" id="drop" data-open="false">
             <button class="chip" id="dropbtn" aria-haspopup="true" aria-expanded="false">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
@@ -1079,6 +1103,8 @@ footer a:hover{color:var(--ink)}
               <button role="menuitem">The Rain Remembers <span>4:33</span></button>
             </div>
           </div>
+        </div>
+
         <button class="cta"><span class="lbl">Make a 5s video for free</span></button>
       </div>
 
