@@ -1701,3 +1701,40 @@ html {
   }
   .about-face-bio:not(.is-active) { visibility: hidden; }
 }
+
+/* ── Hero: bias the centring upward ──────────────────────────────────────────
+
+   The hero centres its content in a fixed band, which left 155px of air above
+   the text and 83px below. Optically that reads bottom-heavy: the eye takes
+   the gap under the topbar as emptiness and the gap above the fold as the
+   page simply ending.
+
+   padding-bottom is the lever rather than padding-top, because reducing the
+   top padding only moves the block by half of what you take off — centring
+   splits the difference. Padding the bottom pushes the centre line up by the
+   full amount instead. 64px here lifts the content 32px.
+
+   Applied to the hero, not to a state, so both faces move together and the
+   buttons stay on the same pixel through the toggle. */
+@media (min-width: 1024px) {
+  .about-intro {
+    padding-bottom: 64px;
+  }
+}
+
+/* ── Focus rings on the hero buttons ─────────────────────────────────────────
+
+   These two were the only interactive things on the page with no
+   :focus-visible style, so they fell through to the browser's default ring —
+   the blue one. Blue appears nowhere else on this site: the palette is ink,
+   paper and crimson, and crimson is the interaction colour.
+
+   Matches .about-work-all's treatment exactly (2px, 3px offset). The offset
+   puts the ring on the white page rather than on the filled pill, so the same
+   crimson reads on both buttons. :focus-visible, not :focus, so a mouse press
+   leaves no ring behind. */
+.about-cta:focus-visible,
+.about-cta-alt:focus-visible {
+  outline: 2px solid var(--crimson);
+  outline-offset: 3px;
+}
