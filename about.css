@@ -892,44 +892,30 @@
    stops scrolling — the paintings sliding IS the scroll — so there is no
    capture, no park, and nothing that can jank.
 
-   The gentle per-section pauses are proximity snap: native, momentum-friendly,
-   and skippable — a suggestion, not a wall. It is safe now precisely because
-   no JS writes to window.scroll* any more; the fights it lost before were
-   against our own animations. */
+   WHAT USED TO BE HERE: per-section proximity snap. `html` carried
+   `scroll-snap-type: y proximity` and each section carried a snap-align —
+   start on the hero and the room, center on the work grid, end on the footer,
+   the last one there because the footer sat past the final snap point and kept
+   being pulled back out of view.
+
+   It is gone, at the owner's report that desktop scrolling clipped to the
+   nearest section and hiccupped. Proximity snap is meant to read as a gentle
+   pause, and the note above called it "a suggestion, not a wall" — but a
+   suggestion the browser re-evaluates on every frame of a momentum scroll is
+   felt as a tug, especially against the sticky pin below, which is itself
+   moving while the snap engine is deciding where to land. The two do not want
+   the same scroll.
+
+   The pin stays; only the snapping went. Do not reintroduce a y-axis snap on
+   this page without testing it against the pinned rail on a real trackpad —
+   that pairing is what made it feel broken, and it is not visible in a
+   screenshot. */
 @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-snap-type: y proximity;
-  }
-
-  .about-intro,
-  .about-room {
-    scroll-snap-align: start;
-  }
-
-  .about-work {
-    scroll-snap-align: center;
-  }
-
   .about-art {
     /* Un-does the earlier centring block: the pin owns the layout now. */
     display: block;
     min-height: 0;
     height: calc(100dvh + var(--art-pin-extra, 120vh));
-    scroll-snap-align: start;
-  }
-
-  /* The end of the document has to be a snap target, or it is unreachable.
-     The room's snap point sits ~258px above the maximum scroll, so the footer
-     lives entirely PAST the last snap position: scrolling to the bottom put
-     the visitor closer to no snap point than to the room's, and proximity snap
-     pulled them back up — the footer bounced away and hid every time.
-
-     Aligning the footer to `end` makes "page bottom, footer fully visible" its
-     own candidate. Near the bottom it is the closest one and the page settles
-     there; higher up the room is closer and still wins, so the room keeps its
-     pause. */
-  .about-footer {
-    scroll-snap-align: end;
   }
 
   .about-art-pin {
@@ -942,7 +928,8 @@
   }
 
   /* scrollLeft is written every scroll frame; snap or smooth-behavior on the
-     rail would re-animate each write into a stutter. */
+     rail would re-animate each write into a stutter. The rail is its own
+     scroll container, so this is about the rail itself, not the page. */
   .about-art-rail {
     scroll-snap-type: none;
     scroll-behavior: auto;
