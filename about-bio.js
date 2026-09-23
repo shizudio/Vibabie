@@ -25,7 +25,38 @@
  */
 
 function controller() {
-  const s = { deck: null, intro: null, bio: null, btn: null }
+  const s = { deck: null, intro: null, bio: null, btn: null, pages: null, dots: null }
+
+  /**
+   * The mobile bio is two pages side by side in a scroll-snap container. The
+   * browser owns the swipe, the inertia and the snap — this only reads where
+   * it landed so the right dot lights up. Passive, and never calls
+   * preventDefault or scrollTo during a gesture.
+   */
+  function syncDots() {
+    if (!s.pages || !s.dots) return
+    const page = s.pages.firstElementChild
+    if (!page) return
+    const width = page.getBoundingClientRect().width
+    if (!width) return
+    const i = Math.round(s.pages.scrollLeft / width)
+    ;[...s.dots.children].forEach((d, n) => d.classList.toggle('is-on', n === i))
+  }
+
+  /**
+   * Closing the bio rewinds it. Leaving it on page two means the next visitor
+   * to open it lands mid-sentence with no indication they have missed a page.
+   * `auto` rather than the CSS `smooth`, so the rewind happens while the face
+   * is hidden instead of animating on its way back in.
+   */
+  function rewindPages() {
+    if (!s.pages) return
+    const prev = s.pages.style.scrollBehavior
+    s.pages.style.scrollBehavior = 'auto'
+    s.pages.scrollLeft = 0
+    s.pages.style.scrollBehavior = prev
+    syncDots()
+  }
 
   function show(next) {
     if (!s.deck || !s.intro || !s.bio) return
@@ -49,6 +80,8 @@ function controller() {
 
     outgoing.classList.remove('is-active')
     incoming.classList.add('is-active')
+
+    if (!toBio) rewindPages()
   }
 
   function onClick() {
@@ -56,7 +89,10 @@ function controller() {
   }
 
   return {
-    attach(deck, intro, bio, btn) {
+    attach(deck, intro, bio, btn, pages, dots) {
+      s.pages = pages
+      s.dots = dots
+      if (pages) pages.addEventListener('scroll', syncDots, { passive: true })
       s.deck = deck
       s.intro = intro
       s.bio = bio
@@ -70,6 +106,7 @@ function controller() {
       btn.setAttribute('aria-expanded', 'false')
       btn.textContent = btn.dataset.labelOpen || 'About Shina'
       deck.removeAttribute('data-direction')
+      rewindPages()
     },
   }
 }
@@ -79,11 +116,15 @@ export function initAboutBio() {
   const intro = document.getElementById('aboutFaceIntro')
   const bio = document.getElementById('aboutFaceBio')
   const btn = document.getElementById('aboutToggle')
+  // Optional: the pager and its dots only exist on this page's bio face, and
+  // the toggle must keep working if either is ever removed.
+  const pages = document.getElementById('aboutBioPages')
+  const dots = document.getElementById('aboutBioDots')
   if (!deck || !intro || !bio || !btn) return
   if (btn.dataset.aboutBioBound) return
 
   if (!window.__shizAboutBio) window.__shizAboutBio = controller()
-  window.__shizAboutBio.attach(deck, intro, bio, btn)
+  window.__shizAboutBio.attach(deck, intro, bio, btn, pages, dots)
 }
 
 initAboutBio()

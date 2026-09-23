@@ -1242,23 +1242,25 @@ html {
 
     margin-left: calc(-1 * var(--bio-breakout));
     width: calc(100% + var(--bio-breakout));
-
-    columns: 2;
-    column-gap: 40px;
   }
 
-  /* The greeting runs across both columns, so the block opens on one line
-     rather than starting halfway down a column. */
+  /* An explicit two-up grid rather than CSS columns. The halves are now real
+     elements — they have to be, because mobile swipes between them — so the
+     break point is authored instead of being whatever the column balancer
+     decides. It also retires break-inside: avoid and column-span, which were
+     both working around not owning that break. */
+  .about-bio-pages {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+
+  /* The greeting sits above both halves and spans the full width. */
   .about-face-bio .about-bio-lead {
-    column-span: all;
     margin-bottom: 24px;
   }
 
-  /* Paragraphs must not straddle the column break — a line orphaned at the top
-     of column two reads as a mistake. */
-  .about-face-bio p {
-    break-inside: avoid;
-  }
+  .about-bio-dots { display: none; }
 
 }
 
@@ -1378,5 +1380,142 @@ html {
      one item, and the gap would otherwise still be reserved above it. */
   .about-intro:has(#aboutFaceBio.is-active) {
     gap: 0;
+  }
+}
+
+/* ── MOBILE: the bio is swiped, and the actions become a bottom bar ──────────
+
+   Two changes that only make sense on a phone.
+
+   The bio pages sideways instead of scrolling. In one column the whole bio is
+   ~1090px — three screenfuls of thumb work to reach the end of a paragraph the
+   visitor is still deciding whether to read. Split in two and laid side by
+   side, each half fits a screen and the second is one swipe away.
+
+   The swipe is native overflow with scroll-snap. No wheel handler, no
+   preventDefault, no scrollTo — the browser owns the gesture and the inertia,
+   which is the standing rule on this site for anything that has to feel like a
+   real scroll. The only script involved reads scrollLeft, passively, to light
+   the right dot. */
+@media (max-width: 1023px) {
+
+  .about-bio-pages {
+    display: flex;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+
+    /* The gutter is paid by the pages, so a page's text still lines up with
+       the rest of the column while the scroll track runs edge to edge. */
+    gap: var(--page-gutter, 24px);
+
+    scrollbar-width: none;
+  }
+  .about-bio-pages::-webkit-scrollbar { display: none; }
+
+  .about-bio-page {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    min-width: 0;
+  }
+
+  .about-bio-page p:last-child { margin-bottom: 0; }
+
+  /* Nothing else on screen says a second page exists. */
+  .about-bio-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+  }
+
+  .about-bio-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--ink-faint);
+    transition: background 200ms ease;
+  }
+
+  .about-bio-dots span.is-on { background: var(--ink); }
+
+  /* ── The actions become a bottom bar ─────────────────────────────────────
+     Two tabs, always reachable. In the bio state the toggle used to sit below
+     a 1090px block, so "Back" meant scrolling to the bottom of something you
+     had already decided to leave. */
+  .about-actions {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+
+    margin: 0;
+    gap: 0;
+
+    background: var(--paper);
+    border-top: 1px solid var(--border);
+
+    /* Clears the home indicator on notched devices and is 0 everywhere else. */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Equal halves, square — the pill shape belongs to a button sitting in the
+     page, not to a bar welded to the bottom of the screen. */
+  .about-actions > * {
+    flex: 1 1 0;
+    justify-content: center;
+    min-width: 0;
+    border-radius: 0;
+    border: none;
+    min-height: 56px;
+  }
+
+  .about-actions .about-cta-alt {
+    background: var(--paper);
+    color: var(--ink);
+    border-left: 1px solid var(--border);
+  }
+
+  .about-actions .about-cta-alt[aria-expanded="true"] {
+    color: var(--crimson);
+  }
+
+  /* The bar is fixed, so the page has to end above it or the footer hides
+     underneath. */
+  body {
+    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* The pager is a scroll container, and a horizontal one at that. Snapping is
+   motion the visitor did not ask for when they have asked for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  .about-bio-pages {
+    scroll-behavior: auto;
+    scroll-snap-type: none;
+  }
+}
+
+/* .about-intro-text is a centred flex column on mobile (align-items: center),
+   which means its children are sized to max-content rather than to the column.
+   That is harmless for a heading, and not harmless for a horizontal pager: the
+   pager's max-content is both pages side by side, so the deck measured 392px
+   inside a 335px column, overflowed it by 53px and pushed the text under the
+   left edge of the screen.
+
+   Pinning the chain to the column's width is what keeps one page equal to one
+   screen. min-width: 0 is the other half — without it a flex/grid child refuses
+   to shrink below its content, which is the same overflow by another route. */
+@media (max-width: 1023px) {
+  .about-deck,
+  .about-deck > .about-face,
+  .about-bio-pages {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
   }
 }
