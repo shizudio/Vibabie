@@ -144,35 +144,45 @@ h1{margin:0;font-size:20px;font-weight:500;letter-spacing:-.018em;color:var(--in
    Cold traffic arrives with nothing. Presets are the cheapest possible first
    action: one click, no file, no typing. They were four grey pills below the
    CTA; they are the on-ramp, so they go first and they get a face. */
-/* The type picker sits with the recipes, not above the composer: both are
-   ways to start, and 190px of cards was pushing the tool off the fold.
-   What you picked still reads in the composer summary, so the setting is
-   never off-screen without a readout. */
-.looks{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 30px}
-.rowlbl{margin:26px 0 12px;text-align:center;font-family:"DM Mono",monospace;
-  font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
-.rowlbl:first-of-type{margin-top:22px}
-.look{position:relative;border:1px solid var(--hair);border-radius:12px;
-  overflow:hidden;cursor:pointer;background:var(--raised);padding:0;
-  text-align:left;transition:border-color .16s var(--ease),transform .16s var(--ease)}
-.look:hover{transform:translateY(-2px);border-color:var(--hair-2)}
+/* ---- video type: an input to the render, so it lives in the composer ----
+   Compact horizontal tiles matching the track row directly above. The big
+   thumbnail cards were 190px of fold; the rest of the types are behind
+   View more. */
+.vtype{margin:10px 0 0;padding:13px 14px;border:1px solid var(--hair);
+  border-radius:14px;background:var(--sunk)}
+.vtype .hd{display:flex;align-items:center;gap:10px;margin:0 0 9px}
+.vtype .lbl{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3)}
+.viewmore{margin-left:auto;display:inline-flex;align-items:center;gap:6px;
+  height:24px;padding:0 9px;border:1px solid var(--hair);border-radius:7px;
+  background:none;color:var(--ink-2);font-family:inherit;font-size:11.5px;
+  cursor:pointer;white-space:nowrap;
+  transition:background .16s var(--ease),color .16s var(--ease)}
+.viewmore:hover{background:var(--ctrl);color:var(--ink)}
+.viewmore svg{width:11px;height:11px;flex:none}
+.looks{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0}
+.look{display:flex;align-items:center;gap:9px;padding:7px 9px;min-width:0;
+  border:1px solid var(--hair-2);border-radius:10px;background:var(--ctrl);
+  color:var(--ink);text-align:left;cursor:pointer;font-family:inherit;
+  overflow:hidden;position:relative;
+  transition:background .16s var(--ease),border-color .16s var(--ease)}
+.look:hover{background:var(--ctrl-hi)}
 .look[aria-pressed=true]{border-color:var(--action);
-  box-shadow:0 0 0 1px var(--action)}
-.look img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;
-  opacity:.72;transition:opacity .16s var(--ease)}
-/* Hover plays the look, same as the recipe tiles below. The clip is pinned to
-   the thumbnail's box rather than the whole card, so it never covers the name,
-   and it shares the img's aspect so the two line up exactly. */
-.look video{position:absolute;top:0;left:0;width:100%;aspect-ratio:16/10;
-  object-fit:cover;display:block;opacity:0;
-  transition:opacity .35s var(--ease)}
-.look video.on{opacity:1}
+  background:color-mix(in srgb,var(--action) 12%,var(--ctrl))}
+.look img{flex:none;display:block;width:30px;height:30px;border-radius:7px;
+  object-fit:cover;opacity:.82;transition:opacity .16s var(--ease)}
 .look:hover img,.look[aria-pressed=true] img{opacity:1}
-.look .nm{display:block;padding:9px 11px;font-size:13px;font-weight:500;
-  letter-spacing:-.01em}
-.look .tick{position:absolute;top:8px;right:8px;width:18px;height:18px;
-  border-radius:50%;background:var(--action);display:none;place-items:center}
+.look video{position:absolute;top:7px;left:9px;width:30px;height:30px;
+  border-radius:7px;object-fit:cover;display:block;opacity:0;
+  transition:opacity .3s var(--ease)}
+.look video.on{opacity:1}
+.look .nm{display:block;font-size:12.5px;font-weight:500;letter-spacing:-.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.look .tick{position:absolute;top:50%;right:7px;transform:translateY(-50%);
+  width:15px;height:15px;border-radius:50%;background:var(--action);
+  display:none;place-items:center}
 .look[aria-pressed=true] .tick{display:grid}
+.look[aria-pressed=true] .nm{padding-right:16px}
 
 /* example prompts: the cure for a 128,000px blank box */
 /* Above the box, not below it: examples are a way in, and underneath they read
@@ -216,7 +226,7 @@ h1{margin:0;font-size:20px;font-weight:500;letter-spacing:-.018em;color:var(--in
 .sample.mine{display:none}
 body.signed .sample.demo{display:none}
 body.signed .sample.mine{display:flex}
-.sample{display:flex;align-items:center;gap:9px;padding:9px 10px;
+.sample{display:flex;align-items:center;gap:7px;padding:7px 8px;min-width:0;
   border:1px solid var(--hair-2);border-radius:10px;background:var(--ctrl);
   color:var(--ink);text-align:left;cursor:pointer;font-family:inherit;
   transition:background .16s var(--ease),border-color .16s var(--ease)}
@@ -224,19 +234,20 @@ body.signed .sample.mine{display:flex}
 .sample[aria-pressed=true]{border-color:var(--action);
   background:color-mix(in srgb,var(--action) 12%,var(--ctrl))}
 .sample[aria-pressed=true] .ic{background:var(--action);color:var(--action-ink,#04140D)}
-.sample .x{margin-left:auto;flex:none;width:18px;height:18px;border:0;
+.sample .x{margin-left:auto;flex:none;width:16px;height:16px;border:0;
   border-radius:50%;background:transparent;color:var(--ink-3);cursor:pointer;
   display:none;place-items:center;font-size:13px;line-height:1;padding:0}
 .sample[aria-pressed=true] .x{display:grid}
 .sample .x:hover{background:var(--ctrl-hi);color:var(--ink)}
-.sample .ic{flex:none;width:26px;height:26px;border-radius:7px;display:grid;
+.sample .ic{flex:none;width:22px;height:22px;border-radius:6px;display:grid;
   place-items:center;background:color-mix(in srgb,var(--action) 16%,transparent);
   color:var(--action)}
-.sample .ic svg{width:13px;height:13px}
-.sample b{display:block;font-size:12.5px;font-weight:500;letter-spacing:-.01em;
+.sample .ic svg{width:11px;height:11px}
+.sample>span:nth-child(2){min-width:0;flex:1}
+.sample b{display:block;font-size:11.5px;font-weight:500;letter-spacing:-.012em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sample i{display:block;font-style:normal;font-family:"DM Mono",monospace;
-  font-size:9.5px;color:var(--ink-3);margin-top:2px;
+  font-size:9px;color:var(--ink-3);margin-top:2px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .srcs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:11px;
   font-size:13px;color:var(--ink-3)}
@@ -389,17 +400,22 @@ h1 em{font-style:normal;color:var(--action)}
    the one control that brings your own material in. Everything it opens used to
    be a row of text links under the samples. */
 .plus-wrap{position:relative;flex:none;display:flex}
-/* Square and card-shaped: it is the first tile on the track shelf, so it reads
-   as one of the sources rather than as chrome borrowed from elsewhere. */
-.plus{width:auto;aspect-ratio:1;align-self:stretch;border:1px dashed var(--hair-2);
-  border-radius:10px;background:var(--ctrl);color:var(--ink-2);cursor:pointer;
-  display:grid;place-items:center;padding:0;
+/* The one control here that adds something the user owns, so it carries a
+   label and reads at full ink. It sizes to its text in the auto column and the
+   four samples share what is left — which is why they run tighter than before. */
+.plus{width:auto;align-self:stretch;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:0 14px;border:1px solid var(--ink-3);border-radius:10px;
+  background:var(--ctrl-hi);color:var(--ink);cursor:pointer;
+  font-family:inherit;font-size:12.5px;font-weight:500;letter-spacing:-.01em;
+  white-space:nowrap;
   transition:background .16s var(--ease),color .16s var(--ease),
              border-color .16s var(--ease)}
-.plus:hover{color:var(--ink);border-color:var(--ink-3)}
+.plus:hover{background:var(--action);border-color:var(--action);
+  color:var(--action-ink,#04140D)}
 .plus svg{width:16px;height:16px;transition:transform .24s var(--ease)}
-.plus-wrap.open .plus{background:var(--ctrl-hi);color:var(--ink);
-  border-style:solid;border-color:var(--ink-3)}
+.plus-wrap.open .plus{background:var(--action);color:var(--action-ink,#04140D);
+  border-color:var(--action)}
 .plus-wrap.open .plus svg{transform:rotate(45deg)}
 .plusmenu{position:absolute;top:calc(100% + 9px);left:0;z-index:30;
   min-width:210px;padding:6px;border:1px solid var(--hair-2);border-radius:12px;
@@ -616,6 +632,20 @@ footer a:hover{color:var(--ink)}
    actions are the whole product, and burying them behind a hamburger would
    cost the page its purpose. */
 @media (max-width:1080px){ :root{--rail:212px;--gut:28px} }
+
+/* The + carries a label now, so the shelf needs ~700px to keep four readable
+   tiles beside it. Below that the + takes its own full-width row and the songs
+   sit two-up; below 560 the type tiles do the same. Measured, not guessed:
+   at 375px the five-across grid gave 23px tiles and overflowed the page. */
+@media (max-width:860px){
+  .samples{grid-template-columns:repeat(2,1fr)}
+  .plus-wrap{grid-column:1 / -1}
+  .plus{width:100%;height:42px}
+}
+@media (max-width:560px){
+  .looks{grid-template-columns:repeat(2,1fr)}
+  .vtype .hd{flex-wrap:wrap}
+}
 @media (max-width:820px){
   :root{--gut:18px}
   main{margin-left:0;padding-bottom:76px}
@@ -631,8 +661,13 @@ footer a:hover{color:var(--ink)}
   .nav-item .full{display:none}
   .nav-item .short{display:inline}
   .nav-item svg{width:18px;height:18px}
-  .top{height:54px}
+  .top{height:54px;gap:10px}
   .top .where span{display:none}
+  /* Discord and language are the two things nobody opens this page for. At
+     375px the full bar measured 433px against a 375px viewport, which scrolled
+     the whole document sideways. Credits and Sign in stay: one is the balance
+     you are about to spend, the other is how you get your work back. */
+  .top .tbtn:not(.solid){display:none}
   .hero{padding:40px 0 0}
   .composer{border-radius:16px;padding:12px}
   .prompt{min-height:104px;font-size:16px}
@@ -712,7 +747,7 @@ footer a:hover{color:var(--ink)}
           <div class="samples">
               <div class="plus-wrap" id="plusWrap">
                 <button class="plus" id="plus" type="button" aria-haspopup="true"
-                        aria-expanded="false" aria-controls="plusmenu" aria-label="Add a track"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+                        aria-expanded="false" aria-controls="plusmenu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span class="plbl">Upload your track</span></button>
                 <div class="plusmenu" id="plusmenu" role="menu" aria-label="Add a track">
                   <button class="pmi" role="menuitem" type="button" data-src="Uploaded file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v13"/></svg>Upload a file</button>
                   <button class="pmi" role="menuitem" type="button" data-src="Linked track"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>Paste a link</button>
@@ -729,6 +764,26 @@ footer a:hover{color:var(--ink)}
               <button class="sample mine" type="button" aria-pressed="false" data-song="Static Bound"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Static Bound</b><i>1:01</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
             </div>
         </div>
+        <!-- The type picker belongs to the composer, not to a browse section:
+             it is an input to the render, so it sits with the other inputs.
+             Compact tiles mirroring the track row above; the rest of the types
+             are behind View more rather than spread across the fold. -->
+        <div class="vtype" id="vtype">
+          <div class="hd">
+            <span class="lbl">Video type</span>
+            <button class="viewmore" type="button">View more
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+                   stroke-linecap="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+          <div class="looks" role="group" aria-label="Pick a look">
+          <button class="look" type="button" aria-pressed="true" data-look="Singing MV"><img src="https://media.solmi.ai/ai-music-video/narrative-thumb-fba31b5e-0a28-418d-833a-f7c3393552d0.jpg" alt="" loading="lazy" decoding="async"><span class="nm">Singing MV</span><span class="tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#04140D" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+          <button class="look" type="button" aria-pressed="false" data-look="Story MV"><img src="https://media.solmi.ai/ai-music-video/narrative-thumb-3840eb9f-9f41-44f7-bb00-ccf1e9bbeb0a.jpg" alt="" loading="lazy" decoding="async"><span class="nm">Story MV</span><span class="tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#04140D" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+          <button class="look" type="button" aria-pressed="false" data-look="Abstract MV"><img src="https://media.solmi.ai/ai-music-video/narrative-thumb-eafb79a1-1e60-4461-a68d-a13e440d1365.jpg" alt="" loading="lazy" decoding="async"><span class="nm">Abstract MV</span><span class="tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#04140D" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+          <button class="look" type="button" aria-pressed="false" data-look="Viral Shorts"><img src="https://media.solmi.ai/ai-music-video/narrative-thumb-3d6bfc63-dd32-42fb-b094-b5f7b65787b2.jpg" alt="" loading="lazy" decoding="async"><span class="nm">Viral Shorts</span><span class="tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#04140D" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+          </div>
+        </div>
+
         <div class="c-bar">
           <div class="opts" id="opts">
             <button data-opt="ratio" class="opt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18v12H3z"/></svg>16:9</button>
@@ -818,15 +873,6 @@ footer a:hover{color:var(--ink)}
           </button>
         </div>
       </div>
-      <p class="rowlbl">Pick the kind of video</p>
-      <div class="looks" role="group" aria-label="Pick a look">
-        <button class="look" type="button" aria-pressed="true" data-look="Singing MV"><img src="https://media.solmi.ai/ai-music-video/narrative-thumb-fba31b5e-0a28-418d-833a-f7c3393552d0.jpg" alt="" loading="lazy" decoding="async"><span class="nm">Singing MV</span><span class="tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#04140D" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
-        <button class="look" type="button" aria-pressed="false" data-look="Story MV"><img src="https://media.solmi.ai/ai-music-video/narrative-thumb-3840eb9f-9f41-44f7-bb00-ccf1e9bbeb0a.jpg" alt="" loading="lazy" decoding="async"><span class="nm">Story MV</span><span class="tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#04140D" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
-        <button class="look" type="button" aria-pressed="false" data-look="Abstract MV"><img src="https://media.solmi.ai/ai-music-video/narrative-thumb-eafb79a1-1e60-4461-a68d-a13e440d1365.jpg" alt="" loading="lazy" decoding="async"><span class="nm">Abstract MV</span><span class="tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#04140D" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
-        <button class="look" type="button" aria-pressed="false" data-look="Viral Shorts"><img src="https://media.solmi.ai/ai-music-video/narrative-thumb-3d6bfc63-dd32-42fb-b094-b5f7b65787b2.jpg" alt="" loading="lazy" decoding="async"><span class="nm">Viral Shorts</span><span class="tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#04140D" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>
-      </div>
-
-      <p class="rowlbl">Or take a finished setup</p>
       <div class="grid" id="grid"></div>
       <button class="link more" id="more" type="button">Show more
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
