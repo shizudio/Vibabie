@@ -150,9 +150,6 @@ h1{margin:0;font-size:20px;font-weight:500;letter-spacing:-.018em;color:var(--in
    View more. */
 .vtype{margin:10px 0 0;padding:13px 14px;border:1px solid var(--hair);
   border-radius:14px;background:var(--sunk)}
-.vtype .hd{display:flex;align-items:center;gap:10px;margin:0 0 9px}
-.vtype .lbl{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.13em;
-  text-transform:uppercase;color:var(--ink-3)}
 .viewmore{margin-left:auto;display:inline-flex;align-items:center;gap:6px;
   height:24px;padding:0 9px;border:1px solid var(--hair);border-radius:7px;
   background:none;color:var(--ink-2);font-family:inherit;font-size:11.5px;
@@ -205,7 +202,41 @@ h1{margin:0;font-size:20px;font-weight:500;letter-spacing:-.018em;color:var(--in
 /* ============ the track, with its sources in the open ============
    The library was behind a single "Attach a song · Required" button, so a
    visitor with no file of their own saw a wall instead of a shelf. */
-.track{margin:16px 0 0;padding:13px 14px;border:1px solid var(--hair);
+/* ---- the three steps ----
+   One container, one header, one numeral slot, three times. The numeral is the
+   empty state and a tick is the done state in the same 20px ring, so the panel
+   answers "what is left before I can render" without adding a line of text.
+   The order is what actually gates a render: the track is the only required
+   input, the prompt is optional, the look is pre-selected. Numbering them any
+   other way would promise a sequence the button does not enforce. */
+.step .hd{display:flex;align-items:center;gap:9px;margin:0 0 9px}
+.sn{flex:none;position:relative;width:20px;height:20px;border-radius:50%;
+  border:1px solid var(--hair-2);display:grid;place-items:center;
+  font-family:"DM Mono",monospace;font-size:10.5px;color:var(--ink-3);
+  transition:background .2s var(--ease),border-color .2s var(--ease),
+             color .2s var(--ease)}
+.sn i{font-style:normal;transition:opacity .16s var(--ease)}
+.sn .tk{position:absolute;width:11px;height:11px;opacity:0;
+  transition:opacity .16s var(--ease)}
+.step.done .sn{background:var(--action);border-color:var(--action);
+  color:var(--action-ink,#04140D)}
+.step.done .sn i{opacity:0}
+.step.done .sn .tk{opacity:1}
+.step .lbl{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3)}
+/* required is stated once, quietly, on the only step that blocks the button */
+.need,.opt-tag{font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase}
+.need{color:var(--ink-2)}
+.opt-tag{color:var(--ink-3);opacity:.75}
+
+/* step 2 gets the same panel the other two always had */
+.pstep{margin:10px 0 0;padding:13px 14px;border:1px solid var(--hair);
+  border-radius:14px;background:var(--sunk)}
+.pstep .egs{margin:0 0 9px}
+.pstep .prompt{margin:0}
+
+.track{margin:0;padding:13px 14px;border:1px solid var(--hair);
   border-radius:14px;background:var(--sunk)}
 .track .hd{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .track .hd .lbl{font-family:"DM Mono",monospace;font-size:10.5px;
@@ -739,18 +770,12 @@ footer a:hover{color:var(--ink)}
       <div class="ctx"><span class="dot"></span><h1>AI music video generator</h1></div>
 
             <div class="composer">
-        <div class="egs">
-          <span class="lbl">Try</span>
-          <button class="eg" type="button">Neon-lit night drive through Tokyo</button>
-          <button class="eg" type="button">Handheld Super 8, beach at golden hour</button>
-          <button class="eg" type="button">One-take black and white performance</button>
-        </div>
-        <textarea class="prompt" rows="3" placeholder="Describe the video you want. A mood, a place, a reference — anything."></textarea>
         <!-- The sources were all behind one button marked REQUIRED. They are the
              reason a visitor with no file can still start, so they are visible. -->
-        <div class="track" id="track">
+        <div class="track step" id="track">
           <div class="hd">
-            <span class="lbl">Your track</span>
+            <span class="sn"><i>1</i><svg class="tk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span><span class="lbl">Pick a track</span>
+            <span class="need">required</span>
           </div>
           <div class="samples">
               <div class="plus-wrap" id="plusWrap">
@@ -772,13 +797,31 @@ footer a:hover{color:var(--ink)}
               <button class="sample mine" type="button" aria-pressed="false" data-song="Static Bound"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><span><b>Static Bound</b><i>1:01</i></span><span class="x" role="button" aria-label="Clear track">×</span></button>
             </div>
         </div>
+        <!-- Step 2. The prompt used to sit naked on the composer while the two
+             blocks under it were bordered panels with labels — which is why it
+             read as a text field with settings below rather than as a step. Same
+             container, same header, same numeral slot as the other two. -->
+        <div class="pstep step" id="pstep">
+          <div class="hd">
+            <span class="sn"><i>2</i><svg class="tk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span><span class="lbl">Describe it</span>
+            <span class="opt-tag">optional</span>
+          </div>
+          <div class="egs">
+            <span class="lbl">Try</span>
+            <button class="eg" type="button">Neon-lit night drive through Tokyo</button>
+            <button class="eg" type="button">Handheld Super 8, beach at golden hour</button>
+            <button class="eg" type="button">One-take black and white performance</button>
+          </div>
+          <textarea class="prompt" rows="3" placeholder="Describe the video you want. A mood, a place, a reference — anything."></textarea>
+        </div>
+
         <!-- The type picker belongs to the composer, not to a browse section:
              it is an input to the render, so it sits with the other inputs.
              Compact tiles mirroring the track row above; the rest of the types
              are behind View more rather than spread across the fold. -->
-        <div class="vtype" id="vtype">
+        <div class="vtype step" id="vtype">
           <div class="hd">
-            <span class="lbl">Video type</span>
+            <span class="sn"><i>3</i><svg class="tk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span><span class="lbl">Choose a look</span>
             <button class="viewmore" type="button">View more
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
                    stroke-linecap="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
@@ -1165,6 +1208,28 @@ document.querySelectorAll('.look').forEach(b=>
     b.setAttribute('aria-pressed','true');
     sum();
   }));
+
+/* ---- step completion ----
+   Each numeral is a tick once its step is satisfied. Recomputed from the DOM
+   rather than tracked in a variable, so it cannot drift out of sync with what
+   the user can actually see is selected. */
+const stepEls={1:document.getElementById('track'),
+               2:document.getElementById('pstep'),
+               3:document.getElementById('vtype')};
+function steps(){
+  const done={
+    1:!!document.querySelector('.sample[aria-pressed=true]'),
+    2:document.querySelector('.prompt').value.trim().length>0,
+    3:!!document.querySelector('.look[aria-pressed=true]')
+  };
+  for(const n in stepEls) stepEls[n].classList.toggle('done',done[n]);
+}
+document.querySelector('.prompt').addEventListener('input',steps);
+document.querySelector('#track').addEventListener('click',()=>setTimeout(steps,0));
+document.querySelector('.looks').addEventListener('click',()=>setTimeout(steps,0));
+document.querySelectorAll('.eg').forEach(b=>b.addEventListener('click',()=>setTimeout(steps,0)));
+document.querySelectorAll('.pmi').forEach(b=>b.addEventListener('click',()=>setTimeout(steps,0)));
+steps();
 
 /* ---- one signal drives both the rail and the Renders panel ----
    A first-time visitor gets the focused page: rail collapsed, no Renders. A
