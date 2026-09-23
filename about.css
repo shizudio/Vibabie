@@ -1182,47 +1182,50 @@ html {
   .about-face:not(.is-active) { transform: none; }
 }
 
-/* ── BIO VIEW: the portrait steps out, the text spreads ──────────────────────
+/* ── BIO VIEW: the bio spreads, everything else holds still ──────────────────
 
-   Opening the bio is a different composition, not the same one with more text
-   in it. The portrait leaves, the text takes the full content width, and the
-   eight paragraphs run in two columns with the greeting spanning the top.
+   Opening the bio is a different composition, but it is allowed to change only
+   the hero. The button under it and every section below must land on exactly
+   the same pixel in both views — a primary CTA that slides out from under the
+   cursor when you click it is the worst thing this toggle could do.
 
-   This is what makes two columns viable at all. Beside the 300px portrait the
-   text column is 612px, which splits into two 286px columns — about 34
-   characters, well under the 45 that reading comfortably needs. With the
-   portrait gone the columns are ~490px, or ~57 characters each, which is
-   inside the comfortable band.
+   So the grid does NOT collapse. The portrait column stays exactly where it is
+   and the portrait is hidden with visibility, not display: visibility keeps the
+   column's 300px in the layout (and takes the image out of the accessibility
+   tree), so .about-intro-text never moves and neither does the h1, the actions
+   row, or anything after them.
 
-   Desktop only. Below 1024px there is no width to split and the bio stays a
-   single column. */
+   Only the bio face breaks out. It reclaims the portrait column with a negative
+   margin, giving it the full 960px content width to split into two columns of
+   ~460px — about 46 characters a line, inside the 45-75 band. At the 612px
+   column it would have been 286px and 30 characters, which is why a two-column
+   bio was rejected before the portrait came out.
+
+   The breakout mirrors the grid's own track and gap expressions rather than
+   hard-coding 348px, so it stays correct across the clamp range.
+
+   Desktop only. Below 1024px there is no width to split and the bio stays one
+   column with the portrait visible. */
 @media (min-width: 1024px) {
 
-  /* main caps at 1040px, which splits into two 448px columns — 44 characters
-     a line, just under the 45 that reading comfortably needs. Widening to
-     1200 for this view only puts each column at ~528px, or ~52 characters,
-     and matches the proportions of the reference. Sections below reflow while
-     the bio is open, which is invisible because the bio fills the viewport. */
-  main:has(#aboutFaceBio.is-active) {
-    max-width: 1200px;
-  }
-
-  .about-intro:has(#aboutFaceBio.is-active) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  /* main stays at 1040px. Widening it for this view gave a more comfortable
+     measure but reflowed every section below — the work grid and its heading
+     visibly resized on toggle. The column gap solves the measure instead. */
 
   .about-intro:has(#aboutFaceBio.is-active) > .portrait-frame {
-    display: none;
-  }
-
-  /* 640px is the cap for the single-column hero. The bio needs the room. */
-  .about-intro:has(#aboutFaceBio.is-active) .about-intro-text {
-    max-width: none;
+    visibility: hidden;
   }
 
   .about-face-bio {
+    /* The portrait track plus the grid gap, written the same way .about-intro
+       writes them so the two cannot drift apart. */
+    --bio-breakout: calc(clamp(280px, 24vw, 300px) + clamp(40px, 4vw, 48px));
+
+    margin-left: calc(-1 * var(--bio-breakout));
+    width: calc(100% + var(--bio-breakout));
+
     columns: 2;
-    column-gap: 64px;
+    column-gap: 40px;
   }
 
   /* The greeting runs across both columns, so the block opens on one line
@@ -1238,10 +1241,4 @@ html {
     break-inside: avoid;
   }
 
-  /* The actions sit under the second column, so the composition is anchored
-     at top-left by the greeting and bottom-right by the buttons rather than
-     running everything down the left edge. */
-  .about-intro:has(#aboutFaceBio.is-active) .about-actions {
-    padding-left: calc(50% + 32px);
-  }
 }
