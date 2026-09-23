@@ -18,14 +18,14 @@
     "external": false
   },
   {
-    "src": "work/stoneflower/p01.webp",
-    "title": "StoneFlower 岩花",
-    "tag": "Brand · Fashion",
-    "role": "Creative Direction",
-    "year": "2026 –",
-    "href": "stoneflower.html",
+    "src": "work/sanctum/tile.webp",
+    "title": "Sanctum Furni Pack",
+    "tag": "Game · Cards",
+    "role": "Card Design & Interaction",
+    "year": "2026",
+    "href": "sanctum.html",
     "external": false,
-    "current": true
+    "hoverVideo": "work/sanctum/teaser.mp4"
   },
   {
     "src": "work/solmi/p01.webp",
@@ -37,22 +37,13 @@
     "external": false
   },
   {
-    "src": "work/sanctum/tile.webp",
-    "title": "Sanctum Furni Pack",
-    "tag": "Game · Cards",
-    "role": "Card Design & Interaction",
-    "year": "2026",
-    "href": "sanctum.html",
-    "external": false,
-    "hoverVideo": "work/sanctum/teaser.mp4"
-  },
-  {
-    "src": "work/birthday.png",
-    "title": "Shina's Birthday Invite",
-    "tag": "Design & Dev",
+    "src": "work/stoneflower/p01.webp",
+    "title": "StoneFlower 岩花",
+    "tag": "Brand · Fashion",
     "role": "Creative Direction",
-    "year": "2025",
-    "href": "birthday.html",
-    "external": false
+    "year": "2026 –",
+    "href": "stoneflower.html",
+    "external": false,
+    "current": true
   }
 ]
