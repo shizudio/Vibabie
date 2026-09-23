@@ -1292,7 +1292,13 @@ html {
 
   .about-actions {
     justify-content: flex-end;
-    margin-top: auto;
+
+    /* Was auto, which does nothing here: .about-intro-text is content-height,
+       so there is no free space for an auto margin to absorb. The bio is the
+       tallest face, so it defines the deck and its last line landed exactly on
+       the deck's bottom edge — zero gap to the buttons. Measured: 0px in the
+       bio view against 87px in the intro. */
+    margin-top: 40px;
 
     /* The 48px below belongs to the stacked mobile layout. Here it sits inside
        the text column's box, so the column measures 48px taller than it looks
@@ -1549,53 +1555,24 @@ html {
    inert placeholder link should look on this site, and there is a second one
    coming the moment another destination is missing. */
 
-/* ── The record is not part of the landing view on mobile ───────────────────
+/* ── No record on mobile ─────────────────────────────────────────────────────
 
-   style.css already names this problem by hand: "A fixed 100px disc in the
-   bottom-right corner otherwise sits permanently on whatever the page has put
-   there: the art rail on About, the dot rail and placard on Art, body copy on
-   a phone." Its answer is .vinyl-tucked, driven by initAutoTuckVinyl() on
-   scroll direction.
+   The vinyl widget does not appear on a phone at all.
 
-   That answer cannot reach the hero. The bio pages sideways, so there is no
-   vertical scroll to read a direction from, and the disc parked over the copy
-   for as long as the bio was open. Measured at 375px: 133x72, 35% of the
-   screen width, covering 51px of the last paragraph on page one.
+   It arrived here by stages: tucked while the bio was open, then away for the
+   whole landing view, then lifted clear of the tab bar. Each step was a
+   negotiation with a 133x72 disc that wanted 35% of a 375px screen, and the
+   answer to all of them is that a floating record player is a desktop
+   flourish. There is not enough room beside it on a phone for it to be one.
 
-   So the same tuck is triggered by the hero being on screen at all. The record
-   is simply not part of the landing view on a phone: it stays away for the
-   first screenful, in the intro state and the bio state alike, and arrives
-   once the visitor has scrolled past the hero into the work.
-   body.shiz-in-hero is set by an IntersectionObserver in about-bio.js.
+   Scoped to about.css, so it is this page only. Moving it to style.css would
+   take it off Art, Work and Play as well.
 
-   Note what this does NOT do: it does not disable initAutoTuckVinyl. Past the
-   hero the record goes back to the site-wide behaviour, hidden while scrolling
-   down and back on the way up. This rule only removes the one case script.js
-   forces the other way — scrollY under its threshold pins the disc visible,
-   and on a phone that is precisely the landing view.
-
-   Deliberately CSS and not the .vinyl-tucked class: script.js strips that class
-   whenever scrollY is under its threshold, which is exactly where this view
-   sits, so a JS toggle would be undone a frame later.
-
-   :not(.playing-active) honours the rule script.js already follows — a disc
-   that is playing is a transport control, and taking the pause button away
-   from someone mid-track to tidy a margin is the wrong trade. */
+   display, not visibility: there is nothing to preserve the layout of, and the
+   widget is its own transport control, so hiding it cannot strand audio that a
+   visitor can no longer stop. */
 @media (max-width: 1023px) {
-  body.shiz-in-hero .vinyl-widget:not(.playing-active) {
-    opacity: 0;
-    transform: translateY(calc(100% + var(--space-xl)));
-    pointer-events: none;
-  }
-}
-
-/* Matches the reduced-motion handling style.css gives .vinyl-tucked: still get
-   out of the way, just without the travel. Hiding is the accessible outcome
-   here; the movement is not. */
-@media (max-width: 1023px) and (prefers-reduced-motion: reduce) {
-  body.shiz-in-hero .vinyl-widget:not(.playing-active) {
-    transform: none;
-  }
+  .vinyl-widget { display: none; }
 }
 
 /* ── Detail row: label and value on one line (mobile) ────────────────────────
@@ -1683,13 +1660,10 @@ html {
     transition-delay: 0s;
   }
 
-  /* The record is z-index 100 and would float on top of the sheet. It is
-     already hidden inside the hero; this covers opening the bio from further
-     down the page. */
-  body.shiz-bio-open .vinyl-widget:not(.playing-active) {
-    opacity: 0;
-    pointer-events: none;
-  }
+  /* The rule that kept the record from floating over this sheet is gone: the
+     record is display: none on mobile now, so there is nothing to move out of
+     the way. body.shiz-bio-open has no consumers left either, and the
+     IntersectionObserver that set body.shiz-in-hero went with it. */
 }
 
 @media (max-width: 1023px) and (prefers-reduced-motion: reduce) {

@@ -81,12 +81,6 @@ function controller() {
     outgoing.classList.remove('is-active')
     incoming.classList.add('is-active')
 
-    // On mobile the bio is a sheet over the page, and things that float above
-    // the page (the record at z-index 100) have to know to get out from in
-    // front of it. Nothing here touches scroll: the page underneath does not
-    // move, which is what puts the visitor back where they were on close.
-    document.body.classList.toggle('shiz-bio-open', toBio)
-
     if (!toBio) rewindPages()
   }
 
@@ -112,7 +106,6 @@ function controller() {
       btn.setAttribute('aria-expanded', 'false')
       btn.textContent = btn.dataset.labelOpen || 'About Shina'
       deck.removeAttribute('data-direction')
-      document.body.classList.remove('shiz-bio-open')
       rewindPages()
     },
   }
@@ -135,54 +128,3 @@ export function initAboutBio() {
 }
 
 initAboutBio()
-
-/**
- * Keeps body.shiz-in-hero true while the landing hero is on screen.
- *
- * about.css uses it to keep the vinyl widget out of the landing view on a
- * phone. The record is a flourish; it is not what the first screenful is for,
- * and at 375px it covered 35% of the width and sat on the copy.
- *
- * An IntersectionObserver rather than a scroll listener, for two reasons: it
- * costs nothing while nothing is crossing the threshold, and this page already
- * has script.js reading scroll for the topbar and the vinyl auto-tuck. A third
- * scroll subscriber for something the platform answers directly would be the
- * wrong trade.
- *
- * This does NOT disable initAutoTuckVinyl. Past the hero the record is back on
- * the site-wide rule — hidden scrolling down, back on the way up. All this
- * removes is the one case script.js forces the other way, where scrollY under
- * its threshold pins the disc visible, which on a phone is the landing view.
- *
- * Soft-nav safe: <main> is replaced on every arrival, so the hero node this
- * was watching is gone. The observer lives once per document and is re-pointed
- * at the new node.
- */
-export function initHeroVinylGuard() {
-  const hero = document.querySelector('.about-intro')
-  if (!hero || typeof IntersectionObserver === 'undefined') return
-  if (hero.dataset.heroGuardBound) return
-  hero.dataset.heroGuardBound = '1'
-
-  if (!window.__shizHeroGuard) {
-    window.__shizHeroGuard = new IntersectionObserver(
-      entries => {
-        for (const e of entries) {
-          document.body.classList.toggle('shiz-in-hero', e.isIntersecting)
-        }
-      },
-      // Flips once less than a fifth of the hero is left on screen, which puts
-      // the record's return at the point the visitor is into the work.
-      { threshold: 0.2 }
-    )
-  }
-
-  window.__shizHeroGuard.disconnect()
-  window.__shizHeroGuard.observe(hero)
-
-  // Observers report asynchronously. Assume the hero is in view on arrival, or
-  // the record shows for a frame before the first callback hides it.
-  document.body.classList.add('shiz-in-hero')
-}
-
-initHeroVinylGuard()
