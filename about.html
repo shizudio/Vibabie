@@ -40,26 +40,59 @@
       </div>
 
       <div class="about-intro-text">
-        <h1 class="page-h1 fade-up" style="--i:1">
-          A full-stack creative building brands from screen to real life.
-        </h1>
+        <!-- Two faces of one hero. Exactly one is in flow at a time; the
+             "About Shina" toggle below slides between them. The actions row
+             sits OUTSIDE the deck on purpose, so "Have a chat" never leaves
+             and the toggle never moves out from under the cursor. -->
+        <div class="about-deck" id="aboutDeck">
 
-        <div class="detail-row fade-up" style="--i:3">
-          <div class="detail-item">
-            <span class="detail-label">Based in</span>
-            <span class="detail-value">Beijing</span>
+          <div class="about-face is-active" id="aboutFaceIntro">
+            <h1 class="page-h1 fade-up" style="--i:1">
+              A full-stack creative building brands from screen to real life.
+            </h1>
+
+            <div class="detail-row fade-up" style="--i:3">
+              <div class="detail-item">
+                <span class="detail-label">Based in</span>
+                <span class="detail-value">Beijing</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Working in</span>
+                <span class="detail-value">Art, Fintech, Design</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Currently</span>
+                <span class="detail-value">Shipping <a class="detail-link" href="https://solkimono.fun" target="_blank" rel="noopener">Solkimono.fun</a></span>
+              </div>
+            </div>
           </div>
-          <div class="detail-item">
-            <span class="detail-label">Working in</span>
-            <span class="detail-value">Art, Fintech, Design</span>
+
+          <div class="about-face about-face-bio" id="aboutFaceBio" aria-label="About Shina">
+            <p class="about-bio-lead">Hey, I'm Shina.</p>
+
+            <p>I'm a full-stack creative who designs and builds brands for early-stage tech companies.</p>
+
+            <p>I work across product, culture and IRL experiences &mdash; turning product ideas into things people can see, feel and touch, and creating meaningful value for both brands and product teams.</p>
+
+            <p>I started out as a UI/UX designer, obsessed with thoughtfully built interfaces. <span class="about-bio-pending">If you want to see my baby works &rarr;</span></p>
+
+            <p>That curiosity eventually pulled me into blockchain and DeFi &mdash; a strange world where ponzis and genuinely meaningful products somehow coexist. I interned at the Solana Foundation researching blockchain technology, then went on to lead growth at Perena with a design-first approach.</p>
+
+            <p>Since then, my work has expanded beyond the screen. I've helped crypto teams and ecosystem partners shape how their brands are experienced through product, positioning, campaigns, events, merch and physical experiences.</p>
+
+            <p>More recently, I've been exploring what happens when I take that same approach beyond crypto &mdash; building an apparel product from scratch, and rebranding and redesigning the product experience for a leading AI music-video generator.</p>
+
+            <p>I'm interested in the space between what a product does and how people experience it.</p>
           </div>
-          <div class="detail-item">
-            <span class="detail-label">Currently</span>
-            <span class="detail-value">Shipping <a class="detail-link" href="https://solkimono.fun" target="_blank" rel="noopener">Solkimono.fun</a></span>
-          </div>
+
         </div>
 
-        <a class="about-cta fade-up" style="--i:4" href="contact.html">Have a chat</a>
+        <div class="about-actions fade-up" style="--i:4">
+          <a class="about-cta" href="contact.html">Have a chat</a>
+          <button class="about-cta-alt" type="button" id="aboutToggle"
+                  aria-expanded="false" aria-controls="aboutFaceBio"
+                  data-label-open="About Shina" data-label-close="Back">About Shina</button>
+        </div>
       </div>
     </div>
 
@@ -120,6 +153,7 @@
 
   <script type="module" src="script.js"></script>
   <script type="module" src="about-work.js"></script>
+  <script type="module" src="about-bio.js"></script>
   <script type="module" src="about-art.js"></script>
   <script type="module" src="about-peek.js"></script>
   <script type="module" src="vinyl-widget.js"></script>

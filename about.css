@@ -1010,3 +1010,145 @@ html {
   html { scroll-padding-top: 54px; }
   .peek-band { top: 54px; }
 }
+
+/* ── HERO DECK — "About Shina" toggle ────────────────────────────────────────
+
+   The landing hero has two faces: the one-line positioning statement with the
+   Based in / Working in / Currently row, and the longer bio. The "About Shina"
+   button slides between them.
+
+   Only the ACTIVE face is in flow — the inactive one is taken out with
+   position: absolute so it contributes no height, and hidden with
+   visibility: hidden so it leaves the accessibility tree too. Opacity alone
+   would leave it focusable and readable by a screen reader; per the standing
+   rule on this site, "hidden" has to actually mean hidden.
+
+   The deck's height is animated by about-bio.js, which measures the incoming
+   face before the swap. CSS cannot transition to height: auto, and letting the
+   height snap while the text slides looked broken at every duration tried.
+
+   Motion is transform + opacity only, so it stays on the compositor. */
+.about-deck {
+  position: relative;
+  transition: height 360ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.about-face {
+  transition:
+    opacity 260ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 360ms cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0s linear 360ms;
+}
+
+/* Inactive: out of flow, out of the a11y tree, parked to one side. */
+.about-face:not(.is-active) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(var(--about-face-park, 24px));
+  pointer-events: none;
+}
+
+.about-face.is-active {
+  position: relative;
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition-delay: 0s;
+}
+
+/* The two faces leave in opposite directions, so the pair reads as one
+   horizontal movement rather than two unrelated fades. */
+.about-deck[data-direction="forward"] #aboutFaceIntro:not(.is-active) { --about-face-park: -24px; }
+.about-deck[data-direction="back"]    #aboutFaceBio:not(.is-active)   { --about-face-park:  24px; }
+
+/* ── The bio face ─────────────────────────────────────────────────────────── */
+.about-face-bio p {
+  max-width: 62ch;
+  margin: 0 0 16px;
+  font-family: var(--font-description);
+  font-size: var(--text-base);
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.about-face-bio p:last-child { margin-bottom: 0; }
+
+/* The opening line carries weight and full ink rather than size — emphasis on
+   this site is weight and colour, never italic and never a size jump that
+   would compete with the h1 on the other face. */
+.about-bio-lead {
+  font-weight: 500;
+  color: var(--ink) !important;
+}
+
+/* Placeholder. This link has no destination yet, so it must not look like one:
+   no crimson, no pointer, and marked unavailable for assistive tech. Swap the
+   span for an <a class="detail-link"> when the page it points at exists. */
+.about-bio-pending {
+  color: var(--ink-faint);
+  cursor: default;
+  white-space: nowrap;
+}
+
+/* ── Actions row ──────────────────────────────────────────────────────────── */
+.about-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+}
+
+/* .about-cta carries its own 48px bottom margin for the single-button layout
+   it used to be in. The row owns that spacing now. */
+.about-actions .about-cta { margin-bottom: 0; }
+
+/* Secondary, and deliberately not a second filled pill — see the note above
+   .about-work-all. Same geometry as .about-cta so the pair sits on one optical
+   line; a 1px edge instead of a fill, so the hierarchy between them is not in
+   question. Padding is 1px under .about-cta's on each side to absorb the
+   border, keeping both boxes the same height. */
+.about-cta-alt {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm, 0.9rem);
+  font-weight: 500;
+  font-style: normal;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: none;
+  border: 1px solid var(--ink-faint);
+  padding: 15px 31px;
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.about-cta-alt:hover,
+.about-cta-alt[aria-expanded="true"] {
+  color: var(--crimson);
+  border-color: var(--crimson);
+}
+
+@media (max-width: 767px) {
+  .about-actions { justify-content: center; }
+  .about-face-bio p { text-align: left; }
+}
+
+/* No sliding, no height animation — the swap is instant. The faces still swap
+   correctly because is-active does all the actual work. */
+@media (prefers-reduced-motion: reduce) {
+  .about-deck,
+  .about-face { transition: none; }
+  .about-face:not(.is-active) { transform: none; }
+}
