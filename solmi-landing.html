@@ -391,7 +391,17 @@ h1{font-size:64px;font-weight:500;line-height:72px;margin:0;color:var(--ink);
   display:grid;place-items:center;padding:0}
 .fx:hover{background:var(--ctrl);color:var(--ink)}
 .fx[hidden]{display:none}
-.sx{margin-left:-4px}
+/* The clear sits in the chevron's place inside the button. As a sibling it
+   wrapped onto its own line and dragged the button out of the row — and a
+   picked control has nothing to drop down anyway, so the chevron is exactly
+   what it should replace. */
+.c-top #dropbtn .sx{display:none;flex:none;width:18px;height:18px;border-radius:50%;
+  place-items:center;color:var(--ink-3);cursor:pointer;margin-right:-3px;
+  transition:background .14s var(--ease),color .14s var(--ease)}
+.c-top #dropbtn .sx:hover{background:color-mix(in srgb,var(--action) 26%,transparent);
+  color:var(--ink)}
+.c-top #dropbtn.picked .chev{display:none}
+.c-top #dropbtn.picked .sx{display:grid}
 .off{opacity:.34;pointer-events:none}
 .c-top #dropbtn:disabled{cursor:default}
 /* a chosen song is the answer to the whole row, so it reads like one */
@@ -927,6 +937,8 @@ footer a:hover{color:var(--ink)}
   .c-or{width:auto;height:1px;align-self:auto;margin:2px 12px}
   .c-top .drop{width:100%}
   .c-top #dropbtn{width:100%;justify-content:flex-start;height:44px}
+  .c-top #dropbtn.picked{height:44px;max-width:none}
+  .c-top #dropbtn .chev,.c-top #dropbtn .sx{margin-left:auto;margin-right:0}
   .cta{width:100%;font-size:16px;height:50px}
   .c-bot{margin-top:8px;gap:6px}
   .picker-frame{margin-top:18px;padding:10px;border-radius:20px}
@@ -1047,9 +1059,11 @@ footer a:hover{color:var(--ink)}
             <button class="chip" id="dropbtn" aria-haspopup="true" aria-expanded="false">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
               <span id="droplabel">Choose a song</span>
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+              <svg class="chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+              <span class="sx" id="songx" role="button" tabindex="-1" aria-label="Clear song">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+              </span>
             </button>
-            <button class="fx sx" id="songx" type="button" aria-label="Clear song" hidden>&times;</button>
             <div class="menu" role="menu">
               <!-- Upload belongs with the library: both answer "which song?" -->
               <button class="mact" id="upload" role="menuitem">
@@ -1335,7 +1349,11 @@ const drop=document.getElementById('drop'), dropbtn=document.getElementById('dro
 /* Both sides clear the same way, and clearing is the only route from one
    source to the other — which is the point: you always know which one is
    feeding the render. */
-songx.onclick=e=>{ e.stopPropagation(); clearTrack(); };
+/* inside the button, so the click has to be stopped before it reaches the
+   toggle underneath it */
+songx.onclick=e=>{ e.stopPropagation(); e.preventDefault(); clearTrack(); };
+songx.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.stopPropagation();
+  e.preventDefault(); clearTrack(); } };
 linkx.onclick=e=>{ e.stopPropagation(); clearTrack(); song.focus(); };
 song.addEventListener('input',()=>setLink(song.value));
 /* Declared here rather than beside setSong: the wiring below runs earlier in
@@ -1442,7 +1460,8 @@ function paintSource(){
   const picked = source==='song', linked = source==='link';
   droplabel.textContent = picked ? track : 'Choose a song';
   dropbtn.classList.toggle('picked', picked);
-  songx.hidden = !picked;
+  /* the song clear is shown by .picked in CSS, not by the hidden attribute */
+  songx.tabIndex = picked ? 0 : -1;
   linkx.hidden = !linked;
   /* whichever side is not in play goes quiet and stops accepting input */
   cField.classList.toggle('off', picked);
