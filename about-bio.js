@@ -73,12 +73,10 @@ function controller() {
     // position of the outgoing face is already correct when it leaves.
     s.deck.dataset.direction = toBio ? 'forward' : 'back'
 
-    // Lock the current height, then measure the incoming face, then animate
-    // between the two. Reading the outgoing height first and forcing a reflow
-    // is what makes the transition have a start value to work from.
+    // Lock the current height so the transition has a start value to animate
+    // from, and commit it before anything else changes.
     const from = s.deck.getBoundingClientRect().height
     s.deck.style.height = from + 'px'
-    const to = heightOf(incoming)
 
     // Force the locked height to be committed before the new one is set,
     // otherwise the browser collapses both writes into one and nothing moves.
@@ -86,7 +84,12 @@ function controller() {
 
     outgoing.classList.remove('is-active')
     incoming.classList.add('is-active')
-    s.deck.style.height = to + 'px'
+
+    // Measure AFTER the swap, not before. The bio view drops the portrait and
+    // goes two-column, and both of those hang off `.is-active` via :has() — so
+    // before the swap the bio still measures at the narrow single-column width
+    // and the height would animate to a number that is never real.
+    s.deck.style.height = heightOf(incoming) + 'px'
 
     // Hand the height back to the document once the slide has landed, so the
     // deck can respond to resizes and reflows on its own again.

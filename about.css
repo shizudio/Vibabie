@@ -1181,3 +1181,67 @@ html {
   .about-face { transition: none; }
   .about-face:not(.is-active) { transform: none; }
 }
+
+/* ── BIO VIEW: the portrait steps out, the text spreads ──────────────────────
+
+   Opening the bio is a different composition, not the same one with more text
+   in it. The portrait leaves, the text takes the full content width, and the
+   eight paragraphs run in two columns with the greeting spanning the top.
+
+   This is what makes two columns viable at all. Beside the 300px portrait the
+   text column is 612px, which splits into two 286px columns — about 34
+   characters, well under the 45 that reading comfortably needs. With the
+   portrait gone the columns are ~490px, or ~57 characters each, which is
+   inside the comfortable band.
+
+   Desktop only. Below 1024px there is no width to split and the bio stays a
+   single column. */
+@media (min-width: 1024px) {
+
+  /* main caps at 1040px, which splits into two 448px columns — 44 characters
+     a line, just under the 45 that reading comfortably needs. Widening to
+     1200 for this view only puts each column at ~528px, or ~52 characters,
+     and matches the proportions of the reference. Sections below reflow while
+     the bio is open, which is invisible because the bio fills the viewport. */
+  main:has(#aboutFaceBio.is-active) {
+    max-width: 1200px;
+  }
+
+  .about-intro:has(#aboutFaceBio.is-active) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .about-intro:has(#aboutFaceBio.is-active) > .portrait-frame {
+    display: none;
+  }
+
+  /* 640px is the cap for the single-column hero. The bio needs the room. */
+  .about-intro:has(#aboutFaceBio.is-active) .about-intro-text {
+    max-width: none;
+  }
+
+  .about-face-bio {
+    columns: 2;
+    column-gap: 64px;
+  }
+
+  /* The greeting runs across both columns, so the block opens on one line
+     rather than starting halfway down a column. */
+  .about-face-bio .about-bio-lead {
+    column-span: all;
+    margin-bottom: 24px;
+  }
+
+  /* Paragraphs must not straddle the column break — a line orphaned at the top
+     of column two reads as a mistake. */
+  .about-face-bio p {
+    break-inside: avoid;
+  }
+
+  /* The actions sit under the second column, so the composition is anchored
+     at top-left by the greeting and bottom-right by the buttons rather than
+     running everything down the left edge. */
+  .about-intro:has(#aboutFaceBio.is-active) .about-actions {
+    padding-left: calc(50% + 32px);
+  }
+}
