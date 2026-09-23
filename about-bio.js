@@ -3,18 +3,19 @@
  *
  * The hero has two faces (see .about-deck in about.css): the positioning line
  * with the Based in / Working in / Currently row, and the longer bio. This
- * slides between them.
+ * decides which one is showing. That is all it decides.
  *
- * What CSS owns: the slide and the fade. Both are transform + opacity, so they
+ * It used to measure the incoming face and animate the deck's height to match,
+ * because the two faces are different heights and CSS cannot transition to
+ * `height: auto`. That was the wrong shape. A deck that changes height pushes
+ * everything under it: at a 650px window "Selected work" jumped 133px on every
+ * toggle, and the page below resized. The fix lives in CSS now — both faces
+ * share one grid cell, so the deck is permanently as tall as the taller of
+ * them and nothing downstream can move.
+ *
+ * So there is no height code here any more, and no layout-triggering animation
+ * anywhere in the feature. The slide and fade are transform and opacity, which
  * stay on the compositor.
- *
- * What this owns: which face is active, and the deck's height. CSS cannot
- * transition to `height: auto`, and the two faces differ by several hundred
- * pixels — letting the height snap while the text slides looked broken at every
- * duration tried. So the incoming face is measured before the swap, the deck is
- * given that height explicitly, and the height is released back to `auto` once
- * the transition lands. Releasing it matters: a hard-coded height would not
- * survive a window resize or a late-loading font.
  *
  * Soft-nav safe: about.html is in router.js's SOFT_NAV_PAGES, so <main> is
  * replaced and page modules re-execute cache-busted on every arrival. The
@@ -23,30 +24,8 @@
  * document, so nothing stacks.
  */
 
-// Matches the transform duration in about.css. If you change one, change both.
-const SLIDE_MS = 360
-
-const reduced = () =>
-  window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
 function controller() {
-  const s = { deck: null, intro: null, bio: null, btn: null, timer: 0 }
-
-  /**
-   * Measure a face that is currently out of flow. It cannot simply be read —
-   * an inactive face is position:absolute and visibility:hidden, so its height
-   * is already correct, but only if it has the width it will have when active.
-   * It does: the rule pins left:0 and right:0 to the deck.
-   */
-  function heightOf(face) {
-    return face.getBoundingClientRect().height
-  }
-
-  function release() {
-    if (!s.deck) return
-    s.deck.style.height = 'auto'
-    s.deck.removeAttribute('data-direction')
-  }
+  const s = { deck: null, intro: null, bio: null, btn: null }
 
   function show(next) {
     if (!s.deck || !s.intro || !s.bio) return
@@ -62,39 +41,14 @@ function controller() {
       ? s.btn.dataset.labelClose || 'Back'
       : s.btn.dataset.labelOpen || 'About Shina'
 
-    if (reduced()) {
-      outgoing.classList.remove('is-active')
-      incoming.classList.add('is-active')
-      release()
-      return
-    }
-
     // Which way the pair travels. Set before the class swap so the parked
-    // position of the outgoing face is already correct when it leaves.
+    // position of the outgoing face is already correct when it leaves. Under
+    // prefers-reduced-motion the CSS zeroes both transitions, so the same two
+    // lines below produce an instant swap with no special case here.
     s.deck.dataset.direction = toBio ? 'forward' : 'back'
-
-    // Lock the current height so the transition has a start value to animate
-    // from, and commit it before anything else changes.
-    const from = s.deck.getBoundingClientRect().height
-    s.deck.style.height = from + 'px'
-
-    // Force the locked height to be committed before the new one is set,
-    // otherwise the browser collapses both writes into one and nothing moves.
-    void s.deck.offsetHeight
 
     outgoing.classList.remove('is-active')
     incoming.classList.add('is-active')
-
-    // Measure AFTER the swap, not before. The bio view drops the portrait and
-    // goes two-column, and both of those hang off `.is-active` via :has() — so
-    // before the swap the bio still measures at the narrow single-column width
-    // and the height would animate to a number that is never real.
-    s.deck.style.height = heightOf(incoming) + 'px'
-
-    // Hand the height back to the document once the slide has landed, so the
-    // deck can respond to resizes and reflows on its own again.
-    clearTimeout(s.timer)
-    s.timer = setTimeout(release, SLIDE_MS + 40)
   }
 
   function onClick() {
@@ -115,7 +69,7 @@ function controller() {
       intro.classList.add('is-active')
       btn.setAttribute('aria-expanded', 'false')
       btn.textContent = btn.dataset.labelOpen || 'About Shina'
-      release()
+      deck.removeAttribute('data-direction')
     },
   }
 }
