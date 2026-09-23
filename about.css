@@ -1548,7 +1548,7 @@ html {
    inert placeholder link should look on this site, and there is a second one
    coming the moment another destination is missing. */
 
-/* ── The record steps back while the bio is open (mobile) ────────────────────
+/* ── The record is not part of the landing view on mobile ───────────────────
 
    style.css already names this problem by hand: "A fixed 100px disc in the
    bottom-right corner otherwise sits permanently on whatever the page has put
@@ -1556,12 +1556,23 @@ html {
    a phone." Its answer is .vinyl-tucked, driven by initAutoTuckVinyl() on
    scroll direction.
 
-   That answer cannot reach this view. The bio pages sideways, so there is no
-   vertical scroll to read a direction from, and the disc parks over the copy
-   for as long as the bio is open. Measured at 375px: 133x72, 35% of the screen
-   width, covering 51px of the last paragraph on page one.
+   That answer cannot reach the hero. The bio pages sideways, so there is no
+   vertical scroll to read a direction from, and the disc parked over the copy
+   for as long as the bio was open. Measured at 375px: 133x72, 35% of the
+   screen width, covering 51px of the last paragraph on page one.
 
-   So the same tuck is triggered by the bio being open instead of by scrolling.
+   So the same tuck is triggered by the hero being on screen at all. The record
+   is simply not part of the landing view on a phone: it stays away for the
+   first screenful, in the intro state and the bio state alike, and arrives
+   once the visitor has scrolled past the hero into the work.
+   body.shiz-in-hero is set by an IntersectionObserver in about-bio.js.
+
+   Note what this does NOT do: it does not disable initAutoTuckVinyl. Past the
+   hero the record goes back to the site-wide behaviour, hidden while scrolling
+   down and back on the way up. This rule only removes the one case script.js
+   forces the other way — scrollY under its threshold pins the disc visible,
+   and on a phone that is precisely the landing view.
+
    Deliberately CSS and not the .vinyl-tucked class: script.js strips that class
    whenever scrollY is under its threshold, which is exactly where this view
    sits, so a JS toggle would be undone a frame later.
@@ -1570,7 +1581,7 @@ html {
    that is playing is a transport control, and taking the pause button away
    from someone mid-track to tidy a margin is the wrong trade. */
 @media (max-width: 1023px) {
-  body:has(#aboutFaceBio.is-active) .vinyl-widget:not(.playing-active) {
+  body.shiz-in-hero .vinyl-widget:not(.playing-active) {
     opacity: 0;
     transform: translateY(calc(100% + var(--space-xl)));
     pointer-events: none;
@@ -1581,7 +1592,7 @@ html {
    out of the way, just without the travel. Hiding is the accessible outcome
    here; the movement is not. */
 @media (max-width: 1023px) and (prefers-reduced-motion: reduce) {
-  body:has(#aboutFaceBio.is-active) .vinyl-widget:not(.playing-active) {
+  body.shiz-in-hero .vinyl-widget:not(.playing-active) {
     transform: none;
   }
 }
