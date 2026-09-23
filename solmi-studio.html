@@ -161,28 +161,35 @@ h1{margin:0;font-size:20px;font-weight:500;letter-spacing:-.018em;color:var(--in
 .viewmore:hover{background:var(--ctrl);color:var(--ink)}
 .viewmore svg{width:11px;height:11px;flex:none}
 .looks{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0}
-.look{display:flex;align-items:center;gap:9px;padding:7px 9px;min-width:0;
-  border:1px solid var(--hair-2);border-radius:10px;background:var(--ctrl);
-  color:var(--ink);text-align:left;cursor:pointer;font-family:inherit;
-  overflow:hidden;position:relative;
-  transition:background .16s var(--ease),border-color .16s var(--ease)}
-.look:hover{background:var(--ctrl-hi)}
+/* Full-bleed thumbnails: the frame IS the choice here, so the art gets the
+   whole tile and the name rides a scrim across the bottom rather than taking
+   its own strip. 16:10 keeps four across at a sane height inside the composer. */
+.look{position:relative;display:block;padding:0;min-width:0;overflow:hidden;
+  border:1px solid var(--hair);border-radius:11px;background:var(--sunk);
+  cursor:pointer;text-align:left;font-family:inherit;color:var(--ink);
+  transition:border-color .16s var(--ease),transform .16s var(--ease)}
+.look:hover{transform:translateY(-2px);border-color:var(--hair-2)}
 .look[aria-pressed=true]{border-color:var(--action);
-  background:color-mix(in srgb,var(--action) 12%,var(--ctrl))}
-.look img{flex:none;display:block;width:30px;height:30px;border-radius:7px;
-  object-fit:cover;opacity:.82;transition:opacity .16s var(--ease)}
+  box-shadow:0 0 0 1px var(--action)}
+.look img,.look video{display:block;width:100%;aspect-ratio:16/10;
+  object-fit:cover;border-radius:0}
+.look img{opacity:.78;transition:opacity .2s var(--ease)}
 .look:hover img,.look[aria-pressed=true] img{opacity:1}
-.look video{position:absolute;top:7px;left:9px;width:30px;height:30px;
-  border-radius:7px;object-fit:cover;display:block;opacity:0;
+.look video{position:absolute;inset:0 0 auto 0;opacity:0;
   transition:opacity .3s var(--ease)}
 .look video.on{opacity:1}
-.look .nm{display:block;font-size:12.5px;font-weight:500;letter-spacing:-.01em;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.look .tick{position:absolute;top:50%;right:7px;transform:translateY(-50%);
-  width:15px;height:15px;border-radius:50%;background:var(--action);
+/* the scrim is part of the tile, not the image, so it survives the video swap */
+.look::after{content:"";position:absolute;left:0;right:0;bottom:0;height:56%;
+  background:linear-gradient(to top,rgba(8,10,9,.88),rgba(8,10,9,.45) 45%,
+    transparent);pointer-events:none}
+.look .nm{position:absolute;left:10px;right:26px;bottom:8px;z-index:2;
+  display:block;font-size:12.5px;font-weight:500;letter-spacing:-.01em;
+  color:#F2F5F3;text-shadow:0 1px 2px rgba(0,0,0,.5);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.look .tick{position:absolute;top:8px;right:8px;z-index:2;
+  width:17px;height:17px;border-radius:50%;background:var(--action);
   display:none;place-items:center}
 .look[aria-pressed=true] .tick{display:grid}
-.look[aria-pressed=true] .nm{padding-right:16px}
 
 /* example prompts: the cure for a 128,000px blank box */
 /* Above the box, not below it: examples are a way in, and underneath they read
@@ -645,6 +652,7 @@ footer a:hover{color:var(--ink)}
 @media (max-width:560px){
   .looks{grid-template-columns:repeat(2,1fr)}
   .vtype .hd{flex-wrap:wrap}
+  .look .nm{font-size:12px;left:9px;right:24px}
 }
 @media (max-width:820px){
   :root{--gut:18px}
