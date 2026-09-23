@@ -1225,6 +1225,16 @@ html {
     visibility: hidden;
   }
 
+  /* 16px rather than the 17px the single column uses. Counter-intuitively it
+     IMPROVES the measure here - fewer, longer lines per column, 53 characters
+     against 46 - while taking the block from 518px to 418px. That height is
+     what decides how much dead air the intro face carries, because the deck is
+     sized to whichever face is taller. The 24px paragraph gap stays; at 16px it
+     is 0.97 of a line, slightly better separation than before. */
+  .about-face-bio p {
+    font-size: 16px;
+  }
+
   .about-face-bio {
     /* The portrait track plus the grid gap, written the same way .about-intro
        writes them so the two cannot drift apart. */
@@ -1314,4 +1324,16 @@ html {
   .about-intro {
     padding-top: 72px;
   }
+}
+
+/* The deck is as tall as the bio, so the shorter intro face would otherwise
+   sit at the top of the cell with all the slack dumped underneath it — a hole
+   between the detail row and the buttons. Centring splits that slack above and
+   below, which reads as air rather than as something missing.
+
+   The remaining slack is the honest difference between the two faces: the bio
+   is 418px and the intro content is 302px. Closing it completely means cutting
+   roughly two paragraphs of bio, not more CSS. */
+.about-face {
+  align-self: center;
 }
