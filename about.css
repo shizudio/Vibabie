@@ -1027,7 +1027,12 @@ html {
    face before the swap. CSS cannot transition to height: auto, and letting the
    height snap while the text slides looked broken at every duration tried.
 
-   Motion is transform + opacity only, so it stays on the compositor. */
+   The faces move on transform + opacity only, so they stay on the compositor.
+   The deck height below does NOT - it transitions height, which is a layout
+   property. That is a deliberate exception, not an oversight: the alternative
+   is the height snapping while the text slides, which looked broken at every
+   duration tried. It runs once per toggle on one element, never per frame of
+   a scroll. */
 .about-deck {
   position: relative;
   transition: height 360ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -1067,13 +1072,33 @@ html {
 
 /* ── The bio face ─────────────────────────────────────────────────────────── */
 .about-face-bio p {
-  max-width: 62ch;
-  margin: 0 0 16px;
+  /* No max-width. This carried 62ch, then 54ch, and BOTH were no-ops: 1ch is
+     11.57px in Instrument Sans (its zero is much wider than its average
+     letter), so 54ch computes to 611px — the column width exactly. The column
+     is the real cap.
+
+     Measured from rendered lines rather than guessed from ch: 50 characters
+     per line on average, 70 on the longest paragraph. That sits inside the
+     45-75 comfortable range, so the measure was never what made this block
+     feel dense. The paragraph gap was. Do not add a ch-based max-width back
+     without measuring what it actually computes to. */
+
+  /* The crowding was here. 16px against a ~27px line is 0.54 of a line, so the
+     space BETWEEN paragraphs was smaller than the space inside them and eight
+     of them fused into one slab. 24px is on the 8px scale and reads as ~0.9 of
+     a line, which is what separates them. */
+  margin: 0 0 24px;
+
   font-family: var(--font-description);
-  font-size: var(--text-base);
+
+  /* Held at 17px rather than --text-base, which clamps up to 20px on a wide
+     screen. Twenty was too loud for 190 words sitting under a 64px heading,
+     and DESIGN.md puts long-form prose at 18px anyway. */
+  font-size: 17px;
+
   font-weight: 400;
   font-style: normal;
-  line-height: 1.6;
+  line-height: 1.55;
   color: var(--ink-soft);
 }
 
@@ -1081,10 +1106,14 @@ html {
 
 /* The opening line carries weight and full ink rather than size — emphasis on
    this site is weight and colour, never italic and never a size jump that
-   would compete with the h1 on the other face. */
-.about-bio-lead {
+   would compete with the h1 on the other face.
+
+   Scoped through .about-face-bio so it outranks the `.about-face-bio p` rule
+   above. As a bare `.about-bio-lead` it lost that fight (0,1,0 against 0,1,1),
+   so the weight silently did nothing and the bio opened with no entry point. */
+.about-face-bio p.about-bio-lead {
   font-weight: 500;
-  color: var(--ink) !important;
+  color: var(--ink);
 }
 
 /* Placeholder. This link has no destination yet, so it must not look like one:
@@ -1100,7 +1129,7 @@ html {
 .about-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   flex-wrap: wrap;
   margin-bottom: 48px;
 }
