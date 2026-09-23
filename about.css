@@ -663,7 +663,14 @@
       font-weight: 500;
     }
 
-    .detail-link {
+    /* Scoped to the detail row. This is a touch-target rule and it belongs to
+       a link that stands on its own line, where a 44px box is free. The bio
+       reuses .detail-link for links inside sentences, and there a 44px
+       inline-flex box sits inside a 24.8px line: it inflated every line box it
+       touched, gave the paragraph uneven leading, and stretched the underline
+       past the words. WCAG exempts links inline in a block of text from the
+       target-size minimum for exactly this reason. */
+    .detail-row .detail-link {
       display: inline-flex;
       align-items: center;
       min-height: 44px;
@@ -1519,3 +1526,24 @@ html {
     min-width: 0;
   }
 }
+
+/* The vinyl widget is fixed to the bottom-right of the viewport
+   (style.css .vinyl-widget, bottom: var(--space-lg) on small screens). The
+   actions bar is now fixed to the bottom of the same viewport and is 56px
+   tall, so the record was sitting on top of the tabs and eating the right-hand
+   one's tap target.
+
+   Lift it clear of the bar plus the home indicator, and keep the same 32px of
+   air it had against the bottom of the screen before. Scoped here rather than
+   in style.css because the bar only exists on this page — every other page
+   still wants the record where it was. */
+@media (max-width: 1023px) {
+  .vinyl-widget {
+    bottom: calc(56px + env(safe-area-inset-bottom, 0px) + var(--space-lg));
+  }
+}
+
+/* .about-bio-pending is unused now that the "baby works" line has somewhere to
+   point. Kept, not deleted: the rule is the one place that records how an
+   inert placeholder link should look on this site, and there is a second one
+   coming the moment another destination is missing. */
