@@ -376,6 +376,7 @@ h1{font-size:64px;font-weight:500;line-height:72px;margin:0;color:var(--ink);
 .c-top{display:flex;align-items:center;gap:14px}
 .c-field{flex:1;display:flex;align-items:center;gap:10px;min-width:0;padding-left:16px;
   overflow:hidden}
+.c-ic{flex:none;color:var(--ink-3)}
 .c-field input{flex:1;min-width:0;background:none;border:0;outline:none;font-size:16px;
   min-height:45px;color:var(--ink);text-overflow:ellipsis;letter-spacing:-.011em}
 .c-field input::placeholder{color:var(--ink-3)}
@@ -421,6 +422,14 @@ h1{font-size:64px;font-weight:500;line-height:72px;margin:0;color:var(--ink);
   background:var(--raised);border:1px solid var(--hair-2);border-radius:16px;
   box-shadow:0 20px 44px rgba(16,17,16,.16);display:none}
 .drop[data-open=true] .menu{display:block}
+.mact{display:flex;align-items:center;gap:10px;width:100%;height:40px;padding:0 12px;
+  border:0;border-radius:11px;background:none;color:var(--ink);font-family:inherit;
+  font-size:13.5px;font-weight:500;text-align:left;cursor:pointer;
+  transition:background .14s var(--ease)}
+.mact:hover{background:var(--ctrl)}
+.mact svg{flex:none;color:var(--ink-3)}
+/* the maker sits above the library, so the rule marks where picking begins */
+.menu .lbl.ruled{margin-top:5px;border-top:1px solid var(--hair);padding-top:10px}
 .menu .lbl{padding:9px 12px 6px;font-family:"DM Mono",monospace;font-size:10px;
   letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
 .menu button{display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;
@@ -995,26 +1004,28 @@ footer a:hover{color:var(--ink)}
     <div class="composer" data-enter style="--d:980ms">
       <div class="c-top">
         <label class="c-field">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(16,17,16,.42)" stroke-width="1.8" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-          <input id="song" type="text" aria-label="Song link or title" placeholder="Upload a song, or paste a link">
+          <svg class="c-ic" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>
+          <input id="song" type="text" aria-label="Song link" placeholder="Paste a Suno, TikTok or YouTube link">
         </label>
         <button class="cta"><span class="lbl">Make a 5s video for free</span></button>
       </div>
 
       <div class="c-bot">
-        <button class="chip" id="upload">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v13"/></svg>
-          Upload
-        </button>
-
         <div class="drop" id="drop" data-open="false">
           <button class="chip" id="dropbtn" aria-haspopup="true" aria-expanded="false">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-            <span id="droplabel">Select a song</span>
+            <span id="droplabel">Choose a song</span>
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
           </button>
           <div class="menu" role="menu">
-            <div class="lbl">Your library</div>
+            <!-- Upload belongs with the library, not beside it: both answer
+                 "which song?". The field beside them is the one source you
+                 paste rather than pick, which is why it kept its own place. -->
+            <button class="mact" id="upload" role="menuitem">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v13"/></svg>
+              Upload a song
+            </button>
+            <div class="lbl ruled">Your library</div>
             <button role="menuitem">Neon Exit <span>1:01</span></button>
             <button role="menuitem">Static Bound <span>1:01</span></button>
             <button role="menuitem">Verdigris Afterglow <span>1:34</span></button>
@@ -1198,7 +1209,7 @@ footer a:hover{color:var(--ink)}
       </button>
       <div class="dpop songs" role="dialog" aria-label="Choose a song">
         <div class="row">
-          <input id="dockInput" type="text" placeholder="Paste a link, or type a title">
+          <input id="dockInput" type="text" placeholder="Paste a Suno, TikTok or YouTube link">
           <button class="mini" id="dockUpload" aria-label="Upload a song" title="Upload">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v13"/></svg>
           </button>
@@ -1273,14 +1284,16 @@ function pickFile(){
   f.onchange=()=>{ if(f.files[0]) setSong(f.files[0].name); };
   f.click();
 }
-document.getElementById('upload').onclick=pickFile;
+document.getElementById('upload').onclick=()=>{ setOpen(false); pickFile(); };
 
 /* --- select a song --- */
 const drop=document.getElementById('drop'), dropbtn=document.getElementById('dropbtn'),
       droplabel=document.getElementById('droplabel');
 const setOpen=v=>{drop.dataset.open=v; dropbtn.setAttribute('aria-expanded',String(v))};
 dropbtn.onclick=e=>{e.stopPropagation(); setOpen(drop.dataset.open!=='true')};
-drop.querySelectorAll('.menu button').forEach(b=>{
+/* Upload is in this menu now and carries no duration span, so the picker rows
+   are selected explicitly rather than by "every button in here". */
+drop.querySelectorAll('.menu button[role=menuitem]:not(.mact)').forEach(b=>{
   b.onclick=()=>{
     const t=b.childNodes[0].textContent.trim(), d=b.querySelector('span').textContent;
     droplabel.textContent=t; setOpen(false); setSong(t+' — '+d);
