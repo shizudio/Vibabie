@@ -246,3 +246,40 @@ html, body { background: #FFFFFF; }
   }
   .project-foot { padding: 24px 24px 72px; }
 }
+
+/* Secondary action on a project page. "Get in touch" keeps the fill; this one
+   takes a 1px edge instead, so a page never shows two solid pills competing
+   for the same press. Same reasoning, and the same geometry, as .about-cta-alt
+   on the landing page: identical 999px shape and padding one pixel under the
+   filled version on each side, so the border does not make it taller.
+
+   Crimson on hover, which is the one thing crimson is for here. */
+.project-cta-alt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  font-style: normal;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  background: none;
+  border: 1px solid var(--ink-faint);
+  padding: 15px 31px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.project-cta-alt:hover {
+  color: var(--crimson);
+  border-color: var(--crimson);
+}
+
+.project-cta:focus-visible,
+.project-cta-alt:focus-visible {
+  outline: 2px solid var(--crimson);
+  outline-offset: 3px;
+}
