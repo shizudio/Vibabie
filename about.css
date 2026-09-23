@@ -1337,3 +1337,46 @@ html {
 .about-face {
   align-self: center;
 }
+
+/* ── BELOW DESKTOP: the deck sizes to the face that is showing ───────────────
+
+   The grid stacking above keeps both faces in one cell so the deck never
+   changes height. That is right on desktop, where the faces are 418px and
+   302px and the slack is 116px of air.
+
+   It is wrong here. In one column the bio is 1090px and the intro is 387px, so
+   stacking left a 703px void above the buttons in the default view — most of a
+   phone screen of nothing. Nobody scrolls past that to find the work.
+
+   So below 1024 the deck goes back to sizing itself to the active face: the
+   inactive one is taken out of flow and contributes no height. The page does
+   grow when the bio opens, which is ordinary disclosure behaviour and is what
+   a phone does anyway — the no-movement rule was about a button sliding out
+   from under a cursor, and there is no cursor here. */
+@media (max-width: 1023px) {
+  .about-deck {
+    display: block;
+    position: relative;
+  }
+
+  .about-face:not(.is-active) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
+  /* display, not visibility. On desktop the portrait keeps its column so
+     nothing shifts sideways; here it is stacked above the text, and holding
+     320px of blank where it used to be would be worse than the image itself.
+     Opening the bio removes it and the copy moves up to fill the space. */
+  .about-intro:has(#aboutFaceBio.is-active) > .portrait-frame {
+    display: none;
+  }
+
+  /* The grid gap belongs to a two-item row. With the portrait gone there is
+     one item, and the gap would otherwise still be reserved above it. */
+  .about-intro:has(#aboutFaceBio.is-active) {
+    gap: 0;
+  }
+}
