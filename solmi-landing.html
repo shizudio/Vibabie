@@ -389,7 +389,7 @@ h1{font-size:64px;font-weight:500;line-height:72px;margin:0;color:var(--ink);
   transition:border-color .16s var(--ease)}
 .trackbox:focus-within{border-color:color-mix(in srgb,var(--action) 45%,transparent)}
 .trackbox .c-field{flex:1;min-width:0;padding-left:14px}
-.trackbox .drop{flex:none}
+.trackbox .drop{flex:none;display:flex;align-items:center}
 
 /* A drawn cut, not a typed slash: it scales with the frame and never reads as
    a fraction. The wrapper clips the rotated line; the menu lives in .drop and
@@ -420,18 +420,34 @@ h1{font-size:64px;font-weight:500;line-height:72px;margin:0;color:var(--ink);
 .off{opacity:.34;pointer-events:none}
 .c-top #dropbtn:disabled{cursor:default}
 /* a chosen song is the answer to the whole row, so it reads like one */
-/* fills the right half of the frame rather than drawing a border inside one */
-.c-top #dropbtn.picked{background:color-mix(in srgb,var(--action) 13%,transparent);
-  border:0;border-radius:0 13px 13px 0;height:43px;padding:0 14px;color:var(--ink);
-  font-size:14.5px;font-weight:700;letter-spacing:-.012em;max-width:320px}
+.c-top #dropbtn.picked{background:none;border:0;height:43px;padding:0 14px;
+  color:var(--ink);font-size:14.5px;font-weight:700;letter-spacing:-.012em;
+  max-width:320px}
+.c-top #dropbtn.picked{--fill:color-mix(in srgb,var(--action) 13%,transparent)}
 .c-top #dropbtn.picked #droplabel{overflow:hidden;text-overflow:ellipsis;
   white-space:nowrap}
-.c-top #dropbtn.picked:hover{background:color-mix(in srgb,var(--action) 19%,transparent)}
+.c-top #dropbtn.picked:hover{--fill:color-mix(in srgb,var(--action) 19%,transparent)}
 .c-top .drop{flex:none}
 /* bare like the field beside it — fill would make it the louder of the two */
 .c-top #dropbtn{background:none;border:0;height:45px;padding:0 12px;
   color:var(--ink-2);font-weight:500}
-.c-top #dropbtn:hover{background:var(--ctrl);color:var(--ink);border-radius:0 13px 13px 0}
+/* A rectangular fill butting against a 13-degree line leaves a triangle of
+   bare card between the two edges. So the fill carries the angle itself: it
+   reaches back across the seam and its left edge is cut parallel to the line,
+   through the same centre. Nothing else can sit in between, because the
+   diagonal IS the boundary of the colour. */
+.c-top #dropbtn{position:relative;isolation:isolate}
+.c-top #dropbtn::before{content:"";position:absolute;z-index:-1;
+  top:0;bottom:0;right:0;left:-15px;border-radius:0 13px 13px 0;
+  background:var(--fill,transparent);
+  clip-path:polygon(12.7px 0, 100% 0, 100% 100%, 2.3px 100%);
+  transition:background .16s var(--ease)}
+.c-top #dropbtn:hover{color:var(--ink)}
+.c-top #dropbtn:hover{--fill:var(--ctrl)}
+/* No rule hides the hairline. The seam sits before the button in the DOM and
+   the fill reaches back across it, so the fill simply paints over the line
+   when there is one to paint — and the line is exactly where the fill's edge
+   is, so there is nothing to misalign. */
 .c-field input{flex:1;min-width:0;background:none;border:0;outline:none;font-size:16px;
   min-height:45px;color:var(--ink);text-overflow:ellipsis;letter-spacing:-.011em}
 .c-field input::placeholder{color:var(--ink-3)}
@@ -956,7 +972,11 @@ footer a:hover{color:var(--ink)}
     transform:translateY(-50%) rotate(-2.2deg)}
   .c-top .drop{width:100%}
   .c-top #dropbtn{width:100%;justify-content:flex-start;height:44px}
-  .c-top #dropbtn.picked{height:44px;max-width:none;border-radius:0 0 15px 15px}
+  .c-top #dropbtn.picked{height:44px;max-width:none}
+  /* stacked: the cut is horizontal, so the fill is a plain rectangle again */
+  .c-top #dropbtn::before{left:0;clip-path:none;border-radius:0 0 15px 15px}
+  .trackbox .drop{display:block}
+  .c-or{display:block}
   .c-top #dropbtn .chev,.c-top #dropbtn .sx{margin-left:auto;margin-right:0}
   .cta{width:100%;font-size:16px;height:50px}
   .c-bot{margin-top:8px;gap:6px}
@@ -1078,8 +1098,8 @@ footer a:hover{color:var(--ink)}
           <input id="song" type="text" aria-label="Song link" placeholder="Paste a Suno, TikTok or YouTube link">
           <button class="fx" id="linkx" type="button" aria-label="Clear link" hidden>&times;</button>
         </div>
-          <span class="c-or" aria-hidden="true"><i></i></span>
           <div class="drop" id="drop" data-open="false">
+            <span class="c-or" aria-hidden="true"><i></i></span>
             <button class="chip" id="dropbtn" aria-haspopup="true" aria-expanded="false">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
               <span id="droplabel">Choose a song</span>
