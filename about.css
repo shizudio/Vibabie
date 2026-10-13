@@ -196,11 +196,24 @@
       Sans against serif is the distinction DESIGN.md asks for here: a quiet
       museum-label voice under the value it introduces. The comment that used
       to sit on this rule pointed at a .label-meta base in style.css; no such
-      class exists, so the rule had no font at all. */
+      class exists, so the rule had no font at all.
+
+      Stone, not ink. The rule below on .detail-value already described the
+      pair as "roman 400 ink against the stone label", but the colour was
+      never actually declared here, so the label inherited full --ink and
+      desktop ended up with label and value at identical darkness — the two
+      separated by 4px of size and the family alone. Mobile had always set
+      stone in its own block, which is why the row read correctly on a phone
+      and flat on a desktop. Declaring it at the base makes both inherit it
+      and leaves the mobile block holding only size and weight.
+
+      DESIGN.md assigns Stone to "metadata, secondary text", which is what a
+      label introducing a value is. */
    .detail-label {
      font-family: var(--font-sans);
      display: block;
      margin-bottom: 8px;
+     color: var(--stone);
    }
    /* Upright on purpose: no italic anywhere on this site. The italic used to
       be what set the value apart from its label — that job now falls to
@@ -668,11 +681,12 @@
       text-align: center;
     }
 
+    /* Colour moved to the base rule — both breakpoints inherit stone now.
+       What stays here is what is genuinely phone-specific: smaller, lighter. */
     .detail-label {
       margin-bottom: 6px;
       font-size: clamp(0.75rem, 3.2vw, 0.84rem);
       font-weight: 300;
-      color: var(--stone);
     }
 
     .detail-value {
