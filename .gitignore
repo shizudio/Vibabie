@@ -16,3 +16,10 @@ public/work/Videos/perena-purple.mov
 
 # Local before/after screenshot captures (not part of the site)
 .compare/
+
+# Source art for the work pages. Originals stay on disk, out of git — the
+# SANC Nine set alone is 102MB, including a 56MB camera-export video that the
+# web only ever needs as a 3.2MB re-encode.
+design/sanc-nine-source/
+design/perena-source/
+design/solkimono-source/

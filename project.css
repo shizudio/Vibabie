@@ -247,39 +247,29 @@ html, body { background: #FFFFFF; }
   .project-foot { padding: 24px 24px 72px; }
 }
 
-/* Secondary action on a project page. "Get in touch" keeps the fill; this one
-   takes a 1px edge instead, so a page never shows two solid pills competing
-   for the same press. Same reasoning, and the same geometry, as .about-cta-alt
-   on the landing page: identical 999px shape and padding one pixel under the
-   filled version on each side, so the border does not make it taller.
-
-   Crimson on hover, which is the one thing crimson is for here. */
-.project-cta-alt {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  font-family: var(--font-sans);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  font-style: normal;
-  letter-spacing: -0.01em;
-  color: var(--ink);
-  background: none;
-  border: 1px solid var(--ink-faint);
-  padding: 15px 31px;
-  border-radius: 999px;
-  text-decoration: none;
-  transition: color 0.2s ease, border-color 0.2s ease;
-}
-
-.project-cta-alt:hover {
-  color: var(--crimson);
-  border-color: var(--crimson);
-}
-
+/* .project-cta-alt was a pill I added for Solmi before noticing .project-visit
+   already existed for exactly this. Removed; Solmi now matches the other three. */
 .project-cta:focus-visible,
-.project-cta-alt:focus-visible {
+.project-visit:focus-visible {
   outline: 2px solid var(--crimson);
   outline-offset: 3px;
+}
+
+/* Projects whose identity has no wordmark asset set the title as type instead.
+   Scoped to a title that contains no .project-logo, so the four pages that do
+   ship a wordmark are untouched. */
+.project-title:not(:has(.project-logo)) {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.2vw, 2.75rem);
+  font-weight: 300;
+  font-style: normal;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+/* A rail can carry more than one paragraph of description. Without this the
+   two run together, because .project-desc's bottom margin is sized for the gap
+   to the actions below it, not for the gap between two paragraphs. */
+.project-desc + .project-desc {
+  margin-top: -28px;
 }

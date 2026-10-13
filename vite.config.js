@@ -23,6 +23,7 @@ export default defineConfig({
         stoneflower: resolve(__dirname, 'stoneflower.html'),
         solmi: resolve(__dirname, 'solmi.html'),
         sanctum: resolve(__dirname, 'sanctum.html'),
+        sancNine: resolve(__dirname, 'sanc-nine.html'),
         birthday: resolve(__dirname, 'birthday.html'),
         toolPortfolioEditor: resolve(__dirname, 'tool-portfolio-editor.html'),
         toolHotspotEditor: resolve(__dirname, 'tool-hotspot-editor.html'),

@@ -45,5 +45,14 @@
     "href": "stoneflower.html",
     "external": false,
     "current": true
+  },
+  {
+    "src": "work/sanc-nine/thumbnail.webp",
+    "title": "SANC Nine",
+    "tag": "Event · Merch",
+    "role": "Event Production & Design",
+    "year": "2026",
+    "href": "sanc-nine.html",
+    "external": false
   }
 ]
