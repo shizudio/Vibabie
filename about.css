@@ -1371,6 +1371,38 @@ html {
   align-self: center;
 }
 
+/* ── Desktop: the intro face rides the top of the reserve ────────────────────
+
+   Centring the slack (above) is right in the abstract, but it is measured
+   against the deck, and the deck is not what the eye compares the text to —
+   the portrait is. With the slack split, the hero landed like this:
+
+       headline top  211  vs  portrait top     229   →  18px above
+       buttons bottom 697  vs  portrait bottom  629   →  68px below
+
+   Near-flush at the top and hanging well past the bottom, which reads as the
+   column having slipped downwards rather than sitting beside the portrait.
+   The ink's midline came out at 454 against the portrait's 429.
+
+   The buttons cannot move: they sit outside the deck precisely so they hold
+   still through the toggle, and the 40px above them is the gap the bio needs.
+   So the only adjustable piece is the intro face, and sending all 100px of
+   slack below it puts the ink's midline exactly on the portrait's (429) and
+   makes the overhang symmetric, 68px top and bottom.
+
+   The cost is the hole this slack used to hide: the gap between the detail
+   row and the buttons goes 122px -> 172px. That is the bio's reserved room
+   with nothing in front of it, and it is only closable by shortening the bio
+   — the two columns already balance at 395px each, so there is no free
+   rebalancing left in it.
+
+   Scoped to the intro face: the bio fills the deck, so its alignment is moot. */
+@media (min-width: 1024px) {
+  #aboutFaceIntro {
+    align-self: start;
+  }
+}
+
 /* ── BELOW DESKTOP: the deck sizes to the face that is showing ───────────────
 
    The grid stacking above keeps both faces in one cell so the deck never
