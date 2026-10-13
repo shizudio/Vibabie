@@ -105,12 +105,20 @@
 
     /* Size now comes from the global --text-display (64px at 1440) — the whole
        site stepped down to that, so this page no longer needs its own. What
-       stays local is the tighter leading and the shorter gap to the bio: with
-       the stack below they bring the text column to ~400px, which is the height
-       that keeps the portrait beside it at 3:4 rather than stretched. */
+       stays local is the tighter leading and the gap to the row below.
+
+       40px, up from 28. The measured optical gap was ~23px, not 28: the h1's
+       line box carries about 5px of half-leading below the final line at
+       1.14, so the letters stop short of where the box does. 23px under a 64px
+       headline, against the 40px between the detail row and the buttons, made
+       the heading sit tighter to its metadata than the metadata sat to the
+       actions. 40 here reads as ~35px optical and evens the rhythm out.
+
+       Note the base rule above is 36px for mobile, where the headline is 36px
+       and the optical gap already measured ~34. */
     .about-intro-text .page-h1 {
       line-height: 1.14;
-      margin-bottom: 28px;
+      margin-bottom: 40px;
     }
     /* The rest of the hero stack is tightened further down the file — it has
        to sit after .bio / .detail-row / .about-cta are defined to win. */
@@ -1707,4 +1715,33 @@ html {
 .about-cta-alt:focus-visible {
   outline: 2px solid var(--crimson);
   outline-offset: 3px;
+}
+
+/* ── Mobile hero: claw back the 10px the landing overflows by ────────────────
+
+   Measured at 375x812: the band between the topbar and the fixed tab bar is
+   701px, and the stack needed 711. "Currently Shipping Solkimono.fun" sat
+   behind the bar.
+
+   The cause is the headline, not this spacing: at 36px it runs to four lines
+   now where the previous one ran to three, which added 43px to a layout that
+   had 33px of slack. The copy is the owner's and stays, so the space comes
+   from the gaps around it.
+
+       heading to detail row   36px -> 24px   (-12)
+       between detail items    20px -> 16px   (-8)
+
+   20px recovered against 10px needed, so the landing clears the bar by 10px
+   instead of hiding behind it. Desktop is untouched: its heading gap is the
+   40px set in the min-width 768 block, and its row is horizontal.
+
+   If the headline ever shortens back to three lines this can relax again. */
+@media (max-width: 767px) {
+  .about-intro-text .page-h1 {
+    margin-bottom: 24px;
+  }
+
+  .detail-row {
+    gap: 16px;
+  }
 }
