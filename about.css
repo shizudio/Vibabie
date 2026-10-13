@@ -180,8 +180,17 @@
      transition: border-color 0.2s ease;
    }
    .detail-link:hover { border-color: var(--crimson); }
+   /* The label is the only sans in this row. It was inheriting EB Garamond
+      from body, which left "Based in" and "Beijing" the same family at the
+      same weight, separated by 4px of size and nothing else — the label read
+      as a smaller version of its value rather than a different kind of thing.
+
+      Sans against serif is the distinction DESIGN.md asks for here: a quiet
+      museum-label voice under the value it introduces. The comment that used
+      to sit on this rule pointed at a .label-meta base in style.css; no such
+      class exists, so the rule had no font at all. */
    .detail-label {
-     /* base: .label-meta in style.css */
+     font-family: var(--font-sans);
      display: block;
      margin-bottom: 8px;
    }
