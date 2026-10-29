@@ -1588,3 +1588,94 @@ body.menu-open .vinyl-widget {
 *:not(:focus-visible) {
   box-shadow: none !important;
 }
+
+/* ── EN / 中 language switch ─────────────────────────────────────────────────
+
+   Injected into .nav-links by i18n.js, so it lands at the right-hand end of
+   every topbar without seventeen nav edits. Styled as type, not as a control:
+   the bar is five plain words and a button with a border would be the loudest
+   thing on the page. Inactive sits at --stone, active at full --ink, and
+   crimson is the hover — the same grammar as every other interactive text on
+   the site. */
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  pointer-events: all;
+}
+
+.lang-switch button {
+  font-family: var(--font-serif);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--stone);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  /* The nav links get their 44px target from min-height + inline-flex; these
+     match so the switch sits on the same baseline rather than half a pixel
+     off it. */
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.lang-switch button.is-on {
+  color: var(--ink);
+}
+
+.lang-switch button:hover {
+  color: var(--crimson);
+}
+
+.lang-switch button:focus-visible {
+  outline: 2px solid var(--crimson);
+  outline-offset: 3px;
+}
+
+.lang-switch-sep {
+  color: var(--ink-faint);
+  font-family: var(--font-serif);
+  font-size: var(--text-sm);
+  user-select: none;
+}
+
+/* ── Chinese typography ─────────────────────────────────────────────────────
+
+   No webfont. EB Garamond and Instrument Sans carry no CJK glyphs, so the
+   browser falls through to the next family in the stack for Chinese
+   characters only — Latin inside a Chinese sentence still renders in the
+   site's own faces. Appending system CJK families therefore gets correct
+   mixed-script text for zero bytes, where Noto Serif SC would cost roughly
+   a megabyte to say the same thing.
+
+   Songti SC is the serif (the display/body voice), PingFang SC the sans (the
+   label voice), which preserves the serif/sans distinction the design system
+   relies on to separate a value from its label.
+
+   CJK has no ascenders or descenders and sets on a full square body, so the
+   same leading that is comfortable in Garamond reads tight in Songti. The
+   line-height nudge below is applied to running copy only. */
+html.lang-zh {
+  --font-serif: 'EB Garamond', 'Songti SC', 'SimSun', 'Noto Serif CJK SC', Georgia, serif;
+  --font-sans: 'Instrument Sans', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --font-description: 'Instrument Sans', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+}
+
+html.lang-zh p,
+html.lang-zh li {
+  line-height: 1.8;
+}
+
+/* Chinese sets without word spaces, so a line can break anywhere; the browser
+   does that correctly on its own. What it does not do is stop the tighter
+   tracking that was tuned for Latin from crowding square glyphs. */
+html.lang-zh .page-h1,
+html.lang-zh h1,
+html.lang-zh h2 {
+  letter-spacing: 0;
+}
