@@ -39,7 +39,7 @@
 
   var SEEN_KEY   = 'shiz-seen-intro'
   var MANIFEST   = '/art-manifest-v2.json'
-  var MIN_MS     = 2000     // the floor Shina asked for
+  var MIN_MS     = 3000     // the floor Shina asked for (2s read too quick)
   var FAILSAFE   = 6000     // absolute ceiling, whatever else happens
   var DESKTOP_MIN= 768      // below this the art is shown whole
   var INTRO_FALLBACK = 'center 20%'
