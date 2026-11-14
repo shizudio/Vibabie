@@ -4,7 +4,9 @@
       "src": "Art/web/Coral Lily.webp",
       "title": "Coral Lily",
       "meta": "Mixed media, oil pastel and digital",
-      "description": "A single lily opened past its peak, petals splaying outward in coral, rose and ochre over a pale sage ground. The brushwork keeps breaking into stray marks at the tips, so the bloom reads as caught mid-turn between flowering and going over."
+      "description": "A single lily opened past its peak, petals splaying outward in coral, rose and ochre over a pale sage ground. The brushwork keeps breaking into stray marks at the tips, so the bloom reads as caught mid-turn between flowering and going over.",
+      "loadingPosition": "center 22%",
+      "loadingScale": 1.22
     },
     {
       "src": "Art/web/Peony Heart.webp",
