@@ -68,6 +68,12 @@ function buildCard(art, i) {
   // the lightbox instead, which is what a click opens.
   card.setAttribute('aria-label', `View ${art.title || 'artwork'}`)
 
+  // The newest painting leads the rail at roughly twice the height of the
+  // rest, with a placard beside it. Two jobs: the size difference is the
+  // emphasis, and the work it pushes off the right edge is the scroll cue —
+  // a half-visible painting says "keep going" without any hint text.
+  if (i === 0) card.classList.add('is-lead')
+
   const thumb = document.createElement('div')
   thumb.className = 'about-art-thumb'
 
@@ -78,6 +84,25 @@ function buildCard(art, i) {
   img.decoding = 'async'
   thumb.appendChild(img)
   card.appendChild(thumb)
+
+  // Placard on the lead only. Every other card stays image-only: a rail of
+  // captioned thumbnails is a catalogue, and the point here is one work
+  // speaking while the others wait their turn.
+  if (i === 0) {
+    const cap = document.createElement('span')
+    cap.className = 'about-art-placard'
+    const t = document.createElement('span')
+    t.className = 'about-art-placard-title'
+    t.textContent = art.title || ''
+    cap.appendChild(t)
+    if (art.meta) {
+      const m = document.createElement('span')
+      m.className = 'about-art-placard-meta'
+      m.textContent = art.meta
+      cap.appendChild(m)
+    }
+    card.appendChild(cap)
+  }
 
   card.addEventListener('click', () => {
     const open = getLightbox()

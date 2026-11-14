@@ -1791,3 +1791,78 @@ html {
     gap: 16px;
   }
 }
+
+/* ── The Artworks rail leads with the newest painting ───────────────────────
+
+   The rail used to show four cards at one size, which reads as a contact
+   sheet: four equal claims on the eye and no entry point. The newest work now
+   runs at roughly twice the height of the rest with a placard beside it.
+
+   Two mechanisms, deliberately separate:
+
+     EMPHASIS is the size step. At 1440 the lead stands ~620px against ~375px,
+     which is a large enough jump to read as hierarchy rather than as an
+     inconsistency.
+
+     THE SCROLL CUE is the work the lead pushes off the right edge. A painting
+     cut by the viewport is the most legible "there is more this way" signal
+     there is, and it needs no hint text, no arrow and no scrollbar.
+
+   Nothing here touches the rail's mechanics. Cards stay flex items in the
+   same native scroll container, and about-art-wheel.js derives its budget
+   from scrollWidth - clientWidth, so a wider lead is absorbed automatically.
+
+   Mobile keeps one size for everything: at 375px a "lead" would simply be
+   the only thing on screen, with no neighbour left to compare it to, so the
+   hierarchy would cost the scroll cue and buy nothing. */
+@media (min-width: 1024px) {
+  .about-art-card.is-lead {
+    --about-art-h: clamp(440px, 52vw, 620px);
+    /* --about-art-max caps a card at 560px, which is right for an image-only
+       card and wrong here: the lead's box is image PLUS placard, so the cap
+       was taken out of the text. The placard got 52px and set one word per
+       line. The thumb keeps its own sizing; only the pair is uncapped. */
+    max-width: none;
+    display: flex;
+    align-items: flex-end;
+    gap: clamp(28px, 3vw, 48px);
+    /* Opens the distance to the next work, so the lead is read as its own
+       event rather than as the first item of a row. */
+    margin-right: clamp(40px, 5vw, 88px);
+  }
+
+  .about-art-placard {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    /* Sits on the lead's baseline, not its middle: the placard belongs to the
+       bottom edge of the work the way it does on a gallery wall. */
+    padding-bottom: 4px;
+    max-width: 240px;
+    text-align: left;
+  }
+
+  .about-art-placard-title {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1.2;
+    color: var(--ink);
+  }
+
+  /* Same grammar as the hero's detail row: sans label voice, stone, under a
+     serif value. */
+  .about-art-placard-meta {
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--stone);
+  }
+}
+
+/* Below the rail's desktop breakpoint the lead is just another card. */
+@media (max-width: 1023px) {
+  .about-art-placard { display: none; }
+}
