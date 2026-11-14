@@ -1396,12 +1396,28 @@ html {
    — the two columns already balance at 395px each, so there is no free
    rebalancing left in it.
 
-   Scoped to the intro face: the bio fills the deck, so its alignment is moot. */
-@media (min-width: 1024px) {
+   Scoped to the intro face: the bio fills the deck, so its alignment is moot.
+
+   REVERTED, on the owner's call after seeing it live. Putting the ink's
+   midline exactly on the portrait's is correct arithmetic and worse design:
+   it buys 25px of centring and pays 50px of extra hole, and on the page the
+   hole is what you actually see. The headline floating 68px clear of the
+   portrait's top edge read as drift rather than as alignment.
+
+   So the slack goes back to being split evenly by the .about-face rule above.
+   The hero returns to: headline top 211 against the portrait's 229, buttons
+   ending 68px below it, ink midline 454 against the portrait's 429, and the
+   gap between the detail row and the buttons back down to 122px.
+
+   Keeping this block as a comment rather than deleting it, because the
+   arithmetic is sound and worth not rediscovering: if the bio is ever
+   shortened the reserve shrinks, the hole closes, and start-alignment
+   becomes the better of the two again. */
+/* @media (min-width: 1024px) {
   #aboutFaceIntro {
     align-self: start;
   }
-}
+} */
 
 /* ── BELOW DESKTOP: the deck sizes to the face that is showing ───────────────
 
