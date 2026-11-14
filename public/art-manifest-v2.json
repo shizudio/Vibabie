@@ -1,6 +1,12 @@
 {
   "artworks": [
     {
+      "src": "Art/web/Coral Lily.webp",
+      "title": "Untitled",
+      "meta": "",
+      "description": "A single lily opened past its peak, petals splaying outward in coral, rose and ochre over a pale sage ground. The brushwork keeps breaking into stray marks at the tips, so the bloom reads as caught mid-turn between flowering and going over."
+    },
+    {
       "src": "Art/web/Peony Heart.webp",
       "title": "Peony Heart",
       "meta": "Acrylic on canvas",
