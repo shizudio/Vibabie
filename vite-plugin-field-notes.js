@@ -33,7 +33,15 @@ function buildIndex() {
     if (!file.endsWith('.json') || file === 'index.json') continue
     try {
       const raw = JSON.parse(readFileSync(join(DIR, file), 'utf8'))
-      const slug = raw.slug || file.replace(/\.json$/, '')
+      // The FILENAME is the slug, not the json field. Authoring a note starts
+      // with copying an existing one, which copies its slug too, and two
+      // entries claiming one slug silently produced two identical cards
+      // pointing at the same URL. A filename is unique by definition, so this
+      // whole class of mistake disappears.
+      const slug = file.replace(/\.json$/, '')
+      if (raw.slug && raw.slug !== slug) {
+        console.warn(`[field-notes] ${file}: slug "${raw.slug}" ignored, using "${slug}" from the filename`)
+      }
       // The index carries only what a card renders. The entry page fetches the
       // full file, so prose never has to travel with the listing.
       // Shina's rule for this section: no em dashes in copy or UI. Caught at
@@ -94,6 +102,15 @@ export default function fieldNotesPlugin() {
       server.watcher.on('add', onChange)
       server.watcher.on('change', onChange)
       server.watcher.on('unlink', onChange)
+
+      // Rebuild before serving the index. The watcher above does not reliably
+      // fire for files added under public/ while the server is running, which
+      // meant a brand new note only appeared after a restart. This costs a few
+      // file reads per request in dev and makes staleness impossible.
+      server.middlewares.use((req, res, next) => {
+        if (req.url && req.url.split('?')[0] === '/field-notes/index.json') buildIndex()
+        next()
+      })
 
       // Mirror the production rewrite so /field-notes/<slug> works in dev.
       server.middlewares.use((req, res, next) => {
