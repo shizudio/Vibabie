@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Title and description are rewritten by field-note.js once the entry
+       loads, so each note gets its own. These are the fallbacks. -->
+  <title>Field Note · Shina Foo</title>
+  <meta name="description" content="A field note by Shina Foo: what a piece of interactive work does, why it feels the way it does, and the technique holding it up.">
+  <script src="/art-loader.js"></script>
+  <!-- Every path here is root-absolute on purpose: this page is served at
+       /field-notes/<slug>, one level deep, so a relative href would resolve
+       against /field-notes/ and 404. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500&family=EB+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/vinyl.css">
+  <link rel="stylesheet" href="/project.css">
+  <link rel="stylesheet" href="/field-notes.css">
+</head>
+<body>
+
+  <div class="cursor default-cursor" id="cursor"></div>
+
+  <header class="project-topbar">
+    <a href="/about" class="nav-logo">Shina Foo</a>
+    <div class="nav-links">
+      <a href="/work">Work</a>
+      <a href="/art">Art</a>
+      <a href="/contact">Contact</a>
+      <a href="/play">Play</a>
+    </div>
+  </header>
+
+  <!-- Same shape as a case-study page: sticky nameplate on the left, the work
+       scrolling on the right. Filled by field-note.js. -->
+  <main class="project-page fn-entry" id="fnEntry" aria-busy="true">
+    <aside class="project-rail" id="fnRail"></aside>
+    <div class="project-stack" id="fnStack"></div>
+  </main>
+
+  <script type="module" src="/script.js"></script>
+  <script type="module" src="/field-note.js"></script>
+  <script type="module" src="/vinyl-widget.js"></script>
+  <script type="module" src="/i18n.js"></script>
+</body>
+</html>

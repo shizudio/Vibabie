@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Field Notes · Shina Foo</title>
+  <meta name="description" content="A reading of interactive work by other people: what each one does, why it feels the way it does, and the one technique holding it up. Notes by Shina Foo.">
+  <script src="/art-loader.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500&family=EB+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="vinyl.css">
+  <link rel="stylesheet" href="field-notes.css">
+</head>
+<body>
+
+  <div class="cursor default-cursor" id="cursor"></div>
+
+  <nav>
+    <a href="about.html" class="nav-logo">Shina Foo</a>
+    <div class="nav-links">
+      <a href="work.html">Work</a>
+      <a href="art.html">Art</a>
+      <a href="contact.html">Contact</a>
+      <a href="play.html">Play</a>
+    </div>
+  </nav>
+
+  <main class="fn-page">
+    <header class="fn-head">
+      <h1 class="page-h1 fade-up" style="--i:0">Field Notes.</h1>
+      <p class="fn-lede fade-up" style="--i:1">
+        Interactive work by other people that I keep coming back to, taken apart
+        to see what holds it up. Every project here belongs to its maker and
+        links back to them.
+      </p>
+    </header>
+
+    <!-- Cards injected by field-notes.js from public/field-notes/index.json,
+         which vite-plugin-field-notes.js generates from the entry files. -->
+    <div class="fn-grid" id="fnGrid" aria-busy="true"></div>
+  </main>
+
+  <footer class="fn-footer" aria-label="Footer">
+    <a class="fn-footer-email" href="mailto:shizudio.eth@gmail.com">shizudio.eth@gmail.com</a>
+    <a href="work.html">Work</a>
+    <a href="https://www.instagram.com/shizudio" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://x.com/shizudio" target="_blank" rel="noopener">X</a>
+  </footer>
+
+  <script type="module" src="script.js"></script>
+  <script type="module" src="field-notes.js"></script>
+  <script type="module" src="vinyl-widget.js"></script>
+  <script type="module" src="i18n.js"></script>
+</body>
+</html>

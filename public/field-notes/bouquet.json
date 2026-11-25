@@ -1,0 +1,21 @@
+{
+  "title": "Bouquet",
+  "slug": "bouquet",
+  "creator": "Renee Du",
+  "creatorUrl": "https://renee-du.github.io/",
+  "projectUrl": "https://renee-du.github.io/bouquet/",
+  "dateAdded": "2026-11-25",
+  "tags": ["three.js", "interaction", "physics", "photography"],
+  "thumb": "",
+  "thumbVideo": "",
+  "thumbAlt": "Placeholder for my own screen recording of Bouquet",
+  "hook": "Lift flowers out of photos and arrange them into a swaying 3D bouquet.",
+  "sections": {
+    "what": "Lift flowers out of photos and arrange them into a swaying 3D bouquet, then wrap it in cellophane.",
+    "special": "Every motion has weight. Flowers trail behind my finger, swing like pendulums, and settle when I let go. It feels like handling something real.",
+    "trick": "The flowers are cut out of the photos in advance and shown as flat images, gently cupped by a shader. It looks photographic without any heavy 3D models.",
+    "alive": "Springs and layered sine-wave wind, so nothing snaps and no two flowers move in sync.",
+    "stack": "One HTML file, three.js r128, vanilla JS, canvas-drawn textures.",
+    "steal": "Cutouts plus spring physics for any collect-and-arrange interaction. Tactile without being heavy."
+  }
+}

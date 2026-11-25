@@ -1,9 +1,10 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
 import peUploadPlugin from './vite-plugin-pe-upload.js'
+import fieldNotesPlugin from './vite-plugin-field-notes.js'
 
 export default defineConfig({
-  plugins: [peUploadPlugin()],
+  plugins: [peUploadPlugin(), fieldNotesPlugin()],
   build: {
     rollupOptions: {
       input: {
@@ -30,6 +31,8 @@ export default defineConfig({
         brandedInSec: resolve(__dirname, 'branded-in-sec.html'),
         solmiLanding: resolve(__dirname, 'solmi-landing.html'),
         solmiStudio: resolve(__dirname, 'solmi-studio.html'),
+        fieldNotes: resolve(__dirname, 'field-notes.html'),
+        fieldNote: resolve(__dirname, 'field-note.html'),
       },
     },
   },

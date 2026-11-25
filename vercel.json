@@ -47,5 +47,11 @@
         }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/field-notes/:slug([A-Za-z0-9_-]+)",
+      "destination": "/field-note.html?slug=:slug"
+    }
   ]
 }

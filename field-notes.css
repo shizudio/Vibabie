@@ -1,0 +1,344 @@
+/* ─────────────────────────────────────────
+   field-notes.css — Field Notes index + entry
+   ─────────────────────────────────────────
+
+   No new visual language. Every value here is an existing token, and the
+   entry page borrows project.css wholesale (sticky rail, scrolling stack) so
+   a note reads like a case study for someone else's work.
+
+   The one decision this file makes on its own is the register: the media
+   leads and the prose sits in a narrow measure beneath it, labels in the sans
+   voice at --stone, values in the serif. That is the same placard grammar as
+   the About hero's detail row, applied to longer text.
+
+   Mobile first. Everything below is the phone layout; the breakpoints only
+   add columns.
+   ───────────────────────────────────────── */
+
+/* ── Index ──────────────────────────────────────────────────────────────── */
+
+.fn-page {
+  padding: var(--layout-content-top-mobile) var(--page-gutter) 0;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.fn-head {
+  margin-bottom: clamp(40px, 7vw, 72px);
+}
+
+.fn-lede {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--ink-soft);
+  /* Short measure on purpose: this is the one paragraph of atmosphere the
+     page gets before the work starts. */
+  max-width: 54ch;
+  margin: 20px 0 0;
+}
+
+.fn-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(40px, 7vw, 64px) var(--gap-grid);
+  padding-bottom: var(--section-gap);
+}
+
+.fn-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* 16:9 to match the work thumbnails, so a Field Note card and a work card
+   sit at the same rhythm if they ever appear on one page. */
+.fn-card-media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--mist);
+  border-radius: var(--radius-sm);
+}
+
+.fn-card-media img,
+.fn-card-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--transition-base);
+}
+
+.fn-card-link:hover .fn-card-media img,
+.fn-card-link:hover .fn-card-media video {
+  transform: scale(1.03);
+}
+
+/* An entry whose capture has not been made yet. Reads as a deliberate
+   placeholder rather than as a broken image. */
+.fn-card-media.is-empty,
+.fn-entry-media.is-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  background: var(--paper);
+}
+
+.fn-card-placeholder {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--ink-faint);
+}
+
+.fn-card-title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.2;
+  color: var(--ink);
+  margin: 18px 0 0;
+}
+
+.fn-card-hook {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: 1.55;
+  color: var(--ink-soft);
+  max-width: 46ch;
+  margin: 8px 0 0;
+}
+
+/* ── Credit ─────────────────────────────────────────────────────────────────
+   Visible on the card and on the entry page, never behind a hover or a click.
+   The label is the sans/stone voice, the name is the thing you read. */
+
+.fn-card-by {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 10px 0 0;
+}
+
+.fn-by-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--stone);
+}
+
+.fn-by-name {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  font-style: normal;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border-crimson, rgba(127, 31, 18, 0.25));
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+a.fn-by-name:hover {
+  color: var(--crimson);
+  border-color: var(--crimson);
+}
+
+a.fn-by-name:focus-visible,
+.fn-card-link:focus-visible,
+.fn-back:focus-visible,
+.fn-inline-link:focus-visible {
+  outline: 2px solid var(--crimson);
+  outline-offset: 3px;
+}
+
+/* ── Tags ───────────────────────────────────────────────────────────────── */
+
+.fn-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+}
+
+.fn-tag {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: 1;
+  color: var(--stone);
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.fn-empty {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--stone);
+}
+
+/* ── Entry ──────────────────────────────────────────────────────────────── */
+
+.fn-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 400;
+  font-style: normal;
+  color: var(--ink);
+}
+
+.fn-entry-by {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0 0 24px;
+}
+
+.fn-entry-tags {
+  margin: 20px 0 28px;
+}
+
+.fn-back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-serif);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  font-style: normal;
+  color: var(--stone);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.fn-back:hover { color: var(--crimson); }
+
+.fn-entry-media {
+  margin: 0;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--mist);
+  border-radius: var(--radius-sm);
+}
+
+.fn-entry-media img,
+.fn-entry-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fn-body {
+  padding: clamp(32px, 6vw, 64px) 0 0;
+  /* The reading measure. Prose is the point on this page, so it gets a real
+     column rather than the full width of the stack. */
+  max-width: 62ch;
+}
+
+.fn-block + .fn-block {
+  margin-top: clamp(28px, 4vw, 44px);
+}
+
+/* Label above value, same grammar as .detail-label / .detail-value: the sans
+   names the thing, the serif says it. */
+.fn-block-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--stone);
+  margin: 0 0 10px;
+}
+
+.fn-block-text {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.fn-credit .fn-block-text { color: var(--stone); }
+
+.fn-inline-link {
+  color: var(--crimson);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border-crimson, rgba(127, 31, 18, 0.25));
+  transition: border-color var(--transition-fast);
+}
+
+.fn-inline-link:hover { border-color: var(--crimson); }
+
+/* ── Wider screens ──────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .fn-page { padding-top: var(--layout-content-top); }
+  .fn-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1200px) {
+  .fn-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* project.css collapses the two-column case-study layout on narrow screens;
+   the entry page inherits that. These only adjust what is ours. */
+@media (max-width: 1023px) {
+  .fn-entry .project-rail {
+    position: static;
+    padding-top: var(--layout-content-top-mobile);
+  }
+  .fn-body { max-width: none; }
+}
+
+/* ── Footer ─────────────────────────────────────────────────────────────────
+   Its own class rather than .about-footer: that component lives in about.css,
+   which this page does not load, and linking about.css here would drag the
+   whole hero, bio and art-rail stylesheet along for four links. Same voice,
+   independently defined, no cross-page coupling. */
+.fn-footer {
+  width: 100%;
+  max-width: 1400px;
+  margin-inline: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px clamp(24px, 5vw, 64px);
+  padding: 24px var(--page-gutter) 32px;
+  /* Clears the fixed vinyl widget parked in the bottom-right corner. */
+  padding-right: max(var(--page-gutter), 120px);
+  padding-bottom: max(32px, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--border);
+  font-family: var(--font-serif);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.fn-footer a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--ink);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.fn-footer a:hover { color: var(--crimson); }
+
+.fn-footer a:focus-visible {
+  outline: 2px solid var(--crimson);
+  outline-offset: 3px;
+}
+
+/* The email takes the whole first line and pushes the rest to their own row,
+   the same shape the About footer settles into on a phone. */
+.fn-footer-email { flex: 1 1 100%; }
+
+@media (min-width: 768px) {
+  .fn-footer-email { flex: 1 1 auto; }
+}
