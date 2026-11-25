@@ -53,6 +53,19 @@ Key routing rules:
 - Save progress → invoke /context-save
 - Resume context → invoke /context-restore
 
+## Task workflows
+
+Two repeatable jobs are written up as skills, tracked in the repo so they
+survive sessions and work for non-Claude agents too:
+
+- `.claude/skills/field-note/` — turn a link into a Field Note. Scaffolds
+  what a machine can know, then interviews Shina for the prose. Never writes
+  those sections itself.
+- `.claude/skills/portrait/` — change the profile picture on the About
+  landing and keep the previous one in the archive.
+
+[AGENTS.md](AGENTS.md) is the same map for agents that do not read this file.
+
 ## Agent Orchestration Policy
 
 Always read and follow [AGENT_POLICY.md](AGENT_POLICY.md) before dispatching subagents or delegating work. It governs when to delegate vs. do work directly, brief/report-back contracts, model routing, and verification requirements.

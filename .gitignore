@@ -2,7 +2,11 @@ node_modules
 .vercel
 dist
 .next/
-.claude
+# Local Claude state stays out, but the task workflows in .claude/skills/ are
+# part of the repo: they are plain markdown any agent can read, and they are
+# the only written record of how these scripts are meant to be used.
+.claude/*
+!.claude/skills/
 
 # Instagram downloaded images are rebuilt at deploy time
 instagram/
