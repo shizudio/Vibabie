@@ -15,7 +15,7 @@
  * /field-notes-media/. Nothing is ever hotlinked from the original project.
  */
 
-const INDEX = '/field-notes/index.json'
+const INDEX = '/field-notes-data/index.json'
 
 const el = (tag, cls, text) => {
   const n = document.createElement(tag)

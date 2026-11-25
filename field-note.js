@@ -169,7 +169,7 @@ async function init() {
   let data = null
   if (slug && /^[A-Za-z0-9._-]+$/.test(slug)) {
     try {
-      const res = await fetch(`/field-notes/${encodeURIComponent(slug)}.json`, { cache: 'no-cache' })
+      const res = await fetch(`/field-notes-data/${encodeURIComponent(slug)}.json`, { cache: 'no-cache' })
       if (res.ok) data = await res.json()
     } catch (e) { /* fall through to not-found */ }
   }

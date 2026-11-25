@@ -22,7 +22,7 @@ import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const DIR = join(__dirname, 'public', 'field-notes')
+const DIR = join(__dirname, 'public', 'field-notes-data')
 const INDEX = join(DIR, 'index.json')
 
 function buildIndex() {
@@ -108,7 +108,7 @@ export default function fieldNotesPlugin() {
       // meant a brand new note only appeared after a restart. This costs a few
       // file reads per request in dev and makes staleness impossible.
       server.middlewares.use((req, res, next) => {
-        if (req.url && req.url.split('?')[0] === '/field-notes/index.json') buildIndex()
+        if (req.url && req.url.split('?')[0] === '/field-notes-data/index.json') buildIndex()
         next()
       })
 
