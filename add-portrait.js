@@ -22,9 +22,18 @@
 import sharp from 'sharp'
 import { readFileSync, writeFileSync, copyFileSync, existsSync, mkdirSync } from 'fs'
 import { basename, extname, join } from 'path'
+import { fileURLToPath } from 'url'
+import { dirname, resolve } from 'path'
 
-const DIR = join('public', 'About', 'portraits')
-const MANIFEST = join('public', 'portrait-manifest.json')
+// Anchor every path on this file, never on the shell's cwd. Run from another
+// directory these scripts used to create public/ wherever they were invoked
+// and then fail on the manifest, which is a quiet way to scatter files around
+// someone's machine. Any agent can now run them from anywhere.
+const ROOT = dirname(fileURLToPath(import.meta.url))
+
+
+const DIR = resolve(ROOT, 'public', 'About', 'portraits')
+const MANIFEST = resolve(ROOT, 'public', 'portrait-manifest.json')
 const MAX_EDGE = 1400          // the frame renders near 300px wide; this covers retina
 const QUALITY = 84
 

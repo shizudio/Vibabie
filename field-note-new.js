@@ -31,9 +31,18 @@
 import sharp from 'sharp'
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
 import { join } from 'path'
+import { fileURLToPath } from 'url'
+import { dirname, resolve } from 'path'
 
-const DATA = join('public', 'field-notes-data')
-const MEDIA = join('public', 'field-notes-media')
+// Anchor every path on this file, never on the shell's cwd. Run from another
+// directory these scripts used to create public/ wherever they were invoked
+// and then fail on the manifest, which is a quiet way to scatter files around
+// someone's machine. Any agent can now run them from anywhere.
+const ROOT = dirname(fileURLToPath(import.meta.url))
+
+
+const DATA = resolve(ROOT, 'public', 'field-notes-data')
+const MEDIA = resolve(ROOT, 'public', 'field-notes-media')
 const SECTIONS = ['what', 'special', 'trick', 'alive', 'stack', 'steal']
 
 const args = process.argv.slice(2)
