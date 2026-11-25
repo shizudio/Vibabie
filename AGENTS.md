@@ -33,9 +33,10 @@ YAML header, so read them directly whatever you are.
 | Add a Field Note from a link | `.claude/skills/field-note/SKILL.md` | `node field-note-new.js` |
 | Change the profile picture | `.claude/skills/portrait/SKILL.md` | `node add-portrait.js` |
 
-**If you cannot write a pasted image to disk**, say so and ask Shina to save
-it (Desktop is fine) and give you the path. Both scripts take a path, and
-they resolve their own output against the repo, so you can run them from any
+**If you cannot write a pasted image to disk**, ask Shina for a path or a
+URL. `add-portrait.js` takes either, so a link to the photo anywhere that
+serves one is enough; it fetches, validates and cleans up after itself. Both
+scripts resolve their output against the repo, so you can run them from any
 working directory.
 
 Other scripts worth knowing, each documented in its own header comment:

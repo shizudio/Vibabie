@@ -25,8 +25,14 @@ which is behaviour `script.js` already gives the frame.
 
 ```bash
 node add-portrait.js <image> --alt "What is in the picture"
+node add-portrait.js <url>   --alt "..."                   # a link works too
 node add-portrait.js <image> --alt "..." --video <video>   # optional hover clip
 ```
+
+A URL is the handoff that works with every agent. If you cannot write a
+pasted image to disk, ask Shina to put it anywhere that serves a link and
+give you that instead. The script fetches it, checks it is actually an image,
+caps it at 25MB, and deletes its temp copy afterwards.
 
 The script optimises the image (max 1400px, WebP), files it under a dated
 name in `public/About/portraits/`, and puts it at the front of the manifest.
