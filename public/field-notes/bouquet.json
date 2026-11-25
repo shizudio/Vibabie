@@ -5,10 +5,10 @@
   "creatorUrl": "https://renee-du.github.io/",
   "projectUrl": "https://renee-du.github.io/bouquet/",
   "dateAdded": "2026-11-25",
-  "tags": ["three.js", "interaction", "physics", "photography"],
-  "thumb": "",
+  "tags": [],
+  "thumb": "/field-notes-media/bouquet.webp",
   "thumbVideo": "",
-  "thumbAlt": "Placeholder for my own screen recording of Bouquet",
+  "thumbAlt": "The Bouquet interface: a strip of photographs on the left, an assembled bouquet of cut-out flowers standing on the right",
   "hook": "Lift flowers out of photos and arrange them into a swaying 3D bouquet.",
   "sections": {
     "what": "Lift flowers out of photos and arrange them into a swaying 3D bouquet, then wrap it in cellophane.",
