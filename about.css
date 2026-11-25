@@ -1886,3 +1886,137 @@ html {
 @media (max-width: 1023px) {
   .about-art-placard { display: none; }
 }
+
+/* ── Profile picture archive ────────────────────────────────────────────────
+
+   Opened by clicking the portrait. A story viewer, the way Telegram shows a
+   contact's old profile pictures: segment bars for position, half-screen taps
+   to move, newest first.
+
+   Dark ground, which is the one place this site goes dark. --overlay-dark
+   already exists for exactly this and the art lightbox uses it, so the two
+   full-screen views match rather than inventing a second treatment. */
+.pg-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-lightbox);
+  background: var(--overlay-dark);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 56px var(--page-gutter) 40px;
+  animation: pg-in 0.2s ease;
+}
+
+@keyframes pg-in { from { opacity: 0 } to { opacity: 1 } }
+
+@media (prefers-reduced-motion: reduce) {
+  .pg-overlay { animation: none; }
+}
+
+/* Position bars, one per picture, across the top. */
+.pg-segs {
+  position: absolute;
+  top: 16px;
+  left: var(--page-gutter);
+  right: var(--page-gutter);
+  display: flex;
+  gap: 4px;
+  z-index: 2;
+}
+
+.pg-seg {
+  flex: 1 1 0;
+  height: 2px;
+  background: var(--paper-dim);
+  transition: background var(--transition-fast);
+}
+
+.pg-seg.is-on { background: var(--paper); }
+
+.pg-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  max-height: 100%;
+  z-index: 1;
+}
+
+.pg-img {
+  max-width: min(520px, 86vw);
+  max-height: 72vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  border-radius: var(--radius-md);
+}
+
+.pg-meta {
+  position: relative;
+  z-index: 2;
+  margin: 18px 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--paper-mid);
+  text-align: center;
+}
+
+/* Half-screen tap targets, under the image in z-order so the picture itself
+   is never covered by a control. */
+.pg-prev,
+.pg-next {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  z-index: 0;
+}
+
+.pg-prev { left: 0; }
+.pg-next { right: 0; }
+
+.pg-prev:disabled,
+.pg-next:disabled { cursor: default; }
+
+.pg-prev:focus-visible,
+.pg-next:focus-visible,
+.pg-close:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: -4px;
+}
+
+.pg-close {
+  position: absolute;
+  top: 28px;
+  right: var(--page-gutter);
+  z-index: 3;
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: none;
+  color: var(--paper);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity var(--transition-fast);
+}
+
+.pg-close:hover { opacity: 1; }
+
+/* The frame only becomes a control once there is an archive behind it;
+   about-portrait.js adds role="button" in that case. */
+.portrait-frame[role="button"]:focus-visible {
+  outline: 2px solid var(--crimson);
+  outline-offset: 4px;
+}

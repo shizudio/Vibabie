@@ -1,0 +1,16 @@
+{
+  "_readme": [
+    "Profile media for the About landing, newest first. Entry 0 is what the page shows;",
+    "everything behind it is the archive you see when you click the portrait.",
+    "Written by add-portrait.js. Run `node add-portrait.js <file>` rather than editing by hand,",
+    "so the image is optimised and the paths stay consistent."
+  ],
+  "portraits": [
+    {
+      "src": "/About/portraits/2026-09-20-portrait.webp",
+      "video": "/About/portraits/2026-09-20-portrait.mp4",
+      "alt": "Shina Foo in front of a wall of bougainvillea",
+      "date": "2026-09-20"
+    }
+  ]
+}
