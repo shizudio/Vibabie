@@ -19,9 +19,9 @@
       lines instead of the two the <br> intends. Trimming the portrait to
       300px and the gap to 48px yields 612px, with ~25px of slack.
 
-      Note this is tuned to the current headline. A longer one will wrap
-      again; the durable fix is to let the h1 span the full content width
-      above both columns. */
+      A longer headline must not wrap past the portrait. From 768px up the
+      heading's height is capped at the frame (about-hero-lock.js widens
+      the line to the right instead). */
    .about-intro {
      display: grid;
      grid-template-columns: minmax(0, clamp(280px, 24vw, 300px)) minmax(0, 1fr);
@@ -116,9 +116,19 @@
 
        Note the base rule above is 36px for mobile, where the headline is 36px
        and the optical gap already measured ~34. */
+    /* The portrait column is a fixed track. A heading that runs long has
+       to overflow this column to the right, not stretch the track and
+       shrink the frame it is locked to. */
+    .about-intro-text { min-width: 0; }
+
     .about-intro-text .page-h1 {
       line-height: 1.14;
       margin-bottom: 40px;
+      min-width: 0;
+      /* The frame is 3:4 of the same column .portrait-frame is given.
+         about-hero-lock.js writes the rendered length into --hero-media-h;
+         the calc is the same length before that runs. */
+      max-height: var(--hero-media-h, calc(clamp(280px, 24vw, 300px) * 4 / 3));
     }
     /* The rest of the hero stack is tightened further down the file — it has
        to sit after .bio / .detail-row / .about-cta are defined to win. */
