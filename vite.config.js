@@ -6,6 +6,14 @@ import portraitPlugin from './vite-plugin-portrait.js'
 
 export default defineConfig({
   plugins: [peUploadPlugin(), fieldNotesPlugin(), portraitPlugin()],
+  server: {
+    proxy: {
+      '/api/photodump': {
+        target: process.env.PHOTODUMP_API_ORIGIN || 'https://shizudio.me',
+        changeOrigin: true,
+      },
+    },
+  },
   build: {
     rollupOptions: {
       input: {
@@ -13,6 +21,7 @@ export default defineConfig({
         play: resolve(__dirname, 'play.html'),
         about: resolve(__dirname, 'about.html'),
         photography: resolve(__dirname, 'photography.html'),
+        photodump: resolve(__dirname, 'photodump.html'),
         cosmos: resolve(__dirname, 'cosmos.html'),
         contact: resolve(__dirname, 'contact.html'),
         instagram: resolve(__dirname, 'instagram.html'),

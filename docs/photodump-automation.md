@@ -1,6 +1,6 @@
 # Photodump upload API
 
-This backend publishes a selected album's uploaded photographs, approximate capture locations and capture dates. It does not read iCloud directly, watch an iPhone album, or include the map interface. Uploading publishes the photo immediately to the public API.
+This backend publishes a selected album's uploaded photographs, approximate capture locations and capture dates. It does not read iCloud directly or watch an iPhone album. Uploading publishes the photo immediately to the public API.
 
 ## Server configuration
 
@@ -50,7 +50,7 @@ The signed, credential-free template is `public/shortcuts/photodump.shortcut`. A
 5. Run manually on iPhone and grant access only to the intended photos and your website. Review returned records or errors; the Shortcut displays actual API responses. No iPhone execution has been verified yet.
 6. After a successful manual test, optionally create a Time of Day automation that runs the Shortcut. This version revisits the album on each run; deterministic records prevent duplicates but images are still uploaded. It is not an instant album-change trigger or incremental background watcher.
 
-The map/gallery interface is not part of this change. The public API is ready for that interface once deployed and configured.
+The `/photodump` interface provides a map with grouped photo thumbnails, a chronological grid and a keyboard-accessible photo viewer. Photos without locations appear in Grid. The map uses attributed OpenStreetMap tiles; locations remain approximate. Refresh loads new uploads. The Vite development server proxies the public feed from production by default; `PHOTODUMP_API_ORIGIN` can point to a local fixture server for development checks, and is not used in the production bundle.
 
 Regenerate without credentials using `python3 scripts/build-photodump-shortcut.py /tmp/photodump.unsigned.shortcut`, then sign on macOS:
 
