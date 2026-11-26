@@ -1915,7 +1915,7 @@ html {
   position: fixed;
   inset: 0;
   z-index: var(--z-lightbox);
-  background: var(--overlay-dark);
+  background: rgba(0, 0, 0, 0.82);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1979,23 +1979,24 @@ html {
   text-align: center;
 }
 
-/* Half-screen tap targets, under the image in z-order so the picture itself
-   is never covered by a control. */
+/* Discreet navigation leaves the black background available to dismiss. */
 .pg-prev,
 .pg-next {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 50%;
+  bottom: 20px;
+  min-width: 76px;
+  min-height: 44px;
   border: 0;
-  padding: 0;
+  padding: 10px 16px;
   background: none;
+  color: var(--paper-mid);
+  font: 400 1rem var(--font-serif);
   cursor: pointer;
-  z-index: 0;
+  z-index: 2;
 }
 
-.pg-prev { left: 0; }
-.pg-next { right: 0; }
+.pg-prev { left: var(--page-gutter); }
+.pg-next { right: var(--page-gutter); }
 
 .pg-prev:disabled,
 .pg-next:disabled { cursor: default; }

@@ -20,7 +20,10 @@ const grid   = document.querySelector('.grid')
 photos.forEach(photo => {
   const item = document.createElement('div')
   item.className = 'grid-item'
+  item.tabIndex = 0
+  item.setAttribute('role', 'button')
   item.dataset.caption = photo.caption || ''
+  item.setAttribute('aria-label', `Open photograph: ${photo.caption || photo.alt || 'photograph'}`)
 
   const img = document.createElement('img')
   img.src     = photo.src
@@ -30,7 +33,9 @@ photos.forEach(photo => {
   item.appendChild(img)
   grid.appendChild(item)
 
-  item.addEventListener('click', () => {
-    openLightbox(img.src, photo.caption || '')
+  const open = () => openLightbox(img.src, photo.caption || '', item)
+  item.addEventListener('click', open)
+  item.addEventListener('keydown', event => {
+    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open() }
   })
 })

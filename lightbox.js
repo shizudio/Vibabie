@@ -12,8 +12,21 @@
 export function initLightbox(overlayEl, imgEl, captionEl, closeBtn) {
   let scrollY = 0
   let previousBodyStyles = null
+  let previouslyFocused = null
+  let isOpen = false
+  overlayEl.inert = true
+  overlayEl.setAttribute('role', 'dialog')
+  overlayEl.setAttribute('aria-modal', 'true')
+  if (!overlayEl.hasAttribute('aria-label') && !overlayEl.hasAttribute('aria-labelledby')) overlayEl.setAttribute('aria-label', 'Image viewer')
 
-  function open(src, caption) {
+  function open(src, caption, trigger = document.activeElement) {
+    if (isOpen) {
+      imgEl.src = src
+      if (captionEl) captionEl.textContent = caption || ''
+      return
+    }
+    isOpen = true
+    previouslyFocused = trigger
     scrollY = window.scrollY || document.documentElement.scrollTop || 0
     previousBodyStyles = {
       position: document.body.style.position,
@@ -29,6 +42,7 @@ export function initLightbox(overlayEl, imgEl, captionEl, closeBtn) {
       captionEl.textContent = caption || ''
       captionEl.style.display = caption ? '' : 'none'
     }
+    overlayEl.inert = false
     overlayEl.classList.add('open')
     overlayEl.setAttribute('aria-hidden', 'false')
     document.body.style.position = 'fixed'
@@ -37,10 +51,14 @@ export function initLightbox(overlayEl, imgEl, captionEl, closeBtn) {
     document.body.style.right = '0'
     document.body.style.width = '100%'
     document.body.style.overflow = 'hidden'
+    closeBtn.focus({ preventScroll: true })
   }
 
   function close() {
+    if (!isOpen) return
+    isOpen = false
     overlayEl.classList.remove('open')
+    overlayEl.inert = true
     overlayEl.setAttribute('aria-hidden', 'true')
     if (previousBodyStyles) {
       document.body.style.position = previousBodyStyles.position
@@ -58,6 +76,7 @@ export function initLightbox(overlayEl, imgEl, captionEl, closeBtn) {
       document.body.style.overflow = ''
     }
     window.scrollTo(0, scrollY)
+    if (previouslyFocused?.isConnected) previouslyFocused.focus({ preventScroll: true })
     // Delay src clear so the CSS transition completes before the image
     // disappears — but only if the lightbox is still closed when the timer
     // fires. Reopening within the fade window used to have its brand-new
@@ -72,11 +91,19 @@ export function initLightbox(overlayEl, imgEl, captionEl, closeBtn) {
   closeBtn.addEventListener('click', close)
 
   overlayEl.addEventListener('click', e => {
-    if (e.target === overlayEl) close()
+    if (e.target === overlayEl || e.target === imgEl.parentElement) close()
   })
 
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && overlayEl.classList.contains('open')) close()
+    if (!isOpen) return
+    if (e.key === 'Escape') close()
+    if (e.key === 'Tab') {
+      const controls = [...overlayEl.querySelectorAll('button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])')].filter(element => !element.disabled && element.getClientRects().length)
+      const first = controls[0], last = controls[controls.length - 1]
+      if (!first) return
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
+    }
   })
 
   return { open, close }

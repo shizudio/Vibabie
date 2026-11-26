@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="/photodump.css">
 </head>
 <body class="photodump-body">
+  <div class="pd-entry-veil" aria-hidden="true"></div>
   <a class="pd-skip" href="#photodump">Skip to photographs</a>
   <main id="photodump" class="pd-page">
     <h1 class="pd-sr-only">Photo map</h1>
@@ -19,7 +20,7 @@
     <div class="pd-toolbar">
       <div class="pd-views" role="group" aria-label="Photo view">
         <button id="pd-map-button" type="button" aria-pressed="true" aria-controls="pd-map-view">Map</button>
-        <button id="pd-grid-button" type="button" aria-pressed="false" aria-controls="pd-grid-view">Grid</button>
+        <button id="pd-stack-button" type="button" aria-pressed="false" aria-controls="pd-stack-view">Stack</button>
       </div>
       <p id="pd-count" class="pd-count" aria-live="polite">Loading photographs…</p>
       <button id="pd-refresh" class="pd-text-button" type="button">Refresh</button>
@@ -36,25 +37,28 @@
           <button id="pd-fit" type="button">All places</button>
         </div>
         <div id="pd-map-empty" class="pd-map-empty" hidden><h2>A little room for everywhere.</h2><p>Your photographs will find their places here.</p></div>
-        <p id="pd-tile-error" class="pd-tile-error" hidden>Some map tiles couldn’t load. You can still browse every photograph in Grid.</p>
+        <p id="pd-tile-error" class="pd-tile-error" hidden>Some map tiles couldn’t load. You can still browse every photograph in Stack.</p>
       </div>
       <p id="pd-map-hint" class="pd-sr-only">Choose a photograph on the map to explore a place. Locations are approximate.</p>
-      <section id="pd-place" class="pd-place" aria-labelledby="pd-place-title" hidden>
-        <div class="pd-place-header"><div><p class="pd-eyebrow">From this place</p><h2 id="pd-place-title">Photographs</h2></div><button id="pd-clear-place" class="pd-text-button" type="button">Clear selection</button></div>
-        <div id="pd-filmstrip" class="pd-filmstrip"></div>
-      </section>
     </section>
 
-    <section id="pd-grid-view" class="pd-grid-view" aria-label="Photographs by date" hidden></section>
+    <section id="pd-stack-view" class="pd-stack-view" aria-label="Photograph stacks" hidden></section>
 
     <span id="pd-last-updated" class="pd-sr-only"></span>
   </main>
 
-  <dialog id="pd-dialog" class="pd-dialog" aria-labelledby="pd-dialog-caption">
+  <dialog id="pd-dialog" class="pd-dialog" aria-labelledby="pd-dialog-label">
     <div class="pd-dialog-shell">
-      <div class="pd-dialog-top"><span id="pd-dialog-count"></span><button id="pd-dialog-close" type="button" autofocus>Close</button></div>
-      <div class="pd-dialog-image-wrap"><img id="pd-dialog-image" alt=""><p id="pd-image-error" hidden>This photograph couldn’t load. Try the next photograph or close and refresh.</p></div>
-      <div class="pd-dialog-bottom"><button id="pd-previous" type="button" aria-label="Previous photograph">Previous</button><p id="pd-dialog-caption"></p><button id="pd-next" type="button" aria-label="Next photograph">Next</button></div>
+      <div class="pd-dialog-top">
+        <div><span id="pd-dialog-label" class="pd-dialog-label">Photographs</span><span id="pd-dialog-count"></span></div>
+        <div class="pd-dialog-actions"><button id="pd-dialog-grid" type="button" hidden>All photographs</button><button id="pd-dialog-close" type="button" autofocus aria-label="Close photographs">Close</button></div>
+      </div>
+      <div id="pd-dialog-grid-view" class="pd-dialog-grid" hidden></div>
+      <div id="pd-dialog-photo-view" class="pd-dialog-photo-view">
+        <div class="pd-dialog-image-wrap"><img id="pd-dialog-image" alt=""><p id="pd-image-error" hidden>This photograph couldn’t load. Try the next photograph or close and refresh.</p></div>
+        <p id="pd-dialog-caption"></p>
+        <div class="pd-dialog-navigation"><button id="pd-previous" type="button" aria-label="Previous photograph">Previous</button><button id="pd-next" type="button" aria-label="Next photograph">Next</button></div>
+      </div>
     </div>
   </dialog>
   <script type="module" src="/photodump.js"></script>
