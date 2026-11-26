@@ -19,10 +19,10 @@
       lines instead of the two the <br> intends. Trimming the portrait to
       300px and the gap to 48px yields 612px, with ~25px of slack.
 
-      A longer headline must not wrap past the portrait. From 768px up the
-      heading's height is held to the frame by about-hero-lock.js: it widens
-      the line to the right, up to the page margin, and only then shrinks the
-      type. */
+      The heading must sit inside the portrait's vertical span and never run
+      past the right edge of the "About Shina" button. From 768px up
+      about-hero-lock.js holds both: it shrinks the type a little if it has to,
+      then grows the portrait taller. See that file for the order and why. */
    .about-intro {
      display: grid;
      grid-template-columns: minmax(0, clamp(280px, 24vw, 300px)) minmax(0, 1fr);
