@@ -117,7 +117,7 @@ function selectPlace(photos) {
   const strip = $('pd-filmstrip')
   strip.replaceChildren(...state.selected.map(photo => photoButton(photo, state.selected)))
   $('pd-map-hint').textContent = `${photos.length} photograph${photos.length === 1 ? '' : 's'} selected. Browse them below.`
-  strip.querySelector('button')?.focus()
+  strip.querySelector('button')?.focus({ preventScroll: true })
 }
 
 function clearPlace() {

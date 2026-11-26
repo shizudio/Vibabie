@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Small moments, collected along the way. Photographs from Shina Foo's camera roll, on a map and in a journal.">
+  <meta name="description" content="Explore Shina Foo's photographs by place.">
   <title>Photodump — Shina Foo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,19 +13,9 @@
 </head>
 <body class="photodump-body">
   <a class="pd-skip" href="#photodump">Skip to photographs</a>
-  <nav aria-label="Main navigation">
-    <a href="/about" class="nav-logo">Shina Foo</a>
-    <div class="nav-links">
-      <a href="/work">Work</a><a href="/art">Art</a><a href="/contact">Contact</a><a href="/play">Play</a>
-    </div>
-  </nav>
-
   <main id="photodump" class="pd-page">
-    <header class="pd-header">
-      <div><p class="pd-eyebrow">From the camera roll</p><h1>Photodump</h1><p class="pd-intro">Small moments, collected along the way.</p></div>
-      <a class="pd-journal-link" href="/photography">The photography collection</a>
-    </header>
-
+    <h1 class="pd-sr-only">Photo map</h1>
+    <a class="pd-back" href="/about" aria-label="Back to Shina Foo">Back</a>
     <div class="pd-toolbar">
       <div class="pd-views" role="group" aria-label="Photo view">
         <button id="pd-map-button" type="button" aria-pressed="true" aria-controls="pd-map-view">Map</button>
@@ -48,7 +38,7 @@
         <div id="pd-map-empty" class="pd-map-empty" hidden><h2>A little room for everywhere.</h2><p>Your photographs will find their places here.</p></div>
         <p id="pd-tile-error" class="pd-tile-error" hidden>Some map tiles couldn’t load. You can still browse every photograph in Grid.</p>
       </div>
-      <div class="pd-map-caption"><p id="pd-map-hint">Choose a photograph on the map to explore a place.</p><span>Locations are approximate.</span></div>
+      <p id="pd-map-hint" class="pd-sr-only">Choose a photograph on the map to explore a place. Locations are approximate.</p>
       <section id="pd-place" class="pd-place" aria-labelledby="pd-place-title" hidden>
         <div class="pd-place-header"><div><p class="pd-eyebrow">From this place</p><h2 id="pd-place-title">Photographs</h2></div><button id="pd-clear-place" class="pd-text-button" type="button">Clear selection</button></div>
         <div id="pd-filmstrip" class="pd-filmstrip"></div>
@@ -57,7 +47,7 @@
 
     <section id="pd-grid-view" class="pd-grid-view" aria-label="Photographs by date" hidden></section>
 
-    <footer class="pd-footer"><span>A journal in photographs.</span><span id="pd-last-updated"></span></footer>
+    <span id="pd-last-updated" class="pd-sr-only"></span>
   </main>
 
   <dialog id="pd-dialog" class="pd-dialog" aria-labelledby="pd-dialog-caption">
