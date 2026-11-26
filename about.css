@@ -19,9 +19,10 @@
       lines instead of the two the <br> intends. Trimming the portrait to
       300px and the gap to 48px yields 612px, with ~25px of slack.
 
-      Note this is tuned to the current headline. A longer one will wrap
-      again; the durable fix is to let the h1 span the full content width
-      above both columns. */
+      The heading must sit inside the portrait's vertical span and never run
+      past the right edge of the "About Shina" button. From 768px up
+      about-hero-lock.js holds both: it shrinks the type a little if it has to,
+      then grows the portrait taller. See that file for the order and why. */
    .about-intro {
      display: grid;
      grid-template-columns: minmax(0, clamp(280px, 24vw, 300px)) minmax(0, 1fr);
@@ -116,9 +117,21 @@
 
        Note the base rule above is 36px for mobile, where the headline is 36px
        and the optical gap already measured ~34. */
+    /* The portrait column is a fixed track. A heading that runs long has
+       to overflow this column to the right, not stretch the track and
+       shrink the frame it is locked to. */
+    .about-intro-text { min-width: 0; }
+
     .about-intro-text .page-h1 {
       line-height: 1.14;
       margin-bottom: 40px;
+      min-width: 0;
+      /* No max-height here, on purpose. With overflow visible a height cap
+         clips nothing: the text just spills out of a box that has stopped
+         growing, over whatever follows it. about-hero-lock.js is what holds the
+         heading to the portrait's height, and if it is late or fails the safe
+         result is a heading that wraps tall and pushes the page down, not text
+         painted over the detail row. */
     }
     /* The rest of the hero stack is tightened further down the file — it has
        to sit after .bio / .detail-row / .about-cta are defined to win. */
