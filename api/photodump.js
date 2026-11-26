@@ -87,7 +87,7 @@ const storage = {
   },
   async image(id, token) {
     const { get } = await import('@vercel/blob')
-    const blob = await get(`photodump/images/${id}.jpg`, { access: 'private', token })
+    const blob = await get(`photodump/images/${id}.jpg`, { access: 'private', token, useCache: false })
     return blob ? Buffer.from(await new Response(blob.stream).arrayBuffer()) : null
   },
   async save(id, image, record, token) {
