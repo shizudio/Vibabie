@@ -1,0 +1,20 @@
+{
+  "title": "East Asian Graphics Archive",
+  "creator": "East Asian Graphics Archive",
+  "creatorUrl": "https://eastasiangraphicsarchive.com/",
+  "projectUrl": "https://eastasiangraphicsarchive.com/",
+  "dateAdded": "2026-11-26",
+  "tags": [],
+  "thumb": "/field-notes-media/east-asian-graphics-archive.webp",
+  "thumbVideo": "",
+  "thumbAlt": "The archive grid with the language filter set to All, showing posters including Bathing in Art, Yuitakada, and a green poster of red fish, each labeled with a maker and a place.",
+  "hook": "A language-filtered grid of contemporary East Asian posters, packaging, and graphic work.",
+  "sections": {
+    "what": "",
+    "special": "",
+    "trick": "",
+    "alive": "",
+    "stack": "WordPress 7.1 custom theme, vanilla JS, CSS grid. The intro is a timed SVG crossfade that wipes away with a clip-path.",
+    "steal": ""
+  }
+}
