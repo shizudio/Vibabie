@@ -139,13 +139,15 @@
     opacity: 0;
   }
   
-  .portrait-frame:hover img {
-    opacity: 0;
-  }
+  /* The swap to the hover video only happens when there IS a video. It used to
+     fire on every hover, so a portrait with no clip faded its photo out to an
+     empty <video> and the picture simply vanished. :has() keys it off the
+     src attribute, so it follows whatever vite-plugin-portrait.js wrote into
+     the HTML and whatever about-portrait.js changes later, with no class to
+     keep in sync. */
+  .portrait-frame:has(.portrait-vid[src]):hover img { opacity: 0; }
   
-  .portrait-frame:hover video {
-    opacity: 1;
-  }
+  .portrait-frame:has(.portrait-vid[src]):hover video { opacity: 1; }
    
    .bio {
      font-family: var(--font-description);
