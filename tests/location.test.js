@@ -33,7 +33,7 @@ test('GET falls back for unconfigured or initially empty storage', async () => {
   for (const overrides of [{ environment: {} }, { read: async () => null }]) {
     const res = await request({ method: 'GET', ...overrides })
     assert.equal(res.statusCode, 200)
-    assert.deepEqual(res.body, { city: 'Beijing' })
+    assert.deepEqual(res.body, { city: 'Beijing', countryCode: 'CN' })
   }
 })
 
@@ -89,7 +89,7 @@ test('POST rejects malformed JSON, coordinates, extra fields, and non-city struc
 })
 
 test('POST rejects markup, coordinates disguised as a city, controls, and oversized names', async () => {
-  for (const city of ['<img src=x onerror=alert(1)>', '40.7128,-74.0060', 'Paris\nLondon', '', '  ', 'A'.repeat(81), 42]) {
+  for (const city of ['<img src=x onerror=alert(1)>', '40.7128,-74.0060', 'Paris\nLondon', 'Paris\n', '', '  ', 'A'.repeat(81), 42]) {
     const res = await request({ body: { city }, write: () => assert.fail('invalid city stored') })
     assert.equal(res.statusCode, 400)
   }
@@ -120,4 +120,79 @@ test('unsupported methods cannot change the city', async () => {
     assert.equal(res.statusCode, 405)
     assert.equal(res.headers.Allow, 'GET, POST')
   }
+})
+
+test('country codes are case-insensitive, validated ISO alpha-2, and stored canonically', async () => {
+  let saved
+  const res = await request({ body: { city: 'Paris', countryCode: ' fr ' }, write: async value => { saved = value } })
+  assert.equal(res.statusCode, 200)
+  assert.deepEqual(saved, { city: 'Paris', countryCode: 'FR' })
+  assert.deepEqual(res.body, saved)
+  for (const countryCode of ['ZZ', 'EU', 'UN', 'FRA', '250', '🇫🇷', '', null, 42, '<FR>']) {
+    const invalid = await request({ body: { city: 'Paris', countryCode }, write: () => assert.fail('invalid country stored') })
+    assert.equal(invalid.statusCode, 400)
+  }
+})
+
+test('country names normalize English, Chinese, and other supported phone locales', async () => {
+  for (const [country, countryCode] of [
+    ['China', 'CN'], ['  china  ', 'CN'], ['中国', 'CN'], ['中华人民共和国', 'CN'],
+    ['中国大陆', 'CN'], ['中國大陸', 'CN'], ['Mainland China', 'CN'],
+    ['United States', 'US'], ['美国', 'US'], ['United Kingdom', 'GB'], ['英国', 'GB'],
+    ['Germany', 'DE'], ['Deutschland', 'DE'], ['日本', 'JP'], ['France', 'FR'],
+    ['美國', 'US'], ['英國', 'GB'], ['法國', 'FR'], ['德國', 'DE'], ['中國', 'CN'],
+    ['臺灣', 'TW'], ['台灣', 'TW'], ['香港特別行政區', 'HK'], ['澳門特別行政區', 'MO'],
+  ]) {
+    const res = await request({ body: { city: 'City', country } })
+    assert.equal(res.statusCode, 200, country)
+    assert.deepEqual(res.body, { city: 'City', countryCode }, country)
+  }
+})
+
+test('country data cannot add coordinates, replace a city, or bypass validation', async () => {
+  const bodies = [
+    { country: 'China' }, { countryCode: 'CN' }, { city: 'Beijing', country: 'China', countryCode: 'CN' },
+    { city: 'Beijing', countryCode: 'CN', longitude: 116 }, { city: 'Paris', country: 'Atlantis' },
+    { city: 'Paris', country: '🇫🇷' }, { city: 'Paris', country: '<script>France</script>' },
+    { city: 'Paris', country: null }, { city: 'Paris', country: 'A'.repeat(101) },
+    { city: 'Paris', country: 'France\n' }, { city: 'Paris', countryCode: 'FR\n' },
+  ]
+  for (const body of bodies) {
+    const res = await request({ body, write: () => assert.fail('invalid payload stored') })
+    assert.equal(res.statusCode, 400)
+  }
+})
+
+test('public GET returns canonical country code without exposing stored extras', async () => {
+  const res = await request({ method: 'GET', read: async () => ({ city: 'Paris', countryCode: 'fr', ignored: 'private' }) })
+  assert.deepEqual(res.body, { city: 'Paris', countryCode: 'FR' })
+})
+
+test('legacy Beijing records get the known China fallback without guessing other cities', async () => {
+  for (const city of ['Beijing', 'beijing', '北京', '北京市']) {
+    const res = await request({ method: 'GET', read: async () => ({ city }) })
+    assert.deepEqual(res.body, { city, countryCode: 'CN' })
+  }
+  const res = await request({ method: 'GET', read: async () => ({ city: 'Paris', countryCode: 'ZZ' }) })
+  assert.deepEqual(res.body, { city: 'Paris' })
+})
+
+test('old city-only shortcuts preserve a known country only for the same normalized city', async () => {
+  const res = await request({ body: { city: '  PARIS  ' }, read: async () => ({ city: 'Paris', countryCode: 'FR' }) })
+  assert.deepEqual(res.body, { city: 'PARIS', countryCode: 'FR' })
+  const changed = await request({ body: { city: 'London' }, read: async () => ({ city: 'Paris', countryCode: 'FR' }) })
+  assert.deepEqual(changed.body, { city: 'London' })
+  const legacy = await request({ body: { city: '北京' }, read: async () => ({ city: '北京' }) })
+  assert.deepEqual(legacy.body, { city: '北京', countryCode: 'CN' })
+})
+
+test('an explicit country replaces the previous country without reading it', async () => {
+  const res = await request({ body: { city: 'London', country: 'United Kingdom' }, read: () => assert.fail('unnecessary read') })
+  assert.deepEqual(res.body, { city: 'London', countryCode: 'GB' })
+})
+
+test('legacy POST storage read failure cannot overwrite a saved country', async () => {
+  const res = await request({ read: async () => { throw Error('storage secret') }, write: () => assert.fail('unexpected overwrite') })
+  assert.equal(res.statusCode, 503)
+  assert.deepEqual(res.body, { error: 'Location update failed' })
 })
