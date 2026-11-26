@@ -2,7 +2,8 @@
    art-loader.js — first-visit intro, painted by the newest artwork
    ─────────────────────────────────────────
 
-   Shows the latest painting full-bleed the first time someone arrives, holds
+   Shows the latest painting full-bleed the first time someone arrives each
+   day, holds
    it for at least two seconds, then fades to the site.
 
    WHICH PAINTING: artworks[0] of art-manifest-v2.json, always. Adding a new
@@ -39,16 +40,29 @@
 
   var SEEN_KEY   = 'shiz-seen-intro'
   var MANIFEST   = '/art-manifest-v2.json'
-  var MIN_MS     = 3000     // the floor Shina asked for (2s read too quick)
-  var FAILSAFE   = 6000     // absolute ceiling, whatever else happens
+  var HOLD_MS    = 3000     // how long the PAINTING is on screen, counted from when it appears
+  var LOAD_MS    = 5000     // give up waiting for the painting after this
+  var FAILSAFE   = 10000    // absolute ceiling (load wait + hold + fade, with room)
   var DESKTOP_MIN= 768      // below this the art is shown whole
   var INTRO_FALLBACK = 'center 20%'
 
+  /* Once per day, by the visitor's own local calendar date. The stored value
+     is the date it last played, so it comes back the first time they arrive on
+     a new day and stays out of the way for the rest of that one. Per-session
+     was the other option: it would replay every time a tab is reopened, which
+     is more often than a loading screen should be. The old value '1' from the
+     once-ever version never equals a date, so existing visitors see it once
+     more and are then on the new schedule. */
+  function today() {
+    var d = new Date()
+    var pad = function (n) { return (n < 10 ? '0' : '') + n }
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+  }
   function seen() {
-    try { return localStorage.getItem(SEEN_KEY) === '1' } catch (e) { return false }
+    try { return localStorage.getItem(SEEN_KEY) === today() } catch (e) { return false }
   }
   function remember() {
-    try { localStorage.setItem(SEEN_KEY, '1') } catch (e) { /* private mode */ }
+    try { localStorage.setItem(SEEN_KEY, today()) } catch (e) { /* private mode */ }
   }
 
   // Nothing to do on a return visit, and nothing to do if the visitor asked
@@ -57,8 +71,8 @@
   // not decoration, so suppressing it entirely would be the wrong call.
   if (seen()) return
 
-  var started = Date.now()
   var done = false
+  var shown = false
   var el = null
   var failsafeTimer = null
 
@@ -103,10 +117,19 @@
   // Whatever happens below, the visitor gets their site back.
   failsafeTimer = setTimeout(finish, FAILSAFE)
 
-  function holdThenFinish() {
-    var elapsed = Date.now() - started
-    setTimeout(finish, Math.max(0, MIN_MS - elapsed))
-  }
+  /* The hold runs from the moment the painting is VISIBLE, not from when the
+     script started. It used to be measured from script start, so on a slow
+     connection the painting could arrive after the floor had already passed:
+     it faded in and was told to leave in the same instant, and the visitor
+     saw almost nothing. Four seconds now means four seconds of painting.
+
+     If there is nothing to show (manifest or image failed) there is nothing to
+     hold either, so it lets go at once instead of keeping a blank white screen
+     up for the duration. */
+  function holdThenFinish() { setTimeout(finish, HOLD_MS) }
+
+  // Stop waiting for a painting that is not coming.
+  setTimeout(function () { if (!shown) finish() }, LOAD_MS)
 
   function mount(src, position, scale) {
     if (done) return
@@ -129,11 +152,11 @@
       el.appendChild(img)
       document.body.appendChild(el)
 
-      var show = function () { img.classList.add('is-in'); holdThenFinish() }
+      var show = function () { shown = true; img.classList.add('is-in'); holdThenFinish() }
       if (img.complete && img.naturalWidth > 0) show()
       else {
         img.addEventListener('load', show, { once: true })
-        img.addEventListener('error', holdThenFinish, { once: true })
+        img.addEventListener('error', finish, { once: true })
       }
     }
     if (document.body) build()
@@ -157,11 +180,11 @@
         }
       } catch (e) { /* malformed manifest — fall through */ }
       if (src) mount(src, pos, scale)
-      else holdThenFinish()
+      else finish()
     }
-    req.onerror = holdThenFinish
+    req.onerror = finish
     req.send()
   }
 
-  try { load() } catch (e) { holdThenFinish() }
+  try { load() } catch (e) { finish() }
 })()
