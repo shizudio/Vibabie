@@ -2,9 +2,10 @@ import { defineConfig } from 'vite'
 import { resolve } from 'path'
 import peUploadPlugin from './vite-plugin-pe-upload.js'
 import fieldNotesPlugin from './vite-plugin-field-notes.js'
+import portraitPlugin from './vite-plugin-portrait.js'
 
 export default defineConfig({
-  plugins: [peUploadPlugin(), fieldNotesPlugin()],
+  plugins: [peUploadPlugin(), fieldNotesPlugin(), portraitPlugin()],
   build: {
     rollupOptions: {
       input: {
