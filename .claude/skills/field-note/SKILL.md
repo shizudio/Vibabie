@@ -100,3 +100,15 @@ node field-note-new.js --fill <slug> \
   forgetting to rename it is the mistake this guards against.
 - Nothing is live until it is committed and deployed, roughly ninety seconds
   of Vercel build after the push.
+
+## Image collections
+
+Some notes are not project writeups. A collection is one note with a `frames` array that grows. Do not scaffold it with `--url`. Do not fill special, trick, alive, or steal. Do not invent a hook.
+
+Add a frame:
+
+```bash
+node field-note-new.js --add-frame collections --image <path> --alt "..."
+```
+
+Pass `--credit` and `--credit-url` only when Shina has confirmed the maker. Lettering inside the image is not a credit. The index is still generated. Never edit index.json.

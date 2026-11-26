@@ -2,7 +2,8 @@
 /**
  * field-note-new.js — scaffold a Field Note from a link, then fill it in.
  *
- * Two modes, because a note is written in two passes.
+ * Three modes. A project note is written in two passes. A collection is one
+ * growing stack of images, and each new image is one more frame on that note.
  *
  * SCAFFOLD. Everything a machine can know, filled in from the page itself:
  *
@@ -24,12 +25,20 @@
  * Passing text through here rather than hand-editing the json avoids escaping
  * mistakes in long quotes and keeps the em dash check on every write.
  *
- * Either mode leaves public/field-notes-data/<slug>.json ready; the index is
+ * ADD A FRAME. Append one optimized image to a collection. If the slug has no
+ * file yet, this creates it. If the file is a project note, this exits and
+ * writes nothing. Do not pass a credit unless the maker is confirmed.
+ * Lettering inside the picture is not a credit.
+ *
+ *   node field-note-new.js --add-frame <slug> --image <path> --alt "..." \
+ *     [--title "..."] [--date YYYY-MM-DD] [--credit "..."] [--credit-url "..."]
+ *
+ * Each mode leaves public/field-notes-data/<slug>.json ready; the index is
  * rebuilt by vite-plugin-field-notes.js on the next request or build.
  */
 
 import sharp from 'sharp'
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'fs'
 import { join } from 'path'
 import { fileURLToPath } from 'url'
 import { dirname, resolve } from 'path'
@@ -98,12 +107,103 @@ if (has('fill')) {
   process.exit(0)
 }
 
+/* ── Add a frame ────────────────────────────────────────────────────────── */
+
+if (has('add-frame')) {
+  const slug = flag('add-frame')
+  if (!slug || !/^[a-z0-9-]+$/.test(slug)) {
+    console.error('Usage: node field-note-new.js --add-frame <slug> --image <path> --alt "..."')
+    process.exit(1)
+  }
+
+  const image = flag('image')
+  if (!image) { console.error('--image is required.'); process.exit(1) }
+  if (!existsSync(image)) { console.error(`No such image: ${image}`); process.exit(1) }
+
+  const alt = flag('alt')
+  if (alt == null || !String(alt).trim()) {
+    console.error('--alt is required and must be non-empty.')
+    process.exit(1)
+  }
+
+  // Read before any write. A project note must stay untouched: no image
+  // file, no JSON change, no media directory.
+  const file = join(DATA, `${slug}.json`)
+  let note
+  if (existsSync(file)) {
+    note = JSON.parse(readFileSync(file, 'utf8'))
+    if (note.kind !== 'collection') {
+      console.error(`${file} is not a collection. Nothing written.`)
+      process.exit(1)
+    }
+    if (!Array.isArray(note.frames)) note.frames = []
+    if (flag('title')) note.title = flag('title')
+    if (flag('date')) note.dateAdded = flag('date')
+    if (flag('hook') != null) note.hook = flag('hook')
+  } else {
+    note = {
+      title: flag('title') || slug,
+      kind: 'collection',
+      creator: 'Shina Foo',
+      creatorUrl: '/about',
+      dateAdded: flag('date') || new Date().toISOString().slice(0, 10),
+      tags: [],
+      hook: flag('hook') || '',
+      frames: [],
+    }
+  }
+
+  const frames = note.frames
+  let max = 0
+  const srcRe = new RegExp(`/${slug}/(\\d+)\\.webp$`)
+  for (const frame of frames) {
+    const m = frame && typeof frame.src === 'string' && frame.src.match(srcRe)
+    if (m) max = Math.max(max, parseInt(m[1], 10))
+  }
+  const dir = join(MEDIA, slug)
+  if (existsSync(dir)) {
+    for (const name of readdirSync(dir)) {
+      const m = name.match(/^(\d+)\.webp$/)
+      if (m) max = Math.max(max, parseInt(m[1], 10))
+    }
+  }
+  const nn = String(max + 1).padStart(2, '0')
+
+  mkdirSync(dir, { recursive: true })
+  const out = join(dir, `${nn}.webp`)
+  const info = await sharp(image)
+    .resize(1600, 1600, { fit: 'inside', withoutEnlargement: true })
+    .webp({ quality: 84 })
+    .toFile(out)
+
+  const frame = {
+    src: `/field-notes-media/${slug}/${nn}.webp`,
+    alt,
+    width: info.width,
+    height: info.height,
+  }
+  const credit = flag('credit')
+  const creditUrl = flag('credit-url')
+  if (credit) frame.credit = credit
+  if (creditUrl) frame.creditUrl = creditUrl
+  note.frames.push(frame)
+
+  checkDashes(note, slug)
+  mkdirSync(DATA, { recursive: true })
+  writeFileSync(file, JSON.stringify(note, null, 2) + '\n')
+
+  console.log(`\n  frame  ${out}  ${info.width}x${info.height}  ${(info.size / 1024).toFixed(0)}KB`)
+  console.log(`  note   ${file}  ${note.frames.length} frame${note.frames.length === 1 ? '' : 's'}\n`)
+  process.exit(0)
+}
+
 /* ── Scaffold mode ──────────────────────────────────────────────────────── */
 
 const url = flag('url')
 if (!url) {
   console.error('Usage: node field-note-new.js --url <projectUrl> [--title ...] [--creator ...] [--thumb <file>]')
   console.error('   or: node field-note-new.js --fill <slug> --special "..." --trick "..."')
+  console.error('   or: node field-note-new.js --add-frame <slug> --image <path> --alt "..."')
   process.exit(1)
 }
 

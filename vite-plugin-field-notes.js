@@ -2,10 +2,10 @@
  * vite-plugin-field-notes.js
  *
  * Two jobs, both in service of one promise: adding a Field Note is ONE new
- * file in public/field-notes/ and nothing else. No index to edit, no route to
+ * file in public/field-notes-data/ and nothing else. No index to edit, no route to
  * register, no config to touch.
  *
- *   1. INDEX. Globs public/field-notes/*.json and writes index.json, sorted
+ *   1. INDEX. Globs public/field-notes-data/*.json and writes index.json, sorted
  *      newest first. Runs on dev-server start, on build, and again whenever a
  *      file in that folder changes, so the index can never drift from what is
  *      on disk. index.json is generated, not authored: it is in .gitignore.
@@ -57,6 +57,11 @@ function buildIndex() {
         console.warn(`[field-notes] ${file}: em dash in ${dashed.join(', ')} (this section bans them)`)
       }
 
+      // A collection's card image is its first frame.
+      const frames = Array.isArray(raw.frames) ? raw.frames : []
+      const first = frames.find((f) => f && f.src) || null
+      const kind = raw.kind || ''
+
       entries.push({
         slug,
         title: raw.title || slug,
@@ -64,9 +69,10 @@ function buildIndex() {
         creatorUrl: raw.creatorUrl || '',
         hook: raw.hook || '',
         tags: Array.isArray(raw.tags) ? raw.tags : [],
-        thumb: raw.thumb || '',
+        kind,
+        thumb: raw.thumb || (first ? first.src : ''),
         thumbVideo: raw.thumbVideo || '',
-        thumbAlt: raw.thumbAlt || '',
+        thumbAlt: raw.thumbAlt || (first ? (first.alt || '') : ''),
         dateAdded: raw.dateAdded || '',
       })
     } catch (e) {

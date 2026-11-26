@@ -1,12 +1,14 @@
 /**
  * field-notes.js — the Field Notes index.
  *
- * Renders public/field-notes/index.json, which vite-plugin-field-notes.js
+ * Renders public/field-notes-data/index.json, which vite-plugin-field-notes.js
  * generates by globbing the entry files. Nothing here knows how many notes
  * exist or what they are called.
  *
  * CREDIT IS STRUCTURAL. Every card names its creator, and that name is a link
- * to them. This archive is about other people's work, so attribution is not a
+ * to them. A project note names its maker. A collection names its collector
+ * ("Collected by") and names a maker on a frame only when that credit is known.
+ * This archive is about other people's work, so attribution is not a
  * courtesy line at the bottom of the entry page, it is on the card itself and
  * it is never optional: an entry with no creator renders the card without the
  * byline rather than quietly presenting the work as unattributed.
@@ -31,11 +33,15 @@ function buildCard(entry, i) {
   // The whole card is one link to the note. The creator credit below it is a
   // separate link to the creator, so the two destinations never fight: nested
   // anchors are invalid and would make the byline unclickable.
+  const collection = entry.kind === 'collection'
   const a = el('a', 'fn-card-link')
   a.href = `/field-notes/${entry.slug}`
-  a.setAttribute('aria-label', `Read the field note on ${entry.title}`)
+  a.setAttribute('aria-label', collection
+    ? `Open ${entry.title}`
+    : `Read the field note on ${entry.title}`)
 
   const frame = el('div', 'fn-card-media')
+  if (collection) frame.classList.add('is-collection')
   if (entry.thumbVideo) {
     const v = document.createElement('video')
     v.src = entry.thumbVideo
@@ -63,12 +69,14 @@ function buildCard(entry, i) {
 
   if (entry.creator) {
     const by = el('p', 'fn-card-by')
-    by.appendChild(el('span', 'fn-by-label', 'By'))
+    by.appendChild(el('span', 'fn-by-label', collection ? 'Collected by' : 'By'))
     if (entry.creatorUrl) {
       const c = el('a', 'fn-by-name', entry.creator)
       c.href = entry.creatorUrl
-      c.target = '_blank'
-      c.rel = 'noopener'
+      if (/^https?:\/\//.test(entry.creatorUrl)) {
+        c.target = '_blank'
+        c.rel = 'noopener'
+      }
       by.appendChild(c)
     } else {
       by.appendChild(el('span', 'fn-by-name', entry.creator))

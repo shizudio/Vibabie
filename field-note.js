@@ -30,6 +30,39 @@ const el = (tag, cls, text) => {
   return n
 }
 
+function isHttpUrl(url) {
+  return /^https?:\/\//.test(url || '')
+}
+
+function renderFrame(frame, index) {
+  const fig = el('figure', 'fn-frame')
+  const img = document.createElement('img')
+  img.src = frame.src
+  img.alt = frame.alt || ''
+  img.decoding = 'async'
+  img.loading = index === 0 ? 'eager' : 'lazy'
+  if (frame.width) img.width = frame.width
+  if (frame.height) img.height = frame.height
+  fig.appendChild(img)
+
+  if (frame.credit && String(frame.credit).trim()) {
+    const cap = el('figcaption', 'fn-frame-credit')
+    if (frame.creditUrl) {
+      const a = el('a', 'fn-inline-link', frame.credit)
+      a.href = frame.creditUrl
+      if (isHttpUrl(frame.creditUrl)) {
+        a.target = '_blank'
+        a.rel = 'noopener'
+      }
+      cap.appendChild(a)
+    } else {
+      cap.textContent = frame.credit
+    }
+    fig.appendChild(cap)
+  }
+  return fig
+}
+
 function slugFromUrl() {
   const q = new URLSearchParams(location.search).get('slug')
   if (q) return q
@@ -57,11 +90,16 @@ function renderRail(rail, data) {
   // Credit sits directly under the title, above everything else. On this page
   // the work is someone else's and the byline is the first thing read.
   if (data.creator) {
+    const collection = data.kind === 'collection'
     const by = el('p', 'fn-entry-by')
-    by.appendChild(el('span', 'fn-by-label', 'By'))
+    by.appendChild(el('span', 'fn-by-label', collection ? 'Collected by' : 'By'))
     if (data.creatorUrl) {
       const c = el('a', 'fn-by-name', data.creator)
-      c.href = data.creatorUrl; c.target = '_blank'; c.rel = 'noopener'
+      c.href = data.creatorUrl
+      if (!collection || isHttpUrl(data.creatorUrl)) {
+        c.target = '_blank'
+        c.rel = 'noopener'
+      }
       by.appendChild(c)
     } else {
       by.appendChild(el('span', 'fn-by-name', data.creator))
@@ -90,26 +128,40 @@ function renderRail(rail, data) {
 }
 
 function renderStack(stack, data) {
-  // Media leads. A note with no capture yet shows a named placeholder rather
-  // than dropping straight into text, so the shape of the page stays the same
-  // once the recording lands.
-  const media = el('figure', 'fn-entry-media')
-  if (data.thumbVideo) {
-    const v = document.createElement('video')
-    v.src = data.thumbVideo
-    v.muted = true; v.loop = true; v.autoplay = true; v.playsInline = true
-    v.setAttribute('aria-label', data.thumbAlt || '')
-    media.appendChild(v)
-  } else if (data.thumb) {
-    const img = document.createElement('img')
-    img.src = data.thumb
-    img.alt = data.thumbAlt || ''
-    media.appendChild(img)
+  const collection = data.kind === 'collection'
+
+  if (collection) {
+    // A stack of frames, not the single 16:9 hero.
+    const frames = Array.isArray(data.frames) ? data.frames.filter((f) => f && f.src) : []
+    if (!frames.length) {
+      const media = el('figure', 'fn-entry-media is-empty')
+      media.appendChild(el('span', 'fn-card-placeholder', 'Frames to come'))
+      stack.appendChild(media)
+    } else {
+      frames.forEach((frame, i) => stack.appendChild(renderFrame(frame, i)))
+    }
   } else {
-    media.classList.add('is-empty')
-    media.appendChild(el('span', 'fn-card-placeholder', 'Recording to come'))
+    // Media leads. A note with no capture yet shows a named placeholder rather
+    // than dropping straight into text, so the shape of the page stays the same
+    // once the recording lands.
+    const media = el('figure', 'fn-entry-media')
+    if (data.thumbVideo) {
+      const v = document.createElement('video')
+      v.src = data.thumbVideo
+      v.muted = true; v.loop = true; v.autoplay = true; v.playsInline = true
+      v.setAttribute('aria-label', data.thumbAlt || '')
+      media.appendChild(v)
+    } else if (data.thumb) {
+      const img = document.createElement('img')
+      img.src = data.thumb
+      img.alt = data.thumbAlt || ''
+      media.appendChild(img)
+    } else {
+      media.classList.add('is-empty')
+      media.appendChild(el('span', 'fn-card-placeholder', 'Recording to come'))
+    }
+    stack.appendChild(media)
   }
-  stack.appendChild(media)
 
   const body = el('div', 'fn-body')
   const s = data.sections || {}
@@ -125,7 +177,28 @@ function renderStack(stack, data) {
   // Credit and link, again, as a closing block. The brief asks for it on the
   // card and on the entry page; this is the entry page's explicit version,
   // separate from the byline at the top of the rail.
-  if (data.creator || data.projectUrl) {
+  if (collection) {
+    if (data.creator) {
+      const credit = el('section', 'fn-block fn-credit')
+      credit.appendChild(el('h2', 'fn-block-label', 'Credit'))
+      const p = el('p', 'fn-block-text')
+      p.appendChild(document.createTextNode('Collected by '))
+      if (data.creatorUrl) {
+        const c = el('a', 'fn-inline-link', data.creator)
+        c.href = data.creatorUrl
+        if (isHttpUrl(data.creatorUrl)) {
+          c.target = '_blank'
+          c.rel = 'noopener'
+        }
+        p.appendChild(c)
+      } else {
+        p.appendChild(document.createTextNode(data.creator))
+      }
+      p.appendChild(document.createTextNode('.'))
+      credit.appendChild(p)
+      body.appendChild(credit)
+    }
+  } else if (data.creator || data.projectUrl) {
     const credit = el('section', 'fn-block fn-credit')
     credit.appendChild(el('h2', 'fn-block-label', 'Credit'))
     const p = el('p', 'fn-block-text')
@@ -180,7 +253,9 @@ async function init() {
 
   document.title = `${data.title} · Field Notes · Shina Foo`
   const meta = document.querySelector('meta[name="description"]')
-  if (meta && data.hook) {
+  if (meta && data.kind === 'collection') {
+    meta.setAttribute('content', `${data.title}. Collected by ${data.creator || 'Shina Foo'}.`)
+  } else if (meta && data.hook) {
     meta.setAttribute('content', `${data.hook} A field note by Shina Foo on ${data.title}${data.creator ? ` by ${data.creator}` : ''}.`)
   }
 
