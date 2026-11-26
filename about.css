@@ -20,8 +20,9 @@
       300px and the gap to 48px yields 612px, with ~25px of slack.
 
       A longer headline must not wrap past the portrait. From 768px up the
-      heading's height is capped at the frame (about-hero-lock.js widens
-      the line to the right instead). */
+      heading's height is held to the frame by about-hero-lock.js: it widens
+      the line to the right, up to the page margin, and only then shrinks the
+      type. */
    .about-intro {
      display: grid;
      grid-template-columns: minmax(0, clamp(280px, 24vw, 300px)) minmax(0, 1fr);
@@ -125,10 +126,12 @@
       line-height: 1.14;
       margin-bottom: 40px;
       min-width: 0;
-      /* The frame is 3:4 of the same column .portrait-frame is given.
-         about-hero-lock.js writes the rendered length into --hero-media-h;
-         the calc is the same length before that runs. */
-      max-height: var(--hero-media-h, calc(clamp(280px, 24vw, 300px) * 4 / 3));
+      /* No max-height here, on purpose. With overflow visible a height cap
+         clips nothing: the text just spills out of a box that has stopped
+         growing, over whatever follows it. about-hero-lock.js is what holds the
+         heading to the portrait's height, and if it is late or fails the safe
+         result is a heading that wraps tall and pushes the page down, not text
+         painted over the detail row. */
     }
     /* The rest of the hero stack is tightened further down the file — it has
        to sit after .bio / .detail-row / .about-cta are defined to win. */
