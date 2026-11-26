@@ -65,9 +65,18 @@ Follow the branch flow in CLAUDE.md: staging first, main only when asked.
 
 ## Notes
 
-- The old `About/portrait.jpg` at the repo root is the pre-archive original.
-  Vite bundles it as a relative HTML asset. It is unused once the manifest is
-  driving the page and can be deleted once this has been live a while.
+- The page shows the right portrait from the very first paint because
+  `vite-plugin-portrait.js` writes entry 0 into the HTML at build time. Before
+  that existed the markup carried the ORIGINAL portrait and a script swapped in
+  the latest after fetching the manifest, so every visit flashed the previous
+  picture first. If you ever see that flash again, the plugin is not running:
+  check it is registered in `vite.config.js`.
+- That also means a portrait change needs a rebuild to appear, not just the
+  manifest being on the server. A deploy does that; a bare file copy to the
+  server would not.
+- `About/portrait.jpg` at the repo root is the original portrait. It is now only
+  the fallback the plugin leaves in place if the manifest cannot be read, so
+  keep it.
 - Never edit `portrait-manifest.json` by hand to add an entry. The script
   keeps the naming, the optimisation and the ordering consistent; hand edits
   drift.

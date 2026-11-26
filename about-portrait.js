@@ -154,15 +154,23 @@ async function init() {
   const current = shots[0]
   const img = frame.querySelector('.portrait-img')
   const vid = frame.querySelector('.portrait-vid')
-  if (img && current.src) {
+  // The build normally wrote the current portrait into the HTML already (see
+  // vite-plugin-portrait.js), so in the usual case there is nothing to do here.
+  // The comparison is the point: re-assigning an identical src makes the
+  // browser re-run the image load, which is itself a chance to repaint, and
+  // this module exists to avoid exactly that flash. It only steps in when the
+  // markup is stale, for instance when the page was served before a new
+  // portrait was deployed.
+  const sameFile = (el, want) => !!want && (el.getAttribute('src') || '') === want
+  if (img && current.src && !sameFile(img, current.src)) {
     img.src = current.src
     if (current.alt) img.alt = current.alt
   }
   if (vid) {
     // Left in the DOM either way: script.js binds the hover handler to it on
     // load, and removing it would break that for every later entry too.
-    if (current.video) vid.src = current.video
-    else vid.removeAttribute('src')
+    if (current.video) { if (!sameFile(vid, current.video)) vid.src = current.video }
+    else if (vid.hasAttribute('src')) vid.removeAttribute('src')
   }
 
   // Only worth opening if there is something behind the current one.
