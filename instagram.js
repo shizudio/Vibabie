@@ -36,8 +36,11 @@ if (!data.elements || data.elements.length === 0) {
 data.elements.forEach((el, i) => {
   const item = document.createElement('div')
   item.className = 'cosmos-item'
+  item.tabIndex = 0
+  item.setAttribute('role', 'button')
   item.style.animationDelay = `${i * 0.045}s`
   item.style.cursor = 'zoom-in'
+  item.setAttribute('aria-label', `Open photograph: ${el.caption || 'photograph'}`)
 
   const img = document.createElement('img')
   img.src      = el.src
@@ -48,7 +51,11 @@ data.elements.forEach((el, i) => {
   item.appendChild(img)
   grid.appendChild(item)
 
-  item.addEventListener('click', () => openLightbox(el.src, el.caption))
+  const open = () => openLightbox(el.src, el.caption, item)
+  item.addEventListener('click', open)
+  item.addEventListener('keydown', event => {
+    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open() }
+  })
 })
 
 // ── IntersectionObserver fade-in ─────────────────────────────────────────────

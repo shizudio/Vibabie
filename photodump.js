@@ -11,8 +11,24 @@ const $ = id => document.getElementById(id)
 const dateLong = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })
 const dateShort = new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', timeZone: 'UTC' })
 const monthLong = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'long', timeZone: 'UTC' })
-const state = { photos: [], view: 'map', controller: null, selected: [], dialogPhotos: [], dialogIndex: 0, dialogTrigger: null, loaded: false }
+/* ANIMATION STORYBOARD — first visit only; refresh and zoom never replay it.
+ *  ready   data settled + first map tiles ready (2400ms safety fallback)
+ *    0ms   paper veil begins its 1200ms dissolve
+ *  180ms   framed photo pins emerge
+ *  320ms   map controls finish their quieter entrance
+ */
+const ENTRY = { fallback: 2400 }
+const entry = { dataReady: false, tilesReady: false, revealed: false }
+function revealMap(force = false) {
+  if (entry.revealed || (!force && !(entry.dataReady && entry.tilesReady))) return
+  entry.revealed = true
+  clearTimeout(entryFallback)
+  document.body.classList.add('pd-entered')
+}
+const entryFallback = setTimeout(() => revealMap(true), ENTRY.fallback)
+const state = { photos: [], view: 'map', controller: null, dialogPhotos: [], dialogIndex: 0, dialogTrigger: null, dialogMode: 'photo', dialogTitle: '', loaded: false }
 const coarsePointer = matchMedia('(pointer: coarse)').matches
+const desktopPins = matchMedia('(min-width: 1024px)')
 const map = L.map('pd-map', {
   center: [22, 15], zoom: 2, minZoom: 2, maxZoom: 18,
   zoomControl: false, scrollWheelZoom: false, touchZoom: false, boxZoom: false,
@@ -25,24 +41,29 @@ const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   maxZoom: 19, updateWhenIdle: true, keepBuffer: 1,
 }).addTo(map)
+tiles.on('load', () => { entry.tilesReady = true; revealMap() })
 tiles.on('tileerror', () => { $('pd-tile-error').hidden = false })
 tiles.on('tileload', () => { $('pd-tile-error').hidden = true })
 
 function pin(photo, count = 1) {
+  const imageSize = desktopPins.matches ? 128 : 64
+  const frameSize = imageSize + 8 // 3px mat + 1px border on each side
   const frame = document.createElement('span')
   frame.className = `pd-pin${count > 1 ? ' pd-pin-stack' : ''}`
   const image = document.createElement('img')
   image.src = photo.imageUrl
   image.alt = ''
+  image.width = imageSize
+  image.height = imageSize
   image.loading = 'lazy'
   frame.append(image)
   if (count > 1) {
-    const badge = document.createElement('span')
-    badge.className = 'pd-pin-count'
-    badge.textContent = count
-    frame.append(badge)
+    const countLabel = document.createElement('span')
+    countLabel.className = 'pd-pin-count'
+    countLabel.textContent = count
+    frame.append(countLabel)
   }
-  return L.divIcon({ html: frame, className: 'pd-photo-marker', iconSize: [64, 72], iconAnchor: [32, 78] })
+  return L.divIcon({ html: frame, className: 'pd-photo-marker', iconSize: [frameSize, frameSize], iconAnchor: [frameSize / 2, frameSize + 12] })
 }
 
 const clusters = L.markerClusterGroup({
@@ -54,8 +75,8 @@ const clusters = L.markerClusterGroup({
   },
 }).addTo(map)
 clusters.on('clusterclick', event => {
-  const photos = event.layer.getAllChildMarkers().map(marker => marker.photo)
-  selectPlace(photos)
+  const photos = event.layer.getAllChildMarkers().map(marker => marker.photo).sort((a, b) => b.capturedAt.localeCompare(a.capturedAt))
+  openPhoto(photos[0], photos, event.layer.getElement())
 })
 clusters.on('clustermouseover', event => {
   const element = event.layer.getElement()
@@ -63,6 +84,14 @@ clusters.on('clustermouseover', event => {
 })
 clusters.on('animationend', labelClusters)
 map.on('zoomend moveend layeradd', labelClusters)
+// CSS changes the print size at the same breakpoint; refresh Leaflet geometry too.
+desktopPins.addEventListener('change', () => {
+  clusters.eachLayer(marker => { if (marker.photo) marker.setIcon(pin(marker.photo)) })
+  clusters.refreshClusters()
+  labelClusters()
+  map.invalidateSize({ animate: false, pan: false })
+  fitPhotos()
+})
 
 function labelClusters() {
   // Cluster icon DOM is managed by Leaflet; give every generated control a useful name.
@@ -79,15 +108,20 @@ function labelClusters() {
 function setView(view) {
   state.view = view
   $('pd-map-view').hidden = view !== 'map'
-  $('pd-grid-view').hidden = view !== 'grid'
+  $('pd-stack-view').hidden = view !== 'stack'
   $('pd-map-button').setAttribute('aria-pressed', String(view === 'map'))
-  $('pd-grid-button').setAttribute('aria-pressed', String(view === 'grid'))
+  $('pd-stack-button').setAttribute('aria-pressed', String(view === 'stack'))
   if (view === 'map') map.invalidateSize({ animate: false })
 }
 
 function fitPhotos() {
   const located = state.photos.filter(photo => 'latitude' in photo)
-  if (located.length) map.fitBounds(L.latLngBounds(located.map(photo => [photo.latitude, photo.longitude])), { padding: [72, 72], maxZoom: 12, animate: false })
+  const frameSize = desktopPins.matches ? 136 : 72
+  if (located.length) map.fitBounds(L.latLngBounds(located.map(photo => [photo.latitude, photo.longitude])), {
+    paddingTopLeft: [frameSize / 2 + 32, frameSize + 48],
+    paddingBottomRight: [frameSize / 2 + 32, 60],
+    maxZoom: 12, animate: false,
+  })
   else map.setView([22, 15], 2, { animate: false })
 }
 
@@ -110,35 +144,14 @@ function photoButton(photo, collection) {
   return button
 }
 
-function selectPlace(photos) {
-  state.selected = [...photos].sort((a, b) => b.capturedAt.localeCompare(a.capturedAt))
-  $('pd-place').hidden = false
-  $('pd-place-title').textContent = `${photos.length} photograph${photos.length === 1 ? '' : 's'}`
-  const strip = $('pd-filmstrip')
-  strip.replaceChildren(...state.selected.map(photo => photoButton(photo, state.selected)))
-  $('pd-map-hint').textContent = `${photos.length} photograph${photos.length === 1 ? '' : 's'} selected. Browse them below.`
-  strip.querySelector('button')?.focus({ preventScroll: true })
-}
-
-function clearPlace() {
-  state.selected = []
-  $('pd-place').hidden = true
-  $('pd-filmstrip').replaceChildren()
-  $('pd-map-hint').textContent = 'Choose a photograph on the map to explore a place.'
-}
-
-function renderGrid() {
-  const grid = $('pd-grid-view')
-  grid.replaceChildren()
+function renderStacks() {
+  const stacks = $('pd-stack-view')
+  stacks.replaceChildren()
   if (!state.photos.length) {
-    const empty = document.createElement('div')
-    empty.className = 'pd-grid-empty'
-    const heading = document.createElement('h2')
-    heading.textContent = 'The first photograph is still to come.'
-    const copy = document.createElement('p')
-    copy.textContent = 'Once the album is synced, its photographs will appear here.'
-    empty.append(heading, copy)
-    grid.append(empty)
+    const empty = document.createElement('p')
+    empty.className = 'pd-stack-empty'
+    empty.textContent = 'The first photograph is still to come.'
+    stacks.append(empty)
     return
   }
   const groups = new Map()
@@ -148,22 +161,44 @@ function renderGrid() {
     groups.get(key).push(photo)
   }
   for (const photos of groups.values()) {
-    const section = document.createElement('section')
-    section.className = 'pd-date-group'
-    const heading = document.createElement('h2')
-    heading.className = 'pd-date-heading'
-    heading.textContent = monthLong.format(new Date(photos[0].capturedAt))
-    const items = document.createElement('div')
-    items.className = 'pd-photo-grid'
-    items.append(...photos.map(photo => photoButton(photo, state.photos)))
-    section.append(heading, items)
-    grid.append(section)
+    const title = monthLong.format(new Date(photos[0].capturedAt))
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.className = 'pd-pile-button'
+    button.setAttribute('aria-label', `Open ${photos.length} photographs from ${title} in a grid`)
+    const pile = document.createElement('span')
+    pile.className = 'pd-pile'
+    const rotations = [-11, 8, -5, 4, -2]
+    const offsets = [[-24, 8], [22, -9], [-9, -18], [12, 10], [0, 0]]
+    photos.slice(0, 5).reverse().forEach((photo, index) => {
+      const print = document.createElement('span')
+      print.className = 'pd-pile-print'
+      print.style.setProperty('--turn', `${rotations[index]}deg`)
+      print.style.setProperty('--x', `${offsets[index][0]}px`)
+      print.style.setProperty('--y', `${offsets[index][1]}px`)
+      print.style.setProperty('--order', index)
+      const image = document.createElement('img')
+      image.src = photo.imageUrl
+      image.alt = ''
+      image.loading = 'lazy'
+      print.append(image)
+      pile.append(print)
+    })
+    const caption = document.createElement('span')
+    caption.className = 'pd-pile-caption'
+    const name = document.createElement('span')
+    name.textContent = title
+    const count = document.createElement('span')
+    count.textContent = `${photos.length} photograph${photos.length === 1 ? '' : 's'}`
+    caption.append(name, count)
+    button.append(pile, caption)
+    button.addEventListener('click', () => openCollection(photos, title, button))
+    stacks.append(button)
   }
 }
 
 function renderPhotos() {
   clusters.clearLayers()
-  clearPlace()
   const located = state.photos.filter(photo => 'latitude' in photo)
   for (const photo of located) {
     const marker = L.marker([photo.latitude, photo.longitude], {
@@ -171,7 +206,7 @@ function renderPhotos() {
       alt: `Explore photograph from ${dateLong.format(new Date(photo.capturedAt))}`, keyboard: true, autoPanOnFocus: false,
     })
     marker.photo = photo
-    marker.on('click', () => selectPlace([photo]))
+    marker.on('click', () => openPhoto(photo, [photo], marker.getElement()))
     clusters.addLayer(marker)
   }
   const total = state.photos.length
@@ -180,12 +215,12 @@ function renderPhotos() {
   $('pd-map-empty').hidden = located.length > 0
   if (total && !located.length) {
     $('pd-map-empty').querySelector('h2').textContent = 'These moments have no map pins.'
-    $('pd-map-empty').querySelector('p').textContent = 'Their locations weren’t recorded. Find every photograph in Grid.'
+    $('pd-map-empty').querySelector('p').textContent = 'Their locations weren’t recorded. Find every photograph in Stack.'
   } else {
     $('pd-map-empty').querySelector('h2').textContent = 'A little room for everywhere.'
     $('pd-map-empty').querySelector('p').textContent = 'Your photographs will find their places here.'
   }
-  renderGrid()
+  renderStacks()
   fitPhotos()
   labelClusters()
 }
@@ -219,6 +254,9 @@ async function refresh() {
     }
   } finally {
     clearTimeout(timeout)
+    entry.dataReady = true
+    if (!tiles.isLoading()) entry.tilesReady = true
+    revealMap()
     if (state.controller === controller) {
       $('pd-refresh').disabled = false
       $('pd-refresh').textContent = 'Refresh'
@@ -228,41 +266,81 @@ async function refresh() {
 }
 
 const dialog = $('pd-dialog')
-function openPhoto(photo, collection, trigger) {
-  state.dialogPhotos = collection
-  state.dialogIndex = collection.findIndex(item => item.id === photo.id)
-  state.dialogTrigger = trigger
-  renderDialog()
+function showDialog(trigger) {
+  if (dialog.open) return
+  state.dialogTrigger = trigger || document.activeElement
   dialog.showModal()
 }
+function openPhoto(photo, collection, trigger) {
+  state.dialogPhotos = [...collection].sort((a, b) => b.capturedAt.localeCompare(a.capturedAt))
+  state.dialogIndex = state.dialogPhotos.findIndex(item => item.id === photo.id)
+  state.dialogMode = 'photo'
+  state.dialogTitle = 'Photographs'
+  renderDialog()
+  showDialog(trigger)
+}
+function openCollection(photos, title, trigger) {
+  state.dialogPhotos = photos
+  state.dialogTitle = title
+  state.dialogMode = 'grid'
+  renderDialog()
+  showDialog(trigger)
+}
+function showCollectionGrid() {
+  state.dialogMode = 'grid'
+  renderDialog()
+  $('pd-dialog-grid-view').querySelector('button')?.focus({ preventScroll: true })
+}
 function renderDialog() {
+  const gridMode = state.dialogMode === 'grid'
+  dialog.dataset.view = state.dialogMode
+  $('pd-dialog-label').textContent = state.dialogTitle
+  $('pd-dialog-grid-view').hidden = !gridMode
+  $('pd-dialog-photo-view').hidden = gridMode
+  $('pd-dialog-grid').hidden = gridMode || state.dialogPhotos.length < 2
+  if (gridMode) {
+    $('pd-dialog-count').textContent = `${state.dialogPhotos.length} photographs`
+    $('pd-dialog-image').removeAttribute('src')
+    const grid = $('pd-dialog-grid-view')
+    grid.replaceChildren(...state.dialogPhotos.map(photo => {
+      const button = photoButton(photo, state.dialogPhotos)
+      button.addEventListener('click', () => { $('pd-dialog-close').focus({ preventScroll: true }) })
+      return button
+    }))
+    return
+  }
   const photo = state.dialogPhotos[state.dialogIndex]
   $('pd-dialog-image').hidden = false
   $('pd-image-error').hidden = true
   $('pd-dialog-image').src = photo.imageUrl
   $('pd-dialog-image').alt = `Photograph taken ${dateLong.format(new Date(photo.capturedAt))}`
-  $('pd-dialog-caption').textContent = `${dateLong.format(new Date(photo.capturedAt))}${'latitude' in photo ? ' · Approximate location recorded' : ' · No recorded location'}`
+  $('pd-dialog-caption').textContent = dateLong.format(new Date(photo.capturedAt))
   $('pd-dialog-count').textContent = `${state.dialogIndex + 1} / ${state.dialogPhotos.length}`
   $('pd-previous').disabled = state.dialogIndex === 0
   $('pd-next').disabled = state.dialogIndex === state.dialogPhotos.length - 1
 }
 function stepPhoto(direction) {
+  if (state.dialogMode !== 'photo') return
   const index = state.dialogIndex + direction
   if (index < 0 || index >= state.dialogPhotos.length) return
+  const focused = document.activeElement
   state.dialogIndex = index
   renderDialog()
+  if (focused?.disabled) $('pd-dialog-close').focus({ preventScroll: true })
 }
 dialog.addEventListener('close', () => {
   $('pd-dialog-image').removeAttribute('src')
+  $('pd-dialog-grid-view').replaceChildren()
   state.dialogTrigger?.isConnected && state.dialogTrigger.focus({ preventScroll: true })
 })
-dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close() })
+let backdropPointerDown = false
+dialog.addEventListener('pointerdown', event => { backdropPointerDown = event.target === dialog }, { passive: true })
+dialog.addEventListener('click', event => { if (event.target === dialog && backdropPointerDown) dialog.close() })
 dialog.addEventListener('keydown', event => {
   if (event.key === 'ArrowLeft') stepPhoto(-1)
   if (event.key === 'ArrowRight') stepPhoto(1)
-  // Native showModal traps focus; explicitly cycle controls for consistent Safari behavior.
   if (event.key === 'Tab') {
-    const controls = [...dialog.querySelectorAll('button:not(:disabled)')]
+    const controls = [...dialog.querySelectorAll('button:not(:disabled)')].filter(button => button.getClientRects().length)
     const first = controls[0], last = controls[controls.length - 1]
     if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus() }
     else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() }
@@ -270,14 +348,14 @@ dialog.addEventListener('keydown', event => {
 })
 $('pd-dialog-image').addEventListener('error', () => { $('pd-dialog-image').hidden = true; $('pd-image-error').hidden = false })
 $('pd-dialog-close').addEventListener('click', () => dialog.close())
+$('pd-dialog-grid').addEventListener('click', showCollectionGrid)
 $('pd-previous').addEventListener('click', () => stepPhoto(-1))
 $('pd-next').addEventListener('click', () => stepPhoto(1))
 $('pd-map-button').addEventListener('click', () => setView('map'))
-$('pd-grid-button').addEventListener('click', () => setView('grid'))
+$('pd-stack-button').addEventListener('click', () => setView('stack'))
 $('pd-refresh').addEventListener('click', refresh)
 $('pd-retry').addEventListener('click', refresh)
 $('pd-fit').addEventListener('click', fitPhotos)
 $('pd-zoom-in').addEventListener('click', () => map.zoomIn(1, { animate: false }))
 $('pd-zoom-out').addEventListener('click', () => map.zoomOut(1, { animate: false }))
-$('pd-clear-place').addEventListener('click', () => { clearPlace(); $('pd-fit').focus({ preventScroll: true }) })
 await refresh()

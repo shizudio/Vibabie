@@ -757,6 +757,12 @@ nav:not(.case-sidenav):not(.nav-overlay-nav) a:hover,
   pointer-events: all;
 }
 
+/* Photographic viewers share the gallery's centered composition with a black scrim. */
+.photo-lightbox,
+.lightbox {
+  background: rgba(0, 0, 0, 0.82);
+}
+
 /* Common close button base */
 .art-lb-close,
 .photo-lb-close,

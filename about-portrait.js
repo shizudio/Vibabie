@@ -26,6 +26,8 @@ let shots = []
 let i = 0
 let overlay = null
 let onKey = null
+let archiveTrigger = null
+let previousOverflow = ''
 
 const el = (tag, cls, text) => {
   const n = document.createElement(tag)
@@ -60,21 +62,26 @@ function render() {
 function go(step) {
   const next = i + step
   if (next < 0 || next >= shots.length) return
+  const focused = document.activeElement
   i = next
   render()
+  if (focused?.disabled) overlay.querySelector('.pg-close').focus({ preventScroll: true })
 }
 
 function close() {
   if (!overlay) return
   document.removeEventListener('keydown', onKey)
-  document.body.style.overflow = ''
+  document.body.style.overflow = previousOverflow
   overlay.remove()
   overlay = null
+  if (archiveTrigger?.isConnected) archiveTrigger.focus({ preventScroll: true })
 }
 
 function open(start = 0) {
   if (overlay || !shots.length) return
   i = Math.max(0, Math.min(start, shots.length - 1))
+  archiveTrigger = document.activeElement
+  previousOverflow = document.body.style.overflow
 
   overlay = el('div', 'pg-overlay')
   overlay.setAttribute('role', 'dialog')
@@ -99,12 +106,11 @@ function open(start = 0) {
 
   overlay.appendChild(el('p', 'pg-meta'))
 
-  // Half-screen tap targets, the way a story viewer works. Buttons rather
-  // than bare divs so a keyboard and a screen reader get them too.
+  // Explicit navigation leaves the black background free to dismiss the viewer.
   const prev = el('button', 'pg-prev')
-  prev.type = 'button'; prev.setAttribute('aria-label', 'Previous picture')
+  prev.type = 'button'; prev.setAttribute('aria-label', 'Previous picture'); prev.textContent = 'Previous'
   const next = el('button', 'pg-next')
-  next.type = 'button'; next.setAttribute('aria-label', 'Next picture')
+  next.type = 'button'; next.setAttribute('aria-label', 'Next picture'); next.textContent = 'Next'
   overlay.appendChild(prev)
   overlay.appendChild(next)
 
@@ -117,6 +123,12 @@ function open(start = 0) {
     if (e.key === 'Escape') close()
     else if (e.key === 'ArrowLeft') go(-1)
     else if (e.key === 'ArrowRight') go(1)
+    else if (e.key === 'Tab') {
+      const controls = [...overlay.querySelectorAll('button:not(:disabled)')]
+      const first = controls[0], last = controls[controls.length - 1]
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
+    }
   }
   document.addEventListener('keydown', onKey)
 
