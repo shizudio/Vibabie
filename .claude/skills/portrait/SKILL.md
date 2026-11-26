@@ -18,21 +18,38 @@ Shina usually drops the image into the chat. Those arrive in the session's
 own directory and the tool result reports the path. Use that path directly;
 there is no need to copy it into the repo first, the script does that.
 
-If she sends a video as well, keep it: it plays on hover over the portrait,
-which is behaviour `script.js` already gives the frame.
+If she sends a video as well (usually the Live Photo clip that sits next to a
+photo), keep it: it plays on hover over the portrait. Photo and video often
+arrive separately, which is what the attach command below is for.
 
 ## 2. Add it
 
 ```bash
 node add-portrait.js <image> --alt "What is in the picture"
 node add-portrait.js <url>   --alt "..."                   # a link works too
-node add-portrait.js <image> --alt "..." --video <video>   # optional hover clip
+node add-portrait.js <image> --alt "..." --video <video>   # with a hover clip
+node add-portrait.js --attach-video <video|url>            # clip arrives later
 ```
+
+`--attach-video` puts a hover clip on a picture that is already in the archive.
+It defaults to the current portrait; `--to <index|date>` picks another, and
+`--force` replaces a clip the picture already has (it refuses otherwise).
 
 A URL is the handoff that works with every agent. If you cannot write a
 pasted image to disk, ask Shina to put it anywhere that serves a link and
 give you that instead. The script fetches it, checks it is actually an image,
 caps it at 25MB, and deletes its temp copy afterwards.
+
+**The hover video is optional, and "no video" is a normal state.** A portrait
+with no clip simply has no hover effect. Never reuse the previous portrait's
+clip for a new photo: it is a video of a different picture. If Shina sends a
+photo with no video, add it without one and say so; the script prints a note
+and names the earlier clip if the previous portrait had one.
+
+Videos are converted rather than copied: muted H.264 MP4, 720px wide at most,
+faststart. A Live Photo `.mov` is often HEVC, which many browsers will not play.
+This needs `ffmpeg`; without it only a ready-made `.mp4` or `.webm` is accepted.
+Keep hover clips to a couple of seconds so they loop well and stay light.
 
 The script optimises the image (max 1400px, WebP), files it under a dated
 name in `public/About/portraits/`, and puts it at the front of the manifest.

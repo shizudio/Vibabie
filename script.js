@@ -196,8 +196,15 @@ const portraitVid = portraitFrame?.querySelector('.portrait-vid');
 
 if (portraitFrame && portraitVid) {
   portraitFrame.addEventListener('mouseenter', () => {
+    // A portrait without a hover clip has a <video> with no src, and play() on
+    // that rejects. Guard it, so "no video" means a quiet no-op rather than an
+    // unhandled promise rejection on every hover. The catch also covers the
+    // normal case where the pointer leaves before play() has resolved and
+    // pause() interrupts it (an AbortError), which is harmless.
+    if (!portraitVid.getAttribute('src')) return;
     portraitVid.currentTime = 0;
-    portraitVid.play();
+    const p = portraitVid.play();
+    if (p && p.catch) p.catch(() => {});
   });
   portraitFrame.addEventListener('mouseleave', () => {
     portraitVid.pause();
