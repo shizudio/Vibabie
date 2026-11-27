@@ -31,6 +31,7 @@ YAML header, so read them directly whatever you are.
 | Workflow | File | Entry point |
 |---|---|---|
 | Add a Field Note from a link | `.claude/skills/field-note/SKILL.md` | `node field-note-new.js` |
+| Add a frame to a collection | `.claude/skills/field-note/SKILL.md` | `node field-note-new.js --add-frame <slug> --image <path> --alt "..."` |
 | Change the profile picture | `.claude/skills/portrait/SKILL.md` | `node add-portrait.js` |
 
 **If you cannot write a pasted image to disk**, ask Shina for a path or a
@@ -58,7 +59,8 @@ Other scripts worth knowing, each documented in its own header comment:
 - **Credit is structural in Field Notes.** The creator's name and link appear
   on the card, at the top of the entry, and in the closing block. An entry
   without a creator is not publishable, and project assets are never copied
-  or hotlinked: use a screenshot of the public page.
+  or hotlinked: use a screenshot of the public page. A collection credits
+  Shina as the collector. A frame names a maker only when that credit is known.
 - **Nothing is live until it is deployed.** The site is static. Expect about
   ninety seconds of Vercel build after a push, and check `dist/` rather than
   trusting a green build: a reference can resolve in dev and 404 in
