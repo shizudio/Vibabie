@@ -1,5 +1,14 @@
 [
   {
+    "src": "work/coffee/tile.webp",
+    "title": "SHIZUDIO Coffee",
+    "tag": "Product · Concept",
+    "role": "Product & Interaction Design",
+    "year": "2026",
+    "href": "coffee.html",
+    "external": false
+  },
+  {
     "src": "work/solkimono/solkimono.webp",
     "title": "Solkimono",
     "tag": "Brand · Fashion",

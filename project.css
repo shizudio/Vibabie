@@ -273,3 +273,17 @@ html, body { background: #FFFFFF; }
 .project-desc + .project-desc {
   margin-top: -28px;
 }
+
+/* Embedded live site — a panel the height of the viewport under the topbar,
+   so the concept site reads as a screen of its own in the stack. */
+.project-stack .stack-embed iframe {
+  display: block;
+  width: 100%;
+  height: calc(100dvh - 68px);
+  min-height: 520px;
+  border: 0;
+  background: #fff;
+}
+@media (max-width: 900px) {
+  .project-stack .stack-embed iframe { height: 78dvh; }
+}
