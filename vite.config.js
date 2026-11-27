@@ -32,6 +32,7 @@ export default defineConfig({
         ai: resolve(__dirname, 'ai.html'),
         perena: resolve(__dirname, 'perena.html'),
         stoneflower: resolve(__dirname, 'stoneflower.html'),
+        coffee: resolve(__dirname, 'coffee.html'),
         solmi: resolve(__dirname, 'solmi.html'),
         sanctum: resolve(__dirname, 'sanctum.html'),
         sancNine: resolve(__dirname, 'sanc-nine.html'),
