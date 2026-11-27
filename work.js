@@ -8,11 +8,6 @@
 const manifestResp = await fetch('work-manifest-v2.json')
 const PROJECTS = await manifestResp.json()
 
-// ── Helpers ───────────────────────────────────────────────
-function pad(n) {
-  return String(n).padStart(3, '0')
-}
-
 // ── DOM refs ──────────────────────────────────────────────
 const indexEl   = document.getElementById('catalog-index')
 const galleryEl = document.getElementById('catalog-gallery')
@@ -22,47 +17,38 @@ const entries = []
 const items   = []
 
 PROJECTS.forEach((project, i) => {
-  const num = pad(i + 1)
-  const currentBadge = project.current
-    ? ''
-    : ''
-  const soonBadge = project.comingSoon
-    ? ''
-    : ''
-
   // ── Left sidebar entry ──────────────────────────────────
   const li = document.createElement('li')
-  li.className = 'catalog-entry fade-up'
-  li.style.setProperty('--i', i + 3)
-  li.dataset.index = i
-  li.dataset.workInjected = 'true'
-  li.innerHTML = `
-    <span class="catalog-num">${num}</span>
-    <div class="catalog-entry-info">
-      <span class="catalog-title">${project.title}</span>
-      <span class="catalog-tag">${project.tag}</span>
-      ${currentBadge}${soonBadge}
-    </div>
-  `
+  li.dataset.i18nSkip = ''
+  const entry = document.createElement('a')
+  entry.className = 'catalog-entry fade-up'
+  entry.style.setProperty('--i', i + 3)
+  entry.dataset.index = i
+  entry.dataset.workInjected = 'true'
+  entry.href = project.href || '#'
+  const title = document.createElement('span')
+  title.className = 'catalog-title'
+  title.textContent = project.title
+  entry.appendChild(title)
+  li.appendChild(entry)
   indexEl.appendChild(li)
-  entries.push(li)
+  entries.push(entry)
 
   // ── Right gallery item ──────────────────────────────────
-  const isExternal = project.external && project.href !== '#'
-  const tag        = isExternal ? 'a' : 'div'
-
-  const div = document.createElement(tag)
+  const div = document.createElement('a')
   div.className = 'catalog-item fade-up' + (project.comingSoon ? ' catalog-item--coming-soon' : '')
   div.style.setProperty('--i', i + 2)
   div.dataset.index = i
   div.dataset.workInjected = 'true'
+  div.dataset.i18nSkip = ''
+  div.href = project.href || '#'
+  div.setAttribute('aria-label', project.title)
 
-  if (isExternal) {
-    div.href   = project.href
-    div.target = '_blank'
-    div.rel    = 'noopener noreferrer'
-  } else if (project.href && project.href !== '#') {
-    div.style.cursor = 'pointer'
+  if (project.external && project.href !== '#') {
+    for (const link of [entry, div]) {
+      link.target = '_blank'
+      link.rel = 'noopener noreferrer'
+    }
   }
 
   // "Coming soon" projects have no screenshot yet — a placeholder card
@@ -75,14 +61,16 @@ PROJECTS.forEach((project, i) => {
         loading="${i === 0 ? 'eager' : 'lazy'}"
       />`
 
-  // No caption under the tile — the left sidebar already names every project,
-  // and hovering a tile highlights its sidebar entry (see activate() below).
   div.innerHTML = `
     <div class="catalog-item-img-wrap">
       ${imgOrPlaceholder}
-      ${currentBadge}
     </div>
   `
+  // Mobile has no sidebar index, so each image carries its own project name.
+  const caption = document.createElement('span')
+  caption.className = 'catalog-item-caption'
+  caption.textContent = project.title
+  div.appendChild(caption)
 
   galleryEl.appendChild(div)
   items.push(div)
@@ -101,38 +89,13 @@ function deactivate() {
   items.forEach(it   => it.classList.remove('is-active'))
 }
 
-// Index hover + click (click scrolls to image on mobile, navigates on desktop)
-entries.forEach((entry, i) => {
-  entry.addEventListener('mouseenter', () => activate(i))
-  entry.addEventListener('mouseleave', deactivate)
-
-  entry.addEventListener('click', () => {
-    if (window.innerWidth <= 767) {
-      // Mobile: scroll to corresponding image
-      items[i]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    } else {
-      // Desktop: navigate to project
-      const p = PROJECTS[i]
-      if (p.href && p.href !== '#') {
-        window.open(p.href, p.external ? '_blank' : '_self')
-      }
-    }
+// Native anchors keep keyboard, modified clicks, and external links working.
+// Focus mirrors hover so the same project is clear for keyboard visitors.
+for (const links of [entries, items]) {
+  links.forEach((link, i) => {
+    link.addEventListener('mouseenter', () => activate(i))
+    link.addEventListener('mouseleave', deactivate)
+    link.addEventListener('focus', () => activate(i))
+    link.addEventListener('blur', deactivate)
   })
-})
-
-// Gallery hover + click
-items.forEach((item, i) => {
-  item.addEventListener('mouseenter', () => activate(i))
-  item.addEventListener('mouseleave', deactivate)
-
-  // For non-<a> items (internal nav), wire up click manually
-  if (item.tagName !== 'A') {
-    item.addEventListener('click', () => {
-      const p = PROJECTS[i]
-      if (p.href && p.href !== '#') {
-        window.open(p.href, p.external ? '_blank' : '_self')
-      }
-    })
-  }
-})
-
+}

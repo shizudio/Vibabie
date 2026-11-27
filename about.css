@@ -823,12 +823,10 @@
     width: 100%;
     max-width: 1040px;
     margin-inline: auto;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) repeat(4, auto);
-    /* Four links since Field Notes joined. This track list is explicit,
-       so adding a fifth means bumping this number too. */
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: clamp(24px, 8vw, 96px);
+    gap: 0 clamp(20px, 3vw, 40px);
     padding: 24px var(--page-gutter, 40px) 32px;
     padding-right: max(
       var(--page-gutter, 40px),
@@ -856,15 +854,12 @@
   }
 
   .about-footer-email {
-    justify-self: start;
+    margin-right: auto;
   }
 
   @media (max-width: 600px) {
     .about-footer {
-      /* 2x2 for the four links; the email spans the row above them. Three
-         columns would leave a single orphan link on its own line. */
-      grid-template-columns: repeat(2, auto);
-      justify-content: start;
+      justify-content: flex-start;
       column-gap: 24px;
       row-gap: 0;
       padding-top: 20px;
@@ -873,7 +868,7 @@
     }
 
     .about-footer-email {
-      grid-column: 1 / -1;
+      flex-basis: 100%;
       margin-bottom: 8px;
     }
 
