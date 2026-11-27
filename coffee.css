@@ -1,0 +1,85 @@
+/* The intro keeps the shared project grid. Its header leaves with the page. */
+.coffee-project .project-topbar {
+  position: relative;
+  transform: none;
+}
+.coffee-intro { padding-top: 0; }
+.coffee-intro .project-rail { top: 0; }
+
+/* The stage's reserved height never changes with animation progress. */
+.coffee-stage {
+  --coffee-frame-left: 40%;
+  --coffee-frame-width: calc(60% - 10px);
+  --coffee-frame-height: 80dvh;
+  position: relative;
+  height: 180svh;
+  min-height: 100dvh;
+}
+.coffee-stage-viewport {
+  position: sticky;
+  top: var(--coffee-viewport-top, 0px);
+  width: 100%;
+  height: var(--coffee-viewport-height, 100dvh);
+}
+.coffee-frame {
+  position: absolute;
+  top: 0;
+  left: var(--coffee-frame-left);
+  width: var(--coffee-frame-width);
+  height: var(--coffee-frame-height);
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--border);
+}
+.coffee-frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 0;
+  background: #fff;
+}
+.coffee-stage[data-coffee-stage="expanding"] iframe {
+  pointer-events: none;
+}
+.coffee-stage[data-coffee-stage="immersive"] .coffee-frame { border: 0; }
+
+.coffee-return {
+  position: absolute;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  left: calc(var(--coffee-viewport-left, 0px) + max(16px, env(safe-area-inset-left)));
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-style: normal;
+  color: var(--ink);
+  background: var(--paper, #fff);
+  border: 1px solid var(--border);
+  text-decoration: none;
+  visibility: hidden;
+}
+.coffee-stage[data-coffee-stage="immersive"] .coffee-return { visibility: visible; }
+.coffee-return:hover { color: var(--crimson); }
+.coffee-return:focus-visible {
+  outline: 2px solid var(--crimson);
+  outline-offset: 3px;
+}
+.coffee-project.coffee-is-immersive #vinyl-widget { visibility: hidden; }
+.coffee-project-foot { padding-left: 40%; }
+
+@media (max-width: 900px) {
+  .coffee-stage {
+    --coffee-frame-left: 0px;
+    --coffee-frame-width: 100%;
+  }
+  .coffee-project-foot { padding-left: var(--page-gutter); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coffee-frame,
+  .coffee-return { transition: none; }
+}
