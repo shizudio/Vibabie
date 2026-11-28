@@ -201,7 +201,7 @@ add(h1, COL_X)
 cursorY += h1.height + 20
 
 // Meta row
-const meta = txt("Head of Growth & Creative Director  ·  2024 – 2026  ·  perena.org ↗", { size: 11, color: C.label, lineH: 18, letterSpacing: 1.2 })
+const meta = txt("Head of Growth & Creative Director  ·  2024 – 2026  ·  perena.org", { size: 11, color: C.label, lineH: 18, letterSpacing: 1.2 })
 meta.textAutoResize = 'WIDTH_AND_HEIGHT'
 add(meta, COL_X)
 cursorY += meta.height + 32
@@ -536,7 +536,7 @@ closingBorder.resize(3, closing.height + 8)
 cursorY = closing.y + closing.height + 48
 
 // CTA
-const cta = txt("Visit perena.org ↗", { family: "EB Garamond", style: "Regular", size: 18, color: C.crimson, lineH: 24, align: "CENTER" })
+const cta = txt("Visit perena.org", { family: "EB Garamond", style: "Regular", size: 18, color: C.crimson, lineH: 24, align: "CENTER" })
 cta.textAutoResize = 'WIDTH_AND_HEIGHT'
 add(cta, COL_X + (COL_W - cta.width) / 2)
 cursorY += cta.height + 120

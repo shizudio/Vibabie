@@ -79,7 +79,7 @@ function renderRail(rail, data) {
 
   const actions = el('div', 'project-actions')
   if (data.projectUrl) {
-    const visit = el('a', 'project-visit', 'Visit the project ↗')
+    const visit = el('a', 'project-visit', 'Visit the project')
     visit.href = data.projectUrl; visit.target = '_blank'; visit.rel = 'noopener'
     actions.appendChild(visit)
   }
@@ -141,7 +141,7 @@ function renderStack(stack, data) {
       p.appendChild(document.createTextNode('. '))
     }
     if (data.projectUrl) {
-      const l = el('a', 'fn-inline-link', 'See it live ↗')
+      const l = el('a', 'fn-inline-link', 'See it live')
       l.href = data.projectUrl; l.target = '_blank'; l.rel = 'noopener'
       p.appendChild(l)
     }
