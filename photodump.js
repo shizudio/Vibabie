@@ -328,14 +328,19 @@ function lockPage(locked) {
   }
 }
 function applyZoom() {
-  zoomEl.style.setProperty('--pd-pan-x', `${zoom.x}px`)
-  zoomEl.style.setProperty('--pd-pan-y', `${zoom.y}px`)
-  zoomEl.style.setProperty('--pd-zoom', String(zoom.scale))
-  // iOS does not reliably repaint a transform that only changes a custom
-  // property inside a modal dialog. Write the used transform directly.
-  zoomEl.style.transform = photoTransformStyle(zoom)
+  const image = $('pd-dialog-image')
+  const active = zoom.scale !== 1 || zoom.x !== 0 || zoom.y !== 0
+  // The entrance animation and a backdrop-filtered dialog layer are what iOS
+  // composites. Clear the animation first, then write the transform on the
+  // image itself. A wrapper transform behind that layer stays at 1x.
+  if (active) {
+    image.style.animation = 'none'
+    dialog.style.animation = 'none'
+  }
+  const transform = active ? photoTransformStyle(zoom) : ''
+  image.style.transform = transform
+  image.style.webkitTransform = transform
   zoomEl.classList.toggle('is-zoomed', zoom.scale > 1)
-  if (zoom.scale > 1) $('pd-dialog-image').style.animation = 'none'
 }
 function resetZoom(photoId = '') {
   gestures.resetTransform()
@@ -470,6 +475,9 @@ dialog.addEventListener('close', () => {
   lockPage(false)
   $('pd-dialog-image').removeAttribute('src')
   $('pd-dialog-image').style.animation = ''
+  $('pd-dialog-image').style.transform = ''
+  $('pd-dialog-image').style.webkitTransform = ''
+  dialog.style.animation = ''
   $('pd-dialog-grid-view').replaceChildren()
   state.dialogTrigger?.isConnected && state.dialogTrigger.focus({ preventScroll: true })
 })

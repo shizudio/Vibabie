@@ -32,7 +32,7 @@ test('touch pointers never scale the photograph', () => {
 test('two touch points scale the photograph and a sideways pinch does not step', () => {
   const zoom = gesture()
   const start = zoom.touchStart({ ...photo, touches: [{ id: 1, x: -50, y: 0 }, { id: 2, x: 50, y: 0 }] }, frame)
-  assert.equal(start.prevent, true)
+  assert.equal(start.prevent, false)
   const moved = zoom.touchMove({
     touches: [{ id: 1, x: -100, y: 40 }, { id: 2, x: 100, y: 40 }],
   }, frame)
@@ -53,7 +53,7 @@ test('a second finger that arrives alone still starts the pinch', () => {
   const zoom = gesture()
   zoom.touchStart({ ...photo, touches: [{ id: 1, x: -50, y: 0 }] }, frame)
   const second = zoom.touchStart({ ...photo, touches: [{ id: 2, x: 50, y: 0 }] }, frame)
-  assert.equal(second.prevent, true)
+  assert.equal(second.prevent, false)
   zoom.touchMove({ touches: [{ id: 1, x: -100, y: 0 }, { id: 2, x: 100, y: 0 }] }, frame)
   assert.equal(zoom.transform().scale, 2)
 })
@@ -169,7 +169,7 @@ test('a button press does not pinch, and the grid still scrolls', () => {
   assert.equal(button.prevent, false)
   assert.equal(zoom.transform().scale, 1)
   const both = zoom.touchStart({ ...photo, control: true, touches: [{ id: 1, x: -50, y: 0 }, { id: 2, x: 50, y: 0 }] }, frame)
-  assert.equal(both.prevent, true)
+  assert.equal(both.prevent, false)
   zoom.touchMove({ touches: [{ id: 1, x: -100, y: 0 }, { id: 2, x: 100, y: 0 }] }, frame)
   assert.equal(zoom.transform().scale, 2)
   zoom.resetTransform()
@@ -244,7 +244,7 @@ test('phone listeners can cancel the gesture and touch pointers are not captured
   const down = event('touchstart', [finger(1, -50, 0), finger(2, 50, 0)])
   find(doc, 'touchstart').fn(down)
   find(dialog, 'touchstart').fn(down)
-  assert.equal(down.defaultPrevented, true)
+  assert.equal(down.defaultPrevented, false)
 
   find(dialog, 'pointerdown').fn(event('pointerdown', [], {
     pointerId: 7, pointerType: 'touch', button: 0, clientX: -50, clientY: 0,
@@ -352,7 +352,8 @@ test('mouse capture and city swipe stay on pointer events', () => {
 test('the open photograph is not a scroll container', () => {
   const css = readFileSync(new URL('../photodump.css', import.meta.url), 'utf8')
   assert.match(css, /\.pd-dialog\[data-view="photo"\] \{ touch-action: none; overflow: hidden; \}/)
-  assert.match(css, /html:has\(\.pd-dialog\[open\]\[data-view="photo"\]\) \{ touch-action: none; \}/)
+  assert.doesNotMatch(css, /html:has\(\.pd-dialog\[open\]\[data-view="photo"\]\)/)
+  assert.doesNotMatch(css, /backdrop-filter\s*:/)
   // The entrance must not leave a transform on the image. iOS composites that
   // transform and the wrapper's pinch scale never becomes visible.
   assert.match(css, /@keyframes pd-photo-in \{ from \{ opacity: 0; \} to \{ opacity: 1; \} \}/)
@@ -465,11 +466,13 @@ test('iOS pinch still scales when the dialog gets the gesture after touchcancel'
 })
 
 test('the photograph transform is written inline and the page pinch is off', () => {
-  assert.equal(photoTransformStyle({ scale: 2, x: 3, y: -4 }), 'translate(3px, -4px) scale(2)')
+  assert.equal(photoTransformStyle({ scale: 2, x: 3, y: -4 }), 'translate3d(3px, -4px, 0) scale(2)')
   const source = readFileSync(new URL('../photodump.js', import.meta.url), 'utf8')
-  assert.match(source, /zoomEl\.style\.transform = photoTransformStyle\(zoom\)/)
+  assert.match(source, /image\.style\.transform = transform/)
+  assert.match(source, /photoTransformStyle\(zoom\)/)
   const html = readFileSync(new URL('../photodump.html', import.meta.url), 'utf8')
-  assert.match(html, /name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"/)
+  assert.match(html, /name="viewport" content="width=device-width, initial-scale=1"/)
+  assert.doesNotMatch(html, /user-scalable|maximum-scale/)
 })
 
 test('the map drags only while the lightbox is closed, and the page is fixed while it is open', () => {
@@ -529,7 +532,7 @@ test('a document pinch scales the photograph when the dialog never sees the touc
   const start = event('touchstart', [finger(1, -50, 0), finger(2, 50, 0)])
   find(doc, 'touchstart').fn(start)
   find(dialog, 'touchstart').fn(start)
-  assert.equal(start.defaultPrevented, true)
+  assert.equal(start.defaultPrevented, false)
   const move = event('touchmove', [finger(1, -110, 0), finger(2, 110, 0)])
   find(doc, 'touchmove').fn(move)
   find(dialog, 'touchmove').fn(move)
@@ -537,4 +540,64 @@ test('a document pinch scales the photograph when the dialog never sees the touc
   assert.equal(zoom.transform().scale, 2.2)
   find(doc, 'touchend').fn(event('touchend', [], { changed: [finger(2, 110, 0)] }))
   assert.equal(zoom.transform().scale, 2.2)
+})
+
+test('frozen client coordinates still scale from the page coordinates iOS keeps updating', () => {
+  const zoom = gesture()
+  zoom.touchStart({
+    ...photo,
+    touches: [
+      { id: 1, x: -50, y: 0, pageX: 10, pageY: 40 },
+      { id: 2, x: 50, y: 0, pageX: 110, pageY: 40 },
+    ],
+  }, frame)
+  const moved = zoom.touchMove({
+    touches: [
+      { id: 1, x: -50, y: 0, pageX: 10, pageY: 40 },
+      { id: 2, x: 50, y: 0, pageX: 210, pageY: 40 },
+    ],
+  }, frame)
+  assert.equal(moved.zoom, true)
+  assert.equal(zoom.transform().scale, 2)
+})
+
+test('a gesture scale still applies when every coordinate pair stays put, and gesturestart is not cancelled', () => {
+  const dialog = host()
+  const doc = host()
+  const zoom = gesture()
+  attachPhotoGestures(dialog, doc, zoom, {
+    open: () => true,
+    mode: () => 'photo',
+    isControl: () => false,
+    isBackdrop: () => false,
+    frame: () => frame,
+    capturePointer() {},
+    apply() {},
+  })
+  const begin = event('gesturestart', [], { scale: 1 })
+  find(doc, 'gesturestart').fn(begin)
+  assert.equal(begin.defaultPrevented, false)
+  assert.equal(zoom.transform().scale, 1)
+  const change = event('gesturechange', [], { scale: 2.5 })
+  find(doc, 'gesturechange').fn(change)
+  assert.equal(change.defaultPrevented, true)
+  assert.equal(zoom.transform().scale, 2.5)
+})
+
+test('screen coordinates scale the photograph when client and page stay put', () => {
+  const zoom = gesture()
+  zoom.touchStart({
+    ...photo,
+    touches: [
+      { id: 1, x: 20, y: 20, pageX: 20, pageY: 20, screenX: 20, screenY: 80 },
+      { id: 2, x: 80, y: 20, pageX: 80, pageY: 20, screenX: 80, screenY: 80 },
+    ],
+  }, frame)
+  zoom.touchMove({
+    touches: [
+      { id: 1, x: 20, y: 20, pageX: 20, pageY: 20, screenX: 20, screenY: 80 },
+      { id: 2, x: 80, y: 20, pageX: 80, pageY: 20, screenX: 200, screenY: 80 },
+    ],
+  }, frame)
+  assert.equal(zoom.transform().scale, 3)
 })
