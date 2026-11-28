@@ -216,7 +216,7 @@ if (portraitFrame && portraitVid) {
 // view; scrolling near the top always reveals it. When hidden, nudging
 // the mouse to the very top edge reveals it, and leaving the bar hides
 // it again. Disabled entirely under prefers-reduced-motion, and never
-// hides while the mobile menu overlay is open.
+// hides while a menu is open (the room overlay, or the mobile nav list).
 ;(function initAutoHideTopbar() {
   // prefers-reduced-motion: keep the bar always visible (accessible choice)
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -237,10 +237,11 @@ if (portraitFrame && portraitVid) {
   let lastY = window.scrollY || 0
   let ticking = false
 
-  const menuOpen = () => document.body.classList.contains('menu-open')
+  const menuOpen = () =>
+    document.body.classList.contains('menu-open') || bar.classList.contains('is-nav-open')
   const show = () => bar.classList.remove('topbar-hidden')
   const hide = () => {
-    if (menuOpen()) return          // never hide while the menu overlay is open
+    if (menuOpen()) return          // never hide while a menu is open
     bar.classList.add('topbar-hidden')
   }
 
