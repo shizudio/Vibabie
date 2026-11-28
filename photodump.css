@@ -75,7 +75,9 @@ html:has(.photodump-body), .photodump-body { height: auto; min-height: 100%; cur
    The catcher is the touch surface for the dark field. Photo view owns the
    gesture (pinch, pan, swipe) so it cannot pan or zoom the map behind it. */
 .pd-dialog { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: none; height: 100dvh; max-height: none; border: 0; padding: 76px 64px 40px; color: #fff; background: transparent; overflow-x: clip; overflow-y: auto; overscroll-behavior: none; touch-action: pan-y; }
-.pd-dialog[data-view="photo"] { touch-action: none; }
+/* Photo view is not a scroller. iOS gives a two-finger pinch to the nearest
+   scrollable ancestor and will zoom the page if this dialog can still scroll. */
+.pd-dialog[data-view="photo"] { touch-action: none; overflow: hidden; }
 .pd-dialog::backdrop { background: rgba(0,0,0,.82); backdrop-filter: blur(3px); }
 .pd-dialog[open] { animation: pd-viewer-in 300ms ease-out both; }
 .pd-dialog-catcher { position: fixed; inset: 0; z-index: 0; background-color: rgba(0,0,0,.001); }
@@ -110,6 +112,7 @@ html:has(.photodump-body), .photodump-body { height: auto; min-height: 100%; cur
 .pd-photo-date { display: block; margin-top: 10px; color: rgba(255,255,255,.65); font: .8125rem/1.45 var(--font-description); }
 html:has(.pd-dialog[open]),
 .photodump-body:has(.pd-dialog[open]) { overflow: hidden; overscroll-behavior: none; }
+html:has(.pd-dialog[open][data-view="photo"]) { touch-action: none; }
 @keyframes pd-viewer-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes pd-photo-in { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: scale(1); } }
 @keyframes pd-photo-next { from { opacity: 0; transform: translateX(32px); } to { opacity: 1; transform: none; } }
