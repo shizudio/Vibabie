@@ -83,7 +83,7 @@ html:has(.photodump-body), .photodump-body { height: auto; min-height: 100%; cur
 .photodump-body .pd-dialog :focus-visible { outline-color: rgba(255,255,255,.8); }
 .pd-dialog-photo-view { display: grid; justify-items: center; gap: 20px; pointer-events: none; }
 .pd-dialog-image-wrap { display: grid; place-items: center; min-height: 120px; max-width: 100%; pointer-events: none; }
-.pd-dialog-image-wrap img { display: block; max-width: min(86vw, 1400px); max-height: calc(100dvh - 240px); width: auto; height: auto; object-fit: contain; box-shadow: 0 12px 56px rgba(0,0,0,.18); pointer-events: auto; animation: pd-photo-in 400ms ease-out both; }
+.pd-dialog-image-wrap img { display: block; max-width: min(86vw, 1400px); max-height: calc(100dvh - 240px); width: auto; height: auto; object-fit: contain; box-shadow: 0 12px 56px rgba(0,0,0,.18); pointer-events: auto; touch-action: pan-y; -webkit-user-drag: none; animation: pd-photo-in 400ms ease-out both; }
 .pd-dialog-image-wrap p { padding: 40px; font-size: 1.125rem; color: rgba(255,255,255,.7); }
 #pd-dialog-caption { max-width: 480px; margin: 0; text-align: center; color: rgba(255,255,255,.65); font: 400 .875rem/1.5 var(--font-description); }
 .pd-dialog-navigation { display: flex; justify-content: space-between; gap: 24px; width: 100%; }
@@ -95,6 +95,8 @@ html:has(.photodump-body), .photodump-body { height: auto; min-height: 100%; cur
 .photodump-body:has(.pd-dialog[open]) { overflow: hidden; }
 @keyframes pd-viewer-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes pd-photo-in { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: scale(1); } }
+@keyframes pd-photo-next { from { opacity: 0; transform: translateX(32px); } to { opacity: 1; transform: none; } }
+@keyframes pd-photo-prev { from { opacity: 0; transform: translateX(-32px); } to { opacity: 1; transform: none; } }
 @media (min-width: 1024px) { .photodump-body { --pd-pin-image-size: 128px; } }
 @media (max-width: 767px) {
   .pd-back { left: 12px; top: max(12px, env(safe-area-inset-top)); }

@@ -2,6 +2,8 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import { loadPhotos } from './photodump-data.js'
+import { cityFromGeocode, photosInCity } from './photodump-city.js'
+import { galleryStep } from './photodump-swipe.js'
 
 // Markercluster 1.x attaches to the shared Leaflet global.
 window.L = L
@@ -27,8 +29,11 @@ function revealMap(force = false) {
 }
 const entryFallback = setTimeout(() => revealMap(true), ENTRY.fallback)
 const state = { photos: [], view: 'map', controller: null, dialogPhotos: [], dialogIndex: 0, dialogTrigger: null, dialogMode: 'photo', dialogTitle: '', loaded: false }
+let citiesReady = Promise.resolve()
+const cityCache = new Map()
 const coarsePointer = matchMedia('(pointer: coarse)').matches
 const desktopPins = matchMedia('(min-width: 1024px)')
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)')
 const map = L.map('pd-map', {
   center: [22, 15], zoom: 2, minZoom: 2, maxZoom: 18,
   zoomControl: false, scrollWheelZoom: false, touchZoom: false, boxZoom: false,
@@ -76,7 +81,7 @@ const clusters = L.markerClusterGroup({
 }).addTo(map)
 clusters.on('clusterclick', event => {
   const photos = event.layer.getAllChildMarkers().map(marker => marker.photo).sort((a, b) => b.capturedAt.localeCompare(a.capturedAt))
-  openPhoto(photos[0], photos, event.layer.getElement())
+  openPhoto(photos[0], event.layer.getElement())
 })
 clusters.on('clustermouseover', event => {
   const element = event.layer.getElement()
@@ -125,7 +130,7 @@ function fitPhotos() {
   else map.setView([22, 15], 2, { animate: false })
 }
 
-function photoButton(photo, collection) {
+function photoButton(photo) {
   const button = document.createElement('button')
   button.type = 'button'
   button.className = 'pd-photo-button'
@@ -140,7 +145,7 @@ function photoButton(photo, collection) {
   caption.className = 'pd-photo-date'
   caption.textContent = `${dateShort.format(new Date(photo.capturedAt))}${'latitude' in photo ? '' : ' · No location'}`
   button.append(image, caption)
-  button.addEventListener('click', () => openPhoto(photo, collection, button))
+  button.addEventListener('click', () => openPhoto(photo, button))
   return button
 }
 
@@ -206,7 +211,7 @@ function renderPhotos() {
       alt: `Explore photograph from ${dateLong.format(new Date(photo.capturedAt))}`, keyboard: true, autoPanOnFocus: false,
     })
     marker.photo = photo
-    marker.on('click', () => openPhoto(photo, [photo], marker.getElement()))
+    marker.on('click', () => openPhoto(photo, marker.getElement()))
     clusters.addLayer(marker)
   }
   const total = state.photos.length
@@ -239,6 +244,7 @@ async function refresh() {
     if (state.controller !== controller) return
     state.photos = photos
     state.loaded = true
+    citiesReady = resolveCities(photos, controller.signal)
     renderPhotos()
     $('pd-last-updated').textContent = `Updated ${new Intl.DateTimeFormat('en', { hour: 'numeric', minute: '2-digit' }).format(new Date())}`
   } catch (error) {
@@ -265,19 +271,76 @@ async function refresh() {
   }
 }
 
+async function lookupCity(latitude, longitude, signal) {
+  const coord = `${latitude},${longitude}`
+  if (cityCache.has(coord)) return cityCache.get(coord)
+  const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(latitude)}&longitude=${encodeURIComponent(longitude)}&localityLanguage=en`
+  const response = await fetch(url, { signal, headers: { Accept: 'application/json' } })
+  if (!response.ok) throw new Error('The city could not be resolved.')
+  const city = cityFromGeocode(await response.json())
+  if (city.key) cityCache.set(coord, city)
+  return city
+}
+async function resolveCities(photos, signal) {
+  const groups = new Map()
+  for (const photo of photos) {
+    if (!Number.isFinite(photo.latitude) || !Number.isFinite(photo.longitude)) continue
+    const coord = `${photo.latitude},${photo.longitude}`
+    if (!groups.has(coord)) groups.set(coord, [])
+    groups.get(coord).push(photo)
+  }
+  await Promise.all([...groups].map(async ([coord, group]) => {
+    if (signal.aborted) return
+    const [latitude, longitude] = coord.split(',').map(Number)
+    try {
+      const city = await lookupCity(latitude, longitude, signal)
+      if (signal.aborted || state.photos !== photos || !city.key) return
+      for (const photo of group) {
+        photo.cityKey = city.key
+        photo.city = city.name
+      }
+    } catch {
+      // An unresolved city stays one photograph. It does not join a district or another city.
+    }
+  }))
+  if (!signal.aborted && state.photos === photos) widenOpenGallery()
+}
+
 const dialog = $('pd-dialog')
 function showDialog(trigger) {
   if (dialog.open) return
   state.dialogTrigger = trigger || document.activeElement
   dialog.showModal()
 }
-function openPhoto(photo, collection, trigger) {
-  state.dialogPhotos = [...collection].sort((a, b) => b.capturedAt.localeCompare(a.capturedAt))
-  state.dialogIndex = state.dialogPhotos.findIndex(item => item.id === photo.id)
+function galleryFor(photo) {
+  return photosInCity(state.photos, photo).sort((a, b) => b.capturedAt.localeCompare(a.capturedAt) || a.id.localeCompare(b.id))
+}
+function showPhotoGallery(photo, trigger) {
+  const gallery = galleryFor(photo)
+  state.dialogPhotos = gallery
+  state.dialogIndex = Math.max(0, gallery.findIndex(item => item.id === photo.id))
   state.dialogMode = 'photo'
-  state.dialogTitle = 'Photographs'
+  state.dialogTitle = photo.city || 'Photographs'
   renderDialog()
   showDialog(trigger)
+}
+async function openPhoto(photo, trigger) {
+  // Wait briefly so the first frame is the whole city, not the map cluster that was tapped.
+  if ('latitude' in photo && !photo.cityKey) await Promise.race([citiesReady, new Promise(resolve => setTimeout(resolve, 4000))])
+  showPhotoGallery(photo, trigger)
+}
+function widenOpenGallery() {
+  if (!dialog.open || state.dialogMode !== 'photo') return
+  const current = state.dialogPhotos[state.dialogIndex]
+  if (!current) return
+  const gallery = galleryFor(current)
+  const title = current.city || 'Photographs'
+  const same = state.dialogTitle === title && gallery.length === state.dialogPhotos.length && gallery.every((item, index) => item.id === state.dialogPhotos[index].id)
+  if (same) return
+  state.dialogPhotos = gallery
+  state.dialogIndex = Math.max(0, gallery.findIndex(item => item.id === current.id))
+  state.dialogTitle = title
+  renderDialog()
 }
 function openCollection(photos, title, trigger) {
   state.dialogPhotos = photos
@@ -303,21 +366,36 @@ function renderDialog() {
     $('pd-dialog-image').removeAttribute('src')
     const grid = $('pd-dialog-grid-view')
     grid.replaceChildren(...state.dialogPhotos.map(photo => {
-      const button = photoButton(photo, state.dialogPhotos)
+      const button = photoButton(photo)
       button.addEventListener('click', () => { $('pd-dialog-close').focus({ preventScroll: true }) })
       return button
     }))
     return
   }
   const photo = state.dialogPhotos[state.dialogIndex]
-  $('pd-dialog-image').hidden = false
+  const image = $('pd-dialog-image')
+  image.hidden = false
   $('pd-image-error').hidden = true
-  $('pd-dialog-image').src = photo.imageUrl
-  $('pd-dialog-image').alt = `Photograph taken ${dateLong.format(new Date(photo.capturedAt))}`
+  const nextUrl = new URL(photo.imageUrl, window.location.href).href
+  if (image.src !== nextUrl) image.src = photo.imageUrl
+  image.alt = `Photograph taken ${dateLong.format(new Date(photo.capturedAt))}`
+  playPhotoMotion(image, photoMotion)
+  photoMotion = 0
   $('pd-dialog-caption').textContent = dateLong.format(new Date(photo.capturedAt))
   $('pd-dialog-count').textContent = `${state.dialogIndex + 1} / ${state.dialogPhotos.length}`
   $('pd-previous').disabled = state.dialogIndex === 0
   $('pd-next').disabled = state.dialogIndex === state.dialogPhotos.length - 1
+}
+let photoMotion = 0
+function playPhotoMotion(image, direction) {
+  if (!direction || reducedMotion.matches) {
+    image.style.animation = ''
+    return
+  }
+  const name = direction > 0 ? 'pd-photo-next' : 'pd-photo-prev'
+  image.style.animation = 'none'
+  void image.offsetWidth
+  image.style.animation = `${name} 280ms ease-out both`
 }
 function stepPhoto(direction) {
   if (state.dialogMode !== 'photo') return
@@ -325,11 +403,14 @@ function stepPhoto(direction) {
   if (index < 0 || index >= state.dialogPhotos.length) return
   const focused = document.activeElement
   state.dialogIndex = index
+  photoMotion = direction
   renderDialog()
   if (focused?.disabled) $('pd-dialog-close').focus({ preventScroll: true })
 }
 dialog.addEventListener('close', () => {
+  photoSwipe = null
   $('pd-dialog-image').removeAttribute('src')
+  $('pd-dialog-image').style.animation = ''
   $('pd-dialog-grid-view').replaceChildren()
   state.dialogTrigger?.isConnected && state.dialogTrigger.focus({ preventScroll: true })
 })
@@ -351,6 +432,38 @@ $('pd-dialog-close').addEventListener('click', () => dialog.close())
 $('pd-dialog-grid').addEventListener('click', showCollectionGrid)
 $('pd-previous').addEventListener('click', () => stepPhoto(-1))
 $('pd-next').addEventListener('click', () => stepPhoto(1))
+
+// Swipe steps through the open city. Listeners stay passive and never cancel the gesture, so a vertical drag remains native scroll.
+let photoSwipe = null
+let swallowPhotoClick = false
+let swallowPhotoTimer = 0
+const photoImage = $('pd-dialog-image')
+photoImage.addEventListener('pointerdown', event => {
+  if (photoSwipe || !event.isPrimary || state.dialogMode !== 'photo') return
+  if (event.pointerType === 'mouse' && event.button !== 0) return
+  photoSwipe = { id: event.pointerId, x: event.clientX, y: event.clientY }
+}, { passive: true })
+function finishPhotoSwipe(event, commit) {
+  if (!photoSwipe || event.pointerId !== photoSwipe.id) return
+  const start = photoSwipe
+  photoSwipe = null
+  if (!commit) return
+  const direction = galleryStep(event.clientX - start.x, event.clientY - start.y)
+  if (!direction) return
+  swallowPhotoClick = true
+  clearTimeout(swallowPhotoTimer)
+  swallowPhotoTimer = setTimeout(() => { swallowPhotoClick = false }, 400)
+  stepPhoto(direction)
+}
+document.addEventListener('pointerup', event => finishPhotoSwipe(event, true), { passive: true })
+document.addEventListener('pointercancel', event => finishPhotoSwipe(event, false), { passive: true })
+document.addEventListener('click', event => {
+  if (!swallowPhotoClick) return
+  swallowPhotoClick = false
+  clearTimeout(swallowPhotoTimer)
+  event.preventDefault()
+  event.stopPropagation()
+}, true)
 $('pd-map-button').addEventListener('click', () => setView('map'))
 $('pd-stack-button').addEventListener('click', () => setView('stack'))
 $('pd-refresh').addEventListener('click', refresh)
