@@ -56,9 +56,11 @@ html, body { height: 100%; }
 }
 .track-viewport::-webkit-scrollbar { display: none; }
 .track-viewport.dragging { cursor: grabbing; }
-/* Mobile: the deck is driven by a custom inertia loop, not native scroll, so
-   we own the touch gesture (prevents compositor/main-thread desync trembling). */
-.track-viewport.deck-touch { overflow: hidden; touch-action: pan-y pinch-zoom; }
+/* Mobile: a virtual position drives the deck, not native scroll, so the
+   compositor and the cards can't drift a frame apart (that drift was the old
+   swipe tremble). touch-action: none hands the gesture over immediately.
+   The page doesn't scroll, so there is no vertical pan to preserve. */
+.track-viewport.deck-touch { overflow: hidden; touch-action: none; }
 
 .track {
   position: relative;
@@ -75,7 +77,7 @@ html, body { height: 100%; }
   text-align: center;
   transform: translate(-50%, -50%);
   transform-origin: center center;
-  will-change: transform, opacity;
+  will-change: transform;
   contain: layout paint style;
   backface-visibility: hidden;
   cursor: pointer;
@@ -92,23 +94,29 @@ html, body { height: 100%; }
   transition: box-shadow 0.45s ease;
 }
 
+@property --veil-opacity {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
 .art-card-frame::after {
   content: '';
   position: absolute;
   inset: 0;
+  /* Static gradient. The swipe used to rewrite the stop alphas every frame,
+     which repainted this overlay on every visible card. Fading the whole
+     layer with opacity is the same composite (stop alpha × veil) and stays
+     on the compositor. JS still eases the number — see VEIL_DAMPING. */
   background:
     linear-gradient(
       115deg,
-      rgba(237, 232, 226, calc(var(--veil-opacity, 0) * 0.75)),
-      rgba(237, 232, 226, var(--veil-opacity, 0)) 52%,
-      rgba(247, 246, 244, calc(var(--veil-opacity, 0) * 0.8))
+      rgba(237, 232, 226, 0.75),
+      rgba(237, 232, 226, 1) 52%,
+      rgba(247, 246, 244, 0.8)
     );
-  opacity: 1;
+  opacity: var(--veil-opacity, 0);
+  will-change: opacity;
   pointer-events: none;
-  /* No CSS transition here — --veil-opacity is an untyped custom property, so
-     the browser can't interpolate it as a number; a transition on background
-     would just restart every frame instead of smoothing anything. The JS-side
-     damping in art.js's render() (VEIL_DAMPING) owns the smoothing instead. */
 }
 
 /* No .is-active override on --veil-opacity here on purpose: JS already damps
@@ -449,6 +457,10 @@ html, body { height: 100%; }
   .stage-hint-desktop { display: none; }
   .stage-hint-mobile { display: inline; }
   .art-card-frame img { max-height: 34.5vh; }
+  /* The active-card shadow is a 70px blur. Animating it while the finger is
+     still moving repaints the focused painting every frame of the transition. */
+  .art-card-frame { transition: none; }
+  .art-card-flip { -webkit-backdrop-filter: none; backdrop-filter: none; }
   .rail-title { max-width: 40vw; }
   .progress-rail { gap: 12px; }
   .sketch-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
