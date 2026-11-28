@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { attachPhotoGestures, blockBrowserPinch, createPhotoGesture } from '../photodump-gesture.js'
+import { attachPhotoGestures, blockBrowserPinch, createPhotoGesture, mapShouldDrag, pageLockStyle, photoTransformStyle } from '../photodump-gesture.js'
 
 const frame = { cx: 0, cy: 0, width: 200, height: 200 }
 const photo = { open: true, mode: 'photo', control: false, backdrop: false }
@@ -353,4 +353,188 @@ test('the open photograph is not a scroll container', () => {
   const css = readFileSync(new URL('../photodump.css', import.meta.url), 'utf8')
   assert.match(css, /\.pd-dialog\[data-view="photo"\] \{ touch-action: none; overflow: hidden; \}/)
   assert.match(css, /html:has\(\.pd-dialog\[open\]\[data-view="photo"\]\) \{ touch-action: none; \}/)
+  // The entrance must not leave a transform on the image. iOS composites that
+  // transform and the wrapper's pinch scale never becomes visible.
+  assert.match(css, /@keyframes pd-photo-in \{ from \{ opacity: 0; \} to \{ opacity: 1; \} \}/)
+})
+
+test('finger jitter does not throw away the WebKit pinch scale', () => {
+  const zoom = gesture()
+  zoom.touchStart({ ...photo, touches: [{ id: 1, x: -50, y: 0 }, { id: 2, x: 50, y: 0 }] }, frame)
+  zoom.nativePinch(2.4, frame)
+  zoom.touchMove({
+    touches: [{ id: 1, x: -52, y: 1 }, { id: 2, x: 51, y: -1 }],
+    scale: 2.4,
+  }, frame)
+  assert.equal(zoom.transform().scale, 2.4)
+})
+
+test('a WebKit gesture scales the photograph when no touch points arrive', () => {
+  const zoom = gesture()
+  assert.deepEqual(zoom.nativePinch(1, frame, true), { zoom: false, backdrop: false })
+  assert.equal(zoom.nativePinch(2, frame).zoom, true)
+  assert.equal(zoom.transform().scale, 2)
+  const end = zoom.endNativePinch()
+  assert.equal(end.direction, 0)
+  assert.equal(zoom.transform().scale, 2)
+})
+
+test('a scale of 1 does not swallow the city swipe', () => {
+  const zoom = gesture()
+  zoom.touchStart({ ...photo, touches: [{ id: 1, x: 180, y: 10 }] }, frame)
+  assert.deepEqual(zoom.nativePinch(1, frame, true), { zoom: false, backdrop: false })
+  zoom.touchMove({ touches: [{ id: 1, x: 20, y: 12 }] }, frame)
+  assert.equal(zoom.touchEnd({ remaining: [], lifted: null, commit: true }, frame).direction, 1)
+  assert.equal(zoom.transform().scale, 1)
+})
+
+test('touchcancel keeps the pinch for the following gesture scale and does not step', () => {
+  const zoom = gesture()
+  zoom.touchStart({ ...photo, touches: [{ id: 1, x: -40, y: 0 }, { id: 2, x: 40, y: 0 }] }, frame)
+  const cancelled = zoom.touchCancel()
+  assert.equal(cancelled.direction, 0)
+  assert.equal(zoom.nativePinch(2, frame).zoom, true)
+  assert.equal(zoom.transform().scale, 2)
+  const end = zoom.endNativePinch()
+  assert.equal(end.direction, 0)
+  assert.equal(zoom.transform().scale, 2)
+})
+
+test('a cancelled pinch under the snap still lets the next swipe step', () => {
+  const zoom = gesture()
+  zoom.touchStart({ ...photo, touches: [{ id: 1, x: 0, y: 0 }, { id: 2, x: 100, y: 0 }] }, frame)
+  zoom.touchCancel()
+  zoom.nativePinch(1.01, frame)
+  zoom.touchStart({ ...photo, touches: [{ id: 3, x: 180, y: 10 }] }, frame)
+  assert.equal(zoom.transform().scale, 1)
+  zoom.touchMove({ touches: [{ id: 3, x: 20, y: 12 }] }, frame)
+  assert.equal(zoom.touchEnd({ remaining: [], lifted: null, commit: true }, frame).direction, 1)
+})
+
+test('one finger being cancelled does not step or zoom', () => {
+  const zoom = gesture()
+  zoom.touchStart({ ...photo, touches: [{ id: 1, x: 180, y: 20 }] }, frame)
+  zoom.touchMove({ touches: [{ id: 1, x: 20, y: 24 }] }, frame)
+  const cancelled = zoom.touchCancel()
+  assert.equal(cancelled.direction, 0)
+  assert.equal(zoom.transform().scale, 1)
+})
+
+test('iOS pinch still scales when the dialog gets the gesture after touchcancel', () => {
+  const dialog = host()
+  const doc = host()
+  const zoom = gesture()
+  const steps = []
+  attachPhotoGestures(dialog, doc, zoom, {
+    open: () => true,
+    mode: () => 'photo',
+    isControl: () => false,
+    isBackdrop: () => false,
+    frame: () => frame,
+    capturePointer() {},
+    apply(result) { if (result?.direction) steps.push(result.direction) },
+  })
+  assert.equal(find(dialog, 'gesturestart').options.passive, false)
+  assert.equal(find(dialog, 'gesturechange').options.passive, false)
+  assert.equal(find(dialog, 'gesturechange').options.capture, true)
+  assert.equal(find(dialog, 'touchcancel').options.passive, false)
+
+  find(dialog, 'touchstart').fn(event('touchstart', [finger(1, -40, 0), finger(2, 40, 0)]))
+  find(dialog, 'touchcancel').fn(event('touchcancel', []))
+  const change = event('gesturechange', [], { scale: 2 })
+  find(dialog, 'gesturechange').fn(change)
+  assert.equal(change.defaultPrevented, true)
+  assert.equal(zoom.transform().scale, 2)
+
+  find(dialog, 'gestureend').fn(event('gestureend', [], { scale: 2 }))
+  assert.equal(zoom.transform().scale, 2)
+  assert.deepEqual(steps, [])
+
+  // The same event must not compound when both the dialog and the document see it.
+  zoom.resetTransform()
+  const shared = event('gesturechange', [], { scale: 2 })
+  find(dialog, 'gesturechange').fn(shared)
+  find(doc, 'gesturechange').fn(shared)
+  assert.equal(zoom.transform().scale, 2)
+
+  zoom.resetTransform()
+  find(dialog, 'gesturechange').fn(event('gesturechange', [], { scale: 1.8 }))
+  find(dialog, 'gestureend').fn(event('gestureend', [], { scale: 1.01 }))
+  assert.equal(zoom.transform().scale, 1)
+  assert.deepEqual(steps, [])
+})
+
+test('the photograph transform is written inline and the page pinch is off', () => {
+  assert.equal(photoTransformStyle({ scale: 2, x: 3, y: -4 }), 'translate(3px, -4px) scale(2)')
+  const source = readFileSync(new URL('../photodump.js', import.meta.url), 'utf8')
+  assert.match(source, /zoomEl\.style\.transform = photoTransformStyle\(zoom\)/)
+  const html = readFileSync(new URL('../photodump.html', import.meta.url), 'utf8')
+  assert.match(html, /name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"/)
+})
+
+test('the map drags only while the lightbox is closed, and the page is fixed while it is open', () => {
+  assert.equal(mapShouldDrag(false), true)
+  assert.equal(mapShouldDrag(true), false)
+  assert.deepEqual(pageLockStyle(true), { position: 'fixed', inset: '0', width: '100%', overflow: 'hidden' })
+  assert.deepEqual(pageLockStyle(false), { position: '', inset: '', width: '', overflow: '' })
+  const source = readFileSync(new URL('../photodump.js', import.meta.url), 'utf8')
+  assert.match(source, /dragging: true/)
+  assert.match(source, /if \(mapShouldDrag\(locked\)\) map\.dragging\.enable\(\)/)
+  assert.doesNotMatch(source, /coarsePointer/)
+  const css = readFileSync(new URL('../photodump.css', import.meta.url), 'utf8')
+  assert.match(css, /#pd-map \{ height: 100dvh; width: 100%; z-index: 0; background: #f2f3f0; touch-action: none; \}/)
+})
+
+test('a vertical finger cannot move the page behind an open photograph', () => {
+  const dialog = host()
+  const doc = host()
+  const zoom = gesture()
+  const steps = []
+  attachPhotoGestures(dialog, doc, zoom, {
+    open: () => true,
+    mode: () => 'photo',
+    isControl: () => false,
+    isBackdrop: () => true,
+    frame: () => frame,
+    capturePointer() {},
+    apply(result) { if (result?.direction) steps.push(result.direction) },
+  })
+  const start = event('touchstart', [finger(1, 40, 20)])
+  find(doc, 'touchstart').fn(start)
+  assert.equal(start.defaultPrevented, false)
+  const nudge = event('touchmove', [finger(1, 40, 28)])
+  find(doc, 'touchmove').fn(nudge)
+  assert.equal(nudge.defaultPrevented, true)
+  const drag = event('touchmove', [finger(1, 42, 180)])
+  find(dialog, 'touchmove').fn(drag)
+  assert.equal(drag.defaultPrevented, true)
+  find(doc, 'touchend').fn(event('touchend', [], { changed: [finger(1, 42, 180)] }))
+  assert.deepEqual(steps, [])
+  assert.equal(zoom.transform().scale, 1)
+})
+
+test('a document pinch scales the photograph when the dialog never sees the touch', () => {
+  const dialog = host()
+  const doc = host()
+  const zoom = gesture()
+  attachPhotoGestures(dialog, doc, zoom, {
+    open: () => true,
+    mode: () => 'photo',
+    isControl: () => false,
+    isBackdrop: () => false,
+    frame: () => frame,
+    capturePointer() {},
+    apply() {},
+  })
+  const start = event('touchstart', [finger(1, -50, 0), finger(2, 50, 0)])
+  find(doc, 'touchstart').fn(start)
+  find(dialog, 'touchstart').fn(start)
+  assert.equal(start.defaultPrevented, true)
+  const move = event('touchmove', [finger(1, -110, 0), finger(2, 110, 0)])
+  find(doc, 'touchmove').fn(move)
+  find(dialog, 'touchmove').fn(move)
+  assert.equal(move.defaultPrevented, true)
+  assert.equal(zoom.transform().scale, 2.2)
+  find(doc, 'touchend').fn(event('touchend', [], { changed: [finger(2, 110, 0)] }))
+  assert.equal(zoom.transform().scale, 2.2)
 })
