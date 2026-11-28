@@ -3,7 +3,7 @@ import 'leaflet/dist/leaflet.css'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import { loadPhotos } from './photodump-data.js'
 import { cityFromGeocode, photosInCity } from './photodump-city.js'
-import { galleryStep } from './photodump-swipe.js'
+import { clampPhotoPan, panBy, photoScale, pinchPan, releaseStep, settleScale } from './photodump-swipe.js'
 
 // Markercluster 1.x attaches to the shared Leaflet global.
 window.L = L
@@ -307,9 +307,40 @@ async function resolveCities(photos, signal) {
 }
 
 const dialog = $('pd-dialog')
+const zoomEl = $('pd-dialog-zoom')
+const zoom = { scale: 1, x: 0, y: 0, photoId: '' }
+function lockMap(locked) {
+  map.getContainer().classList.toggle('pd-map-locked', locked)
+  if (locked) map.dragging.disable()
+  else if (!coarsePointer) map.dragging.enable()
+}
+function applyZoom() {
+  zoomEl.style.setProperty('--pd-pan-x', `${zoom.x}px`)
+  zoomEl.style.setProperty('--pd-pan-y', `${zoom.y}px`)
+  zoomEl.style.setProperty('--pd-zoom', String(zoom.scale))
+  zoomEl.classList.toggle('is-zoomed', zoom.scale > 1)
+}
+function resetZoom(photoId = '') {
+  zoom.scale = 1
+  zoom.x = 0
+  zoom.y = 0
+  zoom.photoId = photoId
+  applyZoom()
+}
+function zoomFrame() {
+  const image = $('pd-dialog-image')
+  const rect = image.getBoundingClientRect()
+  return {
+    cx: rect.left + rect.width / 2 - zoom.x,
+    cy: rect.top + rect.height / 2 - zoom.y,
+    width: image.offsetWidth,
+    height: image.offsetHeight,
+  }
+}
 function showDialog(trigger) {
   if (dialog.open) return
   state.dialogTrigger = trigger || document.activeElement
+  lockMap(true)
   dialog.showModal()
 }
 function galleryFor(photo) {
@@ -362,6 +393,7 @@ function renderDialog() {
   $('pd-dialog-photo-view').hidden = gridMode
   $('pd-dialog-grid').hidden = gridMode || state.dialogPhotos.length < 2
   if (gridMode) {
+    resetZoom('')
     $('pd-dialog-count').textContent = `${state.dialogPhotos.length} photographs`
     $('pd-dialog-image').removeAttribute('src')
     const grid = $('pd-dialog-grid-view')
@@ -373,6 +405,7 @@ function renderDialog() {
     return
   }
   const photo = state.dialogPhotos[state.dialogIndex]
+  if (zoom.photoId !== photo.id) resetZoom(photo.id)
   const image = $('pd-dialog-image')
   image.hidden = false
   $('pd-image-error').hidden = true
@@ -413,15 +446,20 @@ function stepPhoto(direction) {
   if (focused?.disabled) $('pd-dialog-close').focus({ preventScroll: true })
 }
 dialog.addEventListener('close', () => {
-  photoSwipe = null
+  pointers.clear()
+  gesture = null
+  resetZoom('')
+  lockMap(false)
   $('pd-dialog-image').removeAttribute('src')
   $('pd-dialog-image').style.animation = ''
   $('pd-dialog-grid-view').replaceChildren()
   state.dialogTrigger?.isConnected && state.dialogTrigger.focus({ preventScroll: true })
 })
 let backdropPointerDown = false
-dialog.addEventListener('pointerdown', event => { backdropPointerDown = event.target === dialog }, { passive: true })
-dialog.addEventListener('click', event => { if (event.target === dialog && backdropPointerDown) dialog.close() })
+function isBackdropTarget(target) {
+  return target === dialog || (target instanceof Element && target.classList.contains('pd-dialog-catcher'))
+}
+dialog.addEventListener('click', event => { if (backdropPointerDown && isBackdropTarget(event.target)) dialog.close() })
 dialog.addEventListener('keydown', event => {
   if (event.key === 'ArrowLeft') stepPhoto(-1)
   if (event.key === 'ArrowRight') stepPhoto(1)
@@ -442,30 +480,133 @@ $('pd-dialog-grid').addEventListener('click', showCollectionGrid)
 $('pd-previous').addEventListener('click', () => stepPhoto(-1))
 $('pd-next').addEventListener('click', () => stepPhoto(1))
 
-// Swipe steps through the open city. Listeners stay passive and never cancel the gesture, so a vertical drag remains native scroll.
-let photoSwipe = null
+// Photo gestures stay passive. touch-action on the open viewer keeps the browser
+// from panning or pinch-zooming the page, which was sliding the map behind it.
+// At 1x a horizontal swipe steps the city. Two fingers zoom. While zoomed, one
+// finger pans the photograph and does not advance the gallery.
 let swallowPhotoClick = false
 let swallowPhotoTimer = 0
-const photoImage = $('pd-dialog-image')
-photoImage.addEventListener('pointerdown', event => {
-  if (photoSwipe || !event.isPrimary || state.dialogMode !== 'photo') return
-  if (event.pointerType === 'mouse' && event.button !== 0) return
-  photoSwipe = { id: event.pointerId, x: event.clientX, y: event.clientY }
+const pointers = new Map()
+let gesture = null
+function isControl(target) {
+  return target instanceof Element && Boolean(target.closest('button, a, input, textarea, select'))
+}
+function rememberPointer(event) {
+  pointers.set(event.pointerId, { x: event.clientX, y: event.clientY })
+}
+function beginPinch() {
+  const points = [...pointers.values()]
+  if (points.length < 2) return null
+  const frame = zoomFrame()
+  const midX = (points[0].x + points[1].x) / 2
+  const midY = (points[0].y + points[1].y) / 2
+  return {
+    startDistance: Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y),
+    startScale: zoom.scale,
+    startPan: { x: zoom.x, y: zoom.y },
+    startFocal: { x: midX - frame.cx, y: midY - frame.cy },
+    cx: frame.cx,
+    cy: frame.cy,
+    width: frame.width,
+    height: frame.height,
+  }
+}
+function applyPinch(pinch) {
+  const points = [...pointers.values()]
+  if (points.length < 2) return
+  const distance = Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y)
+  const scale = photoScale(pinch.startScale, pinch.startDistance, distance)
+  const focal = {
+    x: (points[0].x + points[1].x) / 2 - pinch.cx,
+    y: (points[0].y + points[1].y) / 2 - pinch.cy,
+  }
+  const pan = pinchPan({ startPan: pinch.startPan, startFocal: pinch.startFocal, focal, startScale: pinch.startScale, scale })
+  const clamped = clampPhotoPan(pan, scale, pinch.width, pinch.height)
+  zoom.scale = scale
+  zoom.x = clamped.x
+  zoom.y = clamped.y
+  applyZoom()
+}
+function beginPan(point) {
+  const frame = zoomFrame()
+  return { x: point.x, y: point.y, panX: zoom.x, panY: zoom.y, width: frame.width, height: frame.height }
+}
+dialog.addEventListener('pointerdown', event => {
+  if (!dialog.open) return
+  const control = isControl(event.target)
+  const photoGesture = state.dialogMode === 'photo' && !control && !(event.pointerType === 'mouse' && event.button !== 0)
+  if (!photoGesture) {
+    backdropPointerDown = !control && isBackdropTarget(event.target)
+    return
+  }
+  rememberPointer(event)
+  try { dialog.setPointerCapture(event.pointerId) } catch { /* pointer already released */ }
+  if (pointers.size === 1) {
+    gesture = { pinched: false, startX: event.clientX, startY: event.clientY, pan: zoom.scale > 1 ? beginPan(pointers.get(event.pointerId)) : null, pinch: null }
+    backdropPointerDown = isBackdropTarget(event.target)
+    return
+  }
+  if (!gesture) gesture = { pinched: true, startX: event.clientX, startY: event.clientY, pan: null, pinch: null }
+  gesture.pinched = true
+  gesture.pan = null
+  gesture.pinch = beginPinch()
+  backdropPointerDown = false
 }, { passive: true })
-function finishPhotoSwipe(event, commit) {
-  if (!photoSwipe || event.pointerId !== photoSwipe.id) return
-  const start = photoSwipe
-  photoSwipe = null
-  if (!commit) return
-  const direction = galleryStep(event.clientX - start.x, event.clientY - start.y)
+document.addEventListener('pointermove', event => {
+  const point = pointers.get(event.pointerId)
+  if (!point || !gesture) return
+  point.x = event.clientX
+  point.y = event.clientY
+  if (pointers.size >= 2 && gesture.pinch) {
+    applyPinch(gesture.pinch)
+    backdropPointerDown = false
+    return
+  }
+  if (gesture.pan && zoom.scale > 1) {
+    const next = panBy({ x: gesture.pan.panX, y: gesture.pan.panY }, point.x - gesture.pan.x, point.y - gesture.pan.y, zoom.scale)
+    const clamped = clampPhotoPan(next, zoom.scale, gesture.pan.width, gesture.pan.height)
+    zoom.x = clamped.x
+    zoom.y = clamped.y
+    applyZoom()
+    backdropPointerDown = false
+    return
+  }
+  if (Math.hypot(event.clientX - gesture.startX, event.clientY - gesture.startY) > 8) backdropPointerDown = false
+}, { passive: true })
+function finishPhotoGesture(event, commit) {
+  if (!pointers.has(event.pointerId)) return
+  pointers.delete(event.pointerId)
+  if (!gesture) return
+  if (pointers.size >= 2) {
+    gesture.pinch = beginPinch()
+    return
+  }
+  if (pointers.size === 1) {
+    const point = pointers.values().next().value
+    gesture.pinch = null
+    gesture.pan = zoom.scale > 1 ? beginPan(point) : null
+    return
+  }
+  const finished = gesture
+  gesture = null
+  const settled = settleScale(zoom.scale)
+  if (settled === 1) {
+    zoom.scale = 1
+    zoom.x = 0
+    zoom.y = 0
+    applyZoom()
+  }
+  if (!commit || !dialog.open || state.dialogMode !== 'photo') return
+  const direction = releaseStep(settled, event.clientX - finished.startX, event.clientY - finished.startY, finished.pinched)
   if (!direction) return
+  backdropPointerDown = false
   swallowPhotoClick = true
   clearTimeout(swallowPhotoTimer)
   swallowPhotoTimer = setTimeout(() => { swallowPhotoClick = false }, 400)
   stepPhoto(direction)
 }
-document.addEventListener('pointerup', event => finishPhotoSwipe(event, true), { passive: true })
-document.addEventListener('pointercancel', event => finishPhotoSwipe(event, false), { passive: true })
+document.addEventListener('pointerup', event => finishPhotoGesture(event, true), { passive: true })
+document.addEventListener('pointercancel', event => finishPhotoGesture(event, false), { passive: true })
 document.addEventListener('click', event => {
   if (!swallowPhotoClick) return
   swallowPhotoClick = false
