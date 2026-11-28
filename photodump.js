@@ -377,7 +377,12 @@ function renderDialog() {
   image.hidden = false
   $('pd-image-error').hidden = true
   const nextUrl = new URL(photo.imageUrl, window.location.href).href
-  if (image.src !== nextUrl) image.src = photo.imageUrl
+  if (image.src !== nextUrl) {
+    image.classList.add('is-pending')
+    image.addEventListener('load', () => image.classList.remove('is-pending'), { once: true })
+    image.src = photo.imageUrl
+    if (image.complete && image.naturalWidth) image.classList.remove('is-pending')
+  }
   image.alt = `Photograph taken ${dateLong.format(new Date(photo.capturedAt))}`
   playPhotoMotion(image, photoMotion)
   photoMotion = 0
@@ -427,7 +432,11 @@ dialog.addEventListener('keydown', event => {
     else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() }
   }
 })
-$('pd-dialog-image').addEventListener('error', () => { $('pd-dialog-image').hidden = true; $('pd-image-error').hidden = false })
+$('pd-dialog-image').addEventListener('error', () => {
+  $('pd-dialog-image').classList.remove('is-pending')
+  $('pd-dialog-image').hidden = true
+  $('pd-image-error').hidden = false
+})
 $('pd-dialog-close').addEventListener('click', () => dialog.close())
 $('pd-dialog-grid').addEventListener('click', showCollectionGrid)
 $('pd-previous').addEventListener('click', () => stepPhoto(-1))

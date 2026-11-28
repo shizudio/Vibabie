@@ -676,7 +676,10 @@
 
 
     .about-room-frame {
-      height: min(62dvh, 440px);
+      /* The centred status was landing under the fixed 56px actions bar
+         while the heading was still on screen. Shorten the stage by that
+         bar and the home indicator so the whole message stays above it. */
+      height: calc(min(62dvh, 440px) - 56px - env(safe-area-inset-bottom, 0px));
     }
 
     .bio {
@@ -1305,6 +1308,7 @@ html {
   }
 
   .about-bio-dots { display: none; }
+  .about-bio-pager { display: none; }
 
 }
 
@@ -1492,10 +1496,9 @@ html {
    side, each half fits a screen and the second is one swipe away.
 
    The swipe is native overflow with scroll-snap. No wheel handler, no
-   preventDefault, no scrollTo — the browser owns the gesture and the inertia,
-   which is the standing rule on this site for anything that has to feel like a
-   real scroll. The only script involved reads scrollLeft, passively, to light
-   the right dot. */
+   preventDefault, no scrollTo during a gesture — the browser owns the swipe
+   and the inertia. The script reads scrollLeft, passively, to light the right
+   dot. Next and the dots call scrollTo only from a click. */
 @media (max-width: 1023px) {
 
   .about-bio-pages {
@@ -1523,15 +1526,35 @@ html {
 
   .about-bio-page p:last-child { margin-bottom: 0; }
 
-  /* Nothing else on screen says a second page exists. */
-  .about-bio-dots {
+  /* Nothing else on screen says a second page exists. The dots are real
+     buttons (44px) and Next uses the same serif as the portrait viewer. */
+  .about-bio-pager {
     display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 24px;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
   }
 
-  .about-bio-dots span {
+  .about-bio-dots {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-top: 0;
+  }
+
+  .about-bio-dots button {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .about-bio-dots button span {
     width: 6px;
     height: 6px;
     border-radius: 999px;
@@ -1539,7 +1562,31 @@ html {
     transition: background 200ms ease;
   }
 
-  .about-bio-dots span.is-on { background: var(--ink); }
+  .about-bio-dots button.is-on span { background: var(--ink); }
+
+  .about-bio-dots button:focus-visible,
+  .about-bio-next:focus-visible {
+    outline: 2px solid var(--crimson);
+    outline-offset: 3px;
+  }
+
+  .about-bio-next {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 76px;
+    min-height: 44px;
+    padding: 10px 0 10px 16px;
+    border: 0;
+    background: none;
+    color: var(--ink);
+    font: 400 1rem var(--font-serif);
+    font-style: normal;
+    cursor: pointer;
+  }
+
+  .about-bio-next:hover { color: var(--crimson); }
+  .about-bio-next[hidden] { display: none; }
 
   /* ── The actions become a bottom bar ─────────────────────────────────────
      Two tabs, always reachable. In the bio state the toggle used to sit below
@@ -1619,46 +1666,17 @@ html {
   }
 }
 
-/* The vinyl widget is fixed to the bottom-right of the viewport
-   (style.css .vinyl-widget, bottom: var(--space-lg) on small screens). The
-   actions bar is now fixed to the bottom of the same viewport and is 56px
-   tall, so the record was sitting on top of the tabs and eating the right-hand
-   one's tap target.
-
-   Lift it clear of the bar plus the home indicator, and keep the same 32px of
-   air it had against the bottom of the screen before. Scoped here rather than
-   in style.css because the bar only exists on this page — every other page
-   still wants the record where it was. */
-@media (max-width: 1023px) {
-  .vinyl-widget {
-    bottom: calc(56px + env(safe-area-inset-bottom, 0px) + var(--space-lg));
-  }
-}
+/* The record used to be lifted clear of this page's tab bar. It is now
+   hidden on every phone (style.css, max-width: 1023px), so there is nothing
+   left to lift. */
 
 /* .about-bio-pending is unused now that the "baby works" line has somewhere to
    point. Kept, not deleted: the rule is the one place that records how an
    inert placeholder link should look on this site, and there is a second one
    coming the moment another destination is missing. */
 
-/* ── No record on mobile ─────────────────────────────────────────────────────
-
-   The vinyl widget does not appear on a phone at all.
-
-   It arrived here by stages: tucked while the bio was open, then away for the
-   whole landing view, then lifted clear of the tab bar. Each step was a
-   negotiation with a 133x72 disc that wanted 35% of a 375px screen, and the
-   answer to all of them is that a floating record player is a desktop
-   flourish. There is not enough room beside it on a phone for it to be one.
-
-   Scoped to about.css, so it is this page only. Moving it to style.css would
-   take it off Art, Work and Play as well.
-
-   display, not visibility: there is nothing to preserve the layout of, and the
-   widget is its own transport control, so hiding it cannot strand audio that a
-   visitor can no longer stop. */
-@media (max-width: 1023px) {
-  .vinyl-widget { display: none; }
-}
+/* The phone hide for .vinyl-widget lives in style.css now, at the same
+   1023px breakpoint. It used to be this page only. */
 
 /* ── Detail row: label and value on one line (mobile) ────────────────────────
 
@@ -1707,9 +1725,10 @@ html {
     z-index: 55;
     background: var(--paper);
 
-    /* Clears the fixed topbar above and the fixed tab bar below. */
+    /* The sheet covers the topbar (z-index 55 over --z-nav), so the old
+       54px padding was an empty band. Keep the tab-bar clearance below. */
     padding:
-      calc(54px + var(--space-lg))
+      max(var(--space-lg), env(safe-area-inset-top, 0px))
       var(--page-gutter, 20px)
       calc(56px + env(safe-area-inset-bottom, 0px) + var(--space-lg));
 
@@ -1915,13 +1934,30 @@ html {
   position: fixed;
   inset: 0;
   z-index: var(--z-lightbox);
-  background: rgba(0, 0, 0, 0.82);
+  /* Opaque, not a scrim. The page, the topbar and the tab bar were reading
+     through the old 0.82 black, and the current portrait ghosted behind the
+     opened one. Solid ground matches the overlay pigment with the alpha off. */
+  background: #1A1614;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 56px var(--page-gutter) 40px;
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 56px)
+    max(var(--page-gutter), env(safe-area-inset-right, 0px))
+    calc(env(safe-area-inset-bottom, 0px) + 72px)
+    max(var(--page-gutter), env(safe-area-inset-left, 0px));
   animation: pg-in 0.2s ease;
+}
+
+/* The topbar and the sticky HAVE A CHAT bar sit under this overlay. Hide
+   them so they are not focusable and do not show through the fade. The art
+   viewer on this page is the same kind of surface. */
+body:has(.pg-overlay) nav,
+body:has(.art-lightbox.open) nav,
+body:has(.pg-overlay) .about-actions,
+body:has(.art-lightbox.open) .about-actions {
+  visibility: hidden;
 }
 
 @keyframes pg-in { from { opacity: 0 } to { opacity: 1 } }
@@ -1933,9 +1969,10 @@ html {
 /* Position bars, one per picture, across the top. */
 .pg-segs {
   position: absolute;
-  top: 16px;
-  left: var(--page-gutter);
-  right: var(--page-gutter);
+  top: calc(env(safe-area-inset-top, 0px) + 20px);
+  left: max(var(--page-gutter), env(safe-area-inset-left, 0px));
+  /* Leave the 44px close clear of the ticks. */
+  right: calc(env(safe-area-inset-right, 0px) + 52px);
   display: flex;
   gap: 4px;
   z-index: 2;
@@ -1983,7 +2020,7 @@ html {
 .pg-prev,
 .pg-next {
   position: absolute;
-  bottom: 20px;
+  bottom: env(safe-area-inset-bottom, 0px);
   min-width: 76px;
   min-height: 44px;
   border: 0;
@@ -2010,9 +2047,11 @@ html {
 
 .pg-close {
   position: absolute;
-  top: 28px;
-  right: var(--page-gutter);
+  top: env(safe-area-inset-top, 0px);
+  right: env(safe-area-inset-right, 0px);
   z-index: 3;
+  width: 44px;
+  height: 44px;
   min-width: 44px;
   min-height: 44px;
   display: inline-flex;
@@ -2029,6 +2068,16 @@ html {
 }
 
 .pg-close:hover { opacity: 1; }
+
+/* Artwork viewer on this page: same opaque ground, close pinned to the
+   safe corner. Scoped here so other pages keep the shared scrim. */
+.art-lightbox {
+  background: #1A1614;
+}
+.art-lb-close {
+  top: env(safe-area-inset-top, 0px);
+  right: env(safe-area-inset-right, 0px);
+}
 
 /* The frame only becomes a control once there is an archive behind it;
    about-portrait.js adds role="button" in that case. */

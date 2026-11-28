@@ -1587,6 +1587,13 @@ body.menu-open .vinyl-widget {
   }
 }
 
+/* A floating record wants a corner a phone does not have. It covered Send
+   note, field-note copy, and the coffee frame. About already hid it below
+   1024px; that hide is the sitewide one. display, not a second player. */
+@media (max-width: 1023px) {
+  .vinyl-widget { display: none; }
+}
+
 /* ── FLAT: strip all decorative box-shadows site-wide ──────────
    Loaded before page-specific stylesheets, so !important flattens
    their hardcoded shadows too. Focus rings (:focus-visible) keep
@@ -1648,6 +1655,35 @@ body.menu-open .vinyl-widget {
   font-family: var(--font-serif);
   font-size: var(--text-sm);
   user-select: none;
+}
+
+/* Phone nav: Art and Play were ~24px wide, and EN / 中 were two glyphs with
+   a gap between them. One 44px-tall cluster wraps the language pair, and the
+   short links get a 44px-wide box. The logo stays on its own width so the
+   one-line bar still fits. */
+@media (max-width: 767px) {
+  nav:not(.case-sidenav):not(.nav-overlay-nav) a:not(.nav-logo):not(.site-logo),
+  .site-header a:not(.nav-logo):not(.site-logo),
+  .project-topbar a:not(.nav-logo):not(.site-logo) {
+    box-sizing: border-box;
+    justify-content: center;
+    min-width: 44px;
+    padding-inline: 2px;
+  }
+
+  .lang-switch {
+    box-sizing: border-box;
+    justify-content: center;
+    gap: 0;
+    min-width: 44px;
+    min-height: 44px;
+    padding-inline: 4px;
+  }
+
+  .lang-switch button {
+    justify-content: center;
+    padding-inline: 6px;
+  }
 }
 
 /* ── Chinese typography ─────────────────────────────────────────────────────
