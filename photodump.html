@@ -50,12 +50,12 @@
   <dialog id="pd-dialog" class="pd-dialog" aria-labelledby="pd-dialog-label">
     <div class="pd-dialog-shell">
       <div class="pd-dialog-top">
-        <div><span id="pd-dialog-label" class="pd-dialog-label">Photographs</span><span id="pd-dialog-count"></span></div>
+        <div><span id="pd-dialog-label" class="pd-dialog-label">Photographs</span><span id="pd-dialog-count" aria-live="polite"></span></div>
         <div class="pd-dialog-actions"><button id="pd-dialog-grid" type="button" hidden>All photographs</button><button id="pd-dialog-close" type="button" autofocus aria-label="Close photographs">Close</button></div>
       </div>
       <div id="pd-dialog-grid-view" class="pd-dialog-grid" hidden></div>
       <div id="pd-dialog-photo-view" class="pd-dialog-photo-view">
-        <div class="pd-dialog-image-wrap"><img id="pd-dialog-image" alt=""><p id="pd-image-error" hidden>This photograph couldn’t load. Try the next photograph or close and refresh.</p></div>
+        <div class="pd-dialog-image-wrap"><img id="pd-dialog-image" alt="" draggable="false"><p id="pd-image-error" hidden>This photograph couldn’t load. Try the next photograph or close and refresh.</p></div>
         <p id="pd-dialog-caption"></p>
         <div class="pd-dialog-navigation"><button id="pd-previous" type="button" aria-label="Previous photograph">Previous</button><button id="pd-next" type="button" aria-label="Next photograph">Next</button></div>
       </div>
