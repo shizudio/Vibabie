@@ -1,24 +1,43 @@
 // Pinch, pan, and city swipe for an open photograph.
 //
-// iOS Safari does not deliver a usable two-finger pinch through Pointer
-// Events. A pinch is a gesturestart/gesturechange sequence plus touch
-// events. The browser then cancels the pointer stream (pointercancel) and,
-// unless preventDefault runs on a non-passive touch or gesture listener,
-// zooms the page instead of the photograph. touch-action: none is not
-// enough there: these listeners were passive, so preventDefault could not
-// run, and the photograph stayed at 1x. Headless Chrome never takes that
-// path, which is why the pointer tracker looked fine.
+// iOS Safari / WKWebView does not deliver a two-finger pinch as pointermove,
+// and it often does not deliver it as a changing touch distance either. The
+// page pinch recognizer freezes the touch coordinates, fires touchcancel,
+// and reports the real scale on gesturechange (and sometimes on the touch
+// event itself). touch-action does not stop that viewport pinch. A 1px
+// jitter used to be treated as the finger distance moving, which discarded
+// the WebKit scale, and touchcancel used to drop the gesture before that
+// scale arrived. The photograph stayed at 1x. Headless Chrome never takes
+// this path.
 //
 // Touch pointers are ignored. Touch events own the phone gesture, including
-// the one-finger city swipe, so a cancelled pointer cannot drop it. Mouse
-// and pen stay on pointer events. A pinch that ends at or under the snap
-// threshold settles back to 1x. While zoomed, one finger pans and does not
-// change photographs. Two fingers never change photographs.
+// the one-finger city swipe, so a cancelled pointer cannot drop it. A
+// touchcancel during a pinch keeps the scale baseline so gesturechange can
+// still land. Mouse and pen stay on pointer events. A pinch that ends at or
+// under the snap threshold settles back to 1x. While zoomed, one finger pans
+// and does not change photographs. Two fingers never change photographs.
 
 import { clampPhotoPan, panBy, photoScale, pinchPan, releaseStep, settleScale } from './photodump-swipe.js'
 
+// A resting finger jitters by a few pixels. That is not a pinch. WebKit's
+// scale stays in charge until the finger distance has clearly changed.
+const FINGER_PINCH = 0.08
+
 export function blockBrowserPinch(open, mode) {
   return open === true && mode === 'photo'
+}
+
+// The map can be dragged whenever the lightbox is closed, including on a
+// phone. Dragging stays off while the lightbox is open.
+export function mapShouldDrag(dialogOpen) {
+  return dialogOpen !== true
+}
+
+// iOS rubber-bands the visual viewport unless the page itself is fixed.
+// overflow: hidden does not stop that shift.
+export function pageLockStyle(locked) {
+  if (locked) return { position: 'fixed', inset: '0', width: '100%', overflow: 'hidden' }
+  return { position: '', inset: '', width: '', overflow: '' }
 }
 
 export function createPhotoGesture() {
@@ -90,34 +109,51 @@ export function createPhotoGesture() {
     zoom.y = clamped.y
   }
 
+  function fingerRatio(pinch) {
+    const points = pair()
+    if (!pinch || points.length < 2 || !(pinch.startDistance > 0)) return null
+    const distance = Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y)
+    return distance / pinch.startDistance
+  }
+
   function applyFingerPinch() {
     const pinch = gesture?.pinch
-    if (!pinch) return false
-    const points = pair()
-    if (points.length < 2) return false
-    const distance = Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y)
-    // Safari sometimes freezes the touch coordinates and reports the pinch
-    // only on gesturechange. Once a finger distance has actually changed,
-    // that distance stays in charge, including a pinch back to the start.
-    if (Math.abs(distance - pinch.startDistance) >= 1) pinch.fingersMoved = true
+    const ratio = fingerRatio(pinch)
+    if (ratio == null) return false
+    // Decide ownership before the native-scale guard. A real spread has to
+    // be able to take over after gesturestart recorded a scale of 1.
+    if (Math.abs(ratio - 1) >= FINGER_PINCH) pinch.fingersMoved = true
     if (!pinch.fingersMoved && pinch.nativeScale > 0) return false
+    const points = pair()
     const focal = {
       x: (points[0].x + points[1].x) / 2 - pinch.cx,
       y: (points[0].y + points[1].y) / 2 - pinch.cy,
     }
-    writePinch(pinch, photoScale(pinch.startScale, pinch.startDistance, distance), focal)
-    return true
+    writePinch(pinch, photoScale(pinch.startScale, 1, ratio), focal)
+    return Math.abs(ratio - 1) >= 0.001
+  }
+
+  function scaleBaseline(frame) {
+    const box = frame || { cx: 0, cy: 0, width: 0, height: 0 }
+    return {
+      ids: [],
+      startDistance: 1,
+      startScale: zoom.scale,
+      startPan: { x: zoom.x, y: zoom.y },
+      startFocal: { x: 0, y: 0 },
+      cx: box.cx,
+      cy: box.cy,
+      width: box.width,
+      height: box.height,
+      nativeScale: 0,
+      fingersMoved: false,
+    }
   }
 
   function applyNativeScale(nativeScale) {
     const pinch = gesture?.pinch
     if (!pinch || !(nativeScale > 0) || pinch.fingersMoved) return false
     pinch.nativeScale = nativeScale
-    const points = pair()
-    if (points.length >= 2) {
-      const distance = Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y)
-      if (Math.abs(distance - pinch.startDistance) >= 1) return false
-    }
     writePinch(pinch, photoScale(pinch.startScale, 1, nativeScale), pinch.startFocal)
     return true
   }
@@ -248,6 +284,18 @@ export function createPhotoGesture() {
       return { prevent: false, backdrop: false, zoom: false }
     }
     if (!input.touches?.length) return { prevent: false, zoom: false }
+    // touchcancel kept the pinch so gesturechange could land. If that end
+    // event never arrived, settle before the next finger starts a new gesture.
+    if (gesture?.orphaned && pointers.size === 0) {
+      const settled = settleScale(zoom.scale)
+      if (settled === 1 && (zoom.scale !== 1 || zoom.x !== 0 || zoom.y !== 0)) {
+        zoom.scale = 1
+        zoom.x = 0
+        zoom.y = 0
+      }
+      gesture = null
+      source = null
+    }
     source = 'touch'
     upsert(input.touches)
     if (pointers.size >= 2) {
@@ -275,14 +323,23 @@ export function createPhotoGesture() {
   function touchMove(input, frame) {
     if (source !== 'touch' || !gesture) return null
     replace(input.touches)
+    const webkitScale = Number.isFinite(input.scale) && input.scale > 0 ? input.scale : 0
     if (pointers.size >= 2) {
       if (!gesture.pinch) {
         gesture.pinched = true
         gesture.pan = null
-        gesture.pinch = beginPinch(frame)
+        gesture.pinch = beginPinch(frame) || scaleBaseline(frame)
       }
       const zoomed = applyFingerPinch()
-      return { prevent: true, zoom: zoomed, backdrop: false }
+      const native = webkitScale ? applyNativeScale(webkitScale) : false
+      return { prevent: true, zoom: Boolean(zoomed || native), backdrop: false }
+    }
+    // Coordinates never arrived, but the touch event still carries WebKit's scale.
+    if (webkitScale && Math.abs(webkitScale - 1) > 0.001) {
+      gesture.pinched = true
+      gesture.pan = null
+      if (!gesture.pinch) gesture.pinch = scaleBaseline(frame)
+      return { prevent: true, zoom: applyNativeScale(webkitScale), backdrop: false }
     }
     const point = [...pointers.values()][0]
     if (gesture.pan && zoom.scale > 1) {
@@ -315,18 +372,54 @@ export function createPhotoGesture() {
     return finish(input.commit, x, y)
   }
 
-  function nativePinch(nativeScale, frame) {
+  // iOS cancels the touch stream when it classifies a pinch, then keeps
+  // reporting scale on gesturechange. Finishing here left the photograph at 1x.
+  function touchCancel() {
+    if (source !== 'touch' || !gesture) return null
+    if (gesture.pinched || gesture.pinch || pointers.size >= 2) {
+      pointers.clear()
+      gesture.orphaned = true
+      gesture.pan = null
+      return { prevent: true, zoom: false, direction: 0, swallow: false }
+    }
+    const point = [...pointers.values()][0]
+    const x = point ? point.x : gesture.startX
+    const y = point ? point.y : gesture.startY
+    return finish(false, x, y)
+  }
+
+  function nativePinch(nativeScale, frame, begin = false) {
     if (source === 'pointer' || !(nativeScale > 0)) return null
-    if (!gesture || pointers.size < 2) return { zoom: false }
-    if (!gesture.pinch) {
+    // Scale 1 with no pinch in progress is gesturestart, not a zoom. A
+    // one-finger swipe has to stay free to step the city.
+    const idle = pointers.size < 2 && !gesture?.pinch && Math.abs(nativeScale - 1) <= 0.001
+    if (idle) return { zoom: false, backdrop: false }
+    if (source !== 'touch') source = 'touch'
+    if (!gesture) gesture = { pinched: true, startX: 0, startY: 0, pan: null, pinch: null, orphaned: false }
+    // A new gesturestart rebases onto the current scale. gesturechange must
+    // not rebase, or a cumulative WebKit scale would compound every event.
+    const reset = begin && !gesture.pinch?.fingersMoved && !(gesture.pinch?.nativeScale > 1)
+    if (!gesture.pinch || reset) {
       gesture.pinched = true
       gesture.pan = null
-      gesture.pinch = beginPinch(frame)
+      gesture.pinch = beginPinch(frame) || scaleBaseline(frame)
     }
+    if (!gesture.pinch) return { zoom: false, backdrop: false }
     return { zoom: applyNativeScale(nativeScale), backdrop: false }
   }
 
-  return { transform, resetTransform, pointerDown, pointerMove, pointerUp, touchStart, touchMove, touchEnd, nativePinch }
+  function endNativePinch() {
+    if (!gesture?.pinched && !gesture?.pinch && !gesture?.orphaned) return null
+    // A finger still on the glass is the touchend path (pan, or the end of
+    // the swipe). gestureend only commits a pinch whose touches were cancelled.
+    if (pointers.size > 0 && !gesture.orphaned) return { zoom: false, direction: 0, swallow: false }
+    const point = [...pointers.values()][0]
+    const x = point ? point.x : gesture.startX
+    const y = point ? point.y : gesture.startY
+    return finish(false, x, y)
+  }
+
+  return { transform, resetTransform, pointerDown, pointerMove, pointerUp, touchStart, touchMove, touchEnd, touchCancel, nativePinch, endNativePinch }
 }
 
 function listed(list) {
@@ -347,28 +440,105 @@ export function attachPhotoGestures(dialog, doc, gestures, hooks) {
 
   const blockTouch = event => {
     if (!blockBrowserPinch(hooks.open(), hooks.mode())) return false
-    if (hooks.isControl(event.target) && event.touches.length < 2) return false
-    if (event.touches.length >= 2) return true
-    return event.type === 'touchmove' && gestures.transform().scale > 1
+    if (event.type === 'touchstart' && hooks.isControl(event.target) && event.touches.length < 2) return false
+    // Every move while a photograph is open. A one-finger drag used to be
+    // left to the browser, which rubber-banded the map in place.
+    if (event.type === 'touchmove') return true
+    return event.touches.length >= 2
   }
 
-  doc.addEventListener('touchstart', event => {
-    if (blockTouch(event)) stopNative(event)
-  }, { capture: true, passive: false })
+  const seenTouch = new WeakSet()
+  const touchTargets = [dialog, doc]
+  if (doc.defaultView && doc.defaultView !== doc) touchTargets.push(doc.defaultView)
 
-  doc.addEventListener('touchmove', event => {
-    if (blockTouch(event)) stopNative(event)
-  }, { capture: true, passive: false })
+  function onTouchStart(event) {
+    if (!hooks.open()) return
+    if (seenTouch.has(event)) return
+    seenTouch.add(event)
+    const result = gestures.touchStart({
+      ...live(),
+      touches: listed(event.touches),
+      control: hooks.isControl(event.target),
+      backdrop: hooks.isBackdrop(event.target),
+    }, frame())
+    if (blockTouch(event) || result?.prevent) stopNative(event)
+    hooks.apply(result)
+  }
 
+  function onTouchMove(event) {
+    if (!blockBrowserPinch(hooks.open(), hooks.mode())) return
+    // Cancel before the handler, including a short vertical nudge. Once iOS
+    // has begun a scroll, later events are not cancelable and the page shifts.
+    stopNative(event)
+    if (seenTouch.has(event)) return
+    seenTouch.add(event)
+    const result = gestures.touchMove({
+      touches: listed(event.touches),
+      scale: event.scale,
+    }, frame())
+    hooks.apply(result)
+  }
+
+  function onTouchEnd(commit) {
+    return event => {
+      if (seenTouch.has(event)) return
+      seenTouch.add(event)
+      const lifted = event.changedTouches?.[0]
+      const result = gestures.touchEnd({
+        remaining: listed(event.touches),
+        lifted: lifted ? { id: lifted.identifier, x: lifted.clientX, y: lifted.clientY } : null,
+        commit: commit && hooks.open() && hooks.mode() === 'photo',
+      }, frame())
+      if (result?.prevent) stopNative(event)
+      hooks.apply(result)
+    }
+  }
+
+  function onTouchCancel(event) {
+    if (seenTouch.has(event)) return
+    seenTouch.add(event)
+    const result = gestures.touchCancel()
+    if (result?.prevent) stopNative(event)
+    hooks.apply(result)
+  }
+
+  for (const target of touchTargets) {
+    target.addEventListener('touchstart', onTouchStart, { capture: true, passive: false })
+    target.addEventListener('touchmove', onTouchMove, { capture: true, passive: false })
+    target.addEventListener('touchend', onTouchEnd(true), { capture: true, passive: false })
+    target.addEventListener('touchcancel', onTouchCancel, { capture: true, passive: false })
+  }
+
+  // One gesture event reaches every target on its path. Applying the scale
+  // twice would rebase the second time and compound it.
+  const handledGesture = new WeakSet()
   const stopGesture = event => {
     if (!blockBrowserPinch(hooks.open(), hooks.mode())) return
     stopNative(event)
+    if (handledGesture.has(event)) return
+    handledGesture.add(event)
+    if (event.type === 'gesturestart') {
+      hooks.apply(gestures.nativePinch(event.scale, frame(), true))
+      return
+    }
+    if (event.type === 'gestureend') {
+      if (event.scale > 0) hooks.apply(gestures.nativePinch(event.scale, frame()))
+      hooks.apply(gestures.endNativePinch())
+      return
+    }
     if (event.type !== 'gesturechange') return
     hooks.apply(gestures.nativePinch(event.scale, frame()))
   }
-  doc.addEventListener('gesturestart', stopGesture, { capture: true, passive: false })
-  doc.addEventListener('gesturechange', stopGesture, { capture: true, passive: false })
-  doc.addEventListener('gestureend', stopGesture, { capture: true, passive: false })
+  // The modal dialog is the target WebKit dispatches to. document (and
+  // window) still see the event when it propagates, and that is what vetoes
+  // the viewport pinch. The same handler is idempotent for one scale value.
+  const gestureTargets = [dialog, doc]
+  if (doc.defaultView && doc.defaultView !== doc) gestureTargets.push(doc.defaultView)
+  for (const target of gestureTargets) {
+    target.addEventListener('gesturestart', stopGesture, { capture: true, passive: false })
+    target.addEventListener('gesturechange', stopGesture, { capture: true, passive: false })
+    target.addEventListener('gestureend', stopGesture, { capture: true, passive: false })
+  }
 
   dialog.addEventListener('pointerdown', event => {
     const result = gestures.pointerDown({
@@ -406,35 +576,14 @@ export function attachPhotoGestures(dialog, doc, gestures, hooks) {
   doc.addEventListener('pointerup', endPointer(true), { passive: true })
   doc.addEventListener('pointercancel', endPointer(false), { passive: true })
 
-  dialog.addEventListener('touchstart', event => {
-    const result = gestures.touchStart({
-      ...live(),
-      touches: listed(event.touches),
-      control: hooks.isControl(event.target),
-      backdrop: hooks.isBackdrop(event.target),
-    }, frame())
-    if (result?.prevent) stopNative(event)
-    hooks.apply(result)
-  }, { capture: true, passive: false })
+}
 
-  dialog.addEventListener('touchmove', event => {
-    const result = gestures.touchMove({
-      touches: listed(event.touches),
-    }, frame())
-    if (result?.prevent) stopNative(event)
-    hooks.apply(result)
-  }, { capture: true, passive: false })
-
-  const endTouch = commit => event => {
-    const lifted = event.changedTouches?.[0]
-    const result = gestures.touchEnd({
-      remaining: listed(event.touches),
-      lifted: lifted ? { id: lifted.identifier, x: lifted.clientX, y: lifted.clientY } : null,
-      commit: commit && hooks.open() && hooks.mode() === 'photo',
-    }, frame())
-    if (result?.prevent) stopNative(event)
-    hooks.apply(result)
-  }
-  dialog.addEventListener('touchend', endTouch(true), { passive: false })
-  dialog.addEventListener('touchcancel', endTouch(false), { passive: false })
+// Used as an inline style. A custom property inside `transform` on a
+// descendant of a modal dialog is not reliably recomposited on iOS, so the
+// photograph can be scaled in state and still look unchanged.
+export function photoTransformStyle(zoom) {
+  const x = Number.isFinite(zoom?.x) ? zoom.x : 0
+  const y = Number.isFinite(zoom?.y) ? zoom.y : 0
+  const scale = Number.isFinite(zoom?.scale) ? zoom.scale : 1
+  return `translate(${x}px, ${y}px) scale(${scale})`
 }

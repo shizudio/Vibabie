@@ -5,7 +5,7 @@
  * 180–880ms  photographic placards settle into the landscape
  * 320–920ms  controls become available without replay on refresh or zoom
  */
-html:has(.photodump-body), .photodump-body { height: auto; min-height: 100%; cursor: auto; }
+html:has(.photodump-body), .photodump-body { height: 100%; overflow: hidden; overscroll-behavior: none; cursor: auto; }
 .photodump-body { margin: 0; --pd-paper: #faf7f1; --pd-hairline: rgba(28,23,20,.19); --pd-dissolve: 1200ms; --pd-pin-image-size: 64px; --pd-pin-frame-size: calc(var(--pd-pin-image-size) + 8px); }
 .photodump-body *, .photodump-body *::before, .photodump-body *::after { box-sizing: border-box; font-style: normal; }
 .photodump-body [hidden] { display: none !important; }
@@ -18,7 +18,7 @@ html:has(.photodump-body), .photodump-body { height: auto; min-height: 100%; cur
 .pd-skip:focus { top: 8px; }
 .pd-page { height: 100dvh; }
 .pd-map-frame { position: relative; }
-#pd-map { height: 100dvh; width: 100%; z-index: 0; background: #f2f3f0; touch-action: pan-y; }
+#pd-map { height: 100dvh; width: 100%; z-index: 0; background: #f2f3f0; touch-action: none; }
 .photodump-body:has(.pd-dialog[open]) #pd-map,
 #pd-map.pd-map-locked { pointer-events: none; touch-action: none; }
 #pd-map .leaflet-tile-pane { filter: saturate(.38) brightness(1.06) contrast(.94); }
@@ -91,7 +91,7 @@ html:has(.photodump-body), .photodump-body { height: auto; min-height: 100%; cur
 .photodump-body .pd-dialog :focus-visible { outline-color: rgba(255,255,255,.8); }
 .pd-dialog-photo-view { display: grid; justify-items: center; gap: 20px; pointer-events: none; }
 .pd-dialog-image-wrap { display: grid; place-items: center; min-height: 120px; max-width: 100%; pointer-events: none; }
-.pd-dialog-zoom { width: max-content; max-width: 100%; transform: translate(var(--pd-pan-x, 0px), var(--pd-pan-y, 0px)) scale(var(--pd-zoom, 1)); transform-origin: center center; touch-action: none; pointer-events: none; }
+.pd-dialog-zoom { width: max-content; max-width: 100%; transform: translate(var(--pd-pan-x, 0px), var(--pd-pan-y, 0px)) scale(var(--pd-zoom, 1)); transform-origin: center center; touch-action: none; pointer-events: auto; }
 .pd-dialog-zoom.is-zoomed { position: relative; z-index: 1; }
 /* Quiet stand-in until the file arrives, so the chrome is not an empty map.
    Removed with .is-pending, so a loaded photograph keeps its own size. */
@@ -114,7 +114,7 @@ html:has(.pd-dialog[open]),
 .photodump-body:has(.pd-dialog[open]) { overflow: hidden; overscroll-behavior: none; }
 html:has(.pd-dialog[open][data-view="photo"]) { touch-action: none; }
 @keyframes pd-viewer-in { from { opacity: 0; } to { opacity: 1; } }
-@keyframes pd-photo-in { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: scale(1); } }
+@keyframes pd-photo-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes pd-photo-next { from { opacity: 0; transform: translateX(32px); } to { opacity: 1; transform: none; } }
 @keyframes pd-photo-prev { from { opacity: 0; transform: translateX(-32px); } to { opacity: 1; transform: none; } }
 @media (min-width: 1024px) { .photodump-body { --pd-pin-image-size: 128px; } }

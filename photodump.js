@@ -3,7 +3,7 @@ import 'leaflet/dist/leaflet.css'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import { loadPhotos } from './photodump-data.js'
 import { cityFromGeocode, photosInCity } from './photodump-city.js'
-import { attachPhotoGestures, createPhotoGesture } from './photodump-gesture.js'
+import { attachPhotoGestures, createPhotoGesture, mapShouldDrag, pageLockStyle, photoTransformStyle } from './photodump-gesture.js'
 
 // Markercluster 1.x attaches to the shared Leaflet global.
 window.L = L
@@ -31,16 +31,16 @@ const entryFallback = setTimeout(() => revealMap(true), ENTRY.fallback)
 const state = { photos: [], view: 'map', controller: null, dialogPhotos: [], dialogIndex: 0, dialogTrigger: null, dialogMode: 'photo', dialogTitle: '', loaded: false }
 let citiesReady = Promise.resolve()
 const cityCache = new Map()
-const coarsePointer = matchMedia('(pointer: coarse)').matches
 const desktopPins = matchMedia('(min-width: 1024px)')
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)')
 const map = L.map('pd-map', {
   center: [22, 15], zoom: 2, minZoom: 2, maxZoom: 18,
   zoomControl: false, scrollWheelZoom: false, touchZoom: false, boxZoom: false,
-  doubleClickZoom: false, keyboard: false, dragging: !coarsePointer, tapHold: false,
+  doubleClickZoom: false, keyboard: false, dragging: true, tapHold: false,
   zoomAnimation: false, fadeAnimation: false, markerZoomAnimation: false,
   attributionControl: true,
 })
+map.getContainer().style.touchAction = 'none'
 map.attributionControl.setPrefix('')
 const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -311,15 +311,31 @@ const zoomEl = $('pd-dialog-zoom')
 const zoom = { scale: 1, x: 0, y: 0, photoId: '' }
 const gestures = createPhotoGesture()
 function lockMap(locked) {
-  map.getContainer().classList.toggle('pd-map-locked', locked)
-  if (locked) map.dragging.disable()
-  else if (!coarsePointer) map.dragging.enable()
+  const container = map.getContainer()
+  container.classList.toggle('pd-map-locked', locked)
+  if (mapShouldDrag(locked)) map.dragging.enable()
+  else map.dragging.disable()
+  // pan-y lets iOS rubber-band the viewport instead of dragging the map.
+  container.style.touchAction = 'none'
+}
+function lockPage(locked) {
+  const style = pageLockStyle(locked)
+  for (const el of [document.documentElement, document.body]) {
+    el.style.position = style.position
+    el.style.inset = style.inset
+    el.style.width = style.width
+    el.style.overflow = style.overflow
+  }
 }
 function applyZoom() {
   zoomEl.style.setProperty('--pd-pan-x', `${zoom.x}px`)
   zoomEl.style.setProperty('--pd-pan-y', `${zoom.y}px`)
   zoomEl.style.setProperty('--pd-zoom', String(zoom.scale))
+  // iOS does not reliably repaint a transform that only changes a custom
+  // property inside a modal dialog. Write the used transform directly.
+  zoomEl.style.transform = photoTransformStyle(zoom)
   zoomEl.classList.toggle('is-zoomed', zoom.scale > 1)
+  if (zoom.scale > 1) $('pd-dialog-image').style.animation = 'none'
 }
 function resetZoom(photoId = '') {
   gestures.resetTransform()
@@ -343,6 +359,7 @@ function showDialog(trigger) {
   if (dialog.open) return
   state.dialogTrigger = trigger || document.activeElement
   lockMap(true)
+  lockPage(true)
   dialog.showModal()
 }
 function galleryFor(photo) {
@@ -450,6 +467,7 @@ function stepPhoto(direction) {
 dialog.addEventListener('close', () => {
   resetZoom('')
   lockMap(false)
+  lockPage(false)
   $('pd-dialog-image').removeAttribute('src')
   $('pd-dialog-image').style.animation = ''
   $('pd-dialog-grid-view').replaceChildren()
@@ -469,6 +487,13 @@ dialog.addEventListener('keydown', event => {
     if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus() }
     else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() }
   }
+})
+$('pd-dialog-image').addEventListener('animationend', event => {
+  if (event.target !== $('pd-dialog-image')) return
+  // The entrance and the step animations leave a transform on the image.
+  // That transform is the one iOS composites, so the wrapper's pinch scale
+  // would not show. Drop it once the animation has finished.
+  event.target.style.animation = 'none'
 })
 $('pd-dialog-image').addEventListener('error', () => {
   $('pd-dialog-image').classList.remove('is-pending')
