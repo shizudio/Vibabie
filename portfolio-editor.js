@@ -503,7 +503,7 @@ function renderToolsTab(body) {
     card.innerHTML = `
       <div class="pe-tool-icon">${tool.icon}</div>
       <div class="pe-tool-info">
-        <div class="pe-tool-name">${tool.name}${tool.url ? ' ↗' : ''}</div>
+        <div class="pe-tool-name">${tool.name}</div>
         <div class="pe-tool-desc">${tool.desc}</div>
       </div>
     `

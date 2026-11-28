@@ -1,13 +1,22 @@
 /* ─────────────────────────────────────────────────────────
  * SCROLL STORYBOARD — driven by native page position, never elapsed time.
  *
- *  stage 0   intro + collage; the live frame matches the image column
- *  stage 1   stage top travels 80vh → 0; frame widens and grows to viewport
- *  stage 2   stage is at the top; same live iframe fills the sticky viewport
- *  reverse   scrolling back unwinds those exact dimensions to the collage
+ *  stage 0   intro + collage; the frame matches the image column
+ *  stage 1   stage top travels 80vh → 0; the frame widens and grows
+ *  stage 2   the frame fills the viewport; the live page is settled there
  *
- * Reduced motion skips stage 1's zoom. No wheel/touch interception, scroll
- * locks, child-frame messaging, frame reloads, or programmatic scrolling.
+ * The iframe is always laid out at the full viewport and clipped to the
+ * frame, with its top-left in the frame's top-left. Opacity is the scroll
+ * progress. The page never reflows into the smaller frame, so it does not
+ * appear squeezed on the way in. Pointers and keyboard reach it only once
+ * the frame fills the screen.
+ * Scrolling back fades it out and unwinds the frame the same way.
+ *
+ * Reduced motion skips the in-between: the frame and the page snap from
+ * hidden to full when the stage reaches the top. No wheel or touch
+ * interception, scroll locks, child-frame messaging, frame reloads, or
+ * programmatic scrolling. Opacity is written from scroll position, not
+ * from a timed transition.
  * ───────────────────────────────────────────────────────── */
 
 const FRAME_MOTION = {
@@ -59,22 +68,34 @@ if (stage && origin && frame) {
       // Keep the exit control and widget clearance through the sticky stage's
       // departure, including fractional viewport edges on mobile browsers.
       const immersive = progress >= FRAME_MOTION.fullThreshold && distanceToTop <= 0 && bounds.bottom > top
-      const motionStage = immersive ? 2 : progress > 0 && progress < FRAME_MOTION.fullThreshold ? 1 : 0
+      const motionStage = immersive ? 2 : progress > 0 ? 1 : 0
+
+      const frameLeft = initial.left + (left - initial.left) * progress
+      const frameWidth = initial.width + (width - initial.width) * progress
+      const frameHeight = height * (FRAME_MOTION.framedHeight + (1 - FRAME_MOTION.framedHeight) * progress)
 
       stage.style.setProperty('--coffee-viewport-top', `${top}px`)
       stage.style.setProperty('--coffee-viewport-left', `${left}px`)
+      stage.style.setProperty('--coffee-viewport-width', `${width}px`)
       stage.style.setProperty('--coffee-viewport-height', `${height}px`)
-      stage.style.setProperty('--coffee-frame-left', `${initial.left + (left - initial.left) * progress}px`)
-      stage.style.setProperty('--coffee-frame-width', `${initial.width + (width - initial.width) * progress}px`)
-      stage.style.setProperty('--coffee-frame-height', `${height * (FRAME_MOTION.framedHeight + (1 - FRAME_MOTION.framedHeight) * progress)}px`)
+      stage.style.setProperty('--coffee-frame-left', `${frameLeft}px`)
+      stage.style.setProperty('--coffee-frame-width', `${frameWidth}px`)
+      stage.style.setProperty('--coffee-frame-height', `${frameHeight}px`)
+      // Opacity tracks scroll progress. The page is already laid out at the
+      // full viewport and clipped to this frame, so it fades in at full size
+      // and is only fully visible once the frame fills the screen.
+      stage.style.setProperty('--coffee-iframe-opacity', immersive ? '1' : String(progress))
       stage.dataset.coffeeStage = ['framed', 'expanding', 'immersive'][motionStage]
       document.body.classList.toggle('coffee-is-immersive', immersive)
 
-      // Only the changing-size interval yields pointer/keyboard input to the
-      // parent. Both settled frame states retain native iframe interaction.
-      if (motionStage === 1) frame.setAttribute('tabindex', '-1')
-      else if (originalTabIndex === null) frame.removeAttribute('tabindex')
-      else frame.setAttribute('tabindex', originalTabIndex)
+      // The live page accepts pointers only once it fills the screen.
+      if (frame.inert !== !immersive) frame.inert = !immersive
+      if (immersive) {
+        if (originalTabIndex === null) frame.removeAttribute('tabindex')
+        else frame.setAttribute('tabindex', originalTabIndex)
+      } else {
+        frame.setAttribute('tabindex', '-1')
+      }
 
       const widget = document.getElementById('vinyl-widget')
       if (immersive && widget) {
@@ -125,6 +146,7 @@ if (stage && origin && frame) {
       reducedMotion.removeEventListener('change', requestRender)
       document.body.classList.remove('coffee-is-immersive')
       restoreWidget()
+      frame.inert = false
       if (originalTabIndex === null) frame.removeAttribute('tabindex')
       else frame.setAttribute('tabindex', originalTabIndex)
     }

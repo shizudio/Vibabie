@@ -115,15 +115,6 @@ main {
   gap: 10px;
 }
 
-.submit-arrow {
-  font-style: normal;
-  transition: transform 0.3s ease;
-}
-
-.submit-btn:hover .submit-arrow {
-  transform: translate(3px, -3px);
-}
-
 /* ── Success state ───────────────────────────────────────────────────────── */
 .success-state {
   display: none;
