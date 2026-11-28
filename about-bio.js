@@ -25,7 +25,7 @@
  */
 
 function controller() {
-  const s = { deck: null, intro: null, bio: null, btn: null, pages: null, dots: null }
+  const s = { deck: null, intro: null, bio: null, btn: null, pages: null, dots: null, next: null }
 
   /**
    * The mobile bio is two pages side by side in a scroll-snap container. The
@@ -33,14 +33,40 @@ function controller() {
    * it landed so the right dot lights up. Passive, and never calls
    * preventDefault or scrollTo during a gesture.
    */
+  function pageIndex() {
+    if (!s.pages) return 0
+    const page = s.pages.firstElementChild
+    if (!page) return 0
+    const width = page.getBoundingClientRect().width
+    if (!width) return 0
+    return Math.round(s.pages.scrollLeft / width)
+  }
+
   function syncDots() {
     if (!s.pages || !s.dots) return
     const page = s.pages.firstElementChild
     if (!page) return
     const width = page.getBoundingClientRect().width
     if (!width) return
-    const i = Math.round(s.pages.scrollLeft / width)
-    ;[...s.dots.children].forEach((d, n) => d.classList.toggle('is-on', n === i))
+    const i = pageIndex()
+    ;[...s.dots.children].forEach((d, n) => {
+      const on = n === i
+      d.classList.toggle('is-on', on)
+      if (d.tagName === 'BUTTON') d.setAttribute('aria-pressed', String(on))
+    })
+    if (s.next) s.next.hidden = i >= s.pages.children.length - 1
+  }
+
+  /* A click, not a gesture: the pager still scrolls natively, this only
+     moves it to the page the visitor asked for. Reduced motion snaps. */
+  function goTo(index) {
+    if (!s.pages) return
+    const page = s.pages.children[index]
+    if (!page) return
+    const width = s.pages.firstElementChild.getBoundingClientRect().width
+    if (!width) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    s.pages.scrollTo({ left: index * width, behavior: reduce ? 'auto' : 'smooth' })
   }
 
   /**
@@ -89,10 +115,24 @@ function controller() {
   }
 
   return {
-    attach(deck, intro, bio, btn, pages, dots) {
+    attach(deck, intro, bio, btn, pages, dots, next) {
       s.pages = pages
       s.dots = dots
+      s.next = next
       if (pages) pages.addEventListener('scroll', syncDots, { passive: true })
+      if (dots && !dots.dataset.aboutBioBound) {
+        dots.dataset.aboutBioBound = '1'
+        dots.addEventListener('click', (e) => {
+          const button = e.target.closest('button')
+          if (!button || !dots.contains(button)) return
+          const index = [...dots.children].indexOf(button)
+          if (index >= 0) goTo(index)
+        })
+      }
+      if (next && !next.dataset.aboutBioBound) {
+        next.dataset.aboutBioBound = '1'
+        next.addEventListener('click', () => goTo(pageIndex() + 1))
+      }
       s.deck = deck
       s.intro = intro
       s.bio = bio
@@ -120,11 +160,12 @@ export function initAboutBio() {
   // the toggle must keep working if either is ever removed.
   const pages = document.getElementById('aboutBioPages')
   const dots = document.getElementById('aboutBioDots')
+  const next = document.getElementById('aboutBioNext')
   if (!deck || !intro || !bio || !btn) return
   if (btn.dataset.aboutBioBound) return
 
   if (!window.__shizAboutBio) window.__shizAboutBio = controller()
-  window.__shizAboutBio.attach(deck, intro, bio, btn, pages, dots)
+  window.__shizAboutBio.attach(deck, intro, bio, btn, pages, dots, next)
 }
 
 initAboutBio()

@@ -247,6 +247,20 @@ html, body { background: #FFFFFF; }
   .project-foot { padding: 24px 24px 72px; }
 }
 
+/* Solmi's type board is one 1600×907 image with two columns. On a phone
+   that scales the specimens down to unreadability. Below 768px each half
+   is shown at the column width. Colours, motif and imagery are untouched. */
+.project-stack img.solmi-fonts-rest { display: none; }
+@media (max-width: 767px) {
+  .project-stack img.solmi-fonts-rest { display: block; }
+  .solmi-fonts img {
+    aspect-ratio: 800 / 907;
+    object-fit: cover;
+    object-position: left center;
+  }
+  .solmi-fonts img.solmi-fonts-rest { object-position: right center; }
+}
+
 /* .project-cta-alt was a pill I added for Solmi before noticing .project-visit
    already existed for exactly this. Removed; Solmi now matches the other three. */
 .project-cta:focus-visible,

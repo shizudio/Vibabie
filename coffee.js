@@ -10,13 +10,19 @@
  * progress. The page never reflows into the smaller frame, so it does not
  * appear squeezed on the way in. Pointers and keyboard reach it only once
  * the frame fills the screen.
- * Scrolling back fades it out and unwinds the frame the same way.
+ * Scrolling back fades it out until the frame fills. After that, Back to
+ * project is the exit, and the fade runs again from the intro.
  *
  * Reduced motion skips the in-between: the frame and the page snap from
  * hidden to full when the stage reaches the top. No wheel or touch
- * interception, scroll locks, child-frame messaging, frame reloads, or
- * programmatic scrolling. Opacity is written from scroll position, not
+ * interception, child-frame messaging, frame reloads, or programmatic
+ * scrolling during a gesture. Opacity is written from scroll position, not
  * from a timed transition.
+ *
+ * Once the frame fills the screen it stays there. Further parent scroll used
+ * to unpin the iframe and reveal the page underneath, so two scroll contexts
+ * fought. Parent overflow locks until "Back to project", which is a click,
+ * not a gesture. The fade-in on the way there is unchanged.
  * ───────────────────────────────────────────────────────── */
 
 const FRAME_MOTION = {
@@ -43,15 +49,77 @@ if (stage && origin && frame) {
     let previousWidgetInert = false
     const originalTabIndex = frame.getAttribute('tabindex')
 
+    let locked = false
+    const back = stage.querySelector('.coffee-return')
+
     function restoreWidget() {
       if (hiddenWidget) hiddenWidget.inert = previousWidgetInert
       hiddenWidget = null
+    }
+
+    function holdFullscreen() {
+      const viewport = window.visualViewport
+      const height = viewport?.height || window.innerHeight
+      const width = viewport?.width || document.documentElement.clientWidth
+      const top = viewport?.offsetTop || 0
+      const left = viewport?.offsetLeft || 0
+      stage.style.setProperty('--coffee-viewport-top', `${top}px`)
+      stage.style.setProperty('--coffee-viewport-left', `${left}px`)
+      stage.style.setProperty('--coffee-viewport-width', `${width}px`)
+      stage.style.setProperty('--coffee-viewport-height', `${height}px`)
+      stage.style.setProperty('--coffee-frame-left', '0px')
+      stage.style.setProperty('--coffee-frame-width', `${width}px`)
+      stage.style.setProperty('--coffee-frame-height', `${height}px`)
+      stage.style.setProperty('--coffee-iframe-opacity', '1')
+      stage.dataset.coffeeStage = 'immersive'
+      stage.dataset.coffeeLocked = 'true'
+      document.body.classList.add('coffee-is-immersive')
+      if (frame.inert) frame.inert = false
+      if (originalTabIndex === null) frame.removeAttribute('tabindex')
+      else frame.setAttribute('tabindex', originalTabIndex)
+    }
+
+    function lockParent() {
+      if (locked) return
+      locked = true
+      const y = window.scrollY || document.documentElement.scrollTop || 0
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${y}px`
+      document.body.style.left = '0'
+      document.body.style.right = '0'
+      document.body.style.width = '100%'
+      document.body.style.overflow = 'hidden'
+      holdFullscreen()
+    }
+
+    function unlockParent() {
+      if (!locked) return
+      locked = false
+      delete stage.dataset.coffeeLocked
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.left = ''
+      document.body.style.right = ''
+      document.body.style.width = ''
+      document.body.style.overflow = ''
+    }
+
+    function onBack(event) {
+      if (!locked) return
+      event.preventDefault()
+      unlockParent()
+      window.scrollTo(0, 0)
+      history.pushState(null, '', '#coffee-intro')
+      // scrollY was already 0 while the body was fixed, so the scroll event
+      // does not fire. Recompute the frame or it stays full-screen at the top.
+      render()
     }
 
     function render() {
       pending = 0
       if (destroyed) return
       if (!stage.isConnected) { destroy(); return }
+      if (locked) { holdFullscreen(); return }
 
       const bounds = stage.getBoundingClientRect()
       const initial = origin.getBoundingClientRect()
@@ -97,6 +165,8 @@ if (stage && origin && frame) {
         frame.setAttribute('tabindex', '-1')
       }
 
+      if (immersive) lockParent()
+
       const widget = document.getElementById('vinyl-widget')
       if (immersive && widget) {
         if (hiddenWidget !== widget) {
@@ -127,6 +197,7 @@ if (stage && origin && frame) {
     })
     removalObserver.observe(document.body, { childList: true })
 
+    back?.addEventListener('click', onBack)
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', requestRender, { passive: true })
     window.visualViewport?.addEventListener('resize', requestRender, { passive: true })
@@ -139,6 +210,8 @@ if (stage && origin && frame) {
       cancelAnimationFrame(pending)
       observer.disconnect()
       removalObserver.disconnect()
+      back?.removeEventListener('click', onBack)
+      unlockParent()
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', requestRender)
       window.visualViewport?.removeEventListener('resize', requestRender)

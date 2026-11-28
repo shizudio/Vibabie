@@ -97,11 +97,14 @@
 
             </div>
 
-            <!-- Mobile only. Without it there is nothing on screen saying a
-                 second page exists, and a swipe affordance nobody knows about
-                 is the same as no second page. -->
-            <div class="about-bio-dots" id="aboutBioDots" aria-hidden="true">
-              <span class="is-on"></span><span></span>
+            <!-- Mobile only. Dots jump to a page; Next is the text affordance
+                 for the second page. The swipe itself stays native scroll-snap. -->
+            <div class="about-bio-pager">
+              <div class="about-bio-dots" id="aboutBioDots">
+                <button type="button" class="is-on" aria-label="Bio, page 1"><span></span></button>
+                <button type="button" aria-label="Bio, page 2"><span></span></button>
+              </div>
+              <button type="button" class="about-bio-next" id="aboutBioNext">Next</button>
             </div>
           </div>
 
