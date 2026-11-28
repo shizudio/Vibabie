@@ -3,17 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SHIZUDIO Coffee — Shina Foo</title>
-  <meta name="description" content="SHIZUDIO Coffee, a coffee machine concept that adapts brewing to humidity and the state of the beans while keeping you involved. Product and interaction design by Shina Foo.">
+  <title>A Coffee Machine — Shina Foo</title>
+  <meta name="description" content="A Coffee Machine, a coffee machine concept that adapts brewing to humidity and the state of the beans while keeping you involved. Product and interaction design by Shina Foo.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500&family=EB+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="vinyl.css">
   <link rel="stylesheet" href="project.css">
+  <link rel="stylesheet" href="coffee.css">
   <script src="/art-loader.js"></script>
 </head>
-<body>
+<body class="coffee-project">
 
   <div class="cursor default-cursor" id="cursor"></div>
 
@@ -28,22 +29,15 @@
     </div>
   </header>
 
-  <main class="project-page">
+  <main class="coffee-page">
+    <div class="project-page coffee-intro" id="coffee-intro">
 
     <!-- ── LEFT: sticky nameplate ── -->
     <aside class="project-rail">
-      <h1 class="project-title">SHIZUDIO Coffee</h1>
+      <h1 class="project-title">A Coffee Machine</h1>
       <p class="project-meta">Product design concept &middot; 2026</p>
       <p class="project-desc">
-        A coffee machine concept that adapts grind, dose and water temperature
-        to the room around it, while keeping you in the making. You choose the
-        coffee, it handles the variables, and a little feedback after each cup
-        makes the next one more yours.
-      </p>
-      <p class="project-desc">
-        One grinder, three ways to brew: espresso on the machine, pour-over and
-        French press from freshly prepared grounds. The behaviour shown is
-        proposed and has not been engineering-validated.
+        This is one of my industrial design coursework projects, and I still find it pretty interesting.
       </p>
       <div class="project-actions">
         <a class="project-visit" href="https://shizudiocoffee.vercel.app" target="_blank" rel="noopener">See the full concept &#8599;</a>
@@ -53,17 +47,23 @@
 
     <!-- ── RIGHT: the work ── -->
     <div class="project-stack">
-      <figure><img src="/work/coffee/collage.webp" alt="Sixteen stills from the SHIZUDIO coffee machine concept: the machine front and three-quarter, grinding and pouring, the interaction bar in rainy, winter and early morning light, the copper handle, and pour-over and French press at the table" loading="eager" decoding="async"></figure>
+      <figure data-coffee-frame-origin><img src="/work/coffee/collage.webp" alt="Sixteen stills from A Coffee Machine: the machine front and three-quarter, grinding and pouring, the interaction bar in rainy, winter and early morning light, the copper handle, and pour-over and French press at the table" loading="eager" decoding="async"></figure>
 
-      <!-- The live concept site, embedded. It sends no frame-blocking headers,
-           so it sits in the stack as a panel; the rail link opens it full. -->
-      <figure class="stack-embed">
-        <iframe src="https://shizudiocoffee.vercel.app/" title="SHIZUDIO Coffee concept site" loading="lazy" allow="autoplay; fullscreen" allowfullscreen></iframe>
-      </figure>
+    </div>
+    </div>
 
-      <div class="project-foot">
-        <a class="project-back" href="work.html">Design</a>
+    <!-- One live frame, kept in place as its viewport grows with native scroll. -->
+    <section class="coffee-stage" id="coffee-stage" aria-label="A Coffee Machine live concept">
+      <div class="coffee-stage-viewport">
+        <div class="coffee-frame">
+          <iframe src="https://shizudiocoffee.vercel.app/" title="A Coffee Machine concept site" loading="lazy" allow="autoplay; fullscreen" allowfullscreen></iframe>
+        </div>
+        <a class="coffee-return" href="#coffee-intro">Back to project</a>
       </div>
+    </section>
+
+    <div class="project-foot coffee-project-foot">
+      <a class="project-back" href="work.html">Design</a>
     </div>
 
   </main>
@@ -71,5 +71,6 @@
   <script type="module" src="script.js"></script>
   <script type="module" src="vinyl-widget.js"></script>
   <script type="module" src="i18n.js"></script>
+  <script type="module" src="coffee.js"></script>
 </body>
 </html>
