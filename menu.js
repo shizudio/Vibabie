@@ -31,6 +31,8 @@ function roomBar() {
 }
 
 function inject() {
+  mountMobileNav()
+
   const bar = roomBar()
 
   // Not a room page: make sure nothing is left over from a previous page.
@@ -140,6 +142,64 @@ function isOpen() {
   return document.getElementById('nav-overlay')?.classList.contains('open') ?? false
 }
 
+/* ── Mobile site nav ────────────────────────────────────────────────────────
+   Below 767px the inline Design / Art / Contact / Play row (plus the EN / 中
+   switch i18n.js appends into .nav-links) is too tight. The same list drops
+   into a panel under the bar, opened by a burger. Desktop keeps display:
+   contents and the inline row; the button is in the DOM but hidden, so a
+   resize does not have to rebuild the bar. Play's room overlay stays a
+   separate control. */
+const MOBILE_NAV_MQ = window.matchMedia('(max-width: 767px)')
+let openFromKeyboard = false
+
+function siteBars() {
+  return [...document.querySelectorAll('.site-header, .project-topbar, nav')].filter((bar) => {
+    if (bar.classList.contains('case-sidenav') || bar.classList.contains('nav-overlay-nav')) return false
+    return !!bar.querySelector(':scope > .nav-links')
+  })
+}
+
+function mountMobileNav() {
+  for (const bar of siteBars()) {
+    const links = bar.querySelector(':scope > .nav-links')
+    if (!links.id) {
+      links.id = document.getElementById('site-nav-menu') ? `site-nav-menu-${bar.className.split(' ')[0] || 'bar'}` : 'site-nav-menu'
+    }
+    let btn = bar.querySelector(':scope > .nav-burger')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'nav-burger'
+      btn.setAttribute('aria-expanded', 'false')
+      btn.setAttribute('aria-label', 'Menu')
+      const icon = document.createElement('span')
+      icon.className = 'nav-burger-icon'
+      icon.setAttribute('aria-hidden', 'true')
+      icon.append(document.createElement('span'), document.createElement('span'), document.createElement('span'))
+      btn.appendChild(icon)
+      // Before the links, so Tab goes button → list once the list is open.
+      links.before(btn)
+    }
+    btn.setAttribute('aria-controls', links.id)
+  }
+}
+
+function closeMobileNav() {
+  for (const bar of siteBars()) {
+    bar.classList.remove('is-nav-open')
+    bar.querySelector(':scope > .nav-burger')?.setAttribute('aria-expanded', 'false')
+  }
+}
+
+function openMobileNav(bar, { focusFirst = false } = {}) {
+  if (isOpen()) closeMenu()
+  closeMobileNav()
+  bar.classList.add('is-nav-open')
+  const btn = bar.querySelector(':scope > .nav-burger')
+  btn?.setAttribute('aria-expanded', 'true')
+  if (focusFirst) bar.querySelector('.nav-links a, .nav-links button')?.focus()
+}
+
 export function initMenu() {
   inject()
 
@@ -150,8 +210,27 @@ export function initMenu() {
   // One delegated handler on the document covers the toggle, the overlay items
   // and the overlay background, so a toggle or overlay built after a soft
   // navigation keeps working without re-binding anything.
+  // A real pointer press is not the keyboard path. Cleared before click so a
+  // leftover Enter flag cannot move focus on the next tap.
+  document.addEventListener('pointerdown', () => { openFromKeyboard = false }, true)
+
   document.addEventListener('click', e => {
+    const burger = e.target.closest('.nav-burger')
+    if (burger) {
+      const bar = burger.closest('.site-header, .project-topbar, nav')
+      if (!bar) return
+      const willOpen = !bar.classList.contains('is-nav-open')
+      const fromKeyboard = openFromKeyboard
+      openFromKeyboard = false
+      if (willOpen) openMobileNav(bar, { focusFirst: fromKeyboard })
+      else closeMobileNav()
+      return
+    }
+
     if (e.target.closest('#menu-toggle')) {
+      // The room index and the site list are different menus. Opening one
+      // closes the other so the bar never shows both at once.
+      closeMobileNav()
       if (isOpen()) closeMenu()
       else openMenu({ focusFirst: e.detail === 0 })
       return
@@ -175,11 +254,44 @@ export function initMenu() {
     if (e.target === overlay) closeMenu()
   })
 
+  // A click outside the open list, or on one of its links, closes it.
+  // Navigation itself is left to the link and the router.
+  document.addEventListener('click', e => {
+    if (e.target.closest('.nav-burger')) return
+    const open = document.querySelector('.is-nav-open')
+    if (!open) return
+    if (open.contains(e.target)) {
+      if (e.target.closest('a[href]')) closeMobileNav()
+      return
+    }
+    closeMobileNav()
+  })
+
+  document.addEventListener('focusin', e => {
+    const open = document.querySelector('.is-nav-open')
+    if (!open || open.contains(e.target)) return
+    closeMobileNav()
+  })
+
+  MOBILE_NAV_MQ.addEventListener('change', () => {
+    if (!MOBILE_NAV_MQ.matches) closeMobileNav()
+  })
+
   // Escape key
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && isOpen()) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target instanceof Element && e.target.closest('.nav-burger')) {
+      openFromKeyboard = true
+    }
+
+    if (e.key === 'Escape' && (isOpen() || document.querySelector('.is-nav-open'))) {
       e.preventDefault()
-      closeMenu()
+      const siteBar = document.querySelector('.is-nav-open')
+      const burger = siteBar?.querySelector(':scope > .nav-burger')
+      if (isOpen()) closeMenu()
+      if (siteBar) {
+        closeMobileNav()
+        burger?.focus()
+      }
       return
     }
 
