@@ -31,18 +31,27 @@
   background: #fff;
   border: 1px solid var(--border);
 }
+/* Full viewport, clipped by the frame. Opacity is scroll progress, written
+   from coffee.js. No timed fade: a transition here would run ahead of the
+   scroll that is supposed to drive it. */
 .coffee-frame iframe {
-  display: block;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--coffee-viewport-width, 100vw);
+  height: var(--coffee-viewport-height, 100dvh);
+  max-width: none;
   min-height: 0;
+  display: block;
   border: 0;
   background: #fff;
-}
-.coffee-stage[data-coffee-stage="expanding"] iframe {
+  opacity: var(--coffee-iframe-opacity, 0);
   pointer-events: none;
 }
 .coffee-stage[data-coffee-stage="immersive"] .coffee-frame { border: 0; }
+.coffee-stage[data-coffee-stage="immersive"] .coffee-frame iframe {
+  pointer-events: auto;
+}
 
 .coffee-return {
   position: absolute;
@@ -81,5 +90,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .coffee-frame,
+  .coffee-frame iframe,
   .coffee-return { transition: none; }
 }
