@@ -119,7 +119,7 @@ function buildTrack() {
     <figcaption class="sketch-pile-cap">
       <span class="art-card-num">${pad(N + 1)}</span>
       <span class="art-card-title">The Sketchbook <span class="art-card-year">${SKETCHES.length}</span></span>
-      <span class="sketch-pile-hint">click to open ↗</span>
+      <span class="sketch-pile-hint">click to open</span>
     </figcaption>
   `
   pileEl.addEventListener('click', openSketchModal)
