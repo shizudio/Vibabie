@@ -39,6 +39,28 @@ const pad = n => String(n).padStart(2, '0')
 const parseYear = m => (m.match(/\b(19|20)\d{2}\b/) || [''])[0]
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v))
 
+// Phone cards use a 1200px sibling under Art/web/card/. The manifest files are
+// 2560px on the long edge so a desktop lightbox stays sharp; decoded, that set
+// is about 300MB, and every card is stacked inside the viewport (placement is
+// a transform, so loading="lazy" never defers them). Uploading those bitmaps
+// while a finger is down is what made the swipe stutter. 1200px still covers
+// a phone-width lightbox at 3x. Desktop keeps the full file.
+function displaySrc(src) {
+  if (!mobileLayout || typeof src !== 'string') return src
+  const marker = 'Art/web/'
+  const at = src.indexOf(marker)
+  if (at === -1) return src
+  return src.slice(0, at) + 'Art/web/card/' + src.slice(at + marker.length)
+}
+function bindDisplay(img, full) {
+  img.dataset.fallback = full
+  img.addEventListener('error', () => {
+    if (img.dataset.fellback === '1') return
+    img.dataset.fellback = '1'
+    img.src = full
+  })
+}
+
 // ── Responsive tuning ─────────────────────────────────────
 let L = {}
 let mobileLayout = false
@@ -49,7 +71,14 @@ function computeLayout() {
   mobileLayout = vw <= 767
   if (mobileLayout) {
     const cardMax = vw * 0.54
-    L = { cardMax, pileMax: vw * 0.305, step: 260, spread: vw * 0.40, steep: 0.72 }
+    const spread = vw * 0.40
+    const steep = 0.72
+    // The focused card's centre moves `spread * tanh(off * steep)` px. Right
+    // at the centre that rate is `spread * steep` px per index, so a step of
+    // that length keeps the piece under the thumb 1:1 with the finger. A fixed
+    // 260px step was ~2.3× the on-screen travel at 390px, which is why a swipe
+    // felt like it was dragging through mud.
+    L = { cardMax, pileMax: vw * 0.305, step: spread * steep, spread, steep }
   } else {
     const cardMax = Math.min(vw * 0.37, 576)
     L = { cardMax, pileMax: cardMax * 0.546, step: 320, spread: vw * 0.35, steep: 0.62 }
@@ -72,7 +101,7 @@ function buildTrack() {
     card.dataset.index = i
     card.innerHTML = `
       <div class="art-card-frame">
-        <img src="${art.src}" alt="${art.title}" loading="${i < 4 ? 'eager' : 'lazy'}" decoding="async" draggable="false" />
+        <img src="${displaySrc(art.src)}" alt="${art.title}" loading="${i < 4 ? 'eager' : 'lazy'}" decoding="async" draggable="false" />
         ${art.beforeSrc ? '<button type="button" class="art-card-flip">before / after</button>' : ''}
       </div>
       <figcaption class="art-card-cap">
@@ -81,8 +110,9 @@ function buildTrack() {
       </figcaption>
     `
     const img = card.querySelector('img')
+    bindDisplay(img, art.src)
     img.addEventListener('click', () =>
-      morphOpen(img, () => openLightbox(img.src, art.description || art.title)))
+      morphOpen(img, () => openLightbox(img.dataset.fallback || img.currentSrc || img.src, art.description || art.title)))
 
     // Opt-in before/after flip — only rendered when a manifest entry has beforeSrc.
     const flipBtn = card.querySelector('.art-card-flip')
@@ -91,7 +121,10 @@ function buildTrack() {
       flipBtn.addEventListener('click', e => {
         e.stopPropagation()
         showingBefore = !showingBefore
-        img.src = showingBefore ? art.beforeSrc : art.src
+        const full = showingBefore ? art.beforeSrc : art.src
+        img.dataset.fallback = full
+        img.dataset.fellback = ''
+        img.src = displaySrc(full)
         flipBtn.textContent = showingBefore ? 'after ↻' : 'before / after'
         flipBtn.classList.toggle('is-before', showingBefore)
       })
@@ -113,7 +146,7 @@ function buildTrack() {
   pileEl.innerHTML = `
     <div class="sketch-pile-stack">
       ${SKETCHES.slice(0, 5).map((s, k) => `
-        <img class="sketch-pile-layer" style="--k:${k}" src="${s.src}" alt="${s.title || 'sketch'}" loading="lazy" decoding="async" draggable="false" />
+        <img class="sketch-pile-layer" style="--k:${k}" src="${displaySrc(s.src)}" alt="${s.title || 'sketch'}" loading="lazy" decoding="async" draggable="false" />
       `).join('')}
     </div>
     <figcaption class="sketch-pile-cap">
@@ -123,6 +156,10 @@ function buildTrack() {
     </figcaption>
   `
   pileEl.addEventListener('click', openSketchModal)
+  pileEl.querySelectorAll('.sketch-pile-layer').forEach((img, k) => {
+    const full = SKETCHES[k] && SKETCHES[k].src
+    if (full) bindDisplay(img, full)
+  })
   track.appendChild(pileEl)
   items.push({ el: pileEl, index: N, isPile: true, veil: null })
 
@@ -157,9 +194,8 @@ function buildRail() {
 let activeIndex = -1
 // Per-frame lerp factor for the veil fade: displayed value eases toward its
 // target instead of snapping to it, so fast scrolling doesn't strobe the
-// opacity (the CSS transition on .art-card-frame::after can't smooth this
-// itself — --veil-opacity is an untyped custom property, so the browser
-// can't interpolate it as a number; JS owns the smoothing instead).
+// dimming. The overlay's opacity is what moves (see art.css); JS eases the
+// number because the value is driven by scroll position, not a CSS transition.
 const VEIL_DAMPING = 0.18
 function render() {
   const scroll = getScroll()
@@ -169,6 +205,9 @@ function render() {
   // them visually fixed. Mobile has no native scroll (custom inertia drives a
   // virtual position), so the anchor is just the viewport centre.
   const anchor = (mobileLayout ? 0 : scroll) + viewport.clientWidth / 2
+  // Stacking order only changes when focus crosses a halfway point. Writing
+  // z-index on every frame rebuilds compositor order for the whole drag.
+  const zBucket = (focus * 2) | 0
 
   let veilSettling = false
   items.forEach(item => {
@@ -176,15 +215,33 @@ function render() {
     const off  = index - focus
     const aoff = Math.abs(off)
     if (mobileLayout && aoff > 3.25) {
-      el.style.visibility = 'hidden'
+      if (!item._hidden) {
+        item._hidden = true
+        el.style.visibility = 'hidden'
+        // Drop the compositor layer. A hidden 1200px painting should not stay
+        // resident on the GPU while the finger is elsewhere on the line.
+        el.style.willChange = 'auto'
+      }
       return
     }
-    el.style.visibility = 'visible'
+    if (item._hidden !== false) {
+      item._hidden = false
+      el.style.visibility = 'visible'
+      if (mobileLayout) el.style.willChange = 'transform'
+    }
     const veilTarget = index === Math.round(focus) ? 0 : 0.8 * centeredness * Math.min(1, aoff)
     if (item.veil === null) item.veil = veilTarget   // first render for this item: snap, don't ease in
     else item.veil += (veilTarget - item.veil) * VEIL_DAMPING
     if (Math.abs(veilTarget - item.veil) > 0.001) veilSettling = true
-    el.style.setProperty('--veil-opacity', item.veil.toFixed(3))
+    // The sketch pile has no veil overlay. Setting the property on it still
+    // invalidates style for every frame of a swipe.
+    if (!item.isPile) {
+      const veilShown = item.veil.toFixed(3)
+      if (item._veil !== veilShown) {
+        item._veil = veilShown
+        el.style.setProperty('--veil-opacity', veilShown)
+      }
+    }
     const t    = Math.tanh(off * L.steep)         // spacing curve: steep at centre
     const x     = L.spread * t                     // horizontal offset (px)
     // neighbours fall off; the focal piece gets a +20% boost that fades by one slot
@@ -195,14 +252,36 @@ function render() {
     const y     = mobileLayout ? 0 : Math.min(aoff, 4) * 5
     // keep every image opaque; signify depth with a gentle darkening instead
     const bright = Math.max(0.74, 1 - Math.min(aoff, 5) * 0.055)
-    el.style.transform = `translate3d(calc(${anchor + x}px - 50%), calc(-50% + ${y}px), 0) rotate(${rot}deg) scale(${scale})`
-    el.style.opacity = 1
-    el.style.filter = mobileLayout || aoff < 0.5 ? 'none' : `brightness(${bright})`
-    el.style.zIndex = String(1000 - Math.round(aoff * 100))
+    const transform = `translate3d(calc(${anchor + x}px - 50%), calc(-50% + ${y}px), 0) rotate(${rot}deg) scale(${scale})`
+    // Veil easing keeps rendering after the finger stops. The positions don't
+    // change on those frames; rewriting transform would restyle every card anyway.
+    if (item._transform !== transform) {
+      item._transform = transform
+      el.style.transform = transform
+    }
+    if (!mobileLayout) {
+      const filter = aoff < 0.5 ? 'none' : `brightness(${bright})`
+      if (item._filter !== filter) {
+        item._filter = filter
+        el.style.filter = filter
+      }
+    }
+    if (mobileLayout) {
+      if (item._zBucket !== zBucket) {
+        item._zBucket = zBucket
+        el.style.zIndex = String(1000 - Math.round(aoff * 100))
+      }
+    } else {
+      el.style.zIndex = String(1000 - Math.round(aoff * 100))
+    }
   })
 
   const max = mobileLayout ? maxPos : (viewport.scrollWidth - viewport.clientWidth)
-  railFill.style.transform = `scaleX(${max > 0 ? scroll / max : 0})`
+  const railT = `scaleX(${max > 0 ? scroll / max : 0})`
+  if (railFill._t !== railT) {
+    railFill._t = railT
+    railFill.style.transform = railT
+  }
 
   const near = Math.round(focus)
   if (near !== activeIndex) setActive(near)
@@ -374,23 +453,43 @@ function animatePos(target, dur = 320) {
 function snapMobile() { animatePos(clamp(Math.round(pos / L.step), 0, N) * L.step) }
 function runInertia() {
   stopInertia()
+  // Per 16.7ms frame, matching the drag sampler below. Scaled by the real
+  // frame delta so a 120Hz phone doesn't coast twice as far as a 60Hz one.
   const friction = 0.92, minV = 0.15
-  const tick = () => {
-    pos = clamp(pos - mVel, 0, maxPos)
-    mVel *= friction
+  let last = performance.now()
+  const tick = now => {
+    const frames = Math.min(2, (now - last) / 16.67)
+    last = now
+    pos = clamp(pos - mVel * frames, 0, maxPos)
+    mVel *= Math.pow(friction, frames)
     scheduleRender()
     if (Math.abs(mVel) > minV && pos > 0 && pos < maxPos) inertiaRAF = requestAnimationFrame(tick)
     else { inertiaRAF = null; snapMobile() }
   }
   inertiaRAF = requestAnimationFrame(tick)
 }
+function endMobileDrag() {
+  if (!mobileLayout || !mDragging) return
+  mDragging = false
+  // A slow release is a placement: snap to the nearest piece. Only a real flick
+  // (about 240px/s) coasts. The old 0.4px/frame gate was tuned for a 260px step;
+  // with the finger-matched step it turned a short drag into an extra card.
+  if (Math.abs(mVel) > 4) runInertia()
+  else snapMobile()
+}
 viewport.addEventListener('pointerdown', e => {
-  if (!mobileLayout) return
+  if (!mobileLayout || e.button !== 0) return
   stopInertia()
   mDragging = true; mVel = 0; moved = 0
   mLastX = e.clientX; mLastT = performance.now()
+  // Keep the gesture if the finger slides off the card. touch-action: none on
+  // .deck-touch is what stops the browser waiting to see if this is a scroll.
+  try { viewport.setPointerCapture(e.pointerId) } catch (err) { /* pointer already gone */ }
 }, { passive: true })
-window.addEventListener('pointermove', e => {
+// pointerrawupdate is the touch sample, a frame ahead of the coalesced
+// pointermove. Fall back where it doesn't exist (Safari).
+const mobileMoveEvent = 'onpointerrawupdate' in window ? 'pointerrawupdate' : 'pointermove'
+window.addEventListener(mobileMoveEvent, e => {
   if (!mobileLayout || !mDragging) return
   const now = performance.now()
   const dx = e.clientX - mLastX
@@ -401,12 +500,8 @@ window.addEventListener('pointermove', e => {
   mLastX = e.clientX; mLastT = now
   scheduleRender()
 })
-window.addEventListener('pointerup', () => {
-  if (!mobileLayout || !mDragging) return
-  mDragging = false
-  if (Math.abs(mVel) > 0.4) runInertia()
-  else snapMobile()
-})
+window.addEventListener('pointerup', endMobileDrag)
+window.addEventListener('pointercancel', endMobileDrag)
 
 // suppress click after a real drag/swipe
 viewport.addEventListener('click', e => {
@@ -424,14 +519,16 @@ document.addEventListener('keydown', e => {
 function buildSketchGrid() {
   sketchGrid.innerHTML = SKETCHES.map((s, i) => `
     <button class="sketch-cell" data-index="${i}" style="--d:${i}">
-      <img src="${s.src}" alt="${s.title || 'sketch'}" loading="lazy" decoding="async" />
+      <img src="${displaySrc(s.src)}" alt="${s.title || 'sketch'}" loading="lazy" decoding="async" />
       ${s.title ? `<span class="sketch-cell-label">${s.title}</span>` : ''}
     </button>
   `).join('')
   sketchGrid.querySelectorAll('.sketch-cell').forEach(cell => {
+    const s = SKETCHES[+cell.dataset.index]
+    const img = cell.querySelector('img')
+    if (s && img) bindDisplay(img, s.src)
     cell.addEventListener('click', () => {
-      const s = SKETCHES[+cell.dataset.index]
-      morphOpen(cell.querySelector('img'), () => openLightbox(s.src, s.description || s.title || ''))
+      morphOpen(img, () => openLightbox(s.src, s.description || s.title || ''))
     })
   })
 }
@@ -459,5 +556,5 @@ render()
 let resizeTimer
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer)
-  resizeTimer = setTimeout(() => { buildTrack(); render() }, 150)
+  resizeTimer = setTimeout(() => { buildTrack(); buildSketchGrid(); render() }, 150)
 })
