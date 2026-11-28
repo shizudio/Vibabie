@@ -21,7 +21,6 @@ html:has(.photodump-body), .photodump-body { height: 100%; overflow: hidden; ove
 #pd-map { height: 100dvh; width: 100%; z-index: 0; background: #f2f3f0; touch-action: none; }
 .photodump-body:has(.pd-dialog[open]) #pd-map,
 #pd-map.pd-map-locked { pointer-events: none; touch-action: none; }
-#pd-map .leaflet-tile-pane { filter: saturate(.38) brightness(1.06) contrast(.94); }
 .pd-entry-veil { position: fixed; inset: 0; z-index: 100; background: var(--paper); opacity: 1; pointer-events: none; transition: opacity var(--pd-dissolve) ease-in-out; }
 .pd-entered .pd-entry-veil { opacity: 0; }
 .pd-back, .pd-toolbar, .pd-map-controls { opacity: 0; transition: opacity 600ms ease 320ms; box-shadow: 0 2px 16px rgba(28,23,20,.09); }

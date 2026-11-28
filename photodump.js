@@ -34,7 +34,7 @@ const cityCache = new Map()
 const desktopPins = matchMedia('(min-width: 1024px)')
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)')
 const map = L.map('pd-map', {
-  center: [22, 15], zoom: 2, minZoom: 2, maxZoom: 18,
+  center: [22, 15], zoom: 2, minZoom: 2, maxZoom: 16,
   zoomControl: false, scrollWheelZoom: false, touchZoom: false, boxZoom: false,
   doubleClickZoom: false, keyboard: false, dragging: true, tapHold: false,
   zoomAnimation: false, fadeAnimation: false, markerZoomAnimation: false,
@@ -42,13 +42,36 @@ const map = L.map('pd-map', {
 })
 map.getContainer().style.touchAction = 'none'
 map.attributionControl.setPrefix('')
-const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-  maxZoom: 19, updateWhenIdle: true, keepBuffer: 1,
+// World Light Gray Canvas. Esri's path is {z}/{y}/{x}. Zoom 17+ is a "data not yet available" tile.
+const canvas = { maxZoom: 16, updateWhenIdle: true, keepBuffer: 1 }
+const base = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+  ...canvas,
+  attribution: 'Esri, HERE, Garmin, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, and the GIS user community',
 }).addTo(map)
-tiles.on('load', () => { entry.tilesReady = true; revealMap() })
-tiles.on('tileerror', () => { $('pd-tile-error').hidden = false })
-tiles.on('tileload', () => { $('pd-tile-error').hidden = true })
+const labels = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
+  ...canvas, zIndex: 2,
+}).addTo(map)
+const tileReady = { base: false, labels: false }
+const tileFailed = { base: false, labels: false }
+function watchTiles(layer, name) {
+  layer.on('load', () => {
+    tileReady[name] = true
+    if (tileReady.base && tileReady.labels) {
+      entry.tilesReady = true
+      revealMap()
+    }
+  })
+  layer.on('tileerror', () => {
+    tileFailed[name] = true
+    $('pd-tile-error').hidden = false
+  })
+  layer.on('tileload', () => {
+    tileFailed[name] = false
+    $('pd-tile-error').hidden = !(tileFailed.base || tileFailed.labels)
+  })
+}
+watchTiles(base, 'base')
+watchTiles(labels, 'labels')
 
 function pin(photo, count = 1) {
   const imageSize = desktopPins.matches ? 128 : 64
@@ -261,7 +284,7 @@ async function refresh() {
   } finally {
     clearTimeout(timeout)
     entry.dataReady = true
-    if (!tiles.isLoading()) entry.tilesReady = true
+    if (!base.isLoading() && !labels.isLoading()) entry.tilesReady = true
     revealMap()
     if (state.controller === controller) {
       $('pd-refresh').disabled = false
